@@ -16,6 +16,7 @@
   color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{margin:0;background:var(--base);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
 p,h1,h2,h3,h4,ul,ol,figure{margin:0}
 ul,ol{padding:0;list-style:none}
@@ -47,6 +48,17 @@ button{font:inherit;color:inherit}
 .topnav a:hover{color:var(--text)}
 .topbar .btn{margin-left:auto}
 @media(min-width:1080px){.topnav{display:flex}}
+.mnav-toggle{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:40px;height:40px;margin-left:auto;background:none;border:1px solid var(--hair-2);border-radius:10px;cursor:pointer;flex:none}
+.mnav-toggle span{display:block;width:18px;height:1.6px;background:var(--text);transition:transform .25s ease,opacity .25s ease}
+.mnav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6.6px) rotate(45deg)}
+.mnav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+.mnav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6.6px) rotate(-45deg)}
+@media(min-width:1080px){.mnav-toggle{display:none}.topbar .btn{margin-left:0}}
+.mnav-panel{position:fixed;inset:70px 0 0 0;z-index:59;background:var(--base);border-top:1px solid var(--hair);padding:22px var(--pad,20px) 28px;overflow-y:auto;display:flex;flex-direction:column;gap:22px}
+.mnav-panel[hidden]{display:none}
+.mnav-panel nav{display:flex;flex-direction:column}
+.mnav-panel nav a{padding:15px 2px;font-size:1.0625rem;font-weight:500;color:var(--text);border-bottom:1px solid var(--hair)}
+@media(min-width:1080px){.mnav-panel{display:none!important}}
 
 /* topnav dropdown (Отрасли / AI-системы / Digital-услуги) */
 .topnav .navitem{position:relative;padding-bottom:24px;margin-bottom:-24px}
@@ -360,61 +372,150 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .dir-card h3{font-size:1.375rem;font-weight:650;letter-spacing:-.01em;line-height:1.25}
 .dir-card p{font-size:1rem;color:var(--text-dim);line-height:1.65}
 
-/* ---------- 05 форматы внедрения — лента крупных строк ---------- */
-.formats-list{margin-top:clamp(48px,6vw,72px);display:flex;flex-direction:column;gap:18px}
-.format-row{position:relative;background:rgba(20,19,17,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
-  border:1px solid var(--hair-2);border-radius:22px;padding:clamp(28px,3vw,40px);
-  display:grid;gap:clamp(20px,3vw,36px);transition:border-color .35s var(--ease),box-shadow .35s var(--ease),background .35s var(--ease);
-  opacity:0;transform:translateX(-34px);transition:opacity .8s var(--ease),transform .8s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease)}
+/* ---------- 04c отрасли: цифры и конкретика ---------- */
+.industries-grid{margin-top:clamp(40px,5vw,60px);display:grid;gap:20px}
+@media(min-width:820px){.industries-grid{grid-template-columns:repeat(2,1fr)}}
+.industry-card{position:relative;opacity:0;transform:scale(.94) translateY(16px);
+  transition:opacity .7s var(--ease),transform .7s var(--ease);perspective:1400px}
+.industry-card.in{opacity:1;transform:none}
+.industry-card__inner{position:relative;overflow:hidden;border:1px solid var(--hair-2);border-radius:22px;
+  background:rgba(16,15,14,.55);padding:clamp(28px,3vw,36px);display:flex;flex-direction:column;gap:18px;height:100%;
+  transition:transform .4s ease,border-color .35s var(--ease),box-shadow .4s ease;will-change:transform;
+  animation:industryFloat 8s ease-in-out infinite;
+  --mx:50%;--my:0%}
+.industry-card:nth-of-type(1) .industry-card__inner{animation-delay:0s}
+.industry-card:nth-of-type(2) .industry-card__inner{animation-delay:.5s}
+.industry-card:nth-of-type(3) .industry-card__inner{animation-delay:1s}
+.industry-card:nth-of-type(4) .industry-card__inner{animation-delay:1.5s}
+.industry-card:nth-of-type(5) .industry-card__inner{animation-delay:2s}
+.industry-card:nth-of-type(6) .industry-card__inner{animation-delay:2.5s}
+@keyframes industryFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.industry-card__inner::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s var(--ease);
+  background:radial-gradient(220px circle at var(--mx) var(--my),rgba(var(--accent-rgb),.16),transparent 70%)}
+.industry-card__inner:hover{border-color:var(--accent);box-shadow:0 40px 70px -30px rgba(0,0,0,.6),0 8px 20px -8px rgba(var(--accent-rgb),.22)}
+.industry-card__inner:hover::before{opacity:1}
+.industry-card__top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.industry-card__top h3{font-size:1.25rem;font-weight:650;letter-spacing:-.01em;max-width:26ch}
+.industry-card__arrow{flex:none;width:38px;height:38px;border-radius:50%;border:1px solid var(--hair-2);display:flex;
+  align-items:center;justify-content:center;color:var(--accent-hi);transition:transform .3s var(--ease),border-color .3s var(--ease),background .3s var(--ease)}
+.industry-card__inner:hover .industry-card__arrow{transform:rotate(45deg);border-color:var(--accent);background:rgba(var(--accent-rgb),.12)}
+.industry-card__arrow svg{width:15px;height:15px}
+.industry-card p{font-size:.9375rem;color:var(--text-dim);line-height:1.6}
+.industry-card__stats{display:flex;gap:28px;padding-top:16px;border-top:1px solid var(--hair)}
+.industry-card__stats b{display:block;font-size:1.375rem;font-weight:650;color:var(--accent-hi);letter-spacing:-.01em}
+.industry-card__stats span{font-size:.8125rem;color:var(--text-faint);line-height:1.4;display:block;margin-top:3px}
+.industry-card__cta{margin-top:auto;padding-top:16px;display:inline-flex;align-items:center;gap:8px;font-size:.875rem;font-weight:600;color:var(--accent-hi);align-self:flex-start;transition:gap .25s var(--ease)}
+.industry-card__cta svg{width:14px;height:14px;transition:transform .25s var(--ease)}
+.industry-card__inner:hover .industry-card__cta{gap:12px}
+.industry-card__inner:hover .industry-card__cta svg{transform:translateX(3px)}
+@media(prefers-reduced-motion:reduce){.industry-card{opacity:1;transform:none}.industry-card__inner{animation:none}}
+
+/* ---------- процесс работы: от разбора до внедрения ---------- */
+.process-list{margin-top:clamp(56px,6vw,80px);position:relative;display:grid;gap:clamp(36px,4vw,0px)}
+@media(min-width:860px){.process-list{grid-template-columns:repeat(4,1fr);gap:24px}}
+.process-line{display:none}
+@media(min-width:860px){
+  .process-line{display:block;position:absolute;left:0;right:0;top:27px;height:1px;background:var(--hair-2);z-index:0;overflow:hidden}
+  .process-line i{position:absolute;inset:0;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--accent),var(--accent-hi));
+    transition:transform 1.4s var(--ease)}
+  .process-list.in .process-line i{transform:scaleX(1)}
+}
+.process-step{position:relative;z-index:1;opacity:0;transform:translateY(20px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.process-step.in{opacity:1;transform:none}
+.process-step:nth-of-type(2){transition-delay:.12s}
+.process-step:nth-of-type(3){transition-delay:.24s}
+.process-step:nth-of-type(4){transition-delay:.36s}
+.process-step:nth-of-type(5){transition-delay:.48s}
+.process-step__n{width:54px;height:54px;border-radius:50%;border:1px solid var(--hair-3);background:var(--base);
+  display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:1.0625rem;color:var(--accent-hi);
+  font-weight:600;transition:border-color .4s var(--ease),box-shadow .4s var(--ease)}
+.process-step.in .process-step__n{border-color:var(--accent);box-shadow:0 0 0 6px rgba(var(--accent-rgb),.12)}
+.process-step h3{margin-top:18px;font-size:1.125rem;font-weight:650;letter-spacing:-.01em}
+.process-step p{margin-top:8px;font-size:.9063rem;color:var(--text-dim);line-height:1.6;max-width:32ch}
+@media(prefers-reduced-motion:reduce){.process-step{opacity:1;transform:none}.process-line i{transition:none}}
+
+/* ---------- 05 форматы внедрения — крупные плавающие карточки ---------- */
+.formats-list{margin-top:clamp(56px,7vw,88px);display:flex;flex-direction:column;gap:clamp(28px,4vw,44px);perspective:1600px}
+.format-row{position:relative;opacity:0;transform:translateX(-34px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
 .format-row.in{opacity:1;transform:none}
-.format-row:nth-of-type(1){transition-delay:0s}
 .format-row:nth-of-type(2){transition-delay:.08s}
 .format-row:nth-of-type(3){transition-delay:.08s}
 .format-row:nth-of-type(4){transition-delay:.08s}
-.format-row:hover{border-color:var(--accent);box-shadow:0 30px 60px -26px rgba(0,0,0,.6)}
-.format-row--hi{border-color:rgba(var(--accent-rgb),.5);background:rgba(196,161,101,.06)}
-@media(min-width:900px){.format-row{grid-template-columns:1fr 1.7fr;align-items:start}}
-.format-row__head{display:flex;flex-direction:column;gap:10px}
+.format-row__inner{position:relative;background:linear-gradient(160deg,rgba(26,24,20,.7),rgba(14,14,13,.6));
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);border:1px solid var(--hair-2);border-radius:26px;
+  padding:clamp(34px,4vw,52px);display:grid;gap:clamp(24px,3.4vw,40px);will-change:transform;
+  box-shadow:0 26px 40px -28px rgba(0,0,0,.7),0 4px 10px -4px rgba(0,0,0,.4);
+  transition:transform .12s linear,box-shadow .4s var(--ease),border-color .4s var(--ease);
+  animation:formatFloat 7s ease-in-out infinite}
+.format-row:nth-of-type(1) .format-row__inner{animation-delay:0s}
+.format-row:nth-of-type(2) .format-row__inner{animation-delay:.7s}
+.format-row:nth-of-type(3) .format-row__inner{animation-delay:1.4s}
+.format-row:nth-of-type(4) .format-row__inner{animation-delay:2.1s}
+.format-row__inner:hover{border-color:var(--accent);box-shadow:0 46px 80px -30px rgba(0,0,0,.7),0 8px 22px -8px rgba(var(--accent-rgb),.25)}
+@keyframes formatFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.format-row--hi .format-row__inner{border-color:rgba(var(--accent-rgb),.5);background:linear-gradient(160deg,rgba(196,161,101,.1),rgba(20,19,17,.55))}
+@media(min-width:900px){.format-row__inner{grid-template-columns:1fr 1.7fr;align-items:start}}
+.format-row__head{display:flex;flex-direction:column;gap:12px;position:relative}
+.format-row__idx{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.1em;color:var(--text-faint);opacity:.7}
 .format-row__badge{align-self:flex-start;font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.08em;text-transform:uppercase;
   color:var(--accent-hi);background:rgba(var(--accent-rgb),.14);border-radius:999px;padding:5px 12px}
-.format-row__head h3{font-size:1.375rem;font-weight:650;letter-spacing:-.01em}
-.format-row__scope{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.02em;color:var(--text-faint)}
-.format-row__cta{margin-top:6px;font-size:.875rem;font-weight:600;color:var(--accent-hi);display:inline-flex;align-items:center;gap:6px}
-.format-row__cta svg{width:13px;height:13px;transition:transform .25s var(--ease)}
-.format-row:hover .format-row__cta svg{transform:translateX(3px)}
-.format-row__body p{font-size:.9688rem;color:var(--text-dim);line-height:1.6}
-.format-row__grid{margin-top:16px;display:grid;gap:16px}
+.format-row__head h3{font-size:clamp(1.5rem,2vw,1.875rem);font-weight:650;letter-spacing:-.015em;line-height:1.15}
+.format-row__scope{font-family:var(--font-mono);font-size:.8125rem;letter-spacing:.02em;color:var(--text-faint)}
+.format-row__cta{margin-top:8px;font-size:.9375rem;font-weight:600;color:var(--accent-hi);display:inline-flex;align-items:center;gap:6px}
+.format-row__cta svg{width:14px;height:14px;transition:transform .25s var(--ease)}
+.format-row__inner:hover .format-row__cta svg{transform:translateX(3px)}
+.format-row__body p{font-size:1.0313rem;color:var(--text-dim);line-height:1.65}
+.format-row__grid{margin-top:18px;display:grid;gap:20px}
 @media(min-width:620px){.format-row__grid{grid-template-columns:repeat(3,1fr)}}
-.format-row__grid h4{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px}
-.format-row__grid ul{display:flex;flex-direction:column;gap:7px}
-.format-row__grid li{display:flex;gap:8px;font-size:.8438rem;color:var(--text-dim);line-height:1.4}
-.format-row__grid li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);flex:none;margin-top:6px}
-.format-row__grid span{font-size:.8438rem;color:var(--text-dim);line-height:1.5;display:block}
-@media(prefers-reduced-motion:reduce){.format-row{opacity:1;transform:none}}
+.format-row__grid h4{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);margin-bottom:9px}
+.format-row__grid ul{display:flex;flex-direction:column;gap:8px}
+.format-row__grid li{display:flex;gap:8px;font-size:.875rem;color:var(--text-dim);line-height:1.45}
+.format-row__grid li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);flex:none;margin-top:7px}
+.format-row__grid span{font-size:.875rem;color:var(--text-dim);line-height:1.55;display:block}
+@media(prefers-reduced-motion:reduce){.format-row{opacity:1;transform:none}.format-row__inner{animation:none}}
 
 /* ---------- 06 трансформация: до / после ---------- */
-.compare-wrap{margin-top:clamp(48px,6vw,72px);position:relative;display:grid;gap:22px;align-items:start}
-@media(min-width:860px){.compare-wrap{grid-template-columns:1fr 1fr;gap:56px}}
-.compare-card{position:relative;border-radius:22px;padding:clamp(26px,3vw,34px);border:1px solid var(--hair-2);
-  background:rgba(14,14,13,.5);opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+/* ---------- textured dark bg — reserved for a couple of standout blocks ---------- */
+.bg-textured{position:relative;isolation:isolate;overflow:hidden}
+.bg-textured::before{content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;
+  background:radial-gradient(100% 90% at 8% 0%,rgba(var(--accent-rgb),.16) 0%,transparent 62%);
+  -webkit-mask-image:radial-gradient(120% 95% at 8% 0%,#000 0%,rgba(0,0,0,.22) 78%,transparent 100%);
+  mask-image:radial-gradient(120% 95% at 8% 0%,#000 0%,rgba(0,0,0,.22) 78%,transparent 100%)}
+.bg-textured::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background-image:
+    linear-gradient(rgba(var(--accent-rgb),.35) 0%,transparent 100%),
+    linear-gradient(rgba(var(--accent-rgb),.35) 0%,transparent 100%),
+    linear-gradient(rgba(var(--accent-rgb),.35) 0%,transparent 100%);
+  background-size:1px 200%,1px 200%,1px 200%;
+  background-position:18% 0,46% 10%,74% -6%;
+  background-repeat:no-repeat;
+  transform:skewX(-18deg) scale(1.4);
+  -webkit-mask-image:radial-gradient(65% 60% at 30% 20%,#000 0%,transparent 78%);
+  mask-image:radial-gradient(65% 60% at 30% 20%,#000 0%,transparent 78%);
+  opacity:.12}
+.compare-wrap{margin-top:clamp(56px,7vw,80px);position:relative;display:grid;gap:24px;align-items:start}
+@media(min-width:860px){.compare-wrap{grid-template-columns:1fr 1fr;gap:64px}}
+.compare-card{position:relative;border-radius:26px;padding:clamp(32px,3.6vw,44px);border:1px solid var(--hair-2);
+  background:rgba(14,14,13,.5);opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease);
+  box-shadow:0 30px 50px -30px rgba(0,0,0,.6)}
 .compare-card.in{opacity:1;transform:none}
 .compare-card--before{border-color:rgba(224,120,105,.28);background:rgba(224,120,105,.045)}
 .compare-card--after{border-color:rgba(143,194,164,.35);background:rgba(143,194,164,.06);transition-delay:.16s}
-.compare-card--after.in{box-shadow:0 40px 80px -34px rgba(143,194,164,.25)}
-.compare-card__head{display:flex;align-items:center;gap:12px;padding-bottom:18px;margin-bottom:16px;border-bottom:1px solid var(--hair-2)}
-.compare-card__ico{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center}
+.compare-card--after.in{box-shadow:0 44px 84px -34px rgba(143,194,164,.25)}
+.compare-card__head{display:flex;align-items:center;gap:14px;padding-bottom:22px;margin-bottom:20px;border-bottom:1px solid var(--hair-2)}
+.compare-card__ico{width:36px;height:36px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center}
 .compare-card--before .compare-card__ico{background:rgba(224,120,105,.16);color:#E9998C}
 .compare-card--after .compare-card__ico{background:rgba(143,194,164,.18);color:var(--green)}
-.compare-card__head b{font-size:1.0625rem;font-weight:650;letter-spacing:-.01em}
+.compare-card__head b{font-size:1.25rem;font-weight:650;letter-spacing:-.01em}
 .compare-card--before .compare-card__head b{color:#E9998C}
 .compare-card--after .compare-card__head b{color:var(--green)}
-.compare-item{padding-block:15px;border-top:1px solid var(--hair)}
+.compare-item{padding-block:17px;border-top:1px solid var(--hair)}
 .compare-item:first-child{border-top:none;padding-top:0}
-.compare-item b{display:block;font-size:.9375rem;font-weight:600;color:var(--text);margin-bottom:4px}
-.compare-item span{font-size:.8438rem;color:var(--text-dim);line-height:1.5}
+.compare-item b{display:block;font-size:1.0313rem;font-weight:600;color:var(--text);margin-bottom:5px}
+.compare-item span{font-size:.9063rem;color:var(--text-dim);line-height:1.55}
 .compare-mid{display:none}
 @media(min-width:860px){
-  .compare-mid{display:flex;position:absolute;left:50%;top:74px;transform:translateX(-50%);width:44px;height:44px;
+  .compare-mid{display:flex;position:absolute;left:50%;top:84px;transform:translateX(-50%);width:44px;height:44px;
     border-radius:50%;background:var(--base);border:1px solid var(--hair-2);align-items:center;justify-content:center;
     color:var(--accent-hi);z-index:2;box-shadow:0 12px 26px -10px rgba(0,0,0,.6)}
   .compare-mid svg{width:18px;height:18px}
@@ -512,47 +613,61 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     <a class="mark" href="#">METRAWEN</a>
     <nav class="topnav" aria-label="Основная навигация">
       <div class="navitem">
-        <a href="#">AI-системы <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="#s-formats">AI-системы <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <div class="dropdown">
-          <a href="#">AI Opportunity Audit</a>
-          <a href="#">AI Employee — Starter</a>
-          <a href="#">AI Employee — Pro</a>
-          <a href="#">AI System</a>
+          <a href="#format-audit">AI Opportunity Audit</a>
+          <a href="#format-starter">AI Employee — Starter</a>
+          <a href="#format-pro">AI Employee — Pro</a>
+          <a href="#format-custom">AI System</a>
         </div>
       </div>
       <div class="navitem">
-        <a href="#">Отрасли <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="#s-industries">Отрасли <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <div class="dropdown">
-          <a href="#">Отели и виллы</a>
-          <a href="#">Рестораны и кафе</a>
-          <a href="#">Клиники и стоматологии</a>
-          <a href="#">Салоны красоты и spa</a>
-          <a href="#">Туризм и экскурсии</a>
-          <a href="#">Недвижимость и аренда</a>
-          <a href="#">Интернет-магазины</a>
-          <a href="#">Розничная торговля</a>
-          <a href="#">Агентства и B2B</a>
-          <a href="#">Образование и курсы</a>
-          <a href="#">Фитнес-студии</a>
-          <a href="#">Производство и логистика</a>
-          <a href="#">Профессиональные услуги</a>
-          <a href="#" class="more">и другие сервисные бизнесы</a>
+          <a href="#ind-hotels">Отели и виллы</a>
+          <a href="#s-industries">Рестораны и кафе</a>
+          <a href="#ind-clinics">Клиники и стоматологии</a>
+          <a href="#ind-beauty">Салоны красоты и spa</a>
+          <a href="#s-industries">Туризм и экскурсии</a>
+          <a href="#ind-realestate">Недвижимость и аренда</a>
+          <a href="#ind-shops">Интернет-магазины</a>
+          <a href="#s-industries">Розничная торговля</a>
+          <a href="#ind-agencies">Агентства и B2B</a>
+          <a href="#s-industries">Образование и курсы</a>
+          <a href="#s-industries">Фитнес-студии</a>
+          <a href="#s-industries">Производство и логистика</a>
+          <a href="#s-industries">Профессиональные услуги</a>
+          <a href="#s-industries" class="more">и другие сервисные бизнесы</a>
         </div>
       </div>
       <div class="navitem">
-        <a href="#">Digital-услуги <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="#s-pack">Digital-услуги <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <div class="dropdown">
-          <a href="#">Сайты и лендинги</a>
-          <a href="#">Telegram / LINE / WhatsApp боты</a>
-          <a href="#">Дашборды и аналитика конкурентов</a>
-          <a href="#" class="more">и другие digital-услуги</a>
+          <a href="#s-pack">Сайты и лендинги</a>
+          <a href="#s-directions">Telegram / LINE / WhatsApp боты</a>
+          <a href="#s-pack">Дашборды и аналитика конкурентов</a>
+          <a href="#s-pack" class="more">и другие digital-услуги</a>
         </div>
       </div>
-      <a href="#">Как мы работаем</a><a href="about-ru.html">О компании</a>
+      <a href="#s-sys">Как мы работаем</a><a href="about-ru.html">О компании</a>
     </nav>
     <button class="btn btn--sm btn--shine" data-open-modal="booking">Бесплатная сессия</button>
+    <button class="mnav-toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mnav-panel">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
+
+<div class="mnav-panel" id="mnav-panel" hidden>
+  <nav aria-label="Мобильная навигация">
+    <a href="#s-formats">AI-системы</a>
+    <a href="#s-industries">Отрасли</a>
+    <a href="#s-pack">Digital-услуги</a>
+    <a href="#s-sys">Как мы работаем</a>
+    <a href="about-ru.html">О компании</a>
+  </nav>
+  <button class="btn btn--lg" data-open-modal="booking" style="width:100%;justify-content:center">Бесплатная сессия</button>
+</div>
 
 <main>
 
@@ -564,7 +679,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="hero__in">
     <p class="eyebrow rv">Бизнес-системы на основе ИИ</p>
     <h1 id="h-hero" class="rv">Автоматизируем рутинную работу бизнеса, чтобы команда занималась <em>тем, что действительно важно.</em></h1>
-    <p class="lede hero__lede rv">Снимаем с бизнеса рутину — ответы на заявки, напоминания, рутинные операции, аналитика и отчёты — система доводит их до результата, а решения остаются за вами.</p>
+    <p class="lede hero__lede rv">Снимаем с бизнеса рутину: привлечение клиентов, заявки, продажи, напоминания, отчётность. Эту работу может закрывать отдельный AI‑сотрудник или целая AI‑команда, а решения остаются за вами.</p>
     <div class="hero__actions rv">
       <button class="btn btn--lg" data-open-modal="booking">Забронировать бесплатную стратегическую сессию
         <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></button>
@@ -718,7 +833,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       <div class="dir-card rv">
         <div class="dir-card__top">
           <div class="dir-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M20 20l-4.4-4.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="11" r="2.2" fill="currentColor"/></svg></div>
-          <span class="tag">Hunter / Outbound</span>
+          <span class="tag">Поиск клиентов и привлечение</span>
         </div>
         <h3>Поиск и привлечение клиентов</h3>
         <p>Находит потенциальных клиентов по заданным критериям и делает первый контакт — до того, как в дело включается человек.</p>
@@ -726,7 +841,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       <div class="dir-card rv">
         <div class="dir-card__top">
           <div class="dir-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8A2.5 2.5 0 0 1 17.5 16H10l-4.5 4v-4H6.5A2.5 2.5 0 0 1 4 13.5v-8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.6 8.7a2.4 2.4 0 1 1 3.4 2.18c-.7.34-1 .74-1 1.32" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="14.7" r=".2" fill="currentColor" stroke="currentColor" stroke-width="1.6"/></svg></div>
-          <span class="tag">FAQ / база знаний</span>
+          <span class="tag">Частые вопросы</span>
         </div>
         <h3>Ответы на типовые вопросы</h3>
         <p>Цена, наличие, условия, график работы: то, что сегодня печатается вручную по десять раз в день.</p>
@@ -734,7 +849,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       <div class="dir-card rv">
         <div class="dir-card__top">
           <div class="dir-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6.5 3h9.4L19 6.1V20a1 1 0 0 1-1 1H6.5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12h6M9 15.5h6M9 8.5h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-          <span class="tag">Документы / Reporting</span>
+          <span class="tag">Документы и отчётность</span>
         </div>
         <h3>Документы, счета и отчётность</h3>
         <p>Готовит счёт или подтверждение, напоминает об оплате и сводит цифры в отчёт — без участия человека.</p>
@@ -754,6 +869,109 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         </div>
         <h3>Внутренние операции и эскалация</h3>
         <p>Ставит задачи команде, распределяет нестандартные случаи по нужным людям и передаёт их с готовым контекстом, а не с нуля.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 04a · ОТРАСЛИ: цифры и конкретика ========== -->
+<section class="sec bg-textured" id="s-industries" aria-labelledby="h-industries">
+  <div class="wrap">
+    <div class="dir-head">
+      <p class="eyebrow rv" style="justify-content:center">Отрасли</p>
+      <h2 class="h2 rv" id="h-industries" style="margin-top:20px;max-width:none">Что система решает в вашей отрасли</h2>
+      <p class="lede rv" style="max-width:none">Задачи и выгоды в каждой отрасли разные, поэтому и система под них собирается отдельно, а не по общему шаблону.</p>
+    </div>
+
+    <div class="industries-grid">
+      <div class="industry-card rv" id="ind-hotels">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Отели и виллы</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI отвечает на вопросы о бронировании и заезде в любое время суток, пока команда занимается гостями на месте.</p>
+        <div class="industry-card__stats">
+          <div><b>24/7</b><span>ответ на бронирование, без ночной смены на телефоне</span></div>
+          <div><b>до 30%</b><span>меньше упущенных броней из-за медленного ответа</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Отели и виллы">Обсудить для «Отели и виллы»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+
+      <div class="industry-card rv" id="ind-clinics">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Клиники и стоматологии</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI ведёт запись и отвечает на типовые вопросы пациентов, чтобы администратор занимался приёмом, а не телефоном.</p>
+        <div class="industry-card__stats">
+          <div><b>до 25%</b><span>меньше пропущенных визитов благодаря напоминаниям</span></div>
+          <div><b>минуты</b><span>среднее время ответа на заявку вместо часов</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Клиники и стоматологии">Обсудить для «Клиники и стоматологии»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+
+      <div class="industry-card rv" id="ind-beauty">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Салоны красоты и spa</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI принимает запись и напоминает о визите, снижая число забытых процедур и разгружая администратора.</p>
+        <div class="industry-card__stats">
+          <div><b>до 20%</b><span>меньше неявок благодаря автоматическим напоминаниям</span></div>
+          <div><b>24/7</b><span>запись на услугу без участия администратора</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Салоны красоты и spa">Обсудить для «Салоны красоты и spa»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+
+      <div class="industry-card rv" id="ind-agencies">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Агентства и B2B</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI квалифицирует входящих лидов и ведёт первичную переписку, пока команда фокусируется на переговорах и сделках.</p>
+        <div class="industry-card__stats">
+          <div><b>быстрее</b><span>первый ответ лиду, пока он ещё не ушёл к конкуренту</span></div>
+          <div><b>больше</b><span>заявок обрабатывается тем же составом команды</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Агентства и B2B">Обсудить для «Агентства и B2B»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+
+      <div class="industry-card rv" id="ind-shops">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Интернет-магазины</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI отвечает на вопросы о заказе, доставке и наличии, снимая с поддержки основной поток типовых обращений.</p>
+        <div class="industry-card__stats">
+          <div><b>24/7</b><span>ответ покупателю в любое время, включая пик распродаж</span></div>
+          <div><b>меньше</b><span>нагрузка на поддержку по типовым вопросам</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Интернет-магазины">Обсудить для «Интернет-магазины»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+
+      <div class="industry-card rv" id="ind-realestate">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Недвижимость</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI обрабатывает входящие по объектам и назначает показы, пока агент занимается непосредственно сделками.</p>
+        <div class="industry-card__stats">
+          <div><b>быстрее</b><span>ответ по объекту, пока интерес покупателя ещё свежий</span></div>
+          <div><b>больше</b><span>показов проводится без потери входящих лидов</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Недвижимость и аренда">Обсудить для «Недвижимость и аренда»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
       </div>
     </div>
   </div>
@@ -791,13 +1009,15 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="wrap">
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Форматы внедрения</p>
-      <h2 class="h2 rv" id="h-formats" style="margin-top:20px;max-width:none">От отдельного AI-помощника до целого отдела</h2>
-      <p class="lede rv" style="max-width:none">Формат растёт вместе с бизнесом: отдельный AI-помощник → AI-работник → AI-команда → AI-отдел → комплексная система. Начинать не обязательно с большого: можно закрыть одну задачу и расширяться по мере результата.</p>
+      <h2 class="h2 rv" id="h-formats" style="margin-top:20px;max-width:none">От отдельного AI‑помощника до целого отдела</h2>
+      <p class="lede rv" style="max-width:none">Формат растёт вместе с бизнесом: отдельный AI‑помощник&nbsp;→ AI‑работник&nbsp;→ AI‑команда&nbsp;→ AI‑отдел&nbsp;→ комплексная система. Начинать не обязательно с большого: можно закрыть одну задачу и расширяться по мере результата.</p>
     </div>
 
     <div class="formats-list">
-      <div class="format-row">
+      <div class="format-row" id="format-audit">
+        <div class="format-row__inner">
         <div class="format-row__head">
+          <span class="format-row__idx">01</span>
           <span class="format-row__badge">Быстрый старт</span>
           <h3>AI Opportunity Audit</h3>
           <span class="format-row__scope">Разбор процессов, 3–5 рабочих дней</span>
@@ -819,12 +1039,15 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             <div><h4>Зачем</h4><span>Снижает риск: вы вкладываетесь в разбор, а не сразу в разработку, и получаете план с реальными сроками и отдачей.</span></div>
           </div>
         </div>
+        </div>
       </div>
 
-      <div class="format-row format-row--hi">
+      <div class="format-row format-row--hi" id="format-starter">
+        <div class="format-row__inner">
         <div class="format-row__head">
+          <span class="format-row__idx">02</span>
           <span class="format-row__badge">Популярный выбор</span>
-          <h3>AI Employee — Starter</h3>
+          <h3>AI Employee · Starter</h3>
           <span class="format-row__scope">Одно направление, 1–2 недели</span>
           <a class="format-row__cta" href="#" data-open-modal="contact">Обсудить Starter
             <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -844,12 +1067,15 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             <div><h4>Зачем</h4><span>Быстрый и предсказуемый результат: одна рутина полностью снимается с команды уже в первые недели, без долгого внедрения.</span></div>
           </div>
         </div>
+        </div>
       </div>
 
-      <div class="format-row">
+      <div class="format-row" id="format-pro">
+        <div class="format-row__inner">
         <div class="format-row__head">
+          <span class="format-row__idx">03</span>
           <span class="format-row__badge">Комплексно</span>
-          <h3>AI Employee — Pro</h3>
+          <h3>AI Employee · Pro</h3>
           <span class="format-row__scope">Несколько направлений, 3–5 недель</span>
           <a class="format-row__cta" href="#" data-open-modal="contact">Обсудить Pro
             <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -869,10 +1095,13 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             <div><h4>Зачем</h4><span>Меньше разрозненных инструментов и ручных передач между людьми: система ведёт клиента от первого касания до закрытых документов.</span></div>
           </div>
         </div>
+        </div>
       </div>
 
-      <div class="format-row">
+      <div class="format-row" id="format-custom">
+        <div class="format-row__inner">
         <div class="format-row__head">
+          <span class="format-row__idx">04</span>
           <span class="format-row__badge">Под задачу</span>
           <h3>AI System (Custom)</h3>
           <span class="format-row__scope">Индивидуально, от 6 недель</span>
@@ -894,18 +1123,19 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             <div><h4>Зачем</h4><span>Система строится вокруг реальной архитектуры бизнеса, а не подгоняет бизнес под шаблон, и растёт вместе с ним дальше.</span></div>
           </div>
         </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ========== 06 · ДО / ПОСЛЕ ========== -->
-<section class="sec" id="s-before-after" aria-labelledby="h-before-after">
+<section class="sec bg-textured" id="s-before-after" aria-labelledby="h-before-after">
   <div class="wrap">
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Трансформация</p>
-      <h2 class="h2 rv" id="h-before-after" style="margin-top:20px;max-width:none">Что меняется в работе с клиентами</h2>
-      <p class="lede rv" style="max-width:none">Одни и те же процессы, до и после того, как рутину забирает система.</p>
+      <h2 class="h2 rv" id="h-before-after" style="margin-top:20px;max-width:none">Что меняется, когда рутину забирает AI‑сотрудник</h2>
+      <p class="lede rv" style="max-width:none">Не только ответы на заявки: AI‑сотрудник или целая AI‑команда берёт на себя заметную часть повседневной работы, от привлечения клиентов до отчётности, а не одну функцию.</p>
     </div>
 
     <div class="compare-wrap">
@@ -932,6 +1162,14 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <b>Отчёт собирают вечером вручную</b>
           <span>Цифры за день сводят в конце смены, поэтому решения принимаются с опозданием.</span>
         </div>
+        <div class="compare-item">
+          <b>Новых клиентов ищут между делом</b>
+          <span>Менеджер занимается привлечением урывками, между звонками и текущими заявками.</span>
+        </div>
+        <div class="compare-item">
+          <b>Один человек закрывает сразу несколько ролей</b>
+          <span>Продажи, поддержка и документы держатся на одном сотруднике, который не успевает везде.</span>
+        </div>
       </div>
 
       <div class="compare-card compare-card--after rv">
@@ -955,6 +1193,14 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <b>Отчёт готов в реальном времени</b>
           <span>Цифры дня видны сразу: решения принимаются сегодня, а не в конце недели.</span>
         </div>
+        <div class="compare-item">
+          <b>AI‑сотрудник ищет клиентов постоянно</b>
+          <span>Привлечение идёт фоном каждый день, а не только когда у менеджера есть свободная минута.</span>
+        </div>
+        <div class="compare-item">
+          <b>AI‑команда закрывает несколько ролей сразу</b>
+          <span>Продажи, поддержка и документы ведутся параллельно, а человек подключается там, где нужно решение.</span>
+        </div>
       </div>
     </div>
   </div>
@@ -973,7 +1219,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <span>Сколько стоит автоматизация?</span>
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="faq-item__a"><p>Точную стоимость называем после бесплатного разбора процессов: она зависит от формата (аудит, отдельный AI-работник или комплексная система) и от того, сколько направлений закрывает система. Фиксированного тарифа нет намеренно: цена всегда привязана к объёму реальной работы.</p></div>
+        <div class="faq-item__a"><p>Точную стоимость называем после бесплатного разбора процессов: она зависит от формата (аудит, отдельный AI‑работник или комплексная система) и от того, сколько направлений закрывает система. Фиксированного тарифа нет намеренно: цена всегда привязана к объёму реальной работы.</p></div>
       </div>
       <div class="faq-item rv">
         <button class="faq-item__q" type="button" aria-expanded="false">
@@ -994,7 +1240,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <span>С какими бизнесами вы работаете?</span>
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="faq-item__a"><p>В основном с сервисным и клиентским бизнесом: отели и виллы, клиники и стоматологии, салоны красоты, агентства, интернет-магазины и похожие направления, где важна скорость первого ответа. Полный список отраслей есть в форме заявки.</p></div>
+        <div class="faq-item__a"><p>С бизнесом любого профиля: система строится под ваши процессы, а не под конкретную отрасль. Чаще всего к нам приходят отели и виллы, клиники и стоматологии, салоны красоты, агентства, интернет-магазины и недвижимость — примеры того, что решает система, есть в разделе «Отрасли» выше. Если вашего направления там нет, это не значит, что решение не подойдёт: обсудим на бесплатном разборе.</p></div>
       </div>
       <div class="faq-item rv">
         <button class="faq-item__q" type="button" aria-expanded="false">
@@ -1256,6 +1502,17 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         var switchFrom = btn.getAttribute('data-switch-modal');
         if(switchFrom && modals[switchFrom.replace('modal-','')]) closeModal(document.getElementById(switchFrom));
         openModal(btn.getAttribute('data-open-modal'));
+        var presetIndustry = btn.getAttribute('data-preset-industry');
+        if(presetIndustry){
+          var sel = document.querySelector('#contact-form select[name="industry"]');
+          if(sel){
+            var matched = Array.prototype.some.call(sel.options, function(o){
+              if(o.value === presetIndustry || o.textContent.trim() === presetIndustry){ sel.value = o.value || o.textContent; return true; }
+              return false;
+            });
+            if(!matched) sel.value = '';
+          }
+        }
       });
     });
     document.querySelectorAll('[data-close-modal]').forEach(function(el){
@@ -1478,6 +1735,40 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   },{rootMargin:'0px 0px -12% 0px'});
   document.querySelectorAll('.rv, .format-row').forEach(function(el){ io.observe(el); });
 
+  /* ---------- format cards: 3d tilt on hover ---------- */
+  document.querySelectorAll('.format-row__inner').forEach(function(card){
+    card.addEventListener('mousemove', function(e){
+      var r = card.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width - 0.5;
+      var py = (e.clientY - r.top) / r.height - 0.5;
+      card.style.animationPlayState = 'paused';
+      card.style.transform = 'perspective(1200px) rotateX(' + (py * -6) + 'deg) rotateY(' + (px * 8) + 'deg) translateY(-6px) translateZ(6px)';
+    });
+    card.addEventListener('mouseleave', function(){
+      card.style.transform = '';
+      card.style.animationPlayState = 'running';
+    });
+  });
+
+  /* ---------- industry cards: 3d tilt + spotlight ---------- */
+  document.querySelectorAll('.industry-card__inner').forEach(function(card){
+    card.addEventListener('mousemove', function(e){
+      var r = card.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width;
+      var py = (e.clientY - r.top) / r.height;
+      card.style.setProperty('--mx', (px * 100) + '%');
+      card.style.setProperty('--my', (py * 100) + '%');
+      if(!reduce){
+        card.style.animationPlayState = 'paused';
+        card.style.transform = 'perspective(1200px) rotateX(' + ((py - 0.5) * -7) + 'deg) rotateY(' + ((px - 0.5) * 9) + 'deg) translateY(-6px) translateZ(6px)';
+      }
+    });
+    card.addEventListener('mouseleave', function(){
+      card.style.transform = '';
+      card.style.animationPlayState = 'running';
+    });
+  });
+
   /* ---------- faq accordion ---------- */
   document.querySelectorAll('.faq-item__q').forEach(function(btn){
     btn.addEventListener('click', function(){
@@ -1491,6 +1782,38 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       else{ item.classList.add('open'); ans.style.maxHeight = ans.scrollHeight + 'px'; btn.setAttribute('aria-expanded','true'); }
     });
   });
+
+  /* ---------- mobile menu ---------- */
+  (function(){
+    var toggle = document.querySelector('.mnav-toggle');
+    var panel = document.getElementById('mnav-panel');
+    if(!toggle || !panel) return;
+    function closeMenu(){
+      panel.hidden = true;
+      toggle.setAttribute('aria-expanded','false');
+      document.body.style.overflow = '';
+    }
+    function openMenu(){
+      panel.hidden = false;
+      toggle.setAttribute('aria-expanded','true');
+      document.body.style.overflow = 'hidden';
+    }
+    toggle.addEventListener('click', function(){
+      if(panel.hidden){ openMenu(); } else { closeMenu(); }
+    });
+    panel.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', closeMenu);
+    });
+    panel.querySelectorAll('[data-open-modal]').forEach(function(b){
+      b.addEventListener('click', closeMenu);
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && !panel.hidden) closeMenu();
+    });
+    window.addEventListener('resize', function(){
+      if(window.innerWidth >= 1080 && !panel.hidden) closeMenu();
+    });
+  })();
 
   /* ---------- hero: full-bleed sonar dot-grid ---------- */
   (function(){
