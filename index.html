@@ -179,7 +179,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 /* ===================== 01 HERO — full-bleed sonar ground ===================== */
 .hero{position:relative;isolation:isolate;overflow:hidden;cursor:crosshair;
   min-height:min(940px,100svh);display:flex;align-items:center;
-  padding-block:clamp(140px,16vw,200px) clamp(96px,11vw,148px)}
+  padding-block:clamp(108px,12vw,156px) clamp(120px,14vw,184px)}
 .hero__canvas{position:absolute;inset:0;z-index:-1}
 .hero__canvas canvas{display:block;width:100%;height:100%;color:var(--accent)}
 .hero__wash{position:absolute;inset:0;z-index:-1;pointer-events:none;
@@ -194,10 +194,11 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .hero h1 em{font-style:normal;color:var(--accent)}
 .hero__lede{max-width:56ch;margin-inline:auto}
 .hero__actions{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:16px 28px;margin-top:46px}
-.hero__micro{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 20px;margin-top:36px;
-  font-family:var(--font-mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)}
-.hero__micro span{display:flex;align-items:center;gap:8px}
-.hero__micro span::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--green);flex:none}
+.hero__micro{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 14px;margin-top:36px}
+.hero__micro span{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;
+  background:rgba(10,10,9,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  font-family:var(--font-mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text)}
+.hero__micro span::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--green);flex:none;box-shadow:0 0 6px 1px var(--green)}
 
 /* industries — auto-scrolling two-row marquee, its own section below the hero */
 .industries{padding-block:clamp(56px,7vw,92px);border-top:1px solid var(--hair);overflow:hidden}
@@ -767,8 +768,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
               <textarea name="message" rows="3" placeholder="Расскажите о бизнесе и о том, где сейчас больше всего ручной рутины"></textarea>
             </label>
             <label class="checkline">
-              <input type="checkbox" name="brief">
-              <span>Пришлите короткий разбор по автоматизации сервисного бизнеса, одно письмо, без рассылки. Отписаться можно в любой момент.</span>
+              <input type="checkbox" name="consent" required>
+              <span>Согласен(-на) на обработку персональных данных. Данные не передаются третьим лицам.</span>
             </label>
             <button type="submit" class="btn btn--lg" style="width:100%;justify-content:center;margin-top:6px">Отправить заявку</button>
           </form>
