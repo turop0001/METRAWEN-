@@ -96,7 +96,7 @@ button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
 .field span{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint)}
 .field input,.field select,.field textarea{font-family:inherit;font-size:.9375rem;color:var(--text);background:rgba(255,255,255,.03);
   border:1px solid var(--hair-2);border-radius:10px;padding:12px 14px;outline:none;transition:border-color .2s,background .2s;resize:vertical;width:100%}
-.field input::placeholder,.field textarea::placeholder{color:var(--text-faint)}
+.field input::placeholder,.field textarea::placeholder{color:var(--text-faint);font-size:.875rem}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);background:rgba(196,161,101,.05)}
 .field select{appearance:none;-webkit-appearance:none;background-color:rgba(255,255,255,.03);color-scheme:dark;
   padding-right:38px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;cursor:pointer;
@@ -116,6 +116,11 @@ button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
 .book-cal b,.book-slots b{font-size:.9375rem;font-weight:600}
 .book-cal__head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
 .book-cal__month{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-hi)}
+.cal-nav{background:none;border:1px solid var(--hair-2);border-radius:8px;width:26px;height:26px;flex:none;
+  display:flex;align-items:center;justify-content:center;color:var(--text-dim);cursor:pointer;font-size:.9375rem;line-height:1;
+  transition:border-color .2s,color .2s}
+.cal-nav:hover:not(:disabled){color:var(--text);border-color:var(--accent)}
+.cal-nav:disabled{opacity:.28;cursor:default}
 .book-cal__week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:16px;
   font-family:var(--font-mono);font-size:.6875rem;color:var(--text-faint);text-align:center}
 .book-cal__grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:6px}
@@ -201,7 +206,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .hero__micro span::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--green);flex:none;box-shadow:0 0 6px 1px var(--green)}
 
 /* industries — auto-scrolling two-row marquee, its own section below the hero */
-.industries{padding-block:clamp(56px,7vw,92px);border-top:1px solid var(--hair);overflow:hidden}
+.industries{padding-block:clamp(56px,7vw,92px);border-top:1px solid var(--hair);overflow-x:clip}
 .chips__t{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-faint);text-align:center;margin-bottom:34px}
 .marquee{position:relative;display:flex;flex-direction:column;gap:16px;
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 8%,#000 92%,transparent 100%);
@@ -678,7 +683,13 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 
       <div class="book-grid" id="book-step-datetime">
         <div class="book-cal">
-          <div class="book-cal__head"><b>Выберите дату</b><span class="book-cal__month" id="cal-month"></span></div>
+          <div class="book-cal__head"><b>Выберите дату</b>
+            <div style="display:flex;align-items:center;gap:10px">
+              <button type="button" class="cal-nav" id="cal-prev" aria-label="Предыдущий месяц">‹</button>
+              <span class="book-cal__month" id="cal-month"></span>
+              <button type="button" class="cal-nav" id="cal-next" aria-label="Следующий месяц">›</button>
+            </div>
+          </div>
           <div class="book-cal__week" id="cal-weekdays"></div>
           <div class="book-cal__grid" id="cal-days"></div>
           <p class="book-cal__note">Время указано по Бангкоку (ICT, UTC+7).</p>
@@ -686,6 +697,15 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         <div class="book-slots">
           <b id="slots-date-label">Выберите дату слева</b>
           <div id="slots-list" class="book-slots__list"></div>
+        </div>
+      </div>
+
+      <div class="book-manual" id="book-manual" style="margin-top:18px;padding-top:18px;border-top:1px solid var(--hair)">
+        <button type="button" class="btn-quiet" id="book-manual-toggle">Ни один слот не подходит? Указать своё время</button>
+        <div id="book-manual-fields" hidden style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-top:14px">
+          <label class="field" style="flex:1;min-width:160px"><span>Удобная дата</span><input type="date" id="book-manual-date"></label>
+          <label class="field" style="flex:1;min-width:140px"><span>Удобное время</span><input type="time" id="book-manual-time"></label>
+          <button type="button" class="btn btn--sm" id="book-manual-submit">Продолжить</button>
         </div>
       </div>
 
@@ -698,7 +718,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           </label>
           <label class="field">
             <span>Email или мессенджер для связи</span>
-            <input type="text" name="contact" required placeholder="email, WhatsApp, Telegram, LINE">
+            <input type="text" name="contact" required placeholder="email, WhatsApp, Telegram">
           </label>
           <label class="field">
             <span>Коротко о бизнесе (необязательно)</span>
@@ -733,13 +753,13 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       <div class="contact-grid">
         <div>
           <h3 id="contact-title" class="modal__h1">Давайте поговорим об автоматизации для вашего бизнеса</h3>
-          <p class="modal__lede" style="max-width:none">Разберём ваши процессы и покажем, где именно AI сэкономит время и снимет рутину с команды.</p>
-          <p class="modal__lede" style="max-width:none;margin-top:10px">Готовы поговорить сейчас? <a href="#" data-open-modal="booking" data-switch-modal="modal-contact" style="color:var(--accent)">Забронируйте время в календаре</a> или заполните заявку — ответим в течение 30 минут.</p>
+          <p class="modal__lede" style="max-width:none">Разберём ваши процессы и покажем, где именно автоматизация сэкономит время и снимет рутину с команды.</p>
+          <p class="modal__lede" style="max-width:none;margin-top:10px">Готовы обсудить сейчас? <a href="#" data-open-modal="booking" data-switch-modal="modal-contact" style="color:var(--accent)">Выберите удобное время</a> или заполните заявку — ответим в течение 30 минут.</p>
 
           <form id="contact-form">
             <div class="field-row">
               <label class="field"><span>Имя</span><input type="text" name="name" required placeholder="Ваше имя"></label>
-              <label class="field"><span>Email или мессенджер</span><input type="text" name="contact" required placeholder="email, WhatsApp, Telegram, LINE"></label>
+              <label class="field"><span>Email или мессенджер</span><input type="text" name="contact" required placeholder="email, WhatsApp, Telegram"></label>
             </div>
             <div class="field-row">
               <label class="field"><span>Бизнес</span><input type="text" name="company" placeholder="Название бизнеса"></label>
@@ -786,10 +806,10 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <p class="contact-side__val">В течение 30 минут</p>
           <p class="eyebrow" style="margin-top:26px">Что будет дальше</p>
           <ol class="contact-steps">
-            <li><b>1</b><span>Смотрим сообщение и разбираемся в бизнесе</span></li>
-            <li><b>2</b><span>Планируем бесплатную стратегическую сессию</span></li>
-            <li><b>3</b><span>Показываем, что конкретно можно автоматизировать</span></li>
-            <li><b>4</b><span>Вы решаете, продолжать ли, без давления</span></li>
+            <li><b>1</b><span>Изучаем заявку и разбираемся в специфике бизнеса</span></li>
+            <li><b>2</b><span>Назначаем бесплатную стратегическую сессию</span></li>
+            <li><b>3</b><span>Показываем, что конкретно можно автоматизировать и с чего начать</span></li>
+            <li><b>4</b><span>Решение о дальнейшей работе остаётся за вами</span></li>
           </ol>
         </aside>
       </div>
@@ -878,12 +898,23 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       WD.forEach(function(d){ var s=document.createElement('span'); s.textContent=d; weekdayEl.appendChild(s); });
 
       var today = new Date(); today.setHours(0,0,0,0);
-      var selectedDate = null, selectedSlot = null;
+      var selectedDate = null, selectedSlot = null, isManualTime = false;
+      var monthOffset = 0; /* 0 = текущий месяц, 1 = следующий */
+      var prevBtn = document.getElementById('cal-prev');
+      var nextBtn = document.getElementById('cal-next');
+      var manualToggle = document.getElementById('book-manual-toggle');
+      var manualFields = document.getElementById('book-manual-fields');
+      var manualDate = document.getElementById('book-manual-date');
+      var manualTime = document.getElementById('book-manual-time');
+      var manualSubmit = document.getElementById('book-manual-submit');
 
       function buildMonth(){
         daysEl.innerHTML = '';
-        var y = today.getFullYear(), m = today.getMonth();
+        var base = new Date(today.getFullYear(), today.getMonth() + monthOffset, 1);
+        var y = base.getFullYear(), m = base.getMonth();
         if(monthLabel) monthLabel.textContent = MONTHS_NOM[m] + ' ' + y;
+        if(prevBtn) prevBtn.disabled = (monthOffset <= 0);
+        if(nextBtn) nextBtn.disabled = (monthOffset >= 1);
         var first = new Date(y, m, 1);
         var startPad = first.getDay();
         var daysInMonth = new Date(y, m+1, 0).getDate();
@@ -905,6 +936,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           daysEl.appendChild(btn);
         }
       }
+      if(prevBtn) prevBtn.addEventListener('click', function(){ if(monthOffset > 0){ monthOffset--; buildMonth(); } });
+      if(nextBtn) nextBtn.addEventListener('click', function(){ if(monthOffset < 1){ monthOffset++; buildMonth(); } });
 
       function selectDate(date){
         selectedDate = date; selectedSlot = null;
@@ -925,15 +958,29 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             slotsList.querySelectorAll('.slot-btn').forEach(function(x){ x.classList.remove('selected'); });
             b.classList.add('selected');
             selectedSlot = t;
+            isManualTime = false;
             setTimeout(goToDetails, 200);
           });
           slotsList.appendChild(b);
         });
       }
 
+      if(manualToggle) manualToggle.addEventListener('click', function(){
+        manualFields.hidden = !manualFields.hidden;
+      });
+      if(manualSubmit) manualSubmit.addEventListener('click', function(){
+        if(!manualDate.value || !manualTime.value) return;
+        var parts = manualDate.value.split('-').map(Number);
+        selectedDate = new Date(parts[0], parts[1]-1, parts[2]);
+        selectedSlot = manualTime.value;
+        isManualTime = true;
+        goToDetails();
+      });
+
       function goToDetails(){
         if(!selectedDate || !selectedSlot) return;
-        summary.textContent = selectedDate.getDate() + ' ' + MONTHS[selectedDate.getMonth()] + ', ' + selectedSlot + ' (ICT)';
+        var tz = isManualTime ? ' (ваше время)' : ' (ICT)';
+        summary.textContent = selectedDate.getDate() + ' ' + MONTHS[selectedDate.getMonth()] + ', ' + selectedSlot + tz;
         stepDatetime.hidden = true; stepDetails.hidden = false;
       }
       if(backBtn) backBtn.addEventListener('click', function(){ stepDetails.hidden = true; stepDatetime.hidden = false; });
@@ -941,7 +988,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       if(form) form.addEventListener('submit', function(e){
         e.preventDefault();
         var contact = form.querySelector('[name="contact"]').value;
-        successText.textContent = 'Забронировали ' + selectedDate.getDate() + ' ' + MONTHS[selectedDate.getMonth()] + ' в ' + selectedSlot + ' (ICT). Пришлём подтверждение на ' + contact + '.';
+        var tz = isManualTime ? ' (по вашему времени)' : ' (ICT)';
+        successText.textContent = 'Забронировали ' + selectedDate.getDate() + ' ' + MONTHS[selectedDate.getMonth()] + ' в ' + selectedSlot + tz + '. Пришлём подтверждение на ' + contact + '.';
         stepDetails.hidden = true;
         var mainBookingBody = document.querySelector('#modal-booking .modal__body:not(.modal__success)');
         if(mainBookingBody) mainBookingBody.hidden = true;
@@ -959,7 +1007,11 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             if(mainBody) mainBody.hidden = false;
             daysEl.querySelectorAll('.cal-day.selected').forEach(function(x){ x.classList.remove('selected'); });
             slotsList.innerHTML = ''; slotsLabel.textContent = 'Выберите дату слева';
-            selectedDate = null; selectedSlot = null;
+            selectedDate = null; selectedSlot = null; isManualTime = false;
+            if(monthOffset !== 0){ monthOffset = 0; buildMonth(); }
+            if(manualFields) manualFields.hidden = true;
+            if(manualDate) manualDate.value = '';
+            if(manualTime) manualTime.value = '';
             if(form) form.reset();
           }, 250);
         });
@@ -1005,10 +1057,10 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   /* ---------- stats marquee (sourced AI-adoption figures) ---------- */
   (function(){
     var STATS = [
-      ['9 из 10','компаний уже используют AI хотя бы в одном процессе','McKinsey, 2026'],
-      ['44%','компаний масштабируют AI на всю организацию (было 38%)','McKinsey, 2026'],
-      ['80%','отмечают рост личной продуктивности от AI','McKinsey, 2026'],
-      ['37%','компаний фиксируют прямой вклад AI в прибыль','McKinsey, 2026'],
+      ['9 из 10','компаний уже используют AI-автоматизацию хотя бы в одном процессе','McKinsey, 2026'],
+      ['44%','компаний масштабируют AI-автоматизацию на всю организацию (было 38%)','McKinsey, 2026'],
+      ['80%','отмечают рост продуктивности благодаря AI-автоматизации','McKinsey, 2026'],
+      ['37%','компаний фиксируют прямой вклад AI-автоматизации в прибыль','McKinsey, 2026'],
       ['40%','корпоративных приложений получат AI-агентов к концу года (было <5%)','Gartner, 2025']
     ];
     var row = document.getElementById('statrow');
