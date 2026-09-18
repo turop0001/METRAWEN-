@@ -718,7 +718,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           </label>
           <label class="field">
             <span>Email или мессенджер для связи</span>
-            <input type="text" name="contact" required placeholder="email, WhatsApp, Telegram">
+            <input type="text" name="contact" required placeholder="email, WhatsApp, Telegram, LINE">
           </label>
           <label class="field">
             <span>Коротко о бизнесе (необязательно)</span>
@@ -759,11 +759,10 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <form id="contact-form">
             <div class="field-row">
               <label class="field"><span>Имя</span><input type="text" name="name" required placeholder="Ваше имя"></label>
-              <label class="field"><span>Email или мессенджер</span><input type="text" name="contact" required placeholder="email, WhatsApp, Telegram"></label>
-            </div>
-            <div class="field-row">
               <label class="field"><span>Бизнес</span><input type="text" name="company" placeholder="Название бизнеса"></label>
-              <label class="field"><span>Ваша отрасль</span>
+            </div>
+            <label class="field"><span>Email или мессенджер</span><input type="text" name="contact" required placeholder="email, WhatsApp, Telegram, LINE"></label>
+            <label class="field"><span>Ваша отрасль</span>
                 <select name="industry">
                   <option value="" selected>Отрасль не указана</option>
                   <option>Отели и виллы</option>
@@ -781,8 +780,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
                   <option>Профессиональные услуги</option>
                   <option>Другое</option>
                 </select>
-              </label>
-            </div>
+            </label>
             <label class="field">
               <span>Что хотите автоматизировать</span>
               <textarea name="message" rows="3" placeholder="Расскажите о бизнесе и о том, где сейчас больше всего ручной рутины"></textarea>
@@ -983,7 +981,15 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         summary.textContent = selectedDate.getDate() + ' ' + MONTHS[selectedDate.getMonth()] + ', ' + selectedSlot + tz;
         stepDatetime.hidden = true; stepDetails.hidden = false;
       }
-      if(backBtn) backBtn.addEventListener('click', function(){ stepDetails.hidden = true; stepDatetime.hidden = false; });
+      if(backBtn) backBtn.addEventListener('click', function(){
+        stepDetails.hidden = true; stepDatetime.hidden = false;
+        selectedDate = null; selectedSlot = null; isManualTime = false;
+        daysEl.querySelectorAll('.cal-day.selected').forEach(function(x){ x.classList.remove('selected'); });
+        slotsList.innerHTML = ''; slotsLabel.textContent = 'Выберите дату слева';
+        if(manualFields) manualFields.hidden = true;
+        if(manualDate) manualDate.value = '';
+        if(manualTime) manualTime.value = '';
+      });
 
       if(form) form.addEventListener('submit', function(e){
         e.preventDefault();
