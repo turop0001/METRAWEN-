@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>О компании — METRAWEN</title>
+<title>О компании: METRAWEN</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
@@ -83,17 +83,26 @@ button{font:inherit;color:inherit}
 .hero-c .h1{max-width:26ch;margin-inline:auto}
 .hero-c .lede{max-width:56ch;margin-inline:auto}
 
-/* founder — small centered card, superdupr-style */
-.founder-c{max-width:640px;margin-inline:auto;text-align:center;border:1px solid var(--hair-2);border-radius:22px;
-  background:rgba(14,14,13,.55);padding:clamp(32px,4vw,48px) clamp(24px,3.4vw,40px);box-shadow:0 40px 70px -30px rgba(0,0,0,.7)}
-.founder__photo{width:84px;height:84px;border-radius:50%;overflow:hidden;margin-inline:auto;border:1px solid var(--hair-2);
+/* company — positioning block, comes first */
+.company-grid{margin-top:clamp(32px,4vw,48px);display:grid;gap:14px}
+@media(min-width:760px){.company-grid{grid-template-columns:repeat(2,1fr)}}
+.company-card{background:rgba(14,14,13,.55);border:1px solid var(--hair-2);border-radius:16px;
+  padding:clamp(24px,2.6vw,30px);display:flex;flex-direction:column;gap:10px}
+.company-card b{font-size:1.0625rem;font-weight:650}
+.company-card span{font-size:.9375rem;color:var(--text-dim);line-height:1.6}
+
+/* founder — small centered card, de-emphasized, superdupr-style */
+.founder-head{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint);text-align:center}
+.founder-c{max-width:560px;margin-inline:auto;text-align:center;border:1px solid var(--hair-2);border-radius:22px;
+  background:rgba(14,14,13,.4);padding:clamp(26px,3.2vw,36px) clamp(22px,3vw,34px)}
+.founder__photo{width:64px;height:64px;border-radius:50%;overflow:hidden;margin-inline:auto;border:1px solid var(--hair-2);
   background:linear-gradient(155deg,#1c1a16,#0d0c0a);display:flex;align-items:center;justify-content:center}
 .founder__photo img{width:100%;height:100%;object-fit:cover;display:block}
-.founder__photo .initials{color:var(--accent-hi);font-family:var(--font-mono);font-size:1.5rem}
-.founder__role{margin-top:20px;font-family:var(--font-mono);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-hi)}
-.founder__name{font-size:clamp(1.375rem,2vw,1.625rem);font-weight:600;letter-spacing:-.01em;margin-top:8px}
-.founder__bio{margin-top:18px;display:flex;flex-direction:column;gap:12px}
-.founder__bio p{color:var(--text-dim);font-size:.9375rem;line-height:1.6}
+.founder__photo .initials{color:var(--accent-hi);font-family:var(--font-mono);font-size:1.25rem}
+.founder__role{margin-top:16px;font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-hi)}
+.founder__name{font-size:1.125rem;font-weight:600;letter-spacing:-.01em;margin-top:6px}
+.founder__bio{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.founder__bio p{color:var(--text-dim);font-size:.875rem;line-height:1.6}
 
 /* values — 2x2 like superdupr */
 .values-grid{margin-top:clamp(40px,5vw,64px);display:grid;gap:16px}
@@ -121,6 +130,7 @@ button{font:inherit;color:inherit}
   <div class="wrap topbar__in">
     <a class="mark" href="metrawen-home-ru.html">METRAWEN</a>
     <nav class="topnav" aria-label="Основная навигация">
+      <a href="metrawen-home-ru.html">Главная</a>
       <a href="metrawen-home-ru.html#s-day">AI-системы</a>
       <a href="metrawen-home-ru.html#s-directions">Отрасли</a>
       <a href="metrawen-home-ru.html#s-pack">Digital-услуги</a>
@@ -136,24 +146,51 @@ button{font:inherit;color:inherit}
 <!-- ===== hero statement ===== -->
 <section class="sec hero-c" style="padding-bottom:0">
   <div class="wrap">
-    <h1 class="h1 rv">Мы делаем системы автоматизации, которые действительно работают</h1>
-    <p class="lede rv" style="margin-top:24px">METRAWEN берёт на себя рутину сервисного бизнеса — от поиска клиентов и продаж до поддержки и внутренних операций — и собирает систему индивидуально под конкретную компанию, а не по шаблону.</p>
+    <h1 class="h1 rv" style="max-width:none">Мы делаем системы автоматизации, которые действительно работают</h1>
+    <p class="lede rv" style="margin-top:24px;max-width:none">METRAWEN берёт на себя рутину сервисного бизнеса: от поиска клиентов и продаж до поддержки и внутренних операций, и собирает систему индивидуально под конкретную компанию, а не по шаблону.</p>
   </div>
 </section>
 
-<!-- ===== founder ===== -->
+<!-- ===== о компании: позиционирование, идёт первым ===== -->
 <section class="sec">
   <div class="wrap">
-    <h2 class="h2 rv" style="text-align:center;margin-inline:auto">Познакомьтесь с основателем</h2>
-    <div class="founder-c rv" style="margin-top:clamp(32px,4vw,48px)">
+    <p class="eyebrow rv" style="justify-content:center">О компании</p>
+    <h2 class="h2 rv" style="text-align:center;margin-inline:auto;margin-top:20px;max-width:none">Почему METRAWEN существует</h2>
+    <p class="lede rv" style="text-align:center;margin-inline:auto;margin-top:16px;max-width:none">Малый и средний сервисный бизнес (отели, клиники, салоны, агентства, интернет-магазины) обычно теряет клиентов не из-за продукта, а из-за рутины: заявки расходятся по чатам, ответы задерживаются, а данные живут в головах у сотрудников, а не в системе. METRAWEN закрывает именно этот разрыв: собирает вокруг бизнеса рабочую систему, которая находит клиентов, ведёт их до сделки и поддерживает после, при этом не отбирая у команды контроль над решениями.</p>
+    <div class="company-grid">
+      <div class="company-card rv">
+        <b>Кому помогаем</b>
+        <span>Сервисному и клиентскому бизнесу с потоком заявок: отелям, клиникам, салонам красоты, агентствам, интернет-магазинам и похожим направлениям, где важна скорость первого ответа.</span>
+      </div>
+      <div class="company-card rv">
+        <b>Что даём</b>
+        <span>Не отдельный чат-бот, а систему: от привлечения и первого контакта до продажи, поддержки и внутренней отчётности, собранную под конкретные процессы клиента.</span>
+      </div>
+      <div class="company-card rv">
+        <b>В чём идея позиционирования</b>
+        <span>Автоматизация должна встраиваться в существующий бизнес, а не заставлять его подстраиваться под готовый шаблон. Поэтому систему всегда собираем индивидуально, а не продаём коробочный продукт.</span>
+      </div>
+      <div class="company-card rv">
+        <b>Почему это важно сейчас</b>
+        <span>Клиенты выбирают тех, кто отвечает быстро и по делу. Система берёт на себя типовые случаи и рутину, а человек в команде занимается тем, что действительно требует его внимания.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== founder: короче, акцент на компании ===== -->
+<section class="sec">
+  <div class="wrap">
+    <p class="founder-head rv">Познакомьтесь с основателем</p>
+    <div class="founder-c rv" style="margin-top:20px">
       <div class="founder__photo">
-        <span class="initials">М</span>
+        <img src="founder.png" alt="Дмитрий Баринов, основатель METRAWEN" loading="lazy">
       </div>
       <p class="founder__role">Основатель · Руководитель</p>
       <h3 class="founder__name">Дмитрий Баринов</h3>
       <div class="founder__bio">
         <p>Начинал с того же, с чем сегодня приходят клиенты METRAWEN: ручная рутина, разрозненные таблицы и мессенджеры, в которых легко потерять заявку.</p>
-        <p>Собрал студию вокруг одной идеи — автоматизация должна встраиваться в существующий бизнес, а не заставлять его подстраиваться под систему. Лично разбирает процессы на старте каждого проекта.</p>
+        <p>Лично разбирает процессы на старте каждого проекта, поэтому команда собирает систему под реальный бизнес, а не под шаблон.</p>
       </div>
     </div>
   </div>
@@ -162,15 +199,15 @@ button{font:inherit;color:inherit}
 <!-- ===== values (2x2, superdupr-style) ===== -->
 <section class="sec">
   <div class="wrap">
-    <h2 class="h2 rv" style="text-align:center;margin-inline:auto">Как мы работаем</h2>
+    <h2 class="h2 rv" style="text-align:center;margin-inline:auto;max-width:none">Как мы работаем</h2>
     <div class="values-grid">
       <div class="value-card rv">
         <b>Результат, а не функция</b>
-        <span>Не продаём готовый пакет — каждая система оценивается по тому, сколько времени и рутины она реально снимает с команды.</span>
+        <span>Не продаём готовый пакет: каждая система оценивается по тому, сколько времени и рутины она реально снимает с команды.</span>
       </div>
       <div class="value-card rv">
         <b>Под конкретный бизнес</b>
-        <span>Не делаем универсальных решений — набор направлений и интеграций каждый раз собирается под процессы конкретной компании.</span>
+        <span>Не делаем универсальных решений: набор направлений и интеграций каждый раз собирается под процессы конкретной компании.</span>
       </div>
       <div class="value-card rv">
         <b>Сначала разбор, потом решение</b>
@@ -178,7 +215,7 @@ button{font:inherit;color:inherit}
       </div>
       <div class="value-card rv">
         <b>Решения остаются за бизнесом</b>
-        <span>Система закрывает типовые случаи сама, а всё нестандартное уходит человеку с готовым контекстом — без потери контроля над бизнесом.</span>
+        <span>Система закрывает типовые случаи сама, а всё нестандартное уходит человеку с готовым контекстом, без потери контроля над бизнесом.</span>
       </div>
     </div>
   </div>
@@ -187,11 +224,10 @@ button{font:inherit;color:inherit}
 <!-- ===== final cta ===== -->
 <section class="sec final-cta">
   <div class="wrap">
-    <h2 class="h2 rv">Давайте построим что-нибудь вместе</h2>
-    <p class="lede rv">Забронируйте бесплатную стратегическую сессию, чтобы увидеть, что именно можно автоматизировать в вашем бизнесе.</p>
+    <h2 class="h2 rv" style="max-width:none">Давайте построим что-нибудь вместе</h2>
+    <p class="lede rv" style="max-width:none">Забронируйте бесплатную стратегическую сессию, чтобы увидеть, что именно можно автоматизировать в вашем бизнесе.</p>
     <a class="btn btn--shine rv" href="metrawen-home-ru.html#s-directions">Забронировать стратегическую сессию
       <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></a>
-    <p class="note">Фото основателя — временная заглушка, ждём файл от клиента.</p>
   </div>
 </section>
 

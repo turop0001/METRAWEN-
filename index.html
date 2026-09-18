@@ -82,12 +82,12 @@ button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
   text-underline-offset:3px;font-weight:600;transition:color .2s,text-decoration-color .2s}
 .link-inline:hover,.link-inline:focus-visible{color:var(--accent-hi);text-decoration-color:var(--accent-hi)}
 
-.book-cta{display:flex;align-items:center;gap:14px;padding:14px 16px;margin-top:18px;border:1px solid rgba(var(--accent-rgb),.35);
-  border-radius:14px;background:rgba(196,161,101,.07);transition:border-color .2s,background .2s,transform .2s}
+.book-cta{display:inline-flex;align-items:center;gap:11px;padding:10px 16px;margin-top:14px;border:1px solid rgba(var(--accent-rgb),.35);
+  border-radius:12px;background:rgba(196,161,101,.07);transition:border-color .2s,background .2s,transform .2s}
 .book-cta:hover,.book-cta:focus-visible{border-color:var(--accent);background:rgba(196,161,101,.13);transform:translateY(-1px)}
-.book-cta__icon{width:38px;height:38px;border-radius:10px;flex:none;background:rgba(var(--accent-rgb),.16);color:var(--accent-hi);
+.book-cta__icon{width:30px;height:30px;border-radius:9px;flex:none;background:rgba(var(--accent-rgb),.16);color:var(--accent-hi);
   display:flex;align-items:center;justify-content:center}
-.book-cta__icon svg{width:18px;height:18px}
+.book-cta__icon svg{width:15px;height:15px}
 .book-cta__body{display:flex;flex-direction:column;gap:2px}
 .book-cta__body b{font-size:.9375rem;font-weight:600;color:var(--text)}
 .book-cta__body span{font-size:.8125rem;color:var(--text-dim)}
@@ -114,7 +114,7 @@ button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
 .pill-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--hair-2);border-radius:999px;
   font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.04em;color:var(--text-dim)}
 .pill-tag i{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}
-#booking-form,#contact-form{margin-top:22px;display:flex;flex-direction:column;gap:16px}
+#booking-form,#contact-form{margin-top:18px;display:flex;flex-direction:column;gap:13px}
 .field{display:flex;flex-direction:column;gap:7px}
 .field span{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint)}
 .field input,.field select,.field textarea{font-family:inherit;font-size:.9375rem;color:var(--text);background:rgba(255,255,255,.03);
@@ -308,7 +308,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   text-transform:uppercase;color:var(--text-faint)}
 
 /* directions grid (block 04) */
-.dir-head{max-width:62ch;margin-inline:auto;text-align:center}
+.dir-head{max-width:80ch;margin-inline:auto;text-align:center}
 .dir-head .lede{margin-top:16px;margin-inline:auto}
 
 /* ---------- packaging (digital services) — distinct track, not part of the automation grid ---------- */
@@ -360,45 +360,65 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .dir-card h3{font-size:1.375rem;font-weight:650;letter-spacing:-.01em;line-height:1.25}
 .dir-card p{font-size:1rem;color:var(--text-dim);line-height:1.65}
 
-/* ---------- 05 форматы внедрения ---------- */
-.formats-grid{margin-top:clamp(48px,6vw,72px);display:grid;gap:20px}
-@media(min-width:720px){.formats-grid{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:1200px){.formats-grid{grid-template-columns:repeat(4,1fr)}}
-.format-card{position:relative;background:rgba(20,19,17,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
-  border:1px solid var(--hair-2);border-radius:20px;padding:clamp(26px,2.6vw,32px) clamp(22px,2.2vw,26px);
-  display:flex;flex-direction:column;gap:16px;transition:transform .35s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease)}
-.format-card:hover{transform:translateY(-6px) perspective(900px) rotateX(2deg);border-color:var(--accent);box-shadow:0 30px 54px -22px rgba(0,0,0,.6)}
-.format-card--hi{border-color:rgba(var(--accent-rgb),.55);background:rgba(196,161,101,.06)}
-.format-card__badge{align-self:flex-start;font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.08em;text-transform:uppercase;
+/* ---------- 05 форматы внедрения — лента крупных строк ---------- */
+.formats-list{margin-top:clamp(48px,6vw,72px);display:flex;flex-direction:column;gap:18px}
+.format-row{position:relative;background:rgba(20,19,17,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  border:1px solid var(--hair-2);border-radius:22px;padding:clamp(28px,3vw,40px);
+  display:grid;gap:clamp(20px,3vw,36px);transition:border-color .35s var(--ease),box-shadow .35s var(--ease),background .35s var(--ease);
+  opacity:0;transform:translateX(-34px);transition:opacity .8s var(--ease),transform .8s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease)}
+.format-row.in{opacity:1;transform:none}
+.format-row:nth-of-type(1){transition-delay:0s}
+.format-row:nth-of-type(2){transition-delay:.08s}
+.format-row:nth-of-type(3){transition-delay:.08s}
+.format-row:nth-of-type(4){transition-delay:.08s}
+.format-row:hover{border-color:var(--accent);box-shadow:0 30px 60px -26px rgba(0,0,0,.6)}
+.format-row--hi{border-color:rgba(var(--accent-rgb),.5);background:rgba(196,161,101,.06)}
+@media(min-width:900px){.format-row{grid-template-columns:1fr 1.7fr;align-items:start}}
+.format-row__head{display:flex;flex-direction:column;gap:10px}
+.format-row__badge{align-self:flex-start;font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.08em;text-transform:uppercase;
   color:var(--accent-hi);background:rgba(var(--accent-rgb),.14);border-radius:999px;padding:5px 12px}
-.format-card h3{font-size:1.1875rem;font-weight:650;letter-spacing:-.01em}
-.format-card__scope{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.02em;color:var(--text-faint)}
-.format-card p{font-size:.9375rem;color:var(--text-dim);line-height:1.55;flex:1}
-.format-card ul{display:flex;flex-direction:column;gap:8px;margin-top:2px}
-.format-card li{display:flex;gap:8px;font-size:.8438rem;color:var(--text-dim);line-height:1.4}
-.format-card li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);flex:none;margin-top:6px}
-.format-card__cta{margin-top:6px;font-size:.875rem;font-weight:600;color:var(--accent-hi);display:inline-flex;align-items:center;gap:6px}
-.format-card__cta svg{width:13px;height:13px;transition:transform .25s var(--ease)}
-.format-card:hover .format-card__cta svg{transform:translateX(3px)}
+.format-row__head h3{font-size:1.375rem;font-weight:650;letter-spacing:-.01em}
+.format-row__scope{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.02em;color:var(--text-faint)}
+.format-row__cta{margin-top:6px;font-size:.875rem;font-weight:600;color:var(--accent-hi);display:inline-flex;align-items:center;gap:6px}
+.format-row__cta svg{width:13px;height:13px;transition:transform .25s var(--ease)}
+.format-row:hover .format-row__cta svg{transform:translateX(3px)}
+.format-row__body p{font-size:.9688rem;color:var(--text-dim);line-height:1.6}
+.format-row__grid{margin-top:16px;display:grid;gap:16px}
+@media(min-width:620px){.format-row__grid{grid-template-columns:repeat(3,1fr)}}
+.format-row__grid h4{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px}
+.format-row__grid ul{display:flex;flex-direction:column;gap:7px}
+.format-row__grid li{display:flex;gap:8px;font-size:.8438rem;color:var(--text-dim);line-height:1.4}
+.format-row__grid li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);flex:none;margin-top:6px}
+.format-row__grid span{font-size:.8438rem;color:var(--text-dim);line-height:1.5;display:block}
+@media(prefers-reduced-motion:reduce){.format-row{opacity:1;transform:none}}
 
-/* ---------- 06 до / после ---------- */
-.compare{margin-top:clamp(48px,6vw,72px);display:flex;flex-direction:column;gap:1px;background:var(--hair);
-  border-radius:20px;overflow:hidden;border:1px solid var(--hair-2);box-shadow:0 40px 70px -32px rgba(0,0,0,.65)}
-.compare__row{display:grid;grid-template-columns:1fr 1fr;background:rgba(14,14,13,.5)}
-@media(max-width:720px){.compare__row{grid-template-columns:1fr}}
-.compare__cell{padding:22px 26px;display:flex;gap:14px;align-items:flex-start}
-.compare__cell--before{background:rgba(255,255,255,.015)}
-.compare__cell--after{background:rgba(196,161,101,.05)}
-.compare__ico{width:26px;height:26px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;margin-top:1px}
-.compare__cell--before .compare__ico{background:rgba(255,255,255,.06);color:var(--text-faint)}
-.compare__cell--after .compare__ico{background:rgba(var(--accent-rgb),.18);color:var(--accent-hi)}
-.compare__cell b{display:block;font-size:.9375rem;font-weight:600;color:var(--text);margin-bottom:3px}
-.compare__cell span{font-size:.875rem;color:var(--text-dim);line-height:1.45}
-.compare__head{display:grid;grid-template-columns:1fr 1fr;font-family:var(--font-mono);font-size:.75rem;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--text-faint)}
-@media(max-width:720px){.compare__head{grid-template-columns:1fr}}
-.compare__head span{padding:14px 26px}
-.compare__head span:last-child{color:var(--accent-hi)}
+/* ---------- 06 трансформация: до / после ---------- */
+.compare-wrap{margin-top:clamp(48px,6vw,72px);position:relative;display:grid;gap:22px;align-items:start}
+@media(min-width:860px){.compare-wrap{grid-template-columns:1fr 1fr;gap:56px}}
+.compare-card{position:relative;border-radius:22px;padding:clamp(26px,3vw,34px);border:1px solid var(--hair-2);
+  background:rgba(14,14,13,.5);opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.compare-card.in{opacity:1;transform:none}
+.compare-card--before{border-color:rgba(224,120,105,.28);background:rgba(224,120,105,.045)}
+.compare-card--after{border-color:rgba(143,194,164,.35);background:rgba(143,194,164,.06);transition-delay:.16s}
+.compare-card--after.in{box-shadow:0 40px 80px -34px rgba(143,194,164,.25)}
+.compare-card__head{display:flex;align-items:center;gap:12px;padding-bottom:18px;margin-bottom:16px;border-bottom:1px solid var(--hair-2)}
+.compare-card__ico{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center}
+.compare-card--before .compare-card__ico{background:rgba(224,120,105,.16);color:#E9998C}
+.compare-card--after .compare-card__ico{background:rgba(143,194,164,.18);color:var(--green)}
+.compare-card__head b{font-size:1.0625rem;font-weight:650;letter-spacing:-.01em}
+.compare-card--before .compare-card__head b{color:#E9998C}
+.compare-card--after .compare-card__head b{color:var(--green)}
+.compare-item{padding-block:15px;border-top:1px solid var(--hair)}
+.compare-item:first-child{border-top:none;padding-top:0}
+.compare-item b{display:block;font-size:.9375rem;font-weight:600;color:var(--text);margin-bottom:4px}
+.compare-item span{font-size:.8438rem;color:var(--text-dim);line-height:1.5}
+.compare-mid{display:none}
+@media(min-width:860px){
+  .compare-mid{display:flex;position:absolute;left:50%;top:74px;transform:translateX(-50%);width:44px;height:44px;
+    border-radius:50%;background:var(--base);border:1px solid var(--hair-2);align-items:center;justify-content:center;
+    color:var(--accent-hi);z-index:2;box-shadow:0 12px 26px -10px rgba(0,0,0,.6)}
+  .compare-mid svg{width:18px;height:18px}
+}
 
 /* pipeline scene */
 .pipe{position:relative;border:1px solid var(--hair);background:rgba(14,14,13,.5);padding:clamp(30px,3.6vw,52px) clamp(24px,3vw,44px);
@@ -450,6 +470,30 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .note{margin-top:14px;font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;color:var(--text-faint);line-height:1.6}
 .endnote{padding-block:56px;border-top:1px solid var(--hair);font-family:var(--font-mono);font-size:.6875rem;
   letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);display:flex;flex-wrap:wrap;gap:10px 24px}
+
+/* ---------- 07 faq ---------- */
+.faq-list{margin-top:clamp(40px,5vw,56px);max-width:860px;margin-inline:auto;display:flex;flex-direction:column;gap:12px}
+.faq-item{border:1px solid var(--hair-2);border-radius:16px;background:rgba(14,14,13,.5);overflow:hidden}
+.faq-item__q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;
+  text-align:left;background:none;border:none;cursor:pointer;font-size:.9688rem;font-weight:600;color:var(--text)}
+.faq-item__q svg{flex:none;width:16px;height:16px;color:var(--accent-hi);transition:transform .3s var(--ease)}
+.faq-item.open .faq-item__q svg{transform:rotate(45deg)}
+.faq-item__a{max-height:0;overflow:hidden;transition:max-height .4s var(--ease)}
+.faq-item__a p{padding:0 24px 20px;font-size:.9063rem;color:var(--text-dim);line-height:1.6;max-width:68ch}
+
+/* ---------- footer ---------- */
+.site-footer{border-top:1px solid var(--hair);padding-block:clamp(48px,6vw,72px) clamp(32px,4vw,44px)}
+.footer-grid{display:grid;gap:clamp(32px,4vw,40px);grid-template-columns:1fr}
+@media(min-width:760px){.footer-grid{grid-template-columns:1.4fr repeat(3,1fr)}}
+.footer-brand .mark{display:block;margin-bottom:14px}
+.footer-brand p{font-size:.875rem;color:var(--text-dim);line-height:1.6;max-width:34ch}
+.footer-col h4{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);margin-bottom:14px}
+.footer-col ul{display:flex;flex-direction:column;gap:10px}
+.footer-col a{font-size:.875rem;color:var(--text-dim);transition:color .2s}
+.footer-col a:hover{color:var(--text)}
+.footer-bottom{margin-top:clamp(36px,4vw,48px);padding-top:22px;border-top:1px solid var(--hair);
+  display:flex;flex-wrap:wrap;gap:10px 20px;justify-content:space-between;font-family:var(--font-mono);font-size:.6875rem;
+  letter-spacing:.06em;color:var(--text-faint)}
 
 @media(prefers-reduced-motion:reduce){
   .scene i{animation:none!important}
@@ -658,8 +702,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="wrap">
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Шире, чем входящие обращения</p>
-      <h2 class="h2 rv" id="h-directions" style="margin-top:20px">От поиска клиентов до отчётности — собираем под конкретный бизнес</h2>
-      <p class="lede rv">METRAWEN — это не только ответы на входящие: система может закрывать привлечение клиентов, продажи и внутренние операции так же, как поддержку. Набор направлений каждый раз собирается под конкретный бизнес, а не берётся из шаблона.</p>
+      <h2 class="h2 rv" id="h-directions" style="margin-top:20px;max-width:none">От поиска клиентов до отчётности: система под конкретный бизнес</h2>
+      <p class="lede rv" style="max-width:none">METRAWEN — это не только ответы на входящие: система может закрывать привлечение клиентов, продажи и внутренние операции так же, как поддержку. Набор направлений каждый раз собирается под конкретный бизнес, а не берётся из шаблона.</p>
     </div>
 
     <div class="dir-grid">
@@ -720,7 +764,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="wrap pack__in">
     <div class="pack__text">
       <h2 class="h2 rv" id="h-pack">Клиенты доверяют автоматизации ровно настолько, насколько доверяют вашему сайту</h2>
-      <p class="lede rv">Сайт, логотип, оформление и контент — фундамент, без которого даже лучшая автоматизация не производит впечатления. Помогаем и с этим: приводим бизнес в порядок снаружи, прежде чем настраивать то, что работает внутри.</p>
+      <p class="lede rv">Сайт, логотип, оформление и контент: фундамент, без которого даже лучшая автоматизация не производит впечатления. Помогаем и с этим: приводим бизнес в порядок снаружи, прежде чем настраивать то, что работает внутри.</p>
       <a class="btn-quiet pack__cta rv" href="#" data-open-modal="contact">Обсудить упаковку бизнеса
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
@@ -747,66 +791,109 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="wrap">
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Форматы внедрения</p>
-      <h2 class="h2 rv" id="h-formats" style="margin-top:20px">От отдельного AI-помощника до целого отдела</h2>
-      <p class="lede rv">Формат растёт вместе с бизнесом: отдельный AI-помощник → AI-работник → AI-команда → AI-отдел → комплексная система. Начинать не обязательно с большого — можно закрыть одну задачу и расширяться по мере результата.</p>
+      <h2 class="h2 rv" id="h-formats" style="margin-top:20px;max-width:none">От отдельного AI-помощника до целого отдела</h2>
+      <p class="lede rv" style="max-width:none">Формат растёт вместе с бизнесом: отдельный AI-помощник → AI-работник → AI-команда → AI-отдел → комплексная система. Начинать не обязательно с большого: можно закрыть одну задачу и расширяться по мере результата.</p>
     </div>
 
-    <div class="formats-grid">
-      <div class="format-card rv">
-        <span class="format-card__badge">Быстрый старт</span>
-        <h3>AI Opportunity Audit</h3>
-        <span class="format-card__scope">Разбор процессов, 3–5 рабочих дней</span>
-        <p>Смотрим на ваши процессы и показываем, что конкретно можно автоматизировать, в каком порядке и с какой отдачей.</p>
-        <ul>
-          <li>Карта повторяющихся задач</li>
-          <li>Приоритеты по эффекту и сложности</li>
-          <li>План внедрения с оценкой сроков</li>
-        </ul>
-        <a class="format-card__cta" href="#" data-open-modal="contact">Обсудить аудит
-          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
+    <div class="formats-list">
+      <div class="format-row">
+        <div class="format-row__head">
+          <span class="format-row__badge">Быстрый старт</span>
+          <h3>AI Opportunity Audit</h3>
+          <span class="format-row__scope">Разбор процессов, 3–5 рабочих дней</span>
+          <a class="format-row__cta" href="#" data-open-modal="contact">Обсудить аудит
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+        <div class="format-row__body">
+          <p>Смотрим на ваши процессы и показываем, что конкретно можно автоматизировать, в каком порядке и с какой отдачей: без внедрения, просто честная карта возможностей и план.</p>
+          <div class="format-row__grid">
+            <div><h4>Что входит</h4>
+              <ul>
+                <li>Карта повторяющихся задач</li>
+                <li>Приоритеты по эффекту и сложности</li>
+                <li>План внедрения с оценкой сроков</li>
+              </ul>
+            </div>
+            <div><h4>Кому подходит</h4><span>Бизнесу, который ещё не уверен, что и в каком порядке автоматизировать, и хочет сначала увидеть картину целиком.</span></div>
+            <div><h4>Зачем</h4><span>Снижает риск: вы вкладываетесь в разбор, а не сразу в разработку, и получаете план с реальными сроками и отдачей.</span></div>
+          </div>
+        </div>
       </div>
-      <div class="format-card rv format-card--hi">
-        <span class="format-card__badge">Популярный выбор</span>
-        <h3>AI Employee — Starter</h3>
-        <span class="format-card__scope">Одно направление, 1–2 недели</span>
-        <p>Закрываем одну конкретную рутину целиком: например приём заявок и запись, или ответы на типовые вопросы.</p>
-        <ul>
-          <li>1–2 канала обращений</li>
-          <li>Интеграция с календарём или CRM</li>
-          <li>Ежемесячная донастройка</li>
-        </ul>
-        <a class="format-card__cta" href="#" data-open-modal="contact">Обсудить Starter
-          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
+
+      <div class="format-row format-row--hi">
+        <div class="format-row__head">
+          <span class="format-row__badge">Популярный выбор</span>
+          <h3>AI Employee — Starter</h3>
+          <span class="format-row__scope">Одно направление, 1–2 недели</span>
+          <a class="format-row__cta" href="#" data-open-modal="contact">Обсудить Starter
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+        <div class="format-row__body">
+          <p>Закрываем одну конкретную рутину целиком: например приём заявок и запись, или ответы на типовые вопросы, полностью и без ручной доработки.</p>
+          <div class="format-row__grid">
+            <div><h4>Что входит</h4>
+              <ul>
+                <li>1–2 канала обращений</li>
+                <li>Интеграция с календарём или CRM</li>
+                <li>Ежемесячная донастройка</li>
+              </ul>
+            </div>
+            <div><h4>Кому подходит</h4><span>Бизнесу с одной явной точкой боли: заявки теряются, запись ведётся вручную или типовые вопросы отнимают время команды.</span></div>
+            <div><h4>Зачем</h4><span>Быстрый и предсказуемый результат: одна рутина полностью снимается с команды уже в первые недели, без долгого внедрения.</span></div>
+          </div>
+        </div>
       </div>
-      <div class="format-card rv">
-        <span class="format-card__badge">Комплексно</span>
-        <h3>AI Employee — Pro</h3>
-        <span class="format-card__scope">Несколько направлений, 3–5 недель</span>
-        <p>Берём на себя большую часть рутины сразу по всем каналам — с эскалацией нестандартных случаев человеку.</p>
-        <ul>
-          <li>Все каналы обращений</li>
-          <li>Документы, напоминания, отчётность</li>
-          <li>Приоритетная поддержка</li>
-        </ul>
-        <a class="format-card__cta" href="#" data-open-modal="contact">Обсудить Pro
-          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
+
+      <div class="format-row">
+        <div class="format-row__head">
+          <span class="format-row__badge">Комплексно</span>
+          <h3>AI Employee — Pro</h3>
+          <span class="format-row__scope">Несколько направлений, 3–5 недель</span>
+          <a class="format-row__cta" href="#" data-open-modal="contact">Обсудить Pro
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+        <div class="format-row__body">
+          <p>Берём на себя большую часть рутины сразу по всем каналам, с эскалацией нестандартных случаев человеку, чтобы контроль оставался за командой.</p>
+          <div class="format-row__grid">
+            <div><h4>Что входит</h4>
+              <ul>
+                <li>Все каналы обращений</li>
+                <li>Документы, напоминания, отчётность</li>
+                <li>Приоритетная поддержка</li>
+              </ul>
+            </div>
+            <div><h4>Кому подходит</h4><span>Бизнесу, где рутина уже распределена по нескольким процессам: продажи, поддержка, документы, и всё это стоит собрать в одну систему.</span></div>
+            <div><h4>Зачем</h4><span>Меньше разрозненных инструментов и ручных передач между людьми: система ведёт клиента от первого касания до закрытых документов.</span></div>
+          </div>
+        </div>
       </div>
-      <div class="format-card rv">
-        <span class="format-card__badge">Под задачу</span>
-        <h3>AI System (Custom)</h3>
-        <span class="format-card__scope">Индивидуально, от 6 недель</span>
-        <p>Полноценная система под нестандартные процессы: несколько отделов, собственные данные, особые требования.</p>
-        <ul>
-          <li>Архитектура под вашу специфику</li>
-          <li>Собственные интеграции и данные</li>
-          <li>Выделенное сопровождение</li>
-        </ul>
-        <a class="format-card__cta" href="#" data-open-modal="contact">Обсудить систему
-          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
+
+      <div class="format-row">
+        <div class="format-row__head">
+          <span class="format-row__badge">Под задачу</span>
+          <h3>AI System (Custom)</h3>
+          <span class="format-row__scope">Индивидуально, от 6 недель</span>
+          <a class="format-row__cta" href="#" data-open-modal="contact">Обсудить систему
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+        <div class="format-row__body">
+          <p>Полноценная система под нестандартные процессы: несколько отделов, собственные данные и особые требования к безопасности или интеграциям.</p>
+          <div class="format-row__grid">
+            <div><h4>Что входит</h4>
+              <ul>
+                <li>Архитектура под вашу специфику</li>
+                <li>Собственные интеграции и данные</li>
+                <li>Выделенное сопровождение</li>
+              </ul>
+            </div>
+            <div><h4>Кому подходит</h4><span>Компаниям со сложной структурой: несколько отделов, филиалов или нетиповых процессов, где готовые пакеты не закрывают задачу.</span></div>
+            <div><h4>Зачем</h4><span>Система строится вокруг реальной архитектуры бизнеса, а не подгоняет бизнес под шаблон, и растёт вместе с ним дальше.</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -816,58 +903,156 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 <section class="sec" id="s-before-after" aria-labelledby="h-before-after">
   <div class="wrap">
     <div class="dir-head">
-      <p class="eyebrow rv" style="justify-content:center">Что меняется на практике</p>
-      <h2 class="h2 rv" id="h-before-after" style="margin-top:20px">До → после</h2>
-      <p class="lede rv">Одни и те же процессы, но без ручного труда за каждым шагом.</p>
+      <p class="eyebrow rv" style="justify-content:center">Трансформация</p>
+      <h2 class="h2 rv" id="h-before-after" style="margin-top:20px;max-width:none">Что меняется в работе с клиентами</h2>
+      <p class="lede rv" style="max-width:none">Одни и те же процессы, до и после того, как рутину забирает система.</p>
     </div>
 
-    <div class="compare rv">
-      <div class="compare__head"><span>До</span><span>После</span></div>
-      <div class="compare__row">
-        <div class="compare__cell compare__cell--before">
-          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg></span>
-          <div><b>Ответ клиенту — когда дойдут руки</b><span>Сообщение лежит в общем чате до тех пор, пока администратор не освободится.</span></div>
+    <div class="compare-wrap">
+      <div class="compare-mid" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+      <div class="compare-card compare-card--before rv">
+        <div class="compare-card__head">
+          <span class="compare-card__ico" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+          <b>Без системы</b>
         </div>
-        <div class="compare__cell compare__cell--after">
-          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <div><b>Ответ за секунды, в любое время</b><span>Система отвечает сразу — днём, ночью, в выходной, без задержек.</span></div>
+        <div class="compare-item">
+          <b>Ответ клиенту: когда дойдут руки</b>
+          <span>Сообщение лежит в общем чате до тех пор, пока администратор не освободится.</span>
         </div>
-      </div>
-      <div class="compare__row">
-        <div class="compare__cell compare__cell--before">
-          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg></span>
-          <div><b>Данные переносятся вручную</b><span>Из переписки в таблицу, из таблицы в CRM — с опечатками и задержками.</span></div>
+        <div class="compare-item">
+          <b>Данные переносятся вручную</b>
+          <span>Из переписки в таблицу, из таблицы в CRM, с опечатками и задержками.</span>
         </div>
-        <div class="compare__cell compare__cell--after">
-          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <div><b>Карточка клиента обновляется сама</b><span>Каждое обращение сразу попадает в CRM — без переноса руками.</span></div>
+        <div class="compare-item">
+          <b>Про оплату и визит напоминают, если вспомнят</b>
+          <span>Напоминания и просьбы об оплате держатся на памяти конкретного человека.</span>
         </div>
-      </div>
-      <div class="compare__row">
-        <div class="compare__cell compare__cell--before">
-          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg></span>
-          <div><b>Про оплату и визит напоминают, если вспомнят</b><span>Напоминания и просьбы об оплате держатся на памяти конкретного человека.</span></div>
-        </div>
-        <div class="compare__cell compare__cell--after">
-          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <div><b>Напоминания уходят по расписанию</b><span>Система сама напоминает о визите и догоняет неоплаченный счёт вовремя.</span></div>
+        <div class="compare-item">
+          <b>Отчёт собирают вечером вручную</b>
+          <span>Цифры за день сводят в конце смены, поэтому решения принимаются с опозданием.</span>
         </div>
       </div>
-      <div class="compare__row">
-        <div class="compare__cell compare__cell--before">
-          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg></span>
-          <div><b>Отчёт собирают вечером вручную</b><span>Цифры за день сводят в конце смены, поэтому решения принимаются с опозданием.</span></div>
+
+      <div class="compare-card compare-card--after rv">
+        <div class="compare-card__head">
+          <span class="compare-card__ico" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <b>С METRAWEN</b>
         </div>
-        <div class="compare__cell compare__cell--after">
-          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <div><b>Отчёт готов в реальном времени</b><span>Цифры дня видны сразу — решения принимаются сегодня, а не в конце недели.</span></div>
+        <div class="compare-item">
+          <b>Ответ за секунды, в любое время</b>
+          <span>Система отвечает сразу: днём, ночью, в выходной, без задержек.</span>
+        </div>
+        <div class="compare-item">
+          <b>Карточка клиента обновляется сама</b>
+          <span>Каждое обращение сразу попадает в CRM, без переноса руками.</span>
+        </div>
+        <div class="compare-item">
+          <b>Напоминания уходят по расписанию</b>
+          <span>Система сама напоминает о визите и догоняет неоплаченный счёт вовремя.</span>
+        </div>
+        <div class="compare-item">
+          <b>Отчёт готов в реальном времени</b>
+          <span>Цифры дня видны сразу: решения принимаются сегодня, а не в конце недели.</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="wrap"><p class="endnote"><span>Прототип блоков 01–06</span><span>Русская версия</span><span>Следующий блок: страница «О компании»</span></p></div>
+<!-- ========== 07 · FAQ ========== -->
+<section class="sec" id="s-faq" aria-labelledby="h-faq">
+  <div class="wrap">
+    <div class="dir-head">
+      <p class="eyebrow rv" style="justify-content:center">Частые вопросы</p>
+      <h2 class="h2 rv" id="h-faq" style="margin-top:20px;max-width:none">Что обычно спрашивают перед стартом</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item rv">
+        <button class="faq-item__q" type="button" aria-expanded="false">
+          <span>Сколько стоит автоматизация?</span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-item__a"><p>Точную стоимость называем после бесплатного разбора процессов: она зависит от формата (аудит, отдельный AI-работник или комплексная система) и от того, сколько направлений закрывает система. Фиксированного тарифа нет намеренно: цена всегда привязана к объёму реальной работы.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <button class="faq-item__q" type="button" aria-expanded="false">
+          <span>Сколько времени занимает внедрение?</span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-item__a"><p>От нескольких рабочих дней для разбора процессов до нескольких недель для комплексной системы, в зависимости от выбранного формата. Ориентиры по срокам есть в разделе «Форматы внедрения» выше.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <button class="faq-item__q" type="button" aria-expanded="false">
+          <span>Автоматизация заменит сотрудников?</span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-item__a"><p>Система берёт на себя повторяющуюся рутину: первый ответ, сбор данных, типовые вопросы, документы. Нестандартные случаи и решения всегда уходят человеку с готовым контекстом, поэтому команда не теряет контроль, а освобождается от однообразной работы.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <button class="faq-item__q" type="button" aria-expanded="false">
+          <span>С какими бизнесами вы работаете?</span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-item__a"><p>В основном с сервисным и клиентским бизнесом: отели и виллы, клиники и стоматологии, салоны красоты, агентства, интернет-магазины и похожие направления, где важна скорость первого ответа. Полный список отраслей есть в форме заявки.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <button class="faq-item__q" type="button" aria-expanded="false">
+          <span>Вы делаете только автоматизацию или ещё и сайты?</span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-item__a"><p>В первую очередь автоматизация, но если сайт, оформление или контент бизнеса мешают производить нужное впечатление, помогаем и с этим: подробнее в разделе «Digital-услуги» выше.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <button class="faq-item__q" type="button" aria-expanded="false">
+          <span>Можно интегрироваться с нашей текущей CRM или таблицами?</span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-item__a"><p>Да, систему собираем под уже используемые у вас инструменты, а не заменяем их без необходимости. Конкретную интеграцию обсуждаем на этапе разбора процессов.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== footer ========== -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="mark">METRAWEN</span>
+        <p>Системы автоматизации для сервисного бизнеса: от поиска клиентов до поддержки и отчётности, собранные индивидуально под компанию.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Навигация</h4>
+        <ul>
+          <li><a href="#s-day">AI-системы</a></li>
+          <li><a href="#s-directions">Направления</a></li>
+          <li><a href="#s-formats">Форматы внедрения</a></li>
+          <li><a href="#s-pack">Digital-услуги</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Компания</h4>
+        <ul>
+          <li><a href="about-ru.html">О компании</a></li>
+          <li><a href="#s-faq">Частые вопросы</a></li>
+          <li><a href="#" data-open-modal="booking">Бесплатная сессия</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Контакты</h4>
+        <ul>
+          <li><a href="mailto:hello@metrawen.com">hello@metrawen.com</a></li>
+          <li><span style="font-size:.875rem;color:var(--text-dim)">Азия, Европа, США, Россия и СНГ</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 METRAWEN</span>
+      <span>Прототип, русская версия</span>
+    </div>
+  </div>
+</footer>
 
 </main>
 
@@ -959,10 +1144,10 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <p class="modal__lede" style="max-width:none">Разберём ваши процессы и покажем, где именно автоматизация сэкономит время и снимет рутину с команды.</p>
           <a href="#" data-open-modal="booking" data-switch-modal="modal-contact" class="book-cta">
             <span class="book-cta__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9.5h17M8 3v3.6M16 3v3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-            <span class="book-cta__body"><b>Выбрать время в календаре</b><span>Готовы обсудить сейчас — 30 секунд, откроется календарь</span></span>
+            <span class="book-cta__body"><b>Выбрать время в календаре</b></span>
             <svg class="book-cta__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
-          <p class="note" style="margin-top:14px;margin-bottom:2px">Или заполните форму ниже — ответим в течение 30 минут.</p>
+          <p class="note" style="margin-top:12px;margin-bottom:0">Или заполните форму ниже: ответим в течение 30 минут.</p>
 
           <form id="contact-form">
             <div class="field-row">
@@ -991,7 +1176,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             </label>
             <label class="field">
               <span>Что хотите автоматизировать</span>
-              <textarea name="message" rows="3" placeholder="Расскажите о бизнесе и о том, где сейчас больше всего ручной рутины"></textarea>
+              <textarea name="message" rows="2" placeholder="Расскажите о бизнесе и о том, где сейчас больше всего ручной рутины"></textarea>
             </label>
             <label class="checkline">
               <input type="checkbox" name="consent" required>
@@ -1291,7 +1476,21 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   var io = new IntersectionObserver(function(es){
     es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
   },{rootMargin:'0px 0px -12% 0px'});
-  document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+  document.querySelectorAll('.rv, .format-row').forEach(function(el){ io.observe(el); });
+
+  /* ---------- faq accordion ---------- */
+  document.querySelectorAll('.faq-item__q').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var item = btn.closest('.faq-item');
+      var ans = item.querySelector('.faq-item__a');
+      var isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(function(o){
+        if(o !== item){ o.classList.remove('open'); o.querySelector('.faq-item__a').style.maxHeight = null; o.querySelector('.faq-item__q').setAttribute('aria-expanded','false'); }
+      });
+      if(isOpen){ item.classList.remove('open'); ans.style.maxHeight = null; btn.setAttribute('aria-expanded','false'); }
+      else{ item.classList.add('open'); ans.style.maxHeight = ans.scrollHeight + 'px'; btn.setAttribute('aria-expanded','true'); }
+    });
+  });
 
   /* ---------- hero: full-bleed sonar dot-grid ---------- */
   (function(){
