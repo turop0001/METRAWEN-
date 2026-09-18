@@ -77,52 +77,38 @@ button{font:inherit;color:inherit}
 .rv.in{opacity:1;transform:none}
 .rv:nth-child(2){transition-delay:.06s}.rv:nth-child(3){transition-delay:.12s}.rv:nth-child(4){transition-delay:.18s}
 
-/* founder */
-.founder{display:grid;gap:clamp(36px,5vw,64px);align-items:center}
-@media(min-width:920px){.founder{grid-template-columns:.8fr 1.2fr}}
-.founder__photo{position:relative;aspect-ratio:4/5;border-radius:22px;overflow:hidden;border:1px solid var(--hair-2);
-  background:linear-gradient(155deg,#1c1a16,#0d0c0a);display:flex;align-items:center;justify-content:center;
-  box-shadow:0 40px 70px -30px rgba(0,0,0,.7)}
+/* centered hero */
+.hero-c{text-align:center}
+.hero-c .eyebrow{justify-content:center}
+.hero-c .h1{max-width:26ch;margin-inline:auto}
+.hero-c .lede{max-width:56ch;margin-inline:auto}
+
+/* founder — small centered card, superdupr-style */
+.founder-c{max-width:640px;margin-inline:auto;text-align:center;border:1px solid var(--hair-2);border-radius:22px;
+  background:rgba(14,14,13,.55);padding:clamp(32px,4vw,48px) clamp(24px,3.4vw,40px);box-shadow:0 40px 70px -30px rgba(0,0,0,.7)}
+.founder__photo{width:84px;height:84px;border-radius:50%;overflow:hidden;margin-inline:auto;border:1px solid var(--hair-2);
+  background:linear-gradient(155deg,#1c1a16,#0d0c0a);display:flex;align-items:center;justify-content:center}
 .founder__photo img{width:100%;height:100%;object-fit:cover;display:block}
-.founder__placeholder{display:flex;flex-direction:column;align-items:center;gap:14px;color:var(--text-faint);text-align:center;padding:24px}
-.founder__placeholder .initials{width:96px;height:96px;border-radius:50%;background:rgba(var(--accent-rgb),.14);color:var(--accent-hi);
-  display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:1.75rem;letter-spacing:.04em}
-.founder__placeholder span{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;max-width:22ch;line-height:1.6}
-.founder__role{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-hi)}
-.founder__name{font-size:clamp(1.5rem,2.4vw,2rem);font-weight:600;letter-spacing:-.01em;margin-top:10px}
-.founder__bio{margin-top:18px;display:flex;flex-direction:column;gap:14px}
-.founder__bio p{color:var(--text-dim);font-size:1.0625rem;line-height:1.65;max-width:60ch}
+.founder__photo .initials{color:var(--accent-hi);font-family:var(--font-mono);font-size:1.5rem}
+.founder__role{margin-top:20px;font-family:var(--font-mono);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-hi)}
+.founder__name{font-size:clamp(1.375rem,2vw,1.625rem);font-weight:600;letter-spacing:-.01em;margin-top:8px}
+.founder__bio{margin-top:18px;display:flex;flex-direction:column;gap:12px}
+.founder__bio p{color:var(--text-dim);font-size:.9375rem;line-height:1.6}
 
-/* values */
-.values-grid{margin-top:clamp(40px,5vw,64px);display:grid;gap:1px;background:var(--hair);border-radius:20px;overflow:hidden;
-  border:1px solid var(--hair-2)}
-@media(min-width:760px){.values-grid{grid-template-columns:repeat(3,1fr)}}
-.value-card{background:rgba(14,14,13,.55);padding:clamp(26px,2.6vw,32px);display:flex;flex-direction:column;gap:12px}
-.value-card b{font-size:1.0625rem;font-weight:650}
-.value-card span{font-size:.9375rem;color:var(--text-dim);line-height:1.55}
-.value-card .n{font-family:var(--font-mono);font-size:.75rem;color:var(--accent-hi)}
+/* values — 2x2 like superdupr */
+.values-grid{margin-top:clamp(40px,5vw,64px);display:grid;gap:16px}
+@media(min-width:720px){.values-grid{grid-template-columns:repeat(2,1fr)}}
+.value-card{background:rgba(14,14,13,.55);border:1px solid var(--hair-2);border-radius:16px;
+  padding:clamp(26px,2.6vw,32px);display:flex;flex-direction:column;gap:12px}
+.value-card b{font-size:1.125rem;font-weight:650}
+.value-card span{font-size:.9375rem;color:var(--text-dim);line-height:1.6}
 
-/* timeline */
-.tl{margin-top:clamp(40px,5vw,64px);display:flex;flex-direction:column;gap:0;border-left:1px solid var(--hair-2);padding-left:clamp(22px,3vw,40px)}
-.tl__item{position:relative;padding-block:22px;border-bottom:1px solid var(--hair)}
-.tl__item:last-child{border-bottom:none}
-.tl__item::before{content:"";position:absolute;left:calc(-1 * clamp(22px,3vw,40px) - 5px);top:28px;width:9px;height:9px;border-radius:50%;
-  background:var(--accent);box-shadow:0 0 0 4px var(--base),0 0 0 5px var(--hair-2)}
-.tl__item b{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.06em;color:var(--accent-hi);text-transform:uppercase}
-.tl__item h3{margin-top:8px;font-size:1.125rem;font-weight:600}
-.tl__item p{margin-top:6px;font-size:.9375rem;color:var(--text-dim);line-height:1.55;max-width:56ch}
-
-/* figs reuse */
-.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;margin-top:30px;background:var(--hair)}
-.figs div{background:var(--base);padding:24px 22px}
-.figs b{display:block;font-family:var(--font-mono);font-size:clamp(2rem,4vw,3rem);font-weight:400;line-height:1;
-  letter-spacing:-.03em;color:var(--accent)}
-.figs p{margin-top:10px;font-size:.9375rem;color:var(--text-dim);line-height:1.45}
-
-.ctaline{display:flex;flex-wrap:wrap;align-items:center;gap:16px 28px;margin-top:clamp(40px,5vw,64px);
-  padding-top:clamp(26px,3vw,40px);border-top:1px solid var(--hair)}
-.ctaline p{font-size:1.0625rem;color:var(--text-dim);max-width:44ch}
-.note{margin-top:14px;font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;color:var(--text-faint);line-height:1.6}
+/* final cta — superdupr-style centered block */
+.final-cta{text-align:center;border-top:1px solid var(--hair);padding-top:clamp(56px,7vw,88px)}
+.final-cta h2{max-width:22ch;margin-inline:auto}
+.final-cta .lede{max-width:52ch;margin-inline:auto;margin-top:18px}
+.final-cta .btn{margin-top:32px}
+.note{margin-top:20px;font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;color:var(--text-faint);line-height:1.6;text-align:center}
 
 @media(prefers-reduced-motion:reduce){.scene i{animation:none!important}.rv{opacity:1;transform:none}}
 </style>
@@ -148,53 +134,49 @@ button{font:inherit;color:inherit}
 <main>
 
 <!-- ===== hero statement ===== -->
-<section class="sec" style="padding-bottom:0">
+<section class="sec hero-c" style="padding-bottom:0">
   <div class="wrap">
-    <p class="eyebrow rv">О компании</p>
-    <h1 class="h1 rv" style="margin-top:22px">Мы делаем так, чтобы автоматизация выглядела как часть бизнеса, а не как надстройка над ним.</h1>
-    <p class="lede rv" style="margin-top:24px">METRAWEN — небольшая студия, которая берёт на себя рутину сервисного бизнеса: от разбора процессов до системы, которая работает каждый день без присмотра.</p>
+    <h1 class="h1 rv">Мы делаем системы автоматизации, которые действительно работают</h1>
+    <p class="lede rv" style="margin-top:24px">METRAWEN берёт на себя рутину сервисного бизнеса — от поиска клиентов и продаж до поддержки и внутренних операций — и собирает систему индивидуально под конкретную компанию, а не по шаблону.</p>
   </div>
 </section>
 
 <!-- ===== founder ===== -->
 <section class="sec">
-  <div class="wrap founder">
-    <div class="founder__photo rv">
-      <div class="founder__placeholder">
-        <div class="initials">М</div>
-        <span>Фото основателя<br>будет добавлено</span>
+  <div class="wrap">
+    <h2 class="h2 rv" style="text-align:center;margin-inline:auto">Познакомьтесь с основателем</h2>
+    <div class="founder-c rv" style="margin-top:clamp(32px,4vw,48px)">
+      <div class="founder__photo">
+        <span class="initials">М</span>
       </div>
-    </div>
-    <div class="rv">
-      <p class="founder__role">Основатель и руководитель</p>
-      <h2 class="founder__name">Имя Фамилия</h2>
+      <p class="founder__role">Основатель · Руководитель</p>
+      <h3 class="founder__name">Дмитрий Баринов</h3>
       <div class="founder__bio">
         <p>Начинал с того же, с чем сегодня приходят клиенты METRAWEN: ручная рутина, разрозненные таблицы и мессенджеры, в которых легко потерять заявку.</p>
-        <p>Собрал студию вокруг одной идеи — автоматизация должна встраиваться в существующий бизнес, а не заставлять его подстраиваться под систему.</p>
-        <p>Лично разбирает процессы на старте каждого проекта, поэтому предложения METRAWEN строятся на реальной специфике бизнеса, а не на шаблоне.</p>
+        <p>Собрал студию вокруг одной идеи — автоматизация должна встраиваться в существующий бизнес, а не заставлять его подстраиваться под систему. Лично разбирает процессы на старте каждого проекта.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== values ===== -->
+<!-- ===== values (2x2, superdupr-style) ===== -->
 <section class="sec">
   <div class="wrap">
-    <p class="eyebrow rv">Как мы работаем</p>
-    <h2 class="h2 rv" style="margin-top:20px">Три принципа, от которых мы не отступаем</h2>
+    <h2 class="h2 rv" style="text-align:center;margin-inline:auto">Как мы работаем</h2>
     <div class="values-grid">
       <div class="value-card rv">
-        <span class="n">01</span>
+        <b>Результат, а не функция</b>
+        <span>Не продаём готовый пакет — каждая система оценивается по тому, сколько времени и рутины она реально снимает с команды.</span>
+      </div>
+      <div class="value-card rv">
+        <b>Под конкретный бизнес</b>
+        <span>Не делаем универсальных решений — набор направлений и интеграций каждый раз собирается под процессы конкретной компании.</span>
+      </div>
+      <div class="value-card rv">
         <b>Сначала разбор, потом решение</b>
-        <span>Не продаём готовый пакет — сначала смотрим на реальные процессы бизнеса и предлагаем то, что даст эффект именно там.</span>
+        <span>Сначала смотрим на реальные процессы бизнеса и только потом предлагаем то, что даст эффект именно там, а не типовой набор функций.</span>
       </div>
       <div class="value-card rv">
-        <span class="n">02</span>
-        <b>Система, а не витрина</b>
-        <span>Автоматизация должна доводить дело до результата — записи, оплаты, ответа клиенту — а не просто красиво выглядеть на демо.</span>
-      </div>
-      <div class="value-card rv">
-        <span class="n">03</span>
         <b>Решения остаются за бизнесом</b>
         <span>Система закрывает типовые случаи сама, а всё нестандартное уходит человеку с готовым контекстом — без потери контроля над бизнесом.</span>
       </div>
@@ -202,44 +184,16 @@ button{font:inherit;color:inherit}
   </div>
 </section>
 
-<!-- ===== timeline ===== -->
-<section class="sec">
+<!-- ===== final cta ===== -->
+<section class="sec final-cta">
   <div class="wrap">
-    <p class="eyebrow rv">Коротко о пути</p>
-    <h2 class="h2 rv" style="margin-top:20px">Как появился METRAWEN</h2>
-    <div class="tl">
-      <div class="tl__item rv">
-        <b>Начало</b>
-        <h3>Первые проекты для сервисного бизнеса</h3>
-        <p>Первые внедрения — приём заявок и запись для небольших сервисных компаний, где вся рутина держалась на одном администраторе.</p>
-      </div>
-      <div class="tl__item rv">
-        <b>Рост</b>
-        <h3>Формат AI-системы вместо разовых ботов</h3>
-        <p>Стало понятно, что разовый чат-бот не решает проблему целиком — родился формат AI Employee, который закрывает рутину сквозным образом.</p>
-      </div>
-      <div class="tl__item rv">
-        <b>Сегодня</b>
-        <h3>Проекты в нескольких странах и отраслях</h3>
-        <p>Работаем с бизнесом в Азии, Европе, США, России и СНГ — от отелей и клиник до розницы и агентств.</p>
-      </div>
-    </div>
-    <div class="figs">
-      <div><b>Азия · Европа · США</b><p>и Россия и СНГ — география клиентов METRAWEN</p></div>
-      <div><b>30 мин</b><p>обычное время первого ответа на заявку</p></div>
-      <div><b>6+</b><p>отраслей с готовыми сценариями внедрения</p></div>
-    </div>
+    <h2 class="h2 rv">Давайте построим что-нибудь вместе</h2>
+    <p class="lede rv">Забронируйте бесплатную стратегическую сессию, чтобы увидеть, что именно можно автоматизировать в вашем бизнесе.</p>
+    <a class="btn btn--shine rv" href="metrawen-home-ru.html#s-directions">Забронировать стратегическую сессию
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></a>
+    <p class="note">Фото основателя — временная заглушка, ждём файл от клиента.</p>
   </div>
 </section>
-
-<div class="wrap">
-  <div class="ctaline">
-    <p>Расскажите о своём бизнесе — покажем, что можно автоматизировать в первую очередь.</p>
-    <a class="btn btn--shine" href="metrawen-home-ru.html#s-directions">Обсудить проект
-      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></a>
-  </div>
-  <p class="note">Фото и имя основателя — временная заглушка, ждём материалы от клиента.</p>
-</div>
 
 </main>
 
