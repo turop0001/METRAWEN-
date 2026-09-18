@@ -82,6 +82,17 @@ button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
   text-underline-offset:3px;font-weight:600;transition:color .2s,text-decoration-color .2s}
 .link-inline:hover,.link-inline:focus-visible{color:var(--accent-hi);text-decoration-color:var(--accent-hi)}
 
+.book-cta{display:flex;align-items:center;gap:14px;padding:14px 16px;margin-top:18px;border:1px solid rgba(var(--accent-rgb),.35);
+  border-radius:14px;background:rgba(196,161,101,.07);transition:border-color .2s,background .2s,transform .2s}
+.book-cta:hover,.book-cta:focus-visible{border-color:var(--accent);background:rgba(196,161,101,.13);transform:translateY(-1px)}
+.book-cta__icon{width:38px;height:38px;border-radius:10px;flex:none;background:rgba(var(--accent-rgb),.16);color:var(--accent-hi);
+  display:flex;align-items:center;justify-content:center}
+.book-cta__icon svg{width:18px;height:18px}
+.book-cta__body{display:flex;flex-direction:column;gap:2px}
+.book-cta__body b{font-size:.9375rem;font-weight:600;color:var(--text)}
+.book-cta__body span{font-size:.8125rem;color:var(--text-dim)}
+.book-cta__arrow{margin-left:auto;flex:none;color:var(--accent-hi)}
+
 [hidden]{display:none!important}
 /* ===== booking modal ===== */
 .modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:24px}
@@ -192,6 +203,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .rv{opacity:0;transform:translateY(18px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
 .rv.in{opacity:1;transform:none}
 .rv:nth-child(2){transition-delay:.06s}.rv:nth-child(3){transition-delay:.12s}.rv:nth-child(4){transition-delay:.18s}
+.rv:nth-child(5){transition-delay:.24s}.rv:nth-child(6){transition-delay:.3s}
 
 /* ===================== 01 HERO — full-bleed sonar ground ===================== */
 .hero{position:relative;isolation:isolate;overflow:hidden;cursor:crosshair;
@@ -300,13 +312,13 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .dir-head .lede{margin-top:16px;margin-inline:auto}
 
 /* ---------- packaging (digital services) — distinct track, not part of the automation grid ---------- */
-.pack{position:relative;isolation:isolate;background:#131210;overflow:hidden}
+.pack{position:relative;isolation:isolate;overflow:hidden}
 .pack::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
   background:
-    radial-gradient(48% 60% at 88% -6%,rgba(var(--accent-rgb),.16) 0%,transparent 62%),
-    radial-gradient(38% 46% at 6% 108%,rgba(var(--accent-rgb),.09) 0%,transparent 68%),
-    linear-gradient(155deg,rgba(var(--accent-rgb),.05) 0%,transparent 34%)}
-.pack::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    radial-gradient(52% 64% at 88% -8%,rgba(var(--accent-rgb),.13) 0%,transparent 62%),
+    radial-gradient(46% 54% at 4% 112%,rgba(236,227,207,.05) 0%,transparent 68%),
+    linear-gradient(155deg,rgba(var(--accent-rgb),.04) 0%,transparent 34%)}
+.pack::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.45;
   background-image:linear-gradient(rgba(var(--accent-rgb),.05) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--accent-rgb),.05) 1px,transparent 1px);
   background-size:64px 64px;
   -webkit-mask-image:radial-gradient(70% 70% at 50% 30%,#000 0%,transparent 75%);
@@ -316,9 +328,13 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .pack__text h2{max-width:16ch}
 .pack__text .lede{margin-top:20px}
 .pack__cta{margin-top:32px}
-.pack__list{display:flex;flex-direction:column;gap:1px;background:var(--hair);border-radius:18px;overflow:hidden}
-.pack__item{display:flex;align-items:center;gap:16px;padding:22px 24px;background:#131210;transition:background .25s var(--ease)}
-.pack__item:hover{background:#1B1712}
+.pack__list{display:flex;flex-direction:column;gap:1px;background:var(--hair);border-radius:18px;overflow:hidden;
+  border:1px solid var(--hair-2);box-shadow:0 40px 70px -30px rgba(0,0,0,.7);
+  transform:perspective(1400px) rotateY(-2deg) rotateX(1deg);transform-origin:0% 50%}
+.pack__item{display:flex;align-items:center;gap:16px;padding:22px 24px;background:rgba(14,14,13,.62);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);transition:background .25s var(--ease)}
+.pack__item:hover{background:rgba(27,23,18,.78)}
+@media(max-width:760px){.pack__list{transform:none}}
 .pack__item__icon{width:38px;height:38px;border-radius:10px;flex:none;background:rgba(var(--accent-rgb),.1);color:var(--accent-hi);
   display:flex;align-items:center;justify-content:center}
 .pack__item__icon svg{width:18px;height:18px}
@@ -343,6 +359,46 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   color:var(--text-dim);background:rgba(var(--text-rgb),.07);border:1px solid var(--hair-2);border-radius:999px;padding:6px 13px}
 .dir-card h3{font-size:1.375rem;font-weight:650;letter-spacing:-.01em;line-height:1.25}
 .dir-card p{font-size:1rem;color:var(--text-dim);line-height:1.65}
+
+/* ---------- 05 форматы внедрения ---------- */
+.formats-grid{margin-top:clamp(48px,6vw,72px);display:grid;gap:20px}
+@media(min-width:720px){.formats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1200px){.formats-grid{grid-template-columns:repeat(4,1fr)}}
+.format-card{position:relative;background:rgba(20,19,17,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  border:1px solid var(--hair-2);border-radius:20px;padding:clamp(26px,2.6vw,32px) clamp(22px,2.2vw,26px);
+  display:flex;flex-direction:column;gap:16px;transition:transform .35s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease)}
+.format-card:hover{transform:translateY(-6px) perspective(900px) rotateX(2deg);border-color:var(--accent);box-shadow:0 30px 54px -22px rgba(0,0,0,.6)}
+.format-card--hi{border-color:rgba(var(--accent-rgb),.55);background:rgba(196,161,101,.06)}
+.format-card__badge{align-self:flex-start;font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent-hi);background:rgba(var(--accent-rgb),.14);border-radius:999px;padding:5px 12px}
+.format-card h3{font-size:1.1875rem;font-weight:650;letter-spacing:-.01em}
+.format-card__scope{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.02em;color:var(--text-faint)}
+.format-card p{font-size:.9375rem;color:var(--text-dim);line-height:1.55;flex:1}
+.format-card ul{display:flex;flex-direction:column;gap:8px;margin-top:2px}
+.format-card li{display:flex;gap:8px;font-size:.8438rem;color:var(--text-dim);line-height:1.4}
+.format-card li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);flex:none;margin-top:6px}
+.format-card__cta{margin-top:6px;font-size:.875rem;font-weight:600;color:var(--accent-hi);display:inline-flex;align-items:center;gap:6px}
+.format-card__cta svg{width:13px;height:13px;transition:transform .25s var(--ease)}
+.format-card:hover .format-card__cta svg{transform:translateX(3px)}
+
+/* ---------- 06 до / после ---------- */
+.compare{margin-top:clamp(48px,6vw,72px);display:flex;flex-direction:column;gap:1px;background:var(--hair);
+  border-radius:20px;overflow:hidden;border:1px solid var(--hair-2);box-shadow:0 40px 70px -32px rgba(0,0,0,.65)}
+.compare__row{display:grid;grid-template-columns:1fr 1fr;background:rgba(14,14,13,.5)}
+@media(max-width:720px){.compare__row{grid-template-columns:1fr}}
+.compare__cell{padding:22px 26px;display:flex;gap:14px;align-items:flex-start}
+.compare__cell--before{background:rgba(255,255,255,.015)}
+.compare__cell--after{background:rgba(196,161,101,.05)}
+.compare__ico{width:26px;height:26px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.compare__cell--before .compare__ico{background:rgba(255,255,255,.06);color:var(--text-faint)}
+.compare__cell--after .compare__ico{background:rgba(var(--accent-rgb),.18);color:var(--accent-hi)}
+.compare__cell b{display:block;font-size:.9375rem;font-weight:600;color:var(--text);margin-bottom:3px}
+.compare__cell span{font-size:.875rem;color:var(--text-dim);line-height:1.45}
+.compare__head{display:grid;grid-template-columns:1fr 1fr;font-family:var(--font-mono);font-size:.75rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-faint)}
+@media(max-width:720px){.compare__head{grid-template-columns:1fr}}
+.compare__head span{padding:14px 26px}
+.compare__head span:last-child{color:var(--accent-hi)}
 
 /* pipeline scene */
 .pipe{position:relative;border:1px solid var(--hair);background:rgba(14,14,13,.5);padding:clamp(30px,3.6vw,52px) clamp(24px,3vw,44px);
@@ -401,7 +457,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   .stage__pin{position:static;min-height:0}
   .stage__track{height:auto}
   .tsk,.node,.steps li,.branch{opacity:1!important;transform:none!important}
-  .day,.pipe{transform:none}
+  .day,.pipe,.pack__list{transform:none}
 }
 </style>
 
@@ -448,7 +504,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <a href="#" class="more">и другие digital-услуги</a>
         </div>
       </div>
-      <a href="#">Как мы работаем</a><a href="#">О компании</a>
+      <a href="#">Как мы работаем</a><a href="about-ru.html">О компании</a>
     </nav>
     <button class="btn btn--sm btn--shine" data-open-modal="contact">Обсудить проект</button>
   </div>
@@ -686,7 +742,132 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   </div>
 </section>
 
-<div class="wrap"><p class="endnote"><span>Прототип блоков 01–04</span><span>Русская версия</span><span>Следующие блоки: форматы внедрения, до → после</span></p></div>
+<!-- ========== 05 · ФОРМАТЫ ВНЕДРЕНИЯ ========== -->
+<section class="sec" id="s-formats" aria-labelledby="h-formats">
+  <div class="wrap">
+    <div class="dir-head">
+      <p class="eyebrow rv" style="justify-content:center">Форматы внедрения</p>
+      <h2 class="h2 rv" id="h-formats" style="margin-top:20px">От одной задачи до полноценной AI-системы</h2>
+      <p class="lede rv">Не обязательно начинать с большого внедрения — можно закрыть одну болевую точку и расширяться по мере результата.</p>
+    </div>
+
+    <div class="formats-grid">
+      <div class="format-card rv">
+        <span class="format-card__badge">Быстрый старт</span>
+        <h3>AI Opportunity Audit</h3>
+        <span class="format-card__scope">Разбор процессов, 3–5 рабочих дней</span>
+        <p>Смотрим на ваши процессы и показываем, что конкретно можно автоматизировать, в каком порядке и с какой отдачей.</p>
+        <ul>
+          <li>Карта повторяющихся задач</li>
+          <li>Приоритеты по эффекту и сложности</li>
+          <li>План внедрения с оценкой сроков</li>
+        </ul>
+        <a class="format-card__cta" href="#" data-open-modal="contact">Обсудить аудит
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+      <div class="format-card rv format-card--hi">
+        <span class="format-card__badge">Популярный выбор</span>
+        <h3>AI Employee — Starter</h3>
+        <span class="format-card__scope">Одно направление, 1–2 недели</span>
+        <p>Закрываем одну конкретную рутину целиком: например приём заявок и запись, или ответы на типовые вопросы.</p>
+        <ul>
+          <li>1–2 канала обращений</li>
+          <li>Интеграция с календарём или CRM</li>
+          <li>Ежемесячная донастройка</li>
+        </ul>
+        <a class="format-card__cta" href="#" data-open-modal="contact">Обсудить Starter
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+      <div class="format-card rv">
+        <span class="format-card__badge">Комплексно</span>
+        <h3>AI Employee — Pro</h3>
+        <span class="format-card__scope">Несколько направлений, 3–5 недель</span>
+        <p>Берём на себя большую часть рутины сразу по всем каналам — с эскалацией нестандартных случаев человеку.</p>
+        <ul>
+          <li>Все каналы обращений</li>
+          <li>Документы, напоминания, отчётность</li>
+          <li>Приоритетная поддержка</li>
+        </ul>
+        <a class="format-card__cta" href="#" data-open-modal="contact">Обсудить Pro
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+      <div class="format-card rv">
+        <span class="format-card__badge">Под задачу</span>
+        <h3>AI System (Custom)</h3>
+        <span class="format-card__scope">Индивидуально, от 6 недель</span>
+        <p>Полноценная система под нестандартные процессы: несколько отделов, собственные данные, особые требования.</p>
+        <ul>
+          <li>Архитектура под вашу специфику</li>
+          <li>Собственные интеграции и данные</li>
+          <li>Выделенное сопровождение</li>
+        </ul>
+        <a class="format-card__cta" href="#" data-open-modal="contact">Обсудить систему
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 06 · ДО / ПОСЛЕ ========== -->
+<section class="sec" id="s-before-after" aria-labelledby="h-before-after">
+  <div class="wrap">
+    <div class="dir-head">
+      <p class="eyebrow rv" style="justify-content:center">Что меняется на практике</p>
+      <h2 class="h2 rv" id="h-before-after" style="margin-top:20px">До → после</h2>
+      <p class="lede rv">Одни и те же процессы, но без ручного труда за каждым шагом.</p>
+    </div>
+
+    <div class="compare rv">
+      <div class="compare__head"><span>До</span><span>После</span></div>
+      <div class="compare__row">
+        <div class="compare__cell compare__cell--before">
+          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg></span>
+          <div><b>Ответ клиенту — когда дойдут руки</b><span>Сообщение лежит в общем чате до тех пор, пока администратор не освободится.</span></div>
+        </div>
+        <div class="compare__cell compare__cell--after">
+          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div><b>Ответ за секунды, в любое время</b><span>Система отвечает сразу — днём, ночью, в выходной, без задержек.</span></div>
+        </div>
+      </div>
+      <div class="compare__row">
+        <div class="compare__cell compare__cell--before">
+          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg></span>
+          <div><b>Данные переносятся вручную</b><span>Из переписки в таблицу, из таблицы в CRM — с опечатками и задержками.</span></div>
+        </div>
+        <div class="compare__cell compare__cell--after">
+          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div><b>Карточка клиента обновляется сама</b><span>Каждое обращение сразу попадает в CRM — без переноса руками.</span></div>
+        </div>
+      </div>
+      <div class="compare__row">
+        <div class="compare__cell compare__cell--before">
+          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg></span>
+          <div><b>Про оплату и визит напоминают, если вспомнят</b><span>Напоминания и просьбы об оплате держатся на памяти конкретного человека.</span></div>
+        </div>
+        <div class="compare__cell compare__cell--after">
+          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div><b>Напоминания уходят по расписанию</b><span>Система сама напоминает о визите и догоняет неоплаченный счёт вовремя.</span></div>
+        </div>
+      </div>
+      <div class="compare__row">
+        <div class="compare__cell compare__cell--before">
+          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg></span>
+          <div><b>Отчёт собирают вечером вручную</b><span>Цифры за день сводят в конце смены, поэтому решения принимаются с опозданием.</span></div>
+        </div>
+        <div class="compare__cell compare__cell--after">
+          <span class="compare__ico" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div><b>Отчёт готов в реальном времени</b><span>Цифры дня видны сразу — решения принимаются сегодня, а не в конце недели.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><p class="endnote"><span>Прототип блоков 01–06</span><span>Русская версия</span><span>Следующий блок: страница «О компании»</span></p></div>
 
 </main>
 
@@ -776,7 +957,12 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         <div>
           <h3 id="contact-title" class="modal__h1">Давайте поговорим об автоматизации для вашего бизнеса</h3>
           <p class="modal__lede" style="max-width:none">Разберём ваши процессы и покажем, где именно автоматизация сэкономит время и снимет рутину с команды.</p>
-          <p class="modal__lede" style="max-width:none;margin-top:10px">Готовы обсудить сейчас? <a href="#" data-open-modal="booking" data-switch-modal="modal-contact" class="link-inline">Выберите удобное время в календаре</a> — займёт 30 секунд — или заполните заявку ниже, ответим в течение 30 минут.</p>
+          <a href="#" data-open-modal="booking" data-switch-modal="modal-contact" class="book-cta">
+            <span class="book-cta__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9.5h17M8 3v3.6M16 3v3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+            <span class="book-cta__body"><b>Выбрать время в календаре</b><span>Готовы обсудить сейчас — 30 секунд, откроется календарь</span></span>
+            <svg class="book-cta__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <p class="note" style="margin-top:14px;margin-bottom:2px">Или заполните форму ниже — ответим в течение 30 минут.</p>
 
           <form id="contact-form">
             <div class="field-row">
@@ -811,7 +997,6 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
               <input type="checkbox" name="consent" required>
               <span>Согласен(-на) на обработку персональных данных. Данные не передаются третьим лицам.</span>
             </label>
-            <button type="submit" class="btn btn--lg btn--shine" style="width:100%;justify-content:center;margin-top:6px">Отправить заявку</button>
           </form>
         </div>
 
@@ -831,6 +1016,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             <li><b>3</b><span>Показываем, что конкретно можно автоматизировать и с чего начать</span></li>
             <li><b>4</b><span>Решение о дальнейшей работе остаётся за вами</span></li>
           </ol>
+          <button type="submit" form="contact-form" class="btn btn--lg btn--shine" style="width:100%;justify-content:center;margin-top:28px">Отправить заявку</button>
         </aside>
       </div>
     </div>
