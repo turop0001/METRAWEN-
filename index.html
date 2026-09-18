@@ -114,6 +114,8 @@ button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
 @media(max-width:680px){.book-grid{grid-template-columns:1fr}}
 .book-cal,.book-slots{border:1px solid var(--hair-2);border-radius:14px;padding:20px}
 .book-cal b,.book-slots b{font-size:.9375rem;font-weight:600}
+.book-cal__head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.book-cal__month{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-hi)}
 .book-cal__week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:16px;
   font-family:var(--font-mono);font-size:.6875rem;color:var(--text-faint);text-align:center}
 .book-cal__grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:6px}
@@ -155,8 +157,10 @@ body{padding-bottom:76px}
 @media(max-width:760px){body{padding-bottom:128px}}
 .btn svg{width:15px;height:15px;flex:none}
 .btn-quiet{display:inline-flex;align-items:center;gap:10px;padding:14px 4px;font-weight:500;color:var(--text-dim);
+  background:none;border:none;border-radius:0;appearance:none;-webkit-appearance:none;cursor:pointer;
   border-bottom:1px solid var(--hair-2);transition:color .25s,border-color .25s}
 .btn-quiet:hover{color:var(--text);border-color:var(--accent)}
+button.btn-quiet{font-family:inherit;font-size:.9375rem}
 
 .eyebrow{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);
   display:flex;align-items:center;gap:12px}
@@ -213,13 +217,19 @@ body{padding-bottom:76px}
 .chip-b:hover::before{background:var(--accent)}
 .chip-b.more{color:var(--accent);border-color:rgba(196,161,101,.4)}
 .chip-b.more::before{background:var(--accent)}
-.chip-b--stat{gap:12px;padding:14px 24px}
-.chip-b--stat::before{display:none}
-.chip-b--stat b{font-family:var(--font-mono);font-size:1.0625rem;font-weight:700;color:var(--accent-hi);flex:none}
-.chip-b--stat .chip-b__txt{color:var(--text-dim)}
-.chip-b--stat .chip-b__src{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.04em;color:var(--text-faint);
-  border-left:1px solid var(--hair-2);padding-left:12px;white-space:nowrap}
-.chip-b--stat:hover .chip-b__src{color:var(--accent-hi)}
+/* stats strip — ticker-tape treatment, deliberately not another row of pills */
+.stat-strip{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
+  background:linear-gradient(180deg,rgba(196,161,101,.04),transparent 60%)}
+#statsmarquee.marquee{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 6%,#000 94%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 6%,#000 94%,transparent 100%)}
+#statsmarquee .marquee__track{gap:0;align-items:stretch}
+.stat-item{display:flex;flex:none;align-items:center;gap:18px;padding:26px clamp(28px,3.4vw,52px);
+  border-right:1px solid var(--hair-2)}
+.stat-item b{flex:none;font-family:var(--font-mono);font-size:clamp(1.75rem,2.6vw,2.5rem);font-weight:600;letter-spacing:-.02em;
+  color:var(--accent-hi);line-height:1;white-space:nowrap}
+.stat-item .stat-item__txt{display:flex;flex-direction:column;gap:5px;text-align:left;white-space:normal;width:24ch;flex:none}
+.stat-item .stat-item__d{font-size:.9375rem;color:var(--text-dim);line-height:1.35}
+.stat-item .stat-item__s{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);white-space:nowrap}
 @media(prefers-reduced-motion:reduce){.marquee__track{animation:none}}
 
 /* ===================== 02 / 03 scroll stage ===================== */
@@ -448,12 +458,12 @@ body{padding-bottom:76px}
 </section>
 
 <!-- ========== stats strip — global AI adoption, sourced ========== -->
-<section class="industries" style="border-top:1px solid var(--hair);padding-top:clamp(40px,5vw,60px)">
+<section class="stat-strip" style="padding-block:clamp(48px,6vw,72px)">
   <div class="wrap">
-    <p class="chips__t rv">Бизнес по всему миру уже переходит на AI</p>
+    <p class="chips__t rv" style="margin-bottom:24px">Бизнес по всему миру уже применяет автоматизацию</p>
   </div>
   <div class="marquee rv" id="statsmarquee">
-    <div class="marquee__track" id="statrow" style="--dur:52s;--dir:normal"></div>
+    <div class="marquee__track" id="statrow" style="--dur:56s;--dir:normal"></div>
   </div>
 </section>
 
@@ -572,7 +582,7 @@ body{padding-bottom:76px}
       <div class="dir-card rv">
         <div class="dir-card__top">
           <div class="dir-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M3 12h4.5l1.5 3h6l1.5-3H21M3 12v6a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-6M3 12l2.6-6.5A1 1 0 0 1 6.5 5h11a1 1 0 0 1 .93.63L21 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <span class="tag">LINE / WhatsApp / сайт</span>
+          <span class="tag">LINE / WhatsApp / Telegram / сайт</span>
         </div>
         <h3>Приём заявок из всех каналов</h3>
         <p>Сообщения из мессенджеров, форм и звонков попадают в одну точку вместо пяти разных окон.</p>
@@ -667,7 +677,7 @@ body{padding-bottom:76px}
 
       <div class="book-grid" id="book-step-datetime">
         <div class="book-cal">
-          <b>Выберите дату</b>
+          <div class="book-cal__head"><b>Выберите дату</b><span class="book-cal__month" id="cal-month"></span></div>
           <div class="book-cal__week" id="cal-weekdays"></div>
           <div class="book-cal__grid" id="cal-days"></div>
           <p class="book-cal__note">Время указано по Бангкоку (ICT, UTC+7).</p>
@@ -687,7 +697,7 @@ body{padding-bottom:76px}
           </label>
           <label class="field">
             <span>Email или мессенджер для связи</span>
-            <input type="text" name="contact" required placeholder="email, WhatsApp, LINE, VK">
+            <input type="text" name="contact" required placeholder="email, WhatsApp, Telegram, LINE">
           </label>
           <label class="field">
             <span>Коротко о бизнесе (необязательно)</span>
@@ -728,7 +738,7 @@ body{padding-bottom:76px}
           <form id="contact-form">
             <div class="field-row">
               <label class="field"><span>Имя</span><input type="text" name="name" required placeholder="Ваше имя"></label>
-              <label class="field"><span>Email или мессенджер</span><input type="text" name="contact" required placeholder="email, WhatsApp, LINE, VK"></label>
+              <label class="field"><span>Email или мессенджер</span><input type="text" name="contact" required placeholder="email, WhatsApp, Telegram, LINE"></label>
             </div>
             <div class="field-row">
               <label class="field"><span>Бизнес</span><input type="text" name="company" placeholder="Название бизнеса"></label>
@@ -862,6 +872,8 @@ body{padding-bottom:76px}
 
       var WD = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
       var MONTHS = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+      var MONTHS_NOM = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+      var monthLabel = document.getElementById('cal-month');
       WD.forEach(function(d){ var s=document.createElement('span'); s.textContent=d; weekdayEl.appendChild(s); });
 
       var today = new Date(); today.setHours(0,0,0,0);
@@ -870,6 +882,7 @@ body{padding-bottom:76px}
       function buildMonth(){
         daysEl.innerHTML = '';
         var y = today.getFullYear(), m = today.getMonth();
+        if(monthLabel) monthLabel.textContent = MONTHS_NOM[m] + ' ' + y;
         var first = new Date(y, m, 1);
         var startPad = first.getDay();
         var daysInMonth = new Date(y, m+1, 0).getDate();
@@ -1000,7 +1013,7 @@ body{padding-bottom:76px}
     var row = document.getElementById('statrow');
     if(row){
       var html = STATS.map(function(s){
-        return '<span class="chip-b chip-b--stat"><b>'+s[0]+'</b><span class="chip-b__txt">'+s[1]+'</span><span class="chip-b__src">'+s[2]+'</span></span>';
+        return '<span class="stat-item"><b>'+s[0]+'</b><span class="stat-item__txt"><span class="stat-item__d">'+s[1]+'</span><span class="stat-item__s">'+s[2]+'</span></span></span>';
       }).join('');
       row.innerHTML = html + html;
     }
