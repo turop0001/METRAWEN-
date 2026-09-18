@@ -70,6 +70,18 @@ button{font:inherit;color:inherit}
 .btn--lg{padding:19px 34px;font-size:1.0625rem}
 button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
 
+.btn--shine{position:relative;overflow:hidden}
+.btn--shine::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
+  background:linear-gradient(115deg,transparent 0%,rgba(255,255,255,.55) 50%,transparent 100%);
+  transform:skewX(-18deg);opacity:0;pointer-events:none}
+.btn--shine:hover::after{opacity:1;animation:btn-shine-sweep 1.1s var(--ease)}
+@keyframes btn-shine-sweep{from{left:-60%}to{left:130%}}
+@media(prefers-reduced-motion:reduce){.btn--shine::after{display:none}}
+
+.link-inline{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(var(--accent-rgb),.4);
+  text-underline-offset:3px;font-weight:600;transition:color .2s,text-decoration-color .2s}
+.link-inline:hover,.link-inline:focus-visible{color:var(--accent-hi);text-decoration-color:var(--accent-hi)}
+
 [hidden]{display:none!important}
 /* ===== booking modal ===== */
 .modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:24px}
@@ -288,8 +300,18 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .dir-head .lede{margin-top:16px;margin-inline:auto}
 
 /* ---------- packaging (digital services) — distinct track, not part of the automation grid ---------- */
-.pack{background:#131210}
-.pack__in{display:grid;gap:clamp(40px,5vw,72px);align-items:start}
+.pack{position:relative;isolation:isolate;background:#131210;overflow:hidden}
+.pack::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(48% 60% at 88% -6%,rgba(var(--accent-rgb),.16) 0%,transparent 62%),
+    radial-gradient(38% 46% at 6% 108%,rgba(var(--accent-rgb),.09) 0%,transparent 68%),
+    linear-gradient(155deg,rgba(var(--accent-rgb),.05) 0%,transparent 34%)}
+.pack::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(var(--accent-rgb),.05) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--accent-rgb),.05) 1px,transparent 1px);
+  background-size:64px 64px;
+  -webkit-mask-image:radial-gradient(70% 70% at 50% 30%,#000 0%,transparent 75%);
+  mask-image:radial-gradient(70% 70% at 50% 30%,#000 0%,transparent 75%)}
+.pack__in{position:relative;display:grid;gap:clamp(40px,5vw,72px);align-items:start}
 @media(min-width:920px){.pack__in{grid-template-columns:1.15fr .85fr}}
 .pack__text h2{max-width:16ch}
 .pack__text .lede{margin-top:20px}
@@ -428,7 +450,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       </div>
       <a href="#">Как мы работаем</a><a href="#">О компании</a>
     </nav>
-    <button class="btn btn--sm" data-open-modal="contact">Обсудить проект</button>
+    <button class="btn btn--sm btn--shine" data-open-modal="contact">Обсудить проект</button>
   </div>
 </header>
 
@@ -498,7 +520,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             </div>
             <div class="day__bar" id="day-bar">
               <div class="day__hours" aria-hidden="true">
-                <span data-h="09"></span><span data-h="11"></span><span data-h="13"></span><span data-h="15"></span><span data-h="17"></span><span data-h="19"></span>
+                <span data-h="09:00"></span><span data-h="11:00"></span><span data-h="13:00"></span><span data-h="15:00"></span><span data-h="17:00"></span><span data-h="19:00"></span>
               </div>
               <div class="day__fill"></div>
             </div>
@@ -641,7 +663,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 <section class="sec pack" id="s-pack" aria-labelledby="h-pack">
   <div class="wrap pack__in">
     <div class="pack__text">
-      <h2 class="h2 rv" id="h-pack">Система работает настолько хорошо, насколько хорошо выглядит бизнес вокруг неё</h2>
+      <h2 class="h2 rv" id="h-pack">Клиенты доверяют автоматизации ровно настолько, насколько доверяют вашему сайту</h2>
       <p class="lede rv">Сайт, логотип, оформление и контент — фундамент, без которого даже лучшая автоматизация не производит впечатления. Помогаем и с этим: приводим бизнес в порядок снаружи, прежде чем настраивать то, что работает внутри.</p>
       <a class="btn-quiet pack__cta rv" href="#" data-open-modal="contact">Обсудить упаковку бизнеса
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -726,7 +748,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           </label>
           <div style="display:flex;gap:12px;margin-top:6px">
             <button type="button" class="btn-quiet" id="booking-back">Назад к выбору времени</button>
-            <button type="submit" class="btn btn--lg" style="flex:1;justify-content:center">Подтвердить бронь</button>
+            <button type="submit" class="btn btn--lg btn--shine" style="flex:1;justify-content:center">Подтвердить бронь</button>
           </div>
         </form>
       </div>
@@ -754,7 +776,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         <div>
           <h3 id="contact-title" class="modal__h1">Давайте поговорим об автоматизации для вашего бизнеса</h3>
           <p class="modal__lede" style="max-width:none">Разберём ваши процессы и покажем, где именно автоматизация сэкономит время и снимет рутину с команды.</p>
-          <p class="modal__lede" style="max-width:none;margin-top:10px">Готовы обсудить сейчас? <a href="#" data-open-modal="booking" data-switch-modal="modal-contact" style="color:var(--accent)">Выберите удобное время</a> или заполните заявку — ответим в течение 30 минут.</p>
+          <p class="modal__lede" style="max-width:none;margin-top:10px">Готовы обсудить сейчас? <a href="#" data-open-modal="booking" data-switch-modal="modal-contact" class="link-inline">Выберите удобное время в календаре</a> — займёт 30 секунд — или заполните заявку ниже, ответим в течение 30 минут.</p>
 
           <form id="contact-form">
             <div class="field-row">
@@ -789,7 +811,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
               <input type="checkbox" name="consent" required>
               <span>Согласен(-на) на обработку персональных данных. Данные не передаются третьим лицам.</span>
             </label>
-            <button type="submit" class="btn btn--lg" style="width:100%;justify-content:center;margin-top:6px">Отправить заявку</button>
+            <button type="submit" class="btn btn--lg btn--shine" style="width:100%;justify-content:center;margin-top:6px">Отправить заявку</button>
           </form>
         </div>
 
