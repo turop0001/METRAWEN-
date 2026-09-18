@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>METRAWEN — Growth OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F3EE; --panel:#FFFFFF; --panel-2:#FBFAF7;
+  --ink:#1B1913; --ink-dim:#5B5648; --ink-faint:#8C876F;
+  --line:#E4DFD1; --line-2:#EFEBE0;
+  --accent:#96631F; --accent-bg:#F4E9D6; --accent-ink:#6B4713;
+  --green:#2F6B4B; --green-bg:#E3F0E7;
+  --red:#A23B2E; --red-bg:#FBEAE5;
+  --blue:#33587A; --blue-bg:#E7EEF4;
+  --radius:10px;
+  --font:'Inter',system-ui,sans-serif; --font-mono:'IBM Plex Mono',monospace;
+  --shadow:0 1px 2px rgba(27,25,19,.04), 0 4px 16px rgba(27,25,19,.04);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:700;letter-spacing:-.01em}
+p{margin:0}
+table{border-collapse:collapse;width:100%}
+button{font-family:inherit;cursor:pointer}
+code,.mono{font-family:var(--font-mono)}
+
+/* ===== layout shell ===== */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(245,243,238,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar__in{max-width:1360px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.05rem;letter-spacing:-.01em}
+.brand small{font-family:var(--font-mono);font-weight:500;font-size:.6875rem;letter-spacing:.08em;color:var(--ink-faint);text-transform:uppercase}
+.statuspill{margin-left:auto;display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:99px;background:var(--red-bg);color:var(--red);font-family:var(--font-mono);font-size:.75rem;font-weight:600;letter-spacing:.02em;border:1px solid rgba(162,59,46,.25)}
+.statuspill i{width:7px;height:7px;border-radius:50%;background:var(--red);flex:none}
+
+.tabs{max-width:1360px;margin:0 auto;padding:0 24px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;padding:12px 16px;border:none;background:none;color:var(--ink-dim);font-size:.875rem;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--accent-ink);border-color:var(--accent)}
+
+.wrap{max-width:1360px;margin:0 auto;padding:32px 24px 100px}
+.panel{display:none}
+.panel.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.pagehead{margin-bottom:28px}
+.pagehead .eyebrow{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink);font-weight:600}
+.pagehead h1{font-size:1.75rem;margin-top:8px}
+.pagehead p{margin-top:8px;color:var(--ink-dim);max-width:70ch;font-size:.9375rem}
+
+/* ===== primitives ===== */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:16px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-family:var(--font-mono);font-size:.6875rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.badge--locked{background:var(--ink);color:#fff}
+.badge--baseline{background:var(--accent-bg);color:var(--accent-ink);border:1px solid rgba(150,99,31,.25)}
+.badge--proposed{background:var(--blue-bg);color:var(--blue);border:1px dashed rgba(51,88,122,.4)}
+.badge--open{background:var(--red-bg);color:var(--red);border:1px solid rgba(162,59,46,.25)}
+
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+.kpi b{display:block;font-family:var(--font-mono);font-size:1.75rem;font-weight:600;color:var(--accent-ink)}
+.kpi span{display:block;margin-top:4px;font-size:.8125rem;color:var(--ink-dim)}
+.kpi small{display:block;margin-top:6px;font-family:var(--font-mono);font-size:.6875rem;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em}
+
+.dtable{width:100%;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;border-spacing:0}
+.dtable th{text-align:left;background:var(--panel-2);font-size:.6875rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:600;padding:10px 14px;border-bottom:1px solid var(--line)}
+.dtable td{padding:12px 14px;border-bottom:1px solid var(--line-2);font-size:.875rem;vertical-align:top;background:var(--panel)}
+.dtable tr:last-child td{border-bottom:none}
+.dtable tr:hover td{background:var(--panel-2)}
+
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:36px 0 14px}
+.section-title h2{font-size:1.125rem}
+.section-title .n{font-family:var(--font-mono);color:var(--ink-faint);font-size:.75rem}
+.section-title:first-child{margin-top:0}
+
+.callout{border-radius:var(--radius);padding:16px 18px;border:1px solid;font-size:.875rem;line-height:1.55}
+.callout--locked{background:#F2F1EC;border-color:var(--ink);color:var(--ink)}
+.callout--warn{background:var(--red-bg);border-color:rgba(162,59,46,.3);color:#7A2C22}
+.callout--info{background:var(--blue-bg);border-color:rgba(51,88,122,.3);color:#26445D}
+.callout b{font-weight:700}
+
+.chip{display:inline-flex;padding:5px 11px;border-radius:99px;background:var(--panel-2);border:1px solid var(--line);font-size:.8125rem;margin:0 6px 6px 0}
+
+/* subtabs (markets / channels / scripts) */
+.subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:0}
+.subtab{padding:9px 14px;border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;background:var(--panel-2);color:var(--ink-dim);font-size:.8438rem;font-weight:600;margin-bottom:-1px}
+.subtab.active{background:var(--panel);color:var(--ink);border-color:var(--line);position:relative}
+.subtab.active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:var(--panel)}
+.subpanel{display:none}
+.subpanel.active{display:block}
+
+/* copy blocks */
+.msg{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 44px 16px 16px;margin-bottom:12px}
+.msg h4{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent-ink);margin-bottom:8px;font-family:var(--font-mono);font-weight:600}
+.msg p{white-space:pre-wrap;font-size:.875rem;color:var(--ink)}
+.msg .copybtn{position:absolute;top:12px;right:12px;border:1px solid var(--line);background:var(--panel-2);border-radius:6px;padding:5px 8px;font-size:.6875rem;color:var(--ink-dim);font-family:var(--font-mono)}
+.msg .copybtn:hover{background:var(--accent-bg);color:var(--accent-ink);border-color:var(--accent)}
+.msg .copybtn.copied{background:var(--green-bg);color:var(--green);border-color:var(--green)}
+
+.stepper{display:flex;flex-wrap:wrap;gap:0;counter-reset:step}
+.step{flex:1 1 140px;position:relative;padding:14px 14px 14px 0;border-bottom:2px solid var(--line)}
+.step b{display:block;font-family:var(--font-mono);font-size:.6875rem;color:var(--accent-ink);margin-bottom:4px}
+.step span{display:block;font-size:.8125rem;color:var(--ink-dim);line-height:1.4}
+.step.human{border-color:var(--red)}
+.step.auto{border-color:var(--green)}
+.step .tag{display:inline-block;margin-top:6px;font-family:var(--font-mono);font-size:.625rem;text-transform:uppercase;padding:2px 6px;border-radius:4px}
+.step.human .tag{background:var(--red-bg);color:var(--red)}
+.step.auto .tag{background:var(--green-bg);color:var(--green)}
+
+.filterbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.filterbtn{padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--panel);font-size:.8125rem;color:var(--ink-dim);font-weight:600}
+.filterbtn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.foot{max-width:1360px;margin:0 auto;padding:24px;border-top:1px solid var(--line);font-family:var(--font-mono);font-size:.75rem;color:var(--ink-faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+@media(max-width:720px){
+  .wrap{padding:24px 16px 80px}
+  .pagehead h1{font-size:1.375rem}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar__in">
+    <div class="brand">METRAWEN <small>Growth OS · draft</small></div>
+    <div class="statuspill"><i></i> Prospecting machine: не запущена</div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="strategy">1. Стратегия</button>
+    <button class="tab" data-tab="markets">2. Рынки</button>
+    <button class="tab" data-tab="icp">3. ICP и сегменты</button>
+    <button class="tab" data-tab="offers">4. Офферы</button>
+    <button class="tab" data-tab="machine">5. Машина поиска</button>
+    <button class="tab" data-tab="channels">6. Каналы</button>
+    <button class="tab" data-tab="scripts">7. Тексты и скрипты</button>
+    <button class="tab" data-tab="limits">8. Лимиты</button>
+    <button class="tab" data-tab="funnel">9. Воронка и CRM</button>
+    <button class="tab" data-tab="kpi">10. KPI 30/60/90</button>
+    <button class="tab" data-tab="ai">11. AI-автоматизация</button>
+    <button class="tab" data-tab="os">12. METRAWEN OS</button>
+  </nav>
+</div>
+
+<div class="wrap" id="panels">
+<div class="panel active" id="panel-strategy">
+  <div class="pagehead">
+    <p class="eyebrow">Раздел 1</p>
+    <h1>Стратегия</h1>
+    <p>Основа — METRAWEN_RESTRATEGY_2026, MASTER_STRATEGIC_PLAN, PRE_IMPLEMENTATION_DECISION_LIST. Здесь только зафиксированные и рабочие решения; ничего не придумано заново.</p>
+  </div>
+
+  <div class="callout callout--locked" style="margin-bottom:24px">
+    <b>Легенда статусов, используется во всём дашборде:</b><br>
+    <span class="badge badge--locked" style="margin-top:8px">LOCKED</span> зафиксировано, не пересматривать без нового явного решения ·
+    <span class="badge badge--baseline">WORKING BASELINE</span> план для работы, корректируется по фактам ·
+    <span class="badge badge--proposed">PROPOSED</span> рекомендация из документов, ждёт вашего утверждения ·
+    <span class="badge badge--open">OPEN</span> решение ещё не принято
+  </div>
+
+  <div class="section-title"><h2>Позиционирование и видение компании</h2><span class="n">WORKING BASELINE</span></div>
+  <div class="callout callout--info" style="margin-bottom:20px">
+    <b>Одним предложением:</b> METRAWEN строит бизнесу управляемые AI-системы, которые берут на себя повторяющуюся ручную работу — приём и обработку обращений, квалификацию, бронирование, ответы на типовые вопросы, отчётность — и делают это под контролем человека, с фиксированной ценой, сроком и измеримым результатом каждый месяц.
+  </div>
+  <div class="grid grid-3">
+    <div class="card">
+      <b>Что мы предлагаем</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim);line-height:1.7">Не «AI-инструмент» и не консультации об AI, а готовую работающую систему под конкретный процесс: от разовой AI Task (одна задача) до AI Employee (весь процесс от начала до конца в одном канале) и AI System (несколько связанных процессов вместе). Клиент покупает результат и снятую с команды рутину, а не подписку на софт и не абстрактную «трансформацию».</p>
+    </div>
+    <div class="card">
+      <b>Какие вопросы/проблемы решаем</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim);line-height:1.7">Обращения клиентов теряются в нерабочее время и разбросаны по 3+ каналам; одни и те же квалифицирующие вопросы и бронирования делаются вручную; еженедельные отчёты собираются руками из уже существующих данных; follow-up зависит от того, вспомнит ли о нём сотрудник, а не от расписания. METRAWEN закрывает именно этот разрыв между «данные и процессы уже есть» и «на них никто не успевает системно реагировать».</p>
+    </div>
+    <div class="card">
+      <b>Зачем мы нужны бизнесу</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim);line-height:1.7">Малый и средний бизнес физически не может нанять отдельного человека под каждый из этих процессов, а готовые no-code инструменты (n8n/Make/Zapier) требуют, чтобы кто-то внутри умел их настраивать и поддерживать. METRAWEN — команда с одной точкой ответственности за всю систему целиком: настраивает, запускает, показывает результат в отчёте и остаётся на связи, а не продаёт лицензию и уходит.</p>
+    </div>
+  </div>
+  <div class="callout callout--warn" style="margin-top:14px">
+    <b>Чем осознанно не являемся:</b> не «универсальный AI-консалтинг» без конкретного продукта; не конкурируем на фиче с бесплатным DIY (n8n/Make/Zapier) — конкурируем контролем, отчётностью, фиксированной ценой/сроком и единой ответственностью; не обещаем замену целой команды или отдела (см. «AI Team/Department» ниже — сознательно не используется).
+  </div>
+
+  <div class="section-title"><h2>Бренд и позиционирование</h2><span class="n">LOCKED</span></div>
+  <div class="grid grid-2">
+    <div class="card">
+      <b>Мастер-бренд</b>
+      <p style="margin-top:8px;font-size:1.375rem;font-weight:800">METRAWEN</p>
+      <p style="margin-top:6px;color:var(--ink-dim);font-size:.875rem">VERSTAK — прежнее имя, используется только как историческая подложка (код, легаси-контент, Digital Services). Никогда не публично.</p>
+    </div>
+    <div class="card">
+      <b>Дескриптор</b>
+      <p style="margin-top:8px;font-size:1.125rem;font-weight:700">«Business Systems. Built with AI.»</p>
+      <p style="margin-top:6px;color:var(--ink-dim);font-size:.875rem">AI — метод, названный в предложении, никогда не заголовочное существительное. «Business Systems» — то, что покупает клиент.</p>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>Коммерческая иерархия</h2><span class="n">WORKING BASELINE</span></div>
+  <div class="card">
+    <div class="stepper">
+      <div class="step"><b>METRAWEN</b><span>Business Systems — общий бренд</span></div>
+      <div class="step"><b>→ AI Systems</b><span>стратегический флагман, ведущий нарратив, амбиция</span></div>
+      <div class="step"><b>→ Digital Services</b><span>текущая выручка, низкий порог входа, мост к AI Systems</span></div>
+    </div>
+    <p style="margin-top:14px;font-size:.875rem;color:var(--ink-dim)">METRAWEN не позиционируется как «только AI». Digital Services — не легаси на списание, а постоянно видимая часть предложения.</p>
+  </div>
+
+  <div class="section-title"><h2>Продуктовая лестница</h2><span class="n">WORKING BASELINE</span></div>
+  <div class="card">
+    <div class="stepper">
+      <div class="step"><b>AI Task</b><span>один процесс, узкая задача</span></div>
+      <div class="step"><b>→ AI Employee</b><span>полный процесс end-to-end в одном канале / одной функции</span></div>
+      <div class="step"><b>→ AI System</b><span>несколько связанных процессов как одна система</span></div>
+    </div>
+    <p style="margin-top:14px;font-size:.875rem;color:var(--ink-dim)">«AI Team» / «AI Department» не используются публично — ни одна команда 1–3 человека не может достоверно обещать такой масштаб без поставленных систем. Вернуться к вопросу после реальной multi-function системы.</p>
+  </div>
+
+  <div class="section-title"><h2>Карта позиционирования</h2><span class="n">анализ рынка</span></div>
+  <div class="card">
+    <table class="dtable">
+      <tr><th></th><th>DIY</th><th>Managed</th></tr>
+      <tr><td><b>Дёшево</b></td><td>n8n, Make, Zapier — реальный заменитель, против которого нужно обосновывать цену, а не фичи</td><td>ThAI Solutions (Таиланд), AI Consulting/Marketing Bali (Индонезия) — реальные локальные игроки без доказанного human-in-the-loop и отчётности</td></tr>
+      <tr><td><b>Дорого / стратегично</b></td><td>Редко — внутренние команды на Relevance AI / Lindy</td><td>Sierra, Decagon, SuperDupr, Thoughtful Automation — enterprise-уровень, не ближняя референсная группа</td></tr>
+    </table>
+    <div class="callout callout--info" style="margin-top:14px"><b>Целевая ниша METRAWEN:</b> пустое пространство между «Дёшево + Managed» и «Дорого + Managed» — дороже и масштабнее ThAI Solutions / AI Consulting Bali, но далеко не уровень Sierra / SuperDupr.</div>
+  </div>
+
+  <div class="section-title"><h2>Дифференциаторы (evidence-based)</h2><span class="n">не встречены у локальных конкурентов</span></div>
+  <div class="grid grid-4">
+    <div class="card"><b>1. Human-in-the-loop</b><p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Контроль человека показан явно, а не спрятан</p></div>
+    <div class="card"><b>2. Измеримый отчёт</b><p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Ежемесячный отчёт о результате — стандартная поставка, не опция</p></div>
+    <div class="card"><b>3. Фикс. цена и срок</b><p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Фиксированная цена и дедлайн со штрафом за просрочку</p></div>
+    <div class="card"><b>4. Одна ответственность</b><p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Одна команда отвечает за всю систему, не бандл разрозненных инструментов</p></div>
+  </div>
+
+  <div class="section-title"><h2>Гардрейлы копирайта и коммуникации</h2><span class="n">LOCKED</span></div>
+  <div class="callout callout--warn">
+    Никогда: выдуманные кейсы / клиенты / тестимониалы / цифры ROI · em-dash в текстах METRAWEN · AI-клише (revolutionary, next-gen, seamless, game-changing) · неподтверждённые заявления (10x, uptime/SLA, «никогда не болеет») · публикация внутренних ценовых диапазонов · название Audit тиром AI Employee/AI System · тайский или бахаса в глобальном языковом переключателе сайта · обещание канала контакта, который реально не может быть доставлен · 3D/WebGL на конверсионных страницах.
+  </div>
+
+  <div class="section-title"><h2>Прочие зафиксированные решения</h2><span class="n">LOCKED</span></div>
+  <div class="grid grid-2">
+    <div class="card"><b>Домен</b><p style="margin-top:6px;font-size:.875rem;color:var(--ink-dim)">metrawen.com — канонический. «.ai» отклонён как первичный (AI — механизм, не категория бренда). Пока не зарегистрирован.</p></div>
+    <div class="card"><b>Визуальная идентичность</b> <span class="badge badge--baseline" style="margin-left:6px">обновлено</span><p style="margin-top:6px;font-size:.875rem;color:var(--ink-dim)">Базовая палитра и шрифты Ledger (графит/айвори + один акцент, Inter + IBM Plex Mono) сохранены, но статичная editorial-версия («только hairline borders, без анимации») больше не актуальна — на прототипе главной страницы утверждена более живая интерактивная версия: full-bleed canvas-анимация в hero, реакция на курсор и клик, кнопки-пилюли со скруглением вместо острых углов, модальные окна с закруглёнными углами, карусель-марки. Неон, glassmorphism и generic AI-роботы по-прежнему исключены, 3D/WebGL не используется (canvas — 2D). METRAWEN_VISUAL_IDENTITY_SPEC.md по мере окончательного утверждения этой версии нужно обновить, чтобы он не противоречил прототипу.</p></div>
+    <div class="card"><b>Языки сайта</b><p style="margin-top:6px;font-size:.875rem;color:var(--ink-dim)">Запуск EN + RU (English primary). IA hreflang-ready для будущих TH/ID страниц без переструктуризации.</p></div>
+    <div class="card"><b>Proof-политика</b><p style="margin-top:6px;font-size:.875rem;color:var(--ink-dim)">Никогда не выдумывать кейсы, тестимониалы, метрики, клиентов, возможности поставки — постоянная политика.</p></div>
+  </div>
+</div>
+<div class="panel" id="panel-markets">
+  <div class="pagehead">
+    <p class="eyebrow">Раздел 2</p>
+    <h1>Рынки</h1>
+    <p>Порядок приоритета — Таиланд → Индонезия → Россия и СНГ → International — зафиксирован (WORKING BASELINE, MARKET_AND_LANGUAGE_STRATEGY).</p>
+  </div>
+
+  <div class="subtabs" id="mk-tabs">
+    <button class="subtab active" data-sub="th" onclick="selectSub('mk-tabs','th')">🇹🇭 Таиланд · приоритет 1</button>
+    <button class="subtab" data-sub="id" onclick="selectSub('mk-tabs','id')">🇮🇩 Индонезия · приоритет 2</button>
+    <button class="subtab" data-sub="ru" onclick="selectSub('mk-tabs','ru')">🇷🇺 Россия и СНГ · приоритет 3</button>
+    <button class="subtab" data-sub="intl" onclick="selectSub('mk-tabs','intl')">🌐 International · приоритет 4</button>
+  </div>
+
+  <div id="mk-tabs-panels">
+  <!-- THAILAND -->
+  <div class="subpanel active" data-sub="th">
+    <div class="grid grid-4" style="margin-bottom:20px">
+      <div class="kpi"><b>61%</b><span>тайских организаций внедряют AI (Deloitte, авг. 2026, enterprise-level)</span></div>
+      <div class="kpi"><b>19%</b><span>довели внедрение до масштаба, 81% застряли в pilot</span></div>
+      <div class="kpi"><b>71%</b><span>топ-барьер — нехватка talent/skills, не бюджет</span></div>
+      <div class="kpi"><b>~55М</b><span>MAU LINE в Таиланде — основной канал</span></div>
+    </div>
+
+    <div class="callout callout--warn" style="margin-bottom:20px"><b>Прямой конкурент уже на рынке:</b> ThAI Solutions (Паттайя/Чонбури) — «Smart Revenue Systems», LINE-чат/бронирование/отзывы для отелей, ресторанов, дентал-клиник, аренды авто, недвижимости. Заявленные результаты (+38% прямых бронирований, −23% no-show) не проверены независимо. METRAWEN не первый игрок — только исполнение, доверие и human-in-the-loop.</div>
+
+    <div class="section-title"><h2>Целевые бизнесы и ICP</h2></div>
+    <table class="dtable" style="margin-bottom:20px">
+      <tr><th>Сегмент</th><th>AI-fit</th><th>Комментарий</th></tr>
+      <tr><td>Отели / резорты / виллы</td><td><span class="badge badge--baseline">высокий</span></td><td>Приоритетный ICP первой поставки — перегрузка бронирований по LINE/телефону/walk-in</td></tr>
+      <tr><td>Клиники, стоматологии, бьюти/spa</td><td><span class="badge badge--baseline">высокий</span></td><td>Записи, напоминания, no-show — те же паттерны, что у ThAI Solutions в дентал</td></tr>
+      <tr><td>Рестораны</td><td><span class="badge badge--proposed">contested</span></td><td>ThAI Solutions уже там — нужна более острая дифференциация (отчётность, human-in-the-loop)</td></tr>
+      <tr><td>Недвижимость, аренда авто, визовые агентства</td><td><span class="badge badge--proposed">contested</span></td><td>Тот же конкурент присутствует — второй волной</td></tr>
+    </table>
+    <p style="font-size:.875rem;color:var(--ink-dim);margin-bottom:20px"><b>Первый ICP для первой AI-системы (PROPOSED, не утверждено окончательно): Thailand hospitality / beauty / clinics.</b></p>
+
+    <div class="section-title"><h2>Источники поиска — где и как искать</h2></div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="stepper">
+        <div class="step"><b>1. Google Maps / Google Search</b><span>категория бизнеса, публичный сайт, отзывы — только просмотр, никакого bulk-экспорта (запрещено ToS)</span></div>
+        <div class="step"><b>2. Публичный сайт проспекта</b><span>оценка booking/contact flow, наличие/отсутствие LINE-кнопки</span></div>
+        <div class="step"><b>3. Google Business Profile</b><span>публично видимые контакты, часы работы, отзывы</span></div>
+        <div class="step"><b>4. CRM</b><span>только публично опубликованные контакты попадают в базу</span></div>
+      </div>
+    </div>
+
+    <div class="section-title"><h2>Qualification и данные для сбора</h2></div>
+    <div class="grid grid-2" style="margin-bottom:20px">
+      <div class="card"><b>Qualification-критерии</b><ul style="margin:10px 0 0 18px;padding:0;font-size:.875rem;color:var(--ink-dim);line-height:1.7">
+        <li>Бронирования идут через LINE/телефон/walk-in, не через готовую систему</li>
+        <li>Публично видимый booking flow с трением (нет мгновенного ответа, ручной подтверждение)</li>
+        <li>Размер: от 5 до 100+ номеров/кресел/столов — не микро-бизнес на 1 человека</li>
+        <li>Есть публичный сайт или активный Google Business Profile</li>
+      </ul></div>
+      <div class="card"><b>Данные для сбора в CRM</b><ul style="margin:10px 0 0 18px;padding:0;font-size:.875rem;color:var(--ink-dim);line-height:1.7">
+        <li>Название, категория, локация, размер (номера/столы/кресла)</li>
+        <li>Текущий канал приёма заявок (LINE/телефон/сайт-форма)</li>
+        <li>Конкретное публичное наблюдение для персонализации</li>
+        <li>ЛПР (владелец/менеджер), контакт из публичного источника</li>
+      </ul></div>
+    </div>
+
+    <div class="section-title"><h2>Последовательность касаний</h2></div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="stepper">
+        <div class="step"><b>День 0</b><span>Первое сообщение в LINE или email — одно конкретное наблюдение</span></div>
+        <div class="step"><b>День 3</b><span>Follow-up 1 — короче, другой угол (конкретная выгода)</span></div>
+        <div class="step"><b>День 7</b><span>Follow-up 2 — кейс-паттерн категории (без выдуманных цифр)</span></div>
+        <div class="step"><b>День 14</b><span>Follow-up 3 — мягкое закрытие, дверь остаётся открытой</span></div>
+      </div>
+    </div>
+
+    <div class="section-title"><h2>Возражения → CTA → стратсессия</h2></div>
+    <p style="font-size:.875rem;color:var(--ink-dim);margin-bottom:12px">Готовые тексты — в разделе <b>7. Тексты и скрипты → Таиланд</b>. CTA верхнего уровня: <span class="chip">Find My Bottleneck</span> → после интереса: <span class="chip">Start the Audit — $900</span> → переход к бесплатной стратегической сессии как первый реальный шаг перед платным Audit.</p>
+
+    <div class="section-title"><h2>KPI и объёмы</h2></div>
+    <div class="grid grid-4">
+      <div class="kpi"><b>40</b><span>проспектов Таиланда в первых 100 (наибольшая доля)</span><small>первые 30 дней</small></div>
+      <div class="kpi"><b>8–10/нед</b><span>новых персонализированных контактов вручную</span><small>объём вручную, соло</small></div>
+      <div class="kpi"><b>2–3/нед</b><span>ответов при 20–30% reply rate на персонализацию</span><small>ориентир, не гарантия</small></div>
+      <div class="kpi"><b>1</b><span>реальный поставленный AI Employee — цель 90 дней</span><small>критический путь</small></div>
+    </div>
+  </div>
+
+  <!-- INDONESIA -->
+  <div class="subpanel" data-sub="id">
+    <div class="grid grid-4" style="margin-bottom:20px">
+      <div class="kpi"><b>27/100</b><span>AI-зрелость Индонезии (Pertama Partners SEA Index) — «Early Experimentation»</span></div>
+      <div class="kpi"><b>26%</b><span>внедрили AI-инструменты вообще</span></div>
+      <div class="kpi"><b>84%</b><span>топ-барьер — инфраструктура, не talent</span></div>
+      <div class="kpi"><b>+127%</b><span>YoY рост AI-application revenue — наивысший в SEA</span></div>
+    </div>
+
+    <div class="callout callout--warn" style="margin-bottom:20px"><b>Прямой конкурент:</b> AI Consulting Bali / AI Marketing Bali — та же ICP (виллы, бутик-отели, F&B, wellness), та же география (Canggu/Seminyak/Ubud/Sanur/Jimbaran). Цены и кейсы не найдены в открытых источниках.</div>
+
+    <div class="callout callout--info" style="margin-bottom:20px"><b>Критичное compliance-ограничение WhatsApp:</b> с 15 января 2026 Meta запрещает general-purpose AI-чатботы на WhatsApp Business API для новых регистрантов (действует с 15 окт. 2025). Структурированный/task-oriented AI (модель AI Employee METRAWEN) остаётся разрешён при условии pre-approved шаблонов, 24-часовых session windows, явного opt-in и human-fallback пути.</div>
+
+    <div class="section-title"><h2>Целевые бизнесы и ICP</h2></div>
+    <table class="dtable" style="margin-bottom:20px">
+      <tr><th>Сегмент</th><th>AI-fit</th><th>Комментарий</th></tr>
+      <tr><td>Виллы и бутик-отели (Бали)</td><td><span class="badge badge--baseline">высокий</span></td><td>Foreign-owned / tourism-adjacent — работает на английском</td></tr>
+      <tr><td>Wellness / spa / йога-студии</td><td><span class="badge badge--baseline">высокий</span></td><td>Та же география, та же ICP, что у AI Consulting Bali</td></tr>
+      <tr><td>F&B (кафе, рестораны для туристов)</td><td><span class="badge badge--proposed">средний</span></td><td>Contested конкурентом, нужна дифференциация</td></tr>
+    </table>
+
+    <div class="section-title"><h2>Источники поиска — где и как искать</h2></div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="stepper">
+        <div class="step"><b>1. Google Maps / GBP</b><span>~40%+ адопция среди индонезийских UMKM — discovery-only, без bulk-экспорта</span></div>
+        <div class="step"><b>2. Instagram</b><span>SME-витрины активно используются под визуальные бизнесы (villas, wellness) — SEA-wide паттерн</span></div>
+        <div class="step"><b>3. Публичный сайт / linktree</b><span>оценка booking flow и наличия WhatsApp-кнопки</span></div>
+        <div class="step"><b>4. CRM</b><span>только публично опубликованные контакты</span></div>
+      </div>
+    </div>
+
+    <div class="section-title"><h2>Qualification и данные для сбора</h2></div>
+    <div class="grid grid-2" style="margin-bottom:20px">
+      <div class="card"><b>Qualification-критерии</b><ul style="margin:10px 0 0 18px;padding:0;font-size:.875rem;color:var(--ink-dim);line-height:1.7">
+        <li>Foreign-owned или явно tourism-facing (сайт/Instagram на английском)</li>
+        <li>Приём заявок через WhatsApp/Instagram DM вручную</li>
+        <li>Достаточный объём: от 5+ комнат/мест, не соло-практика</li>
+      </ul></div>
+      <div class="card"><b>Данные для сбора в CRM</b><ul style="margin:10px 0 0 18px;padding:0;font-size:.875rem;color:var(--ink-dim);line-height:1.7">
+        <li>Название, район (Canggu/Seminyak/Ubud/Sanur/Jimbaran), тип</li>
+        <li>Текущий канал приёма (WhatsApp/Instagram/сайт)</li>
+        <li>Владелец/менеджер, язык коммуникации</li>
+      </ul></div>
+    </div>
+
+    <div class="section-title"><h2>Последовательность касаний</h2></div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="stepper">
+        <div class="step"><b>День 0</b><span>Первое сообщение — WhatsApp или Instagram DM, конкретное наблюдение</span></div>
+        <div class="step"><b>День 3</b><span>Follow-up 1 — короче, другой угол</span></div>
+        <div class="step"><b>День 7</b><span>Follow-up 2 — паттерн категории</span></div>
+        <div class="step"><b>День 14</b><span>Follow-up 3 — мягкое закрытие</span></div>
+      </div>
+    </div>
+
+    <div class="section-title"><h2>KPI и объёмы</h2></div>
+    <div class="grid grid-4">
+      <div class="kpi"><b>25</b><span>проспектов Индонезии в первых 100</span><small>первые 30 дней</small></div>
+      <div class="kpi"><b>5–7/нед</b><span>новых персонализированных контактов</span><small>полностью холодный старт</small></div>
+      <div class="kpi"><b>приоритет 2</b><span>ниже AI-зрелость, инфраструктурный барьер вне контроля METRAWEN</span></div>
+      <div class="kpi"><b>0</b><span>реальных сделок закрыто на сегодня — честная база</span></div>
+    </div>
+  </div>
+
+  <!-- RUSSIA -->
+  <div class="subpanel" data-sub="ru">
+    <div class="callout callout--warn" style="margin-bottom:20px"><b>Критичный риск, факт, не выбор стратегии:</b> Telegram активно throttled российским государством с 10 февраля 2026; к 10 апреля 2026 ≈95% соединений отказывают без VPN (CNN, OSW, Carnegie). ~65М пользователей формально ещё используют через VPN — деградированный, не мёртвый канал. Все старые тексты outreach, где Telegram — основной канал, устарели.</div>
+
+    <div class="callout callout--locked" style="margin-bottom:20px"><b>Роль рынка:</b> НЕ первичный рынок роста AI Systems. Единственный рынок с работающей сегодня финансовой моделью (Digital Services). AI здесь — upsell существующей тёплой базе, не холодный outreach.</div>
+
+    <div class="section-title"><h2>Целевые бизнесы и ICP</h2></div>
+    <table class="dtable" style="margin-bottom:20px">
+      <tr><th>Сегмент</th><th>Приоритет</th><th>Комментарий</th></tr>
+      <tr><td>Мелкие онлайн-продавцы / маркетплейс-вендоры</td><td><span class="badge badge--baseline">высокий</span></td><td>Нет видимости цен конкурентов — AI Research Task как upsell</td></tr>
+      <tr><td>Локальный офлайн-бизнес (существующая база)</td><td><span class="badge badge--baseline">средний</span></td><td>Ручная обработка лидов, пробелы в ночь/выходные</td></tr>
+    </table>
+
+    <div class="section-title"><h2>Источники поиска — где и как искать</h2></div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="stepper">
+        <div class="step"><b>1. Существующая база VERSTAK</b><span>клиенты Digital Services — тёплый upsell, приоритет №1</span></div>
+        <div class="step"><b>2. Yandex Organization Search</b><span>13М+ организаций — платный лицензированный продукт, использовать только через API/публичный UI, discovery-only</span></div>
+        <div class="step"><b>3. Yandex Maps / Business</b><span>публичные карточки, часы, отзывы</span></div>
+        <div class="step"><b>4. CRM</b><span>только публично опубликованные контакты</span></div>
+      </div>
+    </div>
+
+    <div class="section-title"><h2>Qualification и данные для сбора</h2></div>
+    <div class="grid grid-2" style="margin-bottom:20px">
+      <div class="card"><b>Qualification-критерии</b><ul style="margin:10px 0 0 18px;padding:0;font-size:.875rem;color:var(--ink-dim);line-height:1.7">
+        <li>Уже клиент Digital Services ИЛИ активный онлайн-продавец с публичным каталогом</li>
+        <li>Ручной ответ на типовые вопросы (цена/наличие/сроки)</li>
+        <li>Готовность к оплате в валюте, доступной без осложнений (открытый вопрос по cross-border)</li>
+      </ul></div>
+      <div class="card"><b>Данные для сбора в CRM</b><ul style="margin:10px 0 0 18px;padding:0;font-size:.875rem;color:var(--ink-dim);line-height:1.7">
+        <li>История проекта (если существующий клиент), удовлетворённость</li>
+        <li>Текущий канал приёма заявок (VK/сайт/маркетплейс)</li>
+        <li>Контакт: VK, телефон, email — не Telegram как основной</li>
+      </ul></div>
+    </div>
+
+    <div class="section-title"><h2>Последовательность касаний</h2></div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="stepper">
+        <div class="step"><b>День 0</b><span>VK-сообщение или email существующему клиенту — апсейл-предложение</span></div>
+        <div class="step"><b>День 4</b><span>Follow-up 1 — конкретная выгода для его процесса</span></div>
+        <div class="step"><b>День 9</b><span>Follow-up 2 — звонок как альтернатива переписке</span></div>
+        <div class="step"><b>День 16</b><span>Follow-up 3 — мягкое закрытие</span></div>
+      </div>
+    </div>
+
+    <div class="section-title"><h2>KPI и объёмы</h2></div>
+    <div class="grid grid-4">
+      <div class="kpi"><b>20</b><span>проспектов России/СНГ в первых 100</span><small>upsell, не холодный outreach</small></div>
+      <div class="kpi"><b>0</b><span>новых холодных кампаний в первые 30 дней</span><small>только тёплая база</small></div>
+      <div class="kpi"><b>VK</b><span>основной новый канал вместо Telegram</span></div>
+      <div class="kpi"><b>OPEN</b><span>cross-border приём оплаты в USD — не исследовано</span></div>
+    </div>
+  </div>
+
+  <!-- INTERNATIONAL -->
+  <div class="subpanel" data-sub="intl">
+    <div class="callout callout--locked" style="margin-bottom:20px"><b>Роль рынка:</b> нишевая white-label / subcontractor поставка для мелких EN-агентств ($600–1,500/мес рекуррентно), НЕ широкий выход против funded-инкумбентов (Sierra, Decagon, SuperDupr). Позиционирование: «мы строим white-label AI-возможность для вашего агентства», не «мы международная AI-компания».</div>
+
+    <div class="section-title"><h2>Целевые бизнесы и ICP</h2></div>
+    <table class="dtable" style="margin-bottom:20px">
+      <tr><th>Сегмент</th><th>Канал</th><th>Комментарий</th></tr>
+      <tr><td>Мелкие EN-агентства (1–10 человек)</td><td>LinkedIn</td><td>Ищут надёжного implementation-партнёра для перепродажи AI под своим брендом</td></tr>
+      <tr><td>Соло-предприниматели/коучи (EN)</td><td>Upwork/Fiverr</td><td>Нужна страница + всегда-онлайн ответ — вторичный, proof-generation сегмент</td></tr>
+    </table>
+
+    <div class="section-title"><h2>Источники поиска — где и как искать</h2></div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="stepper">
+        <div class="step"><b>1. LinkedIn Sales Navigator / поиск</b><span>агентства marketing/automation с 1–10 сотрудниками, публичный профиль основателя</span></div>
+        <div class="step"><b>2. Upwork</b><span>вторичный — proof-generation, не первичный revenue-канал для $10K+ сделок</span></div>
+        <div class="step"><b>3. Публичный сайт агентства</b><span>оценка текущего стека и предложений клиентам</span></div>
+      </div>
+    </div>
+
+    <div class="section-title"><h2>Qualification и данные для сбора</h2></div>
+    <div class="grid grid-2" style="margin-bottom:20px">
+      <div class="card"><b>Qualification-критерии</b><ul style="margin:10px 0 0 18px;padding:0;font-size:.875rem;color:var(--ink-dim);line-height:1.7">
+        <li>Агентство уже продаёт digital/marketing-услуги, но не строит AI-системы сама</li>
+        <li>Публичный сайт/LinkedIn с активными клиентскими кейсами</li>
+      </ul></div>
+      <div class="card"><b>Данные для сбора в CRM</b><ul style="margin:10px 0 0 18px;padding:0;font-size:.875rem;color:var(--ink-dim);line-height:1.7">
+        <li>Размер команды, ниша агентства, текущий стек</li>
+        <li>Контакт основателя/партнёра из публичного профиля</li>
+      </ul></div>
+    </div>
+
+    <div class="section-title"><h2>Последовательность касаний</h2></div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="stepper">
+        <div class="step"><b>День 0</b><span>LinkedIn-сообщение после коннекта — конкретное наблюдение об их клиентской нише</span></div>
+        <div class="step"><b>День 4</b><span>Follow-up 1</span></div>
+        <div class="step"><b>День 10</b><span>Follow-up 2</span></div>
+        <div class="step"><b>День 18</b><span>Follow-up 3 — мягкое закрытие</span></div>
+      </div>
+    </div>
+
+    <div class="section-title"><h2>KPI и объёмы</h2></div>
+    <div class="grid grid-4">
+      <div class="kpi"><b>15</b><span>проспектов International в первых 100</span></div>
+      <div class="kpi"><b>3–5/нед</b><span>LinkedIn-коннектов с персонализированной запиской</span></div>
+      <div class="kpi"><b>вторичный</b><span>Upwork — только proof-generation, не основной канал</span></div>
+    </div>
+  </div>
+  </div>
+</div>
+<div class="panel" id="panel-icp">
+  <div class="pagehead">
+    <p class="eyebrow">Раздел 3</p>
+    <h1>ICP и сегменты</h1>
+    <p>Канонический рейтинг из Master Strategic Plan §10. Фильтруйте по рынку.</p>
+  </div>
+
+  <div class="filterbar" id="icp-filters">
+    <button class="filterbtn active" data-f="all">Все рынки</button>
+    <button class="filterbtn" data-f="th">Таиланд</button>
+    <button class="filterbtn" data-f="id">Индонезия</button>
+    <button class="filterbtn" data-f="ru">Россия/СНГ</button>
+    <button class="filterbtn" data-f="intl">International</button>
+  </div>
+
+  <table class="dtable" id="icp-table">
+    <tr><th>#</th><th>Сегмент</th><th>Рынок</th><th>Боль</th><th>Платёжеспособность</th><th>AI-возможность</th><th>Продукт</th><th>Канал</th><th>ЛПР</th><th>Приоритет</th></tr>
+    <tr data-m="th"><td>1</td><td>Hospitality / beauty / clinics</td><td>Таиланд</td><td>Перегрузка бронирований (LINE/телефон/walk-in)</td><td>Core–Pro</td><td>High</td><td>AI Reservation Employee</td><td>LINE OA / Google Maps</td><td>Владелец/менеджер</td><td><b>1</b></td></tr>
+    <tr data-m="ru"><td>2</td><td>Мелкий онлайн-продавец / маркетплейс</td><td>Россия, глобально</td><td>Нет видимости цен конкурентов</td><td>Core–Pro</td><td>High</td><td>AI Research Task→Employee</td><td>Существующая тёплая база</td><td>Владелец</td><td><b>2</b></td></tr>
+    <tr data-m="intl"><td>3</td><td>Мелкое агентство (subcontractor)</td><td>International (EN)</td><td>Нужен надёжный AI-implementation партнёр для перепродажи</td><td>Pro–Custom</td><td>Medium</td><td>White-label AI Employee</td><td>LinkedIn / Upwork</td><td>Владелец агентства</td><td><b>2</b></td></tr>
+    <tr data-m="ru"><td>4</td><td>Локальный офлайн-бизнес</td><td>Россия</td><td>Ручная обработка лидов, ночные/выходные пробелы</td><td>Core</td><td>High</td><td>AI Employee (booking/support)</td><td>VK / referral</td><td>Владелец</td><td><b>3</b></td></tr>
+    <tr data-m="intl"><td>5</td><td>Соло-предприниматель/коуч</td><td>International (EN)</td><td>Нужна страница + всегда-онлайн ответ</td><td>Entry–Core</td><td>Medium</td><td>AI Task (сайт+базовый бот)</td><td>Fiverr / Upwork</td><td>Индивид</td><td><b>4</b></td></tr>
+    <tr data-m="ru th"><td>6</td><td>Блогер / контент-канал</td><td>Россия, Таиланд</td><td>Непоследовательная публикация</td><td>Entry</td><td>Low–Medium</td><td>Content automation Task</td><td>Существующая тёплая база</td><td>Индивид</td><td><b>5</b></td></tr>
+  </table>
+
+  <div class="section-title"><h2>Общие проблемы, которые решает METRAWEN</h2></div>
+  <div class="grid grid-2">
+    <div class="card"><ul style="margin:0 0 0 18px;padding:0;font-size:.875rem;color:var(--ink-dim);line-height:1.8">
+      <li>Лиды в нерабочее время остаются без ответа и теряются конкурентам</li>
+      <li>Одни и те же квалифицирующие вопросы печатаются вручную на каждый запрос</li>
+      <li>Запросы разбросаны по 3+ каналам, весь контекст держит один человек</li>
+    </ul></div>
+    <div class="card"><ul style="margin:0 0 0 18px;padding:0;font-size:.875rem;color:var(--ink-dim);line-height:1.8">
+      <li>Еженедельные отчёты собираются вручную из уже существующих данных</li>
+      <li>Follow-up зависит от того, вспомнит ли кто-то, а не от расписания</li>
+      <li>ICP кросс-индустриален по замыслу: hospitality, клиники/бьюти, ритейл/e-commerce, агентства, internal ops</li>
+    </ul></div>
+  </div>
+</div>
+<div class="panel" id="panel-offers">
+  <div class="pagehead">
+    <p class="eyebrow">Раздел 4</p>
+    <h1>Предложения и офферы</h1>
+    <p>Канонический источник — METRAWEN_PRICING_ARCHITECTURE.md. Публичная лестница LOCKED, внутренние диапазоны никогда не публикуются.</p>
+  </div>
+
+  <div class="section-title"><h2>Публичная лестница AI Systems</h2><span class="n">LOCKED</span></div>
+  <div class="grid grid-4" style="margin-bottom:20px">
+    <div class="card"><b>AI Opportunity Audit</b><p style="margin-top:8px;font-size:1.25rem;font-weight:800;color:var(--accent-ink)">$900</p><p style="margin-top:6px;font-size:.8125rem;color:var(--ink-dim)">Платный обзор одного реального процесса, 1–2 дня, письменные находки + AI Opportunity Score</p><p style="margin-top:8px;font-size:.75rem;color:var(--ink-faint)">Upwork-версия: $300–500 фикс, только там</p></div>
+    <div class="card"><b>AI Employee — Starter</b><p style="margin-top:8px;font-size:1.25rem;font-weight:800;color:var(--accent-ink)">от $1,000</p><p style="margin-top:6px;font-size:.8125rem;color:var(--ink-dim)">Один процесс, полный end-to-end, один канал</p></div>
+    <div class="card"><b>AI Employee — Pro</b><p style="margin-top:8px;font-size:1.25rem;font-weight:800;color:var(--accent-ink)">от $3,000</p><p style="margin-top:6px;font-size:.8125rem;color:var(--ink-dim)">Одна бизнес-функция полностью покрыта</p></div>
+    <div class="card"><b>AI System</b><p style="margin-top:8px;font-size:1.25rem;font-weight:800;color:var(--accent-ink)">от $10,000</p><p style="margin-top:6px;font-size:.8125rem;color:var(--ink-dim)">+ от $1,000/мес recurring. Несколько связанных процессов как одна система, без публичного потолка</p></div>
+  </div>
+
+  <div class="callout callout--warn" style="margin-bottom:24px"><b>Правило раскрытия (LOCKED):</b> Audit — $900 фикс, без диапазона. Starter — только «от $1,000». Pro — только «от $3,000». AI System — только «от $10,000», без диапазона и верхнего предела. Слово «Complex» и внутренний ориентир $20,000–30,000+ — только внутри живого предложения, никогда на сайте. Audit никогда не называется тиром AI Employee/AI System.</div>
+
+  <div class="section-title"><h2>Почему Audit разделён на два SKU</h2></div>
+  <div class="card" style="margin-bottom:24px">
+    <p style="font-size:.875rem;color:var(--ink-dim)">Рыночные комплаблы для standalone AI-аудита стартуют от $1,500, большинство $2,500–15,000 — $300–500 читается как «непрофессионально» и занижает именно ту credibility, которую аудит должен построить. Но медианная fixed-price AI-automation работа на Upwork = $400 (n=8,228 постов, Marathon Insights), ~50% дешевле $500 — там $300–500 верная цена для видимости в листинге.</p>
+  </div>
+
+  <div class="section-title"><h2>Geography adjustment</h2><span class="n">RECOMMENDED</span></div>
+  <div class="grid grid-2" style="margin-bottom:24px">
+    <div class="card"><b>Таиланд / Индонезия</b><p style="margin-top:6px;font-size:.875rem;color:var(--ink-dim)">Anchor к нижней границе диапазона — это реальная рыночная цена (LineBot.pro берёт $410–3,240 за LINE-бота, на 40–70% ниже US/EU ставок), а не скидка</p></div>
+    <div class="card"><b>Россия/СНГ и International (агентства)</b><p style="margin-top:6px;font-size:.875rem;color:var(--ink-dim)">Anchor к верхней границе диапазона</p></div>
+  </div>
+
+  <div class="section-title"><h2>Digital Services — отдельная живая линейка</h2><span class="n">не смешивается с AI-лестницей</span></div>
+  <table class="dtable" style="margin-bottom:24px">
+    <tr><th>Тариф</th><th>Цена</th><th>Что включено</th><th>Срок</th></tr>
+    <tr><td>СТАРТ</td><td>29,900 ₽</td><td>Одностраничник + форма лида</td><td>3–6 дней</td></tr>
+    <tr><td>АВТОПИЛОТ</td><td>45,900 ₽</td><td>Start + лид-чатбот</td><td>~7 дней</td></tr>
+    <tr><td>ПОД КЛЮЧ</td><td>69,900 ₽</td><td>Всё выше + углублённая сборка</td><td>по объёму</td></tr>
+  </table>
+
+  <div class="section-title"><h2>Unit economics по тиру</h2></div>
+  <table class="dtable">
+    <tr><th>Тир</th><th>Часы поставки</th><th>Revenue/час</th></tr>
+    <tr><td>AI Task</td><td>3–8ч build + 1–2ч/мес upkeep</td><td>$25–60/ч</td></tr>
+    <tr><td>AI Employee (Core)</td><td>10–20ч + 2–4ч/мес</td><td>$40–90/ч</td></tr>
+    <tr><td>AI Employee (Pro)</td><td>20–35ч + 4–6ч/мес</td><td>$90–150/ч</td></tr>
+    <tr><td>AI System (Custom)</td><td>50–100ч+ + 8–15ч/мес</td><td>$150–250/ч+</td></tr>
+  </table>
+</div>
+<div class="panel" id="panel-machine">
+  <div class="pagehead">
+    <p class="eyebrow">Раздел 5</p>
+    <h1>Машина поиска клиентов</h1>
+    <p>Полный pipeline проспектинга. Зелёная рамка — можно автоматизировать уже сейчас (с человеческой проверкой). Красная — должно оставаться на человеке.</p>
+  </div>
+
+  <div class="statuspill" style="margin:0 0 20px;display:inline-flex"><i></i> Ничего из этого не запущено — только план</div>
+
+  <div class="section-title"><h2>Полный pipeline</h2></div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="stepper">
+      <div class="step auto"><b>1. Найти</b><span>Discovery по публичным источникам</span><span class="tag">можно автоматизировать</span></div>
+      <div class="step auto"><b>2. Проверить</b><span>Verification — сайт жив, бизнес активен</span><span class="tag">можно автоматизировать</span></div>
+      <div class="step auto"><b>3. Квалифицировать</b><span>AI Opportunity Score по публичным сигналам</span><span class="tag">можно автоматизировать</span></div>
+      <div class="step human"><b>4. Персонализировать</b><span>Черновик — AI, финальное решение — человек</span><span class="tag">human review</span></div>
+      <div class="step human"><b>5. Контакт</b><span>Отправка первого сообщения</span><span class="tag">только человек</span></div>
+      <div class="step auto"><b>6. Follow-up</b><span>По расписанию, если нет ответа</span><span class="tag">можно автоматизировать</span></div>
+      <div class="step human"><b>7. Ответ</b><span>Обработка входящего интереса/возражения</span><span class="tag">только человек</span></div>
+      <div class="step human"><b>8. Созвон</b><span>Discovery call</span><span class="tag">только человек</span></div>
+      <div class="step human"><b>9. Стратсессия</b><span>Бесплатная стратегическая сессия</span><span class="tag">только человек</span></div>
+      <div class="step human"><b>10. Предложение</b><span>Proposal, scoping, цена</span><span class="tag">только человек</span></div>
+      <div class="step human"><b>11. Продажа</b><span>Закрытие сделки</span><span class="tag">только человек</span></div>
+      <div class="step human"><b>12. Внедрение</b><span>Setup, launch</span><span class="tag">только человек</span></div>
+      <div class="step auto"><b>13. Recurring</b><span>Мониторинг, месячный отчёт</span><span class="tag">частично автоматизировать</span></div>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>AI Opportunity Detection framework</h2></div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="stepper">
+      <div class="step"><b>Business</b><span>категория, размер</span></div>
+      <div class="step"><b>→ Process</b><span>какой процесс виден публично</span></div>
+      <div class="step"><b>→ Friction</b><span>где заметно трение (медленный ответ, ручной ввод)</span></div>
+      <div class="step"><b>→ Repetition</b><span>повторяется ли действие</span></div>
+      <div class="step"><b>→ Data availability</b><span>есть ли данные для работы AI</span></div>
+      <div class="step"><b>→ Automation feasibility</b><span>реалистично ли технически</span></div>
+      <div class="step"><b>→ Business value</b><span>что это даёт бизнесу</span></div>
+      <div class="step"><b>→ Decision-maker access</b><span>можно ли достучаться до ЛПР</span></div>
+      <div class="step"><b>→ AI Opportunity Score</b><span>итоговая оценка приоритета</span></div>
+    </div>
+    <p style="margin-top:14px;font-size:.875rem;color:var(--ink-dim)">Допустимые данные: только публичные сигналы — категория бизнеса, публичный сайт, публично видимый booking/contact flow, публичные отзывы. Никаких частных или скрапленных персональных данных.</p>
+  </div>
+
+  <div class="section-title"><h2>Compliance-модель discovery</h2><span class="n">LOCKED для всех рынков</span></div>
+  <div class="callout callout--locked" style="margin-bottom:24px">
+    Google Maps / Yandex (только просмотр, discovery) → собственный публичный сайт проспекта → публично опубликованные контакты → CRM.<br>
+    Никогда: bulk-scraping, экспорт, автоматическое извлечение контента Maps (запрещено ToS Google). Yandex Organization Search — только через лицензированный API или публичный UI, вручную.
+  </div>
+
+  <div class="section-title"><h2>Первые 100 проспектов</h2></div>
+  <div class="grid grid-4" style="margin-bottom:24px">
+    <div class="kpi"><b>40</b><span>Таиланд</span><small>приоритет 1</small></div>
+    <div class="kpi"><b>25</b><span>Индонезия</span><small>приоритет 2</small></div>
+    <div class="kpi"><b>20</b><span>Россия/СНГ</span><small>upsell тёплой базы</small></div>
+    <div class="kpi"><b>15</b><span>International</span><small>только через LinkedIn</small></div>
+  </div>
+
+  <div class="section-title"><h2>Правило персонализации</h2></div>
+  <div class="callout callout--info">Одно реальное, конкретное наблюдение о публичном booking/contact flow проспекта до любого сообщения — никогда generic «мы делаем AI-агентов».</div>
+</div>
+<div class="panel" id="panel-channels">
+  <div class="pagehead">
+    <p class="eyebrow">Раздел 6</p>
+    <h1>Каналы привлечения</h1>
+    <p>Точные лимиты отправки — в разделе 8. Здесь роль каждого канала, объёмы и риски.</p>
+  </div>
+
+  <div class="section-title"><h2>Канонические цепочки по рынку</h2><span class="n">LOCKED</span></div>
+  <table class="dtable" style="margin-bottom:28px">
+    <tr><th>Рынок</th><th>Цепочка discovery → контакт</th><th>Основной канал коммуникации</th></tr>
+    <tr><td>Таиланд</td><td>Google Maps → сайт → LINE → телефон/email</td><td><b>LINE</b></td></tr>
+    <tr><td>Индонезия</td><td>Google Maps/Instagram → сайт → WhatsApp → email</td><td><b>WhatsApp</b> (только структурированные workflow)</td></tr>
+    <tr><td>Россия/СНГ</td><td>Yandex → сайт → VK/телефон/email</td><td><b>VK</b> (Telegram — только fallback для существующих)</td></tr>
+    <tr><td>International</td><td>LinkedIn → сайт → email</td><td><b>LinkedIn</b> (Upwork — вторичный)</td></tr>
+  </table>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <b>Email</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Поддерживающий канал на всех рынках, основной для follow-up после первого касания в мессенджере. Требует прогрева домена перед объёмной рассылкой.</p>
+    </div>
+    <div class="card">
+      <b>LinkedIn</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Первичный канал International-сегмента (агентства-subcontractor). PDF-карусели превосходят текст в 3.7–7 раз, одиночные картинки уступают тексту ~30% (наблюдение VERSTAK).</p>
+    </div>
+    <div class="card">
+      <b>Google Maps</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Discovery-only источник для Таиланда и Индонезии — просмотр карточек, никакого автоматического экспорта (запрещено ToS Google Maps Platform).</p>
+    </div>
+    <div class="card">
+      <b>Сайты компаний</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Оценка booking/contact flow проспекта вручную — источник персонализации, не канал отправки.</p>
+    </div>
+    <div class="card">
+      <b>WhatsApp</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Первичный канал Индонезии. С 15.01.2026 Meta запрещает general-purpose AI-чатботы для новых регистрантов API — структурированный AI Employee остаётся разрешён при pre-approved шаблонах.</p>
+    </div>
+    <div class="card">
+      <b>LINE</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Первичный канал Таиланда, ~54–56М MAU. LINE публикует официальный MCP-сервер (line-bot-mcp-server) — технически удобный путь для будущей поставки.</p>
+    </div>
+    <div class="card">
+      <b>VK</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Основной новый канал для России/СНГ вместо деградировавшего Telegram.</p>
+    </div>
+    <div class="card">
+      <b>Телефон</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Поддерживающий канал на всех рынках, основной для России при недоступности мессенджера. Нет технологического лимита отправки, есть юридический контекст (см. раздел 8).</p>
+    </div>
+    <div class="card">
+      <b>Upwork</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Вторичный, proof-generation канал на всех рынках. Медиана fixed-price AI-automation работы — $400 (n=8,228). Ниша с явным ROI: Zapier→n8n migration, $800–3,500/проект. НЕ используется для продажи $10K+ офферов.</p>
+    </div>
+    <div class="card">
+      <b>Партнёрства</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Медленный старт, высокое доверие — white-label для International, локальные партнёрства (отельные ассоциации, коворкинги) для Таиланда/Индонезии.</p>
+    </div>
+    <div class="card">
+      <b>Referrals</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Дешевейший канал, высочайший close-rate — систематический ask после каждого проекта Digital Services.</p>
+    </div>
+    <div class="card">
+      <b>Existing Digital Services клиенты</b>
+      <p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim)">Немедленный, тёплый, есть доверие — основной канал для России/СНГ на старте.</p>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>Сбалансированный портфель</h2><span class="n">WORKING BASELINE, ключевая коррекция</span></div>
+  <div class="callout callout--warn">При верифицированном reply rate холодных email 0.45% (Belkins), достижение $30K/мес через чистый объём холодного outreach потребовало бы 7,000–10,000 контактов/мес — объём, который соло-фаундер не может персонализировать на нужном уровне. Вывод: не масштабировать объём холодного outreach, а строить портфель из 9 источников (inbound, outbound, партнёрства, Upwork, referrals, local discovery, existing clients, AI upsell, content/authority), оптимизированный под качество, а не сырой объём.</div>
+</div>
+<div class="panel" id="panel-scripts">
+  <div class="pagehead">
+    <p class="eyebrow">Раздел 7</p>
+    <h1>Готовые тексты и скрипты</h1>
+    <p>Тексты адаптированы под рынок и канал, не универсальны. Английский для Таиланда/Индонезии/International (язык продажи по MARKET_AND_LANGUAGE_STRATEGY), русский для России/СНГ. Кнопка «copy» копирует текст сообщения.</p>
+  </div>
+
+  <div class="subtabs" id="sc-tabs">
+    <button class="subtab active" data-sub="th" onclick="selectSub('sc-tabs','th')">🇹🇭 Таиланд</button>
+    <button class="subtab" data-sub="id" onclick="selectSub('sc-tabs','id')">🇮🇩 Индонезия</button>
+    <button class="subtab" data-sub="ru" onclick="selectSub('sc-tabs','ru')">🇷🇺 Россия и СНГ</button>
+    <button class="subtab" data-sub="intl" onclick="selectSub('sc-tabs','intl')">🌐 International</button>
+  </div>
+
+  <div id="sc-tabs-panels">
+  <!-- THAILAND SCRIPTS -->
+  <div class="subpanel active" data-sub="th">
+    <div class="msg"><h4>Первое сообщение · LINE (hospitality/clinic)</h4><p>Hi, I noticed [Business Name] takes bookings mostly through LINE and phone calls. I help small hotels and clinics in Thailand set up a simple AI system that answers common booking questions instantly and only hands over to your team for anything unusual. Would it be useful to see how that could work for you?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Follow-up 1 (день 3)</h4><p>Following up quickly, in case this got buried. Most of the booking questions we see in hotels and clinics repeat every day (availability, pricing, hours). If reducing that manual load is useful right now, happy to share a short example.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Follow-up 2 (день 7)</h4><p>One more note. Businesses like yours usually lose a few bookings a week simply because a reply comes late at night or on a day off. If that sounds familiar, I can walk you through how we handle it, no obligation.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Follow-up 3 (день 14, мягкое закрытие)</h4><p>I will leave this here for now. If handling repetitive booking questions ever becomes a priority, feel free to reach out, happy to help whenever it is relevant.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ после интереса</h4><p>Glad it is useful. The easiest next step is a short, free strategy session, about 20 to 30 minutes, where we look at how your bookings actually flow today and where an AI system would realistically help. No slide deck, just your process. Would this week or next work better for you?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «дорого»</h4><p>Fair question. We start with a paid Opportunity Audit at $900, a focused review of one real process in your business, so you know exactly what it would take and what it is worth before any bigger commitment. If it turns out automation is not worth it for that process, you will know that too, and that is a fair outcome.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «уже есть сотрудник»</h4><p>That is good, a person handling this is exactly the setup we are used to working alongside. What we usually add is coverage for the hours nobody is answering, and the repetitive part of the same questions, so your staff spends time on the guests and cases that actually need a person.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «нам не нужен AI»</h4><p>Understood, and to be clear, we are not selling AI as the point. The point is fewer missed bookings and less repeated typing for your team. If that is already solved for you, there is nothing to fix here.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «пришлите информацию»</h4><p>Happy to. Rather than a generic PDF, the most useful thing is a short free strategy session where we look at your actual booking flow for 20 minutes, that gives you something specific instead of a brochure. Could we find 20 minutes this week?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Переход к бесплатной стратегической сессии</h4><p>Before anything paid, we do a free strategy session, no deck, no pressure. We look at how bookings come in today, where the repetitive work sits, and whether an AI system is actually worth it for your case. If it is not, we will say so directly. Want me to send a couple of time slots?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Короткий cold email</h4><h4 style="margin-top:-4px;color:var(--ink-faint)">Тема: A quick question about [Business Name]'s bookings</h4><p>Hi [Name], I help small hotels and clinics in Thailand handle repetitive booking questions with a simple AI system, backed by a person for anything unusual. Noticed [Business Name] runs bookings mostly through LINE and phone. Worth a short, free strategy session to see if this fits your setup?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Телефонный скрипт (короткий)</h4><p>Hi, this is [Name] from METRAWEN. I work with small hotels and clinics here in Thailand on handling repetitive booking questions with AI, backed by your own team for anything unusual. I noticed [Business Name] takes most bookings by phone and LINE, is that still the main way guests reach you? [pause] Would a free 20-minute strategy session make sense to see if this is worth setting up for you?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+  </div>
+
+  <!-- INDONESIA SCRIPTS -->
+  <div class="subpanel" data-sub="id">
+    <div class="msg"><h4>Первое сообщение · WhatsApp (villas/wellness)</h4><p>Hi, I came across [Business Name] and noticed guest questions mostly come through WhatsApp. I help villas and wellness businesses in Bali set up a simple AI assistant for the repeat questions (availability, pricing, directions), with a real person handling anything specific. Worth a quick look?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Follow-up 1 (день 3)</h4><p>Quick follow-up in case my last message got lost in the chats. Most villas and studios answer the same handful of questions every day, happy to show a short example of how that gets handled without extra headcount.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Follow-up 2 (день 7)</h4><p>One more thought. A late night or early morning reply gap is usually where a booking gets lost to a competitor. If that is a pattern for [Business Name], happy to walk through how we would close that gap.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Follow-up 3 (день 14, мягкое закрытие)</h4><p>I will leave it here for now. If this becomes useful later, feel free to message anytime, always happy to help.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ после интереса</h4><p>Good to hear. The simplest next step is a free strategy session, 20 to 30 minutes, looking at how guest questions actually flow into your WhatsApp today. No pitch, just your real process. Does this week work?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «дорого»</h4><p>Reasonable to ask. We start small, with a $900 paid Opportunity Audit on one specific process, so you see exactly what it takes and what it is worth before committing to more. If the numbers do not work for your case, that is a useful answer too.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «уже есть сотрудник»</h4><p>Good, having someone on WhatsApp already is the normal setup we work alongside. What usually gets added is coverage outside working hours and for repeated questions, so your team focuses on the guests who need a real answer.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «нам не нужен AI»</h4><p>Fair, and to be clear, the goal is not AI for its own sake, it is fewer missed messages and less repeated typing. If that is already handled well for you, there is nothing to change here.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «пришлите информацию»</h4><p>Happy to, though the more useful option is usually a short free strategy session looking at your actual WhatsApp flow, rather than a generic overview. Could we find 20 minutes this week?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Переход к бесплатной стратегической сессии</h4><p>Before anything paid, we do a free strategy session. We look at your current WhatsApp flow, where the repetitive work sits, and whether it is actually worth automating in your case. If it is not, we will say so. Want me to suggest a couple of times?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Короткий cold email</h4><h4 style="margin-top:-4px;color:var(--ink-faint)">Тема: A quick question about [Business Name]'s guest messages</h4><p>Hi [Name], I help villas and wellness businesses in Bali handle repeat WhatsApp questions with a simple AI setup, backed by a real person for anything specific. Noticed [Business Name] runs most guest communication through WhatsApp. Worth a short, free strategy session to see if it fits?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>WhatsApp · короткий вариант для Instagram DM</h4><p>Hi! Love what you are doing at [Business Name]. Quick one, do you handle all the booking questions on WhatsApp yourself? I help villas nearby set up a simple AI assistant for the repetitive ones, might be worth a quick chat.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+  </div>
+
+  <!-- RUSSIA SCRIPTS -->
+  <div class="subpanel" data-sub="ru">
+    <div class="callout callout--warn" style="margin-bottom:16px">Эти тексты для тёплой базы (существующие клиенты Digital Services) или для качественного ручного контакта через VK, не для массовой холодной рассылки в Telegram.</div>
+    <div class="msg"><h4>Первое сообщение · VK (существующему клиенту, апсейл)</h4><p>Привет! Смотрел, как у вас сейчас идут заявки, и заметил, что часть однотипных вопросов (цена, наличие, сроки) отвечается вручную каждый раз. Можем настроить простую AI-систему, которая закрывает это сама, а вам передаёт только нестандартные случаи. Интересно посмотреть, как это будет выглядеть у вас?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Follow-up 1 (день 4)</h4><p>Возвращаюсь к прошлому сообщению. По опыту таких же продавцов, повторяющиеся вопросы клиентов отнимают несколько часов в неделю. Могу коротко показать, как это обычно закрывается без найма человека.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Follow-up 2 (день 9)</h4><p>Если удобнее коротко созвониться вместо переписки, могу набрать на 10 минут и просто показать, как это работает на практике. Без подготовки с вашей стороны.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Follow-up 3 (день 16, мягкое закрытие)</h4><p>Пока оставлю эту тему открытой. Если станет актуально позже, пишите в любой момент, всегда рад помочь.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ после интереса</h4><p>Отлично. Проще всего начать с бесплатной стратегической сессии на 20 30 минут: посмотрим, как у вас реально идут заявки сейчас, и где AI-система даст ощутимый эффект. Без презентаций, только ваш процесс. Когда удобно на этой или следующей неделе?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «дорого»</h4><p>Понимаю вопрос. Начинаем с платного разбора одного процесса за $900: вы получаете чёткую картину, что именно можно автоматизировать и какой в этом смысл, прежде чем принимать решение о более крупном проекте. Если по цифрам не сходится, это тоже честный и полезный результат.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «уже есть сотрудник»</h4><p>Хорошо, если процесс уже закрыт человеком, обычно мы работаем рядом с ним: берём на себя однотипные вопросы и время вне рабочих часов, а человек занимается тем, что реально требует его внимания.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «нам не нужен AI»</h4><p>Понимаю, и суть здесь не в AI ради AI, а в том, чтобы меньше заявок терялось и меньше времени уходило на одно и то же вручную. Если это у вас уже решено, дополнительно ничего не нужно.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «пришлите информацию»</h4><p>Конечно, только вместо общей презентации полезнее короткая бесплатная стратегическая сессия на 20 минут, где посмотрим именно на ваш процесс. Найдётся 20 минут на этой неделе?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Переход к бесплатной стратегической сессии</h4><p>Перед любой оплатой у нас есть бесплатная стратегическая сессия: смотрим, как сейчас устроен процесс, где повторяется рутина, и стоит ли это автоматизировать именно в вашем случае. Если не стоит, так и скажем. Прислать пару вариантов времени?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Короткий cold email</h4><h4 style="margin-top:-4px;color:var(--ink-faint)">Тема: вопрос по обработке заявок в [Название]</h4><p>Здравствуйте, [Имя]. Помогаю продавцам вроде [Название] снять с себя однотипные вопросы клиентов через простую AI-систему, с передачей нестандартных случаев человеку. Было бы полезно 20 минут бесплатной стратегической сессии, чтобы посмотреть, подойдёт ли это вам?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Телефонный скрипт</h4><p>Здравствуйте, это [Имя], я работаю с [Название] по автоматизации типовых обращений клиентов. Подскажите, сейчас вопросы по цене и наличию вам приходится отвечать вручную? [пауза] Если да, есть бесплатная стратегическая сессия на 20 минут, где посмотрим, сколько времени это реально занимает и стоит ли это автоматизировать. Когда вам было бы удобно?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+  </div>
+
+  <!-- INTERNATIONAL SCRIPTS -->
+  <div class="subpanel" data-sub="intl">
+    <div class="msg"><h4>Первое сообщение · LinkedIn (после коннекта, агентство)</h4><p>Hi [Name], noticed [Agency] works with [niche] clients on [service]. We build white-label AI systems that agencies like yours can offer under their own brand, without building an in-house AI team. Would it be worth a short conversation to see if there is a fit?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Follow-up 1 (день 4)</h4><p>Following up in case this got buried. A few agencies we work with started with one specific client workflow rather than a full offering, happy to share how that looked in practice.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Follow-up 2 (день 10)</h4><p>One more note, if your clients ever ask about AI automation and you do not have an in-house way to deliver it, that is usually where the white-label setup helps most. Worth a quick call to see if it is relevant?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Follow-up 3 (день 18, мягкое закрытие)</h4><p>I will leave this here for now. If a client need comes up later where this would help, feel free to reach out anytime.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ после интереса</h4><p>Good to hear. Easiest next step is a short, free strategy session, about 20 to 30 minutes, to look at one real client workflow and whether a white-label AI system fits it. Does this week or next work for you?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «дорого»</h4><p>Fair question. We usually start with a paid Opportunity Audit at $900 on one specific client workflow, so you and your client can see the real scope and value before any bigger commitment.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «уже есть сотрудник»</h4><p>Good, if you already have someone handling delivery, we usually plug in for the AI-specific implementation work, so your team is not building that expertise from zero for a single client request.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «нам не нужен AI»</h4><p>Understood, this is only relevant if a client of yours actually needs it. If that has not come up, there is nothing to act on right now.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Ответ «пришлите информацию»</h4><p>Happy to, though the most useful format is usually a short call looking at one real client workflow rather than a generic deck. Could we find 20 minutes this week?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Переход к бесплатной стратегической сессии</h4><p>Before anything paid, we do a free strategy session on one real client workflow, no deck, no pressure. If a white-label AI system does not make sense for it, we will say so directly. Want me to send a couple of time slots?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>Короткий cold email</h4><h4 style="margin-top:-4px;color:var(--ink-faint)">Тема: White-label AI for [Agency]'s clients</h4><p>Hi [Name], we build white-label AI systems that small agencies offer under their own brand. Noticed [Agency] works with [niche] clients, worth a short, free strategy session to see if there is a fit for one of your accounts?</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+    <div class="msg"><h4>LinkedIn · короткая коннект-записка</h4><p>Hi [Name], we build white-label AI systems for agencies like [Agency]. Would love to connect and share notes.</p><button class="copybtn" onclick="copyMsg(this)">copy</button></div>
+  </div>
+  </div>
+</div>
+<div class="panel" id="panel-limits">
+  <div class="pagehead">
+    <p class="eyebrow">Раздел 8</p>
+    <h1>Лимиты и правила отправки</h1>
+    <p>Только официальные источники. Где официальной цифры нет, это явно указано, вместо придуманного числа.</p>
+  </div>
+
+  <table class="dtable" style="margin-bottom:12px">
+    <tr><th>Платформа</th><th>Официальное ограничение</th><th>Безопасный рабочий диапазон</th><th>Источник</th><th>Дата проверки</th></tr>
+    <tr>
+      <td><b>Email (Google Workspace)</b></td>
+      <td>2,000 писем/сутки на аккаунт (rolling 24ч); максимум 500 внешних получателей на одно письмо; до 2,000 уникальных внешних получателей/сутки. Trial-аккаунты: 500/сутки.</td>
+      <td>20–40 писем/день с нового домена в первые 2–3 недели (прогрев), до 100–150/день с прогретого адреса на человека</td>
+      <td><a href="https://knowledge.workspace.google.com/admin/gmail/gmail-sending-limits-in-google-workspace" target="_blank" rel="noopener">Google Workspace Admin Help</a></td>
+      <td>18.09.2026</td>
+    </tr>
+    <tr>
+      <td><b>WhatsApp Business API</b></td>
+      <td>Messaging tier по уникальным клиентам за 24ч: 250 (новый аккаунт) → 2,000 (scaling path) → 10,000 → 100,000 → unlimited (автоматическое масштабирование)</td>
+      <td>Оставаться в рамках Tier 1 (250/24ч) на старте, не форсировать рост тира, только pre-approved шаблоны и structured/task-oriented AI (compliance с ограничением Meta от 15.01.2026)</td>
+      <td><a href="https://developers.facebook.com/documentation/business-messaging/whatsapp/messaging-limits" target="_blank" rel="noopener">Meta for Developers</a></td>
+      <td>18.09.2026</td>
+    </tr>
+    <tr>
+      <td><b>LINE Official Account</b></td>
+      <td>Communication (бесплатный) план: до 500 бесплатных рассылок/сообщений в месяц. Платные планы (пример Японии): Light ~10,000 сообщений/мес, Standard ~30,000/мес. Точные региональные лимиты для Таиланда официально не опубликованы в открытой документации, планы различаются по стране</td>
+      <td>Планировать объём в пределах 500 сообщений/мес на бесплатном тарифе на старте, переходить на платный план по мере роста базы диалогов</td>
+      <td><a href="https://help2.line.me/official_account/web/categoryId/20006330/pc?lang=en&contentId=20011707" target="_blank" rel="noopener">LINE Official Account Help Center</a> / <a href="https://developers.line.biz/en/docs/messaging-api/pricing/" target="_blank" rel="noopener">LINE Developers Pricing</a></td>
+      <td>18.09.2026</td>
+    </tr>
+    <tr>
+      <td><b>LinkedIn</b></td>
+      <td>Официальной цифры LinkedIn не публикует. User Agreement и Professional Community Policies запрещают automated/bulk-действия и «избыточное» использование без указания точного числа</td>
+      <td class="badge badge--open" style="display:table-cell">нет официальной цифры</td>
+      <td>LinkedIn User Agreement / Professional Community Policies (официально, без чисел). Практический ориентир 100–200 приглашений/неделю на обычном аккаунте встречается у сторонних SDR-инструментов, но это не гарантия LinkedIn, а рыночная практика</td>
+      <td>18.09.2026</td>
+    </tr>
+    <tr>
+      <td><b>VK</b></td>
+      <td>Официальный дневной лимит на отправку сообщений (messages.send) в открытых источниках не подтверждён в рамках этой сессии; общий API-лимит по частоте запросов в документации VK</td>
+      <td class="badge badge--open" style="display:table-cell">требует проверки вручную</td>
+      <td>dev.vk.com (прямой доступ к странице документации был заблокирован для автоматического запроса в этой сессии, нужно проверить вручную перед запуском)</td>
+      <td>18.09.2026, не подтверждено</td>
+    </tr>
+    <tr>
+      <td><b>Upwork Connects</b></td>
+      <td>Официальная страница с точной ценой Connect не была получена напрямую в этой сессии (страница поддержки, которую удалось открыть, её не содержала)</td>
+      <td>По данным сторонних агрегаторов (не официальный источник): ориентир ~$0.15 за Connect, обычная заявка стоит 2–6 Connects. Использовать только как ориентир, перепроверить в личном кабинете Upwork перед бюджетированием</td>
+      <td>Сторонние агрегаторы (snipework.com, aiproposer.com) — <b>не официальный источник</b>, требует проверки в Upwork Help напрямую</td>
+      <td>18.09.2026, не первоисточник</td>
+    </tr>
+    <tr>
+      <td><b>Телефон / холодные звонки</b></td>
+      <td>Платформенного лимита нет. Действует общий юридический контекст защиты персональных данных и telemarketing-регулирования в каждой юрисдикции (например 152-ФЗ в России, PDPA в Таиланде/Индонезии)</td>
+      <td>Использовать только публично опубликованные номера, представляться сразу, не звонить повторно при явном отказе</td>
+      <td>Общий принцип, не заменяет юридическую консультацию</td>
+      <td>18.09.2026</td>
+    </tr>
+  </table>
+
+  <div class="callout callout--warn">Не придумывать лимиты там, где официальный источник не найден, лучше явно пометить «требует проверки», чем показать неверную цифру. Перед реальным запуском (после трёх условий из раздела 12) все строки без подтверждённого источника нужно перепроверить вручную.</div>
+</div>
+<div class="panel" id="panel-funnel">
+  <div class="pagehead">
+    <p class="eyebrow">Раздел 9</p>
+    <h1>Воронка и CRM</h1>
+    <p>Реального CRM сегодня нет (DEFERRED решение) — текущий handoff через Telegram/mailto достаточен при текущем объёме. Ниже структура для сборки, когда объём заставит.</p>
+  </div>
+
+  <div class="section-title"><h2>Канонический funnel</h2></div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="stepper">
+      <div class="step"><b>Discovery</b><span>найден по публичным источникам</span></div>
+      <div class="step"><b>→ Research</b><span>публичные сигналы собраны</span></div>
+      <div class="step"><b>→ AI Opportunity Detection</b><span>оценка по framework из раздела 5</span></div>
+      <div class="step"><b>→ Personalized Outreach</b><span>первое сообщение</span></div>
+      <div class="step"><b>→ Response</b><span>ответ получен</span></div>
+      <div class="step"><b>→ Qualification</b><span>подходит под ICP</span></div>
+      <div class="step"><b>→ Discovery Call</b><span>звонок для уточнения</span></div>
+      <div class="step"><b>→ Paid AI Opportunity Audit</b><span>$900 / $300–500 на Upwork</span></div>
+      <div class="step"><b>→ Proposal</b><span>предложение по итогам аудита</span></div>
+      <div class="step"><b>→ Setup</b><span>внедрение</span></div>
+      <div class="step"><b>→ Launch</b><span>запуск</span></div>
+      <div class="step"><b>→ Recurring</b><span>мониторинг, месячный отчёт</span></div>
+      <div class="step"><b>→ Expansion</b><span>апсейл на следующий тир</span></div>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>Lead data model</h2><span class="n">CRM-ready, не построен</span></div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="grid grid-4">
+      <div class="chip">source</div><div class="chip">country</div><div class="chip">language</div><div class="chip">industry</div>
+      <div class="chip">company size</div><div class="chip">pain</div><div class="chip">estimated opportunity</div><div class="chip">offer</div>
+      <div class="chip">status</div><div class="chip">next action</div>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>Аналитические события</h2><span class="n">не реализовано, на сайте сейчас 0 аналитики</span></div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="stepper">
+      <div class="step"><b>Page View</b><span></span></div>
+      <div class="step"><b>Hero CTA</b><span></span></div>
+      <div class="step"><b>Ladder Tier Click</b><span></span></div>
+      <div class="step"><b>Calculator Start/Complete</b><span></span></div>
+      <div class="step"><b>Qualification Start/Submit</b><span></span></div>
+      <div class="step"><b>Audit Purchase</b><span></span></div>
+      <div class="step"><b>LINE/WhatsApp/Telegram/Mailto Click</b><span></span></div>
+    </div>
+  </div>
+
+  <div class="callout callout--info">Провайдер аналитики (GA4 / Яндекс.Метрика / privacy-first) — <span class="badge badge--open">OPEN</span>, ни один не обслуживает все 4 приоритетных рынка одинаково хорошо. Архитектура событий одобрена, провайдер выбирается при имплементации.</div>
+</div>
+<div class="panel" id="panel-kpi">
+  <div class="pagehead">
+    <p class="eyebrow">Раздел 10</p>
+    <h1>KPI и план на 30 / 60 / 90 дней</h1>
+  </div>
+
+  <div class="section-title"><h2>90-дневный план</h2></div>
+  <div class="grid grid-3" style="margin-bottom:24px">
+    <div class="card"><b>Дни 1–30</b><p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim);line-height:1.6">Запуск двух-SKU Audit ($900 / $300–500 Upwork), ~40 контактов Таиланд + 25 Индонезия (compliant discovery), запуск Upwork-листинга, фикс мобильного бага сайта, аналитика и SEO metadata. Россия — только upsell существующей базы, без новой холодной кампании.</p></div>
+    <div class="card"><b>Дни 31–60</b><p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim);line-height:1.6">Первый реальный AI Employee (Thailand hospitality/clinic, LINE Messaging API), тест VK-скрипта для России, документирование первого Upwork-кейса.</p></div>
+    <div class="card"><b>Дни 61–90</b><p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim);line-height:1.6">Зафиксировать выигрышную цену/оффер/скрипт, задокументировать первые 1–2 кейса, пересмотреть матрицу приоритетов рынков по реальным данным.</p></div>
+  </div>
+
+  <div class="callout callout--warn" style="margin-bottom:24px"><b>Критический путь:</b> Upwork-листинг + Thailand LINE Employee build — два элемента, от которых зависит доказуемый результат. 90-дневная цель: одна реальная, доставленная, задокументированная AI Employee-система (Таиланд) + одна закрытая Upwork-сделка.</div>
+
+  <div class="section-title"><h2>Финансовые сценарии</h2><span class="n">SCENARIO, не прогноз</span></div>
+  <table class="dtable" style="margin-bottom:24px">
+    <tr><th>Цель/мес</th><th>Аудитов/мес</th><th>Прогноз клиентов recurring</th><th>Команда</th></tr>
+    <tr><td>$10K</td><td>~8–10</td><td>~15</td><td>Соло-фаундер</td></tr>
+    <tr><td>$30K</td><td>~20–25</td><td>~40</td><td>+ 1 ассистент</td></tr>
+    <tr><td>$50K</td><td>~35–40</td><td>~70</td><td>+ ассистент + part-time delivery</td></tr>
+    <tr><td>$100K</td><td>~60+</td><td>~120+</td><td>Closer + PM + delivery team</td></tr>
+  </table>
+
+  <div class="section-title"><h2>Roadmap milestones</h2></div>
+  <div class="grid grid-2">
+    <div class="card"><b>P0 — до запуска</b><p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim);line-height:1.6">Фикс mobile overflow-бага сайта, аналитика + SEO metadata, запуск $900 Audit-оффера, LINE/WhatsApp контакт-каналы для Таиланда/Индонезии.</p></div>
+    <div class="card"><b>P1</b><p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim);line-height:1.6">Первый реальный AI Employee (Таиланд), первый кейс-стади, qualification-шаг в lead flow.</p></div>
+    <div class="card"><b>P2</b><p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim);line-height:1.6">Brand migration (VERSTAK-файлы → METRAWEN), recurring-отчётность, expansion/upsell sequencing, International white-label packaging.</p></div>
+    <div class="card"><b>P3 — избегать сейчас</b><p style="margin-top:8px;font-size:.875rem;color:var(--ink-dim);line-height:1.6">Sub-brand naming, «AI Team»/«AI Department» вокабуляр, 3D/WebGL, полноценная CRM.</p></div>
+  </div>
+</div>
+<div class="panel" id="panel-ai">
+  <div class="pagehead">
+    <p class="eyebrow">Раздел 11</p>
+    <h1>Автоматизация через AI</h1>
+    <p>Что можно автоматизировать уже сейчас (с человеческой проверкой), а что должно оставаться на человеке. Ничего из этого не запущено.</p>
+  </div>
+
+  <div class="statuspill" style="margin:0 0 24px;display:inline-flex"><i></i> Prospecting machine: не запущена, ждёт 3 условий из раздела 12</div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <b style="color:var(--green)">Можно автоматизировать сейчас (с проверкой человеком)</b>
+      <ul style="margin:12px 0 0 18px;padding:0;font-size:.875rem;color:var(--ink-dim);line-height:1.8">
+        <li>Поиск и сбор публичных сигналов о бизнесе (discovery, research)</li>
+        <li>Расчёт AI Opportunity Score по framework</li>
+        <li>Черновик персонализированного сообщения (финальное решение и отправка, только человек)</li>
+        <li>Напоминания о follow-up по расписанию</li>
+        <li>Сбор данных для еженедельного/месячного отчёта</li>
+        <li>Первичная сортировка входящих ответов по тону (интерес / возражение / отказ) для приоритизации, не для автоответа</li>
+      </ul>
+    </div>
+    <div class="card">
+      <b style="color:var(--red)">Должно оставаться на человеке</b>
+      <ul style="margin:12px 0 0 18px;padding:0;font-size:.875rem;color:var(--ink-dim);line-height:1.8">
+        <li>Отправка первого сообщения и любых персонализированных писем</li>
+        <li>Ответ на возражения и переговоры по цене</li>
+        <li>Discovery call и бесплатная стратегическая сессия</li>
+        <li>Составление и защита коммерческого предложения</li>
+        <li>Финальное решение о продаже и условиях</li>
+        <li>Внедрение системы у клиента</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>Почему не сейчас</h2></div>
+  <div class="callout callout--warn">Финансовая модель показывает, что достижение серьёзного объёма через чистую автоматизацию холодного outreach требует тысяч контактов в месяц, то есть либо низкого качества персонализации, либо реального риска для репутации бренда на этапе, когда ещё нет ни одного поставленного кейса. Правильный порядок: сначала сайт и чат-бот, потом первые кейсы вручную, и только потом контролируемая автоматизация рутины вокруг проверенного процесса.</div>
+</div>
+<div class="panel" id="panel-os">
+  <div class="pagehead">
+    <p class="eyebrow">Раздел 12</p>
+    <h1>Будущий METRAWEN OS</h1>
+    <p>Внутренняя (не публичная) система для поиска, обогащения, квалификации, скоринга, персонализации, follow-up, CRM, задач и отчётов. DEFERRED — не строится сейчас, не публичный суб-бренд.</p>
+  </div>
+
+  <div class="callout callout--locked" style="margin-bottom:28px">
+    <b>Система запускается только после:</b><br>
+    1. завершения сайта METRAWEN;<br>
+    2. запуска чат-бота на сайте;<br>
+    3. отдельного подтверждения запуска prospecting machine от Дмитрия.<br>
+    До выполнения всех трёх условий этот раздел, раздел 11 и раздел 5 остаются планом, не инструкцией к действию.
+  </div>
+
+  <div class="section-title"><h2>Конвейер METRAWEN OS</h2></div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="stepper">
+      <div class="step"><b>Поиск</b><span>discovery по публичным источникам</span></div>
+      <div class="step"><b>→ Enrichment</b><span>сбор публичных сигналов о бизнесе</span></div>
+      <div class="step"><b>→ Qualification</b><span>проверка на соответствие ICP</span></div>
+      <div class="step"><b>→ Scoring</b><span>AI Opportunity Score</span></div>
+      <div class="step"><b>→ Персонализация</b><span>черновик сообщения</span></div>
+      <div class="step"><b>→ Подготовка сообщений</b><span>вариант под канал рынка</span></div>
+      <div class="step"><b>→ Follow-up</b><span>напоминания по расписанию</span></div>
+      <div class="step"><b>→ CRM</b><span>обновление карточки лида</span></div>
+      <div class="step"><b>→ Задачи</b><span>что и кому назначить</span></div>
+      <div class="step"><b>→ Отчёты</b><span>сводка по воронке</span></div>
+      <div class="step"><b>→ Контроль pipeline</b><span>видимость на каждом этапе</span></div>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>Будущие AI-помощники / роли</h2></div>
+  <table class="dtable" style="margin-bottom:24px">
+    <tr><th>Роль</th><th>Задачи</th><th>Human checkpoint</th></tr>
+    <tr><td><b>Scout</b></td><td>Поиск и обогащение проспектов из публичных источников</td><td>Проверка перед добавлением в CRM</td></tr>
+    <tr><td><b>Qualifier</b></td><td>Скоринг по AI Opportunity Score, сортировка по приоритету</td><td>Финальная проверка приоритета человеком</td></tr>
+    <tr><td><b>Writer</b></td><td>Черновики персонализированных сообщений по шаблонам раздела 7</td><td>Ни одно сообщение не уходит без одобрения человека</td></tr>
+    <tr><td><b>Follow-up Coordinator</b></td><td>Напоминания и расписание касаний по разделу 2</td><td>Человек решает, продолжать ли цепочку</td></tr>
+    <tr><td><b>CRM / Reporting Agent</b></td><td>Обновление карточек лидов, сборка еженедельных отчётов</td><td>Периодическая сверка человеком</td></tr>
+    <tr><td><b>Pipeline Controller</b></td><td>Видимость воронки, узкие места, просроченные задачи</td><td>Решения по приоритетам принимает человек</td></tr>
+  </table>
+
+  <div class="section-title" style="margin-top:48px"><h2>Что автоматизировать первым</h2><span class="n">приоритет по влиянию и сложности</span></div>
+  <table class="dtable">
+    <tr><th>#</th><th>Что автоматизировать</th><th>Влияние</th><th>Сложность</th><th>Когда</th></tr>
+    <tr><td>1</td><td>Discovery + enrichment публичных сигналов (Scout)</td><td>Высокое</td><td>Низкая</td><td>Первым, сразу после подтверждения запуска</td></tr>
+    <tr><td>2</td><td>AI Opportunity Score (Qualifier)</td><td>Высокое</td><td>Низкая</td><td>Сразу за Scout</td></tr>
+    <tr><td>3</td><td>Черновики персонализации (Writer, с обязательным review)</td><td>Высокое</td><td>Средняя</td><td>После первых ручных 20–30 сообщений как эталона</td></tr>
+    <tr><td>4</td><td>Follow-up напоминания по расписанию</td><td>Среднее</td><td>Низкая</td><td>Параллельно с Writer</td></tr>
+    <tr><td>5</td><td>Сборка еженедельного отчёта по pipeline</td><td>Среднее</td><td>Низкая</td><td>Как только появится 10+ активных лидов</td></tr>
+    <tr><td>6</td><td>CRM-обновление карточек лидов</td><td>Среднее</td><td>Средняя</td><td>После выбора реального CRM-инструмента</td></tr>
+    <tr><td>7</td><td>Полноценный Pipeline Controller</td><td>Высокое</td><td>Высокая</td><td>Только после устойчивого потока из 3+ каналов</td></tr>
+    <tr><td>8</td><td>Автоматическая отправка первого сообщения без человека</td><td>—</td><td>—</td><td><span class="badge badge--open">не автоматизировать</span> — решение всегда за человеком</td></tr>
+  </table>
+</div>
+</div>
+
+<div class="foot">
+  <span>METRAWEN Growth OS — рабочий черновик, не публикуется</span>
+  <span id="foot-date"></span>
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(function(b){
+  b.onclick = function(){ selectTab(b.dataset.tab); };
+});
+function selectTab(id){
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===id); });
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.toggle('active', p.id==='panel-'+id); });
+  window.scrollTo({top:0,behavior:'instant'});
+}
+function selectSub(groupId, subId){
+  document.querySelectorAll('#'+groupId+' .subtab').forEach(function(b){ b.classList.toggle('active', b.dataset.sub===subId); });
+  document.querySelectorAll('#'+groupId+'-panels .subpanel').forEach(function(p){ p.classList.toggle('active', p.dataset.sub===subId); });
+}
+function copyMsg(btn){
+  var txt = btn.parentElement.querySelector('p').innerText;
+  navigator.clipboard && navigator.clipboard.writeText(txt).catch(function(){});
+  btn.textContent = 'скопировано'; btn.classList.add('copied');
+  setTimeout(function(){ btn.textContent='copy'; btn.classList.remove('copied'); }, 1500);
+}
+document.getElementById('foot-date').textContent = 'обновлено ' + new Date().toLocaleDateString('ru-RU', {year:'numeric',month:'long',day:'numeric'});
+
+document.querySelectorAll('#icp-filters .filterbtn').forEach(function(b){
+  b.onclick = function(){
+    document.querySelectorAll('#icp-filters .filterbtn').forEach(function(x){ x.classList.remove('active'); });
+    b.classList.add('active');
+    var f = b.dataset.f;
+    document.querySelectorAll('#icp-table tr[data-m]').forEach(function(tr){
+      tr.style.display = (f==='all' || (tr.dataset.m||'').indexOf(f)>-1) ? '' : 'none';
+    });
+  };
+});
+</script>
+</body>
+</html>
