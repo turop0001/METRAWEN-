@@ -53,7 +53,7 @@ button{font:inherit;color:inherit}
 .mnav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6.6px) rotate(45deg)}
 .mnav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
 .mnav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6.6px) rotate(-45deg)}
-@media(min-width:1080px){.mnav-toggle{display:none}.topbar .btn{margin-left:0}}
+@media(min-width:1080px){.mnav-toggle{display:none}}
 .mnav-panel{position:fixed;inset:70px 0 0 0;z-index:59;background:var(--base);border-top:1px solid var(--hair);padding:22px var(--pad,20px) 28px;overflow-y:auto;display:flex;flex-direction:column;gap:22px}
 .mnav-panel[hidden]{display:none}
 .mnav-panel nav{display:flex;flex-direction:column}
@@ -375,6 +375,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 /* ---------- 04c отрасли: цифры и конкретика ---------- */
 .industries-grid{margin-top:clamp(40px,5vw,60px);display:grid;gap:20px}
 @media(min-width:820px){.industries-grid{grid-template-columns:repeat(2,1fr)}}
+.industries-more{margin-top:22px;text-align:center;font-size:.9063rem;color:var(--text-dim)}
+.industries-more a{color:var(--accent-hi);font-weight:600;text-decoration:underline;text-underline-offset:3px}
 .industry-card{position:relative;opacity:0;transform:scale(.94) translateY(16px);
   transition:opacity .7s var(--ease),transform .7s var(--ease);perspective:1400px}
 .industry-card.in{opacity:1;transform:none}
@@ -521,25 +523,22 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   .compare-mid svg{width:18px;height:18px}
 }
 
-/* pipeline scene */
-.pipe{position:relative;border:1px solid var(--hair);background:rgba(14,14,13,.5);padding:clamp(30px,3.6vw,52px) clamp(24px,3vw,44px);
-  transform:perspective(1700px) rotateX(3deg);transform-origin:50% 100%}
-.pipe__head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:36px;
-  font-family:var(--font-mono);font-size:.8125rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint)}
-.pipe__row{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(8px,1.4vw,20px)}
-.pipe__spine{position:absolute;left:5%;right:5%;top:26px;height:1px;background:var(--hair-2)}
-.pipe__spine i{position:absolute;left:0;top:0;height:1px;width:calc(var(--p,0)*100%);
-  background:linear-gradient(90deg,rgba(196,161,101,.25),var(--accent));box-shadow:0 0 20px 1px rgba(196,161,101,.45)}
-.node{position:relative;text-align:center;opacity:.3;transition:opacity .45s var(--ease)}
-.node.on{opacity:1}
-.node em{display:block;width:18px;height:18px;margin:17px auto 0;border:1.5px solid var(--hair-3);background:var(--base);
-  border-radius:50%;transition:border-color .4s,background .4s,box-shadow .4s}
-.node.on em{border-color:var(--accent);background:var(--accent);box-shadow:0 0 0 6px rgba(196,161,101,.15)}
-.node b{display:block;margin-top:20px;font-family:var(--font-mono);font-size:.8125rem;font-weight:600;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--text)}
-.node span{display:block;margin-top:10px;font-size:.9375rem;line-height:1.45;color:var(--text-faint)}
-.node--out.on em{border-color:var(--green);background:var(--green);box-shadow:0 0 0 6px rgba(143,194,164,.16)}
-.node--out.on b{color:var(--green)}
+/* four-direction system panel (заменяет старый единый "маршрут одного обращения") */
+.dir4{position:relative;border:1px solid var(--hair);background:rgba(14,14,13,.5);padding:clamp(26px,3.2vw,40px) clamp(22px,2.6vw,32px);
+  transform:perspective(1700px) rotateX(3deg);transform-origin:50% 100%;
+  display:grid;gap:clamp(14px,1.8vw,20px)}
+@media(min-width:620px){.dir4{grid-template-columns:1fr 1fr}}
+.dir4__card{border:1px solid var(--hair-2);border-radius:14px;padding:clamp(20px,2.2vw,26px);
+  opacity:.36;transform:translateY(10px);transition:opacity .5s var(--ease),transform .5s var(--ease),border-color .4s}
+.dir4__card.on{opacity:1;transform:none;border-color:rgba(var(--accent-rgb),.4)}
+.dir4__tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:.75rem;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--accent-hi)}
+.dir4__tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--hair-3);flex:none;transition:background .4s}
+.dir4__card.on .dir4__tag::before{background:var(--accent)}
+.dir4__card p{margin-top:12px;font-size:.9375rem;line-height:1.5;color:var(--text-dim)}
+.dir4__mini{margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;
+  font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.03em;color:var(--text-faint)}
+.dir4__mini i{width:10px;height:1px;background:var(--hair-3);flex:none}
 .branch{position:relative;margin-top:clamp(34px,3.8vw,52px);padding-top:clamp(28px,3.2vw,42px);border-top:1px dashed rgba(var(--text-rgb),.16);
   display:grid;gap:16px;opacity:.3;transition:opacity .5s var(--ease)}
 .branch.on{opacity:1}
@@ -551,22 +550,31 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .branch__c--sys b{color:var(--green)}.branch__c--sys b::before{background:var(--green)}
 .branch__c--hum b{color:var(--accent)}.branch__c--hum b::before{background:var(--accent)}
 .branch__c p{margin-top:12px;font-size:1rem;color:var(--text-dim);line-height:1.55}
+.dir-tag{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:.6875rem;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--accent-hi);margin-bottom:6px}
+.dir-tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}
+.dir-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:2px;
+  font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.05em;color:var(--text-faint)}
+.dir-legend span{display:inline-flex;align-items:center;gap:6px}
+.dir-legend span::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--text-faint);flex:none}
 @media(max-width:680px){
   .day__bar{height:clamp(320px,88vw,420px)}
   .tsk{font-size:.6875rem;padding:5px 8px;letter-spacing:0}
   .day__head{font-size:.6875rem}
   .day__load{font-size:.8125rem}
-  .pipe__row{grid-template-columns:1fr;gap:22px}
-  .pipe__spine{display:none}
-  .node{display:grid;grid-template-columns:18px 1fr;grid-template-rows:auto auto;column-gap:16px;text-align:left}
-  .node em{grid-column:1;grid-row:1 / 3;margin:3px 0 0;align-self:start}
-  .node b{grid-column:2;grid-row:1;margin-top:0}
-  .node span{grid-column:2;grid-row:2;margin-top:6px}
 }
 
 .ctaline{display:flex;flex-wrap:wrap;align-items:center;gap:16px 28px;margin-top:clamp(40px,5vw,64px);
   padding-top:clamp(26px,3vw,40px);border-top:1px solid var(--hair)}
 .ctaline p{font-size:1.0625rem;color:var(--text-dim);max-width:44ch}
+.growth-chain{margin-top:clamp(48px,5vw,72px)}
+.growth-chain__lead{font-size:.9375rem;color:var(--text-dim);max-width:56ch;margin-bottom:18px}
+.growth-chain__row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 4px}
+.growth-chain__item{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.03em;line-height:1.3;
+  padding:10px 14px;border:1px solid var(--hair-2);border-radius:999px;color:var(--text);white-space:nowrap;background:rgba(16,15,14,.4)}
+.growth-chain__item--final{color:var(--accent-hi);border-color:var(--accent);background:rgba(var(--accent-rgb),.08)}
+.growth-chain__arrow{width:14px;height:14px;flex:none;color:var(--text-faint)}
+@media(max-width:640px){.growth-chain__item{white-space:normal}.growth-chain__arrow{transform:rotate(90deg)}}
 
 .note{margin-top:14px;font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;color:var(--text-faint);line-height:1.6}
 .endnote{padding-block:56px;border-top:1px solid var(--hair);font-family:var(--font-mono);font-size:.6875rem;
@@ -601,8 +609,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   .rv{opacity:1;transform:none}
   .stage__pin{position:static;min-height:0}
   .stage__track{height:auto}
-  .tsk,.node,.steps li,.branch{opacity:1!important;transform:none!important}
-  .day,.pipe,.pack__list{transform:none}
+  .tsk,.dir4__card,.steps li,.branch{opacity:1!important;transform:none!important}
+  .day,.dir4{transform:none}
 }
 </style>
 
@@ -641,12 +649,12 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         </div>
       </div>
       <div class="navitem">
-        <a href="#s-pack">Digital-услуги <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="digital-ru.html">Digital-услуги <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <div class="dropdown">
-          <a href="#s-pack">Сайты и лендинги</a>
-          <a href="#s-directions">Telegram / LINE / WhatsApp боты</a>
-          <a href="#s-pack">Дашборды и аналитика конкурентов</a>
-          <a href="#s-pack" class="more">и другие digital-услуги</a>
+          <a href="digital-ru.html#svc-sites">Сайты и лендинги</a>
+          <a href="digital-ru.html#svc-bots">Telegram / LINE / WhatsApp боты</a>
+          <a href="digital-ru.html#svc-data">Дашборды и аналитика конкурентов</a>
+          <a href="digital-ru.html" class="more">и другие digital-услуги</a>
         </div>
       </div>
       <a href="#s-sys">Как мы работаем</a><a href="about-ru.html">О компании</a>
@@ -662,7 +670,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <nav aria-label="Мобильная навигация">
     <a href="#s-formats">AI-системы</a>
     <a href="#s-industries">Отрасли</a>
-    <a href="#s-pack">Digital-услуги</a>
+    <a href="digital-ru.html">Digital-услуги</a>
     <a href="#s-sys">Как мы работаем</a>
     <a href="about-ru.html">О компании</a>
   </nav>
@@ -712,27 +720,28 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 
 <!-- ========== 02 · КУДА УХОДИТ ДЕНЬ ========== -->
 <section class="sec stage" id="s-day" aria-labelledby="h-day">
-  <div class="stage__track" style="--track:300vh">
+  <div class="stage__track" style="--track:360vh">
     <div class="stage__pin">
       <div class="wrap stage__grid">
         <div>
           <p class="eyebrow rv">Что забирает время</p>
-          <h2 class="h2 rv" id="h-day" style="margin-block:22px 20px">Бизнес разный. Механика одна.</h2>
-          <p class="lede rv">Отель, вилла, клиника, стоматология, ресторан, салон красоты, магазин, агентство, застройщик, производство: обращения выглядят по-разному, а работа под ними повторяется каждый день и держится на одном человеке.</p>
+          <h2 class="h2 rv" id="h-day" style="margin-block:22px 20px">Время уходит одинаково: сразу в четырёх направлениях.</h2>
+          <p class="lede rv">Отель, вилла, клиника, стоматология, ресторан, салон красоты, магазин, агентство, застройщик, производство: привлечение клиентов, продажи, сервис и внутренние операции устроены по-разному, но рутина в каждом из них каждый день держится на одном и том же человеке.</p>
           <ol class="steps" id="day-steps">
-            <li data-s="0"><span class="ix">01</span><div><h3>Одни и те же вопросы</h3><p>Цены, наличие, сроки, адрес, условия: один и тот же ответ пишется заново десятки раз в день.</p></div></li>
-            <li data-s="1"><span class="ix">02</span><div><h3>Перенос данных руками</h3><p>Из мессенджера в таблицу, из таблицы в CRM, из CRM в календарь и обратно, с потерями и опечатками.</p></div></li>
-            <li data-s="2"><span class="ix">03</span><div><h3>Напоминания и подтверждения</h3><p>Подтвердить запись, напомнить о визите, попросить отзыв, догнать неоплаченный счёт: помнит человек.</p></div></li>
-            <li data-s="3"><span class="ix">04</span><div><h3>Отчёт, который собирают вечером</h3><p>Цифры за день сводятся вручную, поэтому решения принимаются не сегодня, а в конце недели.</p></div></li>
+            <li data-s="0"><span class="ix">01</span><div><span class="dir-tag">Привлечение</span><h3>Поиск клиентов вручную</h3><p>Менеджер сам ищет базу и контакты, пишет первым и ведёт список в заметках или таблице — до того, как появится первый ответ.</p></div></li>
+            <li data-s="1"><span class="ix">02</span><div><span class="dir-tag">Продажи</span><h3>Ручные рассылки и допродажи</h3><p>Собрать список, написать текст и разослать вручную по одному, а потом отдельно вспомнить, кому предложить повторный заказ.</p></div></li>
+            <li data-s="2"><span class="ix">03</span><div><span class="dir-tag">Клиентский сервис</span><h3>Одни и те же вопросы и напоминания</h3><p>Цены, наличие, сроки и адрес: один и тот же ответ пишется заново, а подтверждение записи и напоминание о визите держится на человеке.</p></div></li>
+            <li data-s="3"><span class="ix">04</span><div><span class="dir-tag">Операции</span><h3>Перенос данных и отчёт вечером</h3><p>Из мессенджера в таблицу, из таблицы в CRM и обратно, а цифры за день сводятся вручную в конце дня.</p></div></li>
           </ol>
         </div>
 
         <div>
           <div class="day" id="day">
             <div class="day__head">
-              <span>Рабочий день администратора</span>
+              <span>Рабочий день: 4 направления, один человек</span>
               <span class="day__load">Загрузка рутиной: <b class="mono" id="day-pct">0</b>%</span>
             </div>
+            <p class="dir-legend"><span>Привлечение</span><span>Продажи</span><span>Сервис</span><span>Операции</span></p>
             <div class="day__bar" id="day-bar">
               <div class="day__hours" aria-hidden="true">
                 <span data-h="09:00"></span><span data-h="11:00"></span><span data-h="13:00"></span><span data-h="15:00"></span><span data-h="17:00"></span><span data-h="19:00"></span>
@@ -746,7 +755,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           </div>
           <div class="figs">
             <div><b class="mono" id="f1">0</b><p>рабочего дня уходит на повторяющиеся действия</p><small>оценка по разбору процессов</small></div>
-            <div><b class="mono" id="f2">0</b><p>обращений в день проходит через одного человека</p><small>сервисный бизнес, средняя смена</small></div>
+            <div><b class="mono" id="f2">0</b><p>задач и обращений в день проходит через одного человека</p><small>сервисный бизнес, средняя смена</small></div>
             <div><b class="mono" id="f3">0</b><p>часов в неделю тратится на сбор отчётности руками</p><small>без единой системы данных</small></div>
           </div>
           <p class="note">Цифры иллюстративные: реальные считаем на разборе вашего бизнеса.</p>
@@ -758,41 +767,49 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 
 <!-- ========== 03 · ЧТО БЕРЁТ НА СЕБЯ METRAWEN ========== -->
 <section class="sec stage" id="s-sys" aria-labelledby="h-sys">
-  <div class="stage__track" style="--track:320vh">
+  <div class="stage__track" style="--track:380vh">
     <div class="stage__pin">
       <div class="wrap stage__grid">
         <div>
           <p class="eyebrow rv">Что METRAWEN берёт на себя</p>
-          <h2 class="h2 rv" id="h-sys" style="margin-block:22px 20px">Не чат-бот. Работа, доведённая до результата.</h2>
-          <p class="lede rv">Система принимает обращение, понимает его, проверяет в ваших данных, выполняет действие в вашем календаре, CRM или учёте и возвращает клиенту ответ. Всё, что выходит за правила, уходит человеку с готовым контекстом.</p>
+          <h2 class="h2 rv" id="h-sys" style="margin-block:22px 20px">Не чат-бот на входящие. Система на все четыре направления.</h2>
+          <p class="lede rv">Система параллельно закрывает рутину в привлечении, продажах, сервисе и операциях: сама находит клиентов и пишет первой, ведёт рассылки и допродажи, отвечает на обращения и выполняет действие в CRM, готовит документы и сводит отчёт. Всё, что выходит за правила, уходит человеку с готовым контекстом.</p>
           <ol class="steps" id="sys-steps">
-            <li data-s="0"><span class="ix">01</span><div><h3>Принимает отовсюду</h3><p>WhatsApp, Telegram, LINE, почта, форма на сайте, звонок: один вход вместо пяти разных окон.</p></div></li>
-            <li data-s="1"><span class="ix">02</span><div><h3>Понимает и квалифицирует</h3><p>Определяет, что человеку нужно, чего не хватает в заявке, и задаёт недостающие вопросы сама.</p></div></li>
-            <li data-s="2"><span class="ix">03</span><div><h3>Выполняет действие</h3><p>Бронирует, переносит, оформляет заказ, готовит документ, ставит задачу, обновляет карточку в CRM.</p></div></li>
-            <li data-s="3"><span class="ix">04</span><div><h3>Доводит и отчитывается</h3><p>Напоминает, подтверждает, догоняет неоплату, а вечером сводит цифры дня без участия человека.</p></div></li>
+            <li data-s="0"><span class="ix">01</span><div><span class="dir-tag">Привлечение</span><h3>Ищет клиентов и пишет первой</h3><p>По заданным критериям находит потенциальных клиентов и делает первый контакт — без ручного поиска и рассылки.</p></div></li>
+            <li data-s="1"><span class="ix">02</span><div><span class="dir-tag">Продажи</span><h3>Ведёт рассылки и допродажи сама</h3><p>Сегментирует базу, готовит сообщения, отправляет их по расписанию и напоминает о повторном заказе, без ручной работы каждую неделю.</p></div></li>
+            <li data-s="2"><span class="ix">03</span><div><span class="dir-tag">Клиентский сервис</span><h3>Принимает обращения и отвечает</h3><p>WhatsApp, Telegram, LINE, почта, форма на сайте, звонок: один вход вместо пяти окон; понимает, что нужно, и сама бронирует, оформляет заказ или обновляет карточку в CRM.</p></div></li>
+            <li data-s="3"><span class="ix">04</span><div><span class="dir-tag">Операции</span><h3>Готовит документы и сводит отчёт</h3><p>Готовит счёт или подтверждение, напоминает об оплате и вечером сводит цифры дня без участия человека.</p></div></li>
           </ol>
         </div>
 
         <div>
-          <div class="pipe" id="pipe">
-            <div class="pipe__head"><span>Маршрут одного обращения</span><span class="mono" id="pipe-t">0:00</span></div>
-            <div class="pipe__row" id="pipe-row">
-              <div class="pipe__spine" aria-hidden="true"><i></i></div>
-              <div class="node" data-n="0"><em></em><b>Приём</b><span>Сообщение из любого канала</span></div>
-              <div class="node" data-n="1"><em></em><b>Понимание</b><span>Что нужно и чего не хватает</span></div>
-              <div class="node" data-n="2"><em></em><b>Проверка</b><span>Наличие, график, история</span></div>
-              <div class="node" data-n="3"><em></em><b>Действие</b><span>Запись, заказ, документ</span></div>
-              <div class="node node--out" data-n="4"><em></em><b>Результат</b><span>Ответ клиенту и запись в CRM</span></div>
+          <div class="dir4" id="dir4">
+            <div class="dir4__card" data-n="0">
+              <span class="dir4__tag">Привлечение</span>
+              <p>Сама находит клиентов по заданным критериям и первой пишет им в удобный канал.</p>
             </div>
-            <div class="branch" id="branch">
-              <div class="branch__c branch__c--sys"><b>Система закрывает сама</b>
-                <p>Типовые обращения: ответы, записи, переносы, счета, статусы заказов, напоминания, ежедневный отчёт.</p></div>
-              <div class="branch__c branch__c--hum"><b>Человек решает</b>
-                <p>Спецусловия, крупные сделки, конфликты, исключения: приходят к человеку уже собранными, с историей и предложением.</p></div>
+            <div class="dir4__card" data-n="1">
+              <span class="dir4__tag">Продажи</span>
+              <p>Ведёт рассылки, напоминания и допродажи по расписанию, без ручной работы каждую неделю.</p>
+            </div>
+            <div class="dir4__card" data-n="2">
+              <span class="dir4__tag">Клиентский сервис</span>
+              <p>Принимает обращение из любого канала, понимает его и сама выполняет действие в CRM.</p>
+              <p class="dir4__mini"><span>Приём</span><i></i><span>Понимание</span><i></i><span>Действие</span><i></i><span>Результат</span></p>
+            </div>
+            <div class="dir4__card" data-n="3">
+              <span class="dir4__tag">Операции</span>
+              <p>Готовит документы, напоминает об оплате и сама сводит отчёт в конце дня.</p>
             </div>
           </div>
+          <div class="branch" id="branch">
+            <div class="branch__c branch__c--sys"><b>Система закрывает сама</b>
+              <p>Типовые задачи по всем четырём направлениям: ответы, записи, рассылки, счета, статусы заказов, напоминания, ежедневный отчёт.</p></div>
+            <div class="branch__c branch__c--hum"><b>Человек решает</b>
+              <p>Спецусловия, крупные сделки, конфликты, исключения: приходят к человеку уже собранными, с историей и предложением.</p></div>
+          </div>
           <div class="figs">
-            <div><b class="mono" id="g1">0</b><p>типовых обращений закрывается без человека</p><small>после настройки правил</small></div>
+            <div><b class="mono" id="g1">0</b><p>типовых задач закрывается без человека</p><small>после настройки правил</small></div>
             <div><b class="mono" id="g2">0</b><p>секунд до первого ответа клиенту в любое время суток</p><small>включая ночь и выходные</small></div>
             <div><b class="mono" id="g3">0</b><p>часов в неделю возвращается команде на работу с людьми</p><small>иллюстративная оценка</small></div>
           </div>
@@ -803,6 +820,20 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   </div>
 
   <div class="wrap">
+    <div class="growth-chain rv">
+      <p class="growth-chain__lead">Освобождённые часы — это не пауза, а ресурс: время идёт в развитие, а не в рутину. Дальше это считается в цифрах:</p>
+      <div class="growth-chain__row">
+        <span class="growth-chain__item">Экономия часов и денег</span>
+        <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span class="growth-chain__item">Время на развитие бизнеса</span>
+        <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span class="growth-chain__item">Рост эффективности</span>
+        <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span class="growth-chain__item">Больше клиентов и повторных заказов</span>
+        <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span class="growth-chain__item growth-chain__item--final">Рост прибыли и рост компании</span>
+      </div>
+    </div>
     <div class="ctaline">
       <p>Разберём ваши процессы и покажем, что из этого можно передать системе, а что должно остаться за людьми.</p>
       <button class="btn btn--lg" data-open-modal="contact">Забронировать бесплатную стратегическую сессию
@@ -974,33 +1005,20 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         </div>
       </div>
     </div>
+
+    <p class="industries-more rv">Не видите свою отрасль? <a href="#" data-open-modal="contact">Оставьте заявку на консультацию</a> — разберём именно ваш случай.</p>
   </div>
 </section>
 
-<!-- ========== 04b · УПАКОВКА БИЗНЕСА (digital services, отдельный трек) ========== -->
+<!-- ========== 04b · Digital-услуги (короткий тизер, подробности на digital-ru.html) ========== -->
 <section class="sec pack" id="s-pack" aria-labelledby="h-pack">
-  <div class="wrap pack__in">
-    <div class="pack__text">
-      <h2 class="h2 rv" id="h-pack">Клиенты доверяют автоматизации ровно настолько, насколько доверяют вашему сайту</h2>
-      <p class="lede rv">Сайт, логотип, оформление и контент: фундамент, без которого даже лучшая автоматизация не производит впечатления. Помогаем и с этим: приводим бизнес в порядок снаружи, прежде чем настраивать то, что работает внутри.</p>
-      <a class="btn-quiet pack__cta rv" href="#" data-open-modal="contact">Обсудить упаковку бизнеса
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-    </div>
-    <div class="pack__list rv">
-      <div class="pack__item">
-        <div class="pack__item__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9h17" stroke="currentColor" stroke-width="1.6"/><circle cx="6.3" cy="7" r=".55" fill="currentColor"/><circle cx="8.3" cy="7" r=".55" fill="currentColor"/></svg></div>
-        <div class="pack__item__body"><b>Сайт и посадочные страницы</b><span>Место, куда не стыдно привести клиента и откуда система начинает работать</span></div>
-      </div>
-      <div class="pack__item">
-        <div class="pack__item__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 16.9l-5.6 3.1 1.4-6.2-4.8-4.3 6.4-.6L12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
-        <div class="pack__item__body"><b>Логотип и визуальный стиль</b><span>Узнаваемый вид во всех точках контакта — от вывески до чат-бота</span></div>
-      </div>
-      <div class="pack__item">
-        <div class="pack__item__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6.5 3h9.4L19 6.1V20a1 1 0 0 1-1 1H6.5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12h6M9 15.5h6M9 8.5h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <div class="pack__item__body"><b>Контент и оформление</b><span>Тексты, фото и структура, которые объясняют бизнес с первого экрана</span></div>
-      </div>
-    </div>
+  <div class="wrap" style="text-align:center">
+    <p class="eyebrow rv" style="justify-content:center">Digital-услуги</p>
+    <h2 class="h2 rv" id="h-pack" style="margin-top:20px;margin-inline:auto;max-width:26ch">Сайт, бренд и подача — фундамент, на котором держится автоматизация</h2>
+    <p class="lede rv" style="margin-top:16px;margin-inline:auto;max-width:56ch">Сайты, боты, аналитика конкурентов и упаковка бизнеса: помогаем и с этим, прежде чем настраивать то, что работает внутри.</p>
+    <a class="btn btn--lg btn--shine rv" href="digital-ru.html" style="margin-top:32px">Смотреть Digital-услуги
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
   </div>
 </section>
 
@@ -1124,6 +1142,41 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           </div>
         </div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 05b · ПРОЦЕСС РАБОТЫ: ОТ РАЗБОРА ДО ВНЕДРЕНИЯ ========== -->
+<section class="sec" id="s-process" aria-labelledby="h-process">
+  <div class="wrap">
+    <div class="dir-head">
+      <p class="eyebrow rv" style="justify-content:center">Как мы работаем</p>
+      <h2 class="h2 rv" id="h-process" style="margin-top:20px;max-width:none">От разбора процессов до запуска системы</h2>
+      <p class="lede rv" style="max-width:none">Один и тот же путь для любого формата — от аудита до полноценной AI‑команды: меняется масштаб, а не логика работы.</p>
+    </div>
+
+    <div class="process-list" id="process-list">
+      <div class="process-line" aria-hidden="true"><i></i></div>
+      <div class="process-step">
+        <div class="process-step__n">01</div>
+        <h3>Разбор процессов</h3>
+        <p>Смотрим, как устроена рутина в вашем бизнесе сегодня: какие обращения, сколько времени уходит и где теряются клиенты.</p>
+      </div>
+      <div class="process-step">
+        <div class="process-step__n">02</div>
+        <h3>План и приоритеты</h3>
+        <p>Показываем карту того, что можно автоматизировать в первую очередь, с оценкой сроков и ожидаемой отдачи по каждому шагу.</p>
+      </div>
+      <div class="process-step">
+        <div class="process-step__n">03</div>
+        <h3>Внедрение</h3>
+        <p>Настраиваем AI‑сотрудника или систему под ваши каналы и инструменты: без остановки текущей работы бизнеса.</p>
+      </div>
+      <div class="process-step">
+        <div class="process-step__n">04</div>
+        <h3>Поддержка и рост</h3>
+        <p>Смотрим на результат вместе, донастраиваем по реальным данным и расширяем систему на новые направления по мере готовности.</p>
       </div>
     </div>
   </div>
@@ -1274,7 +1327,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <li><a href="#s-day">AI-системы</a></li>
           <li><a href="#s-directions">Направления</a></li>
           <li><a href="#s-formats">Форматы внедрения</a></li>
-          <li><a href="#s-pack">Digital-услуги</a></li>
+          <li><a href="#s-process">Процесс работы</a></li>
+          <li><a href="digital-ru.html">Digital-услуги</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -1313,7 +1367,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     <div class="modal__body">
       <p class="pill-tag"><i></i> Бесплатно · 30 минут · без питча</p>
       <h3 id="booking-title" class="modal__h1">Забронировать стратегическую сессию</h3>
-      <p class="modal__lede">Разберём, где именно в вашем бизнесе автоматизация окупится. Без презентации услуг.</p>
+      <p class="modal__lede">Разберём, где именно в вашем бизнесе автоматизация может дать наибольший эффект. Без презентации услуг.</p>
 
       <div class="book-grid" id="book-step-datetime">
         <div class="book-cal">
@@ -1461,6 +1515,22 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   </div>
 </div>
 
+<!-- ========== exit-intent: one-time offer before leaving ========== -->
+<div class="modal" id="modal-exit" aria-hidden="true">
+  <div class="modal__backdrop" data-close-modal></div>
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="exit-title">
+    <button class="modal__close" data-close-modal aria-label="Закрыть">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.5"/></svg>
+    </button>
+    <div class="modal__body">
+      <p class="eyebrow">Персональный разбор</p>
+      <h3 id="exit-title" class="modal__h1">Не уверены, с чего начать?</h3>
+      <p class="modal__lede">Опишите ситуацию в двух словах: подскажем, какой формат подойдёт именно вам. Разбор бесплатный, без обязательств.</p>
+      <a href="#" data-open-modal="contact" data-switch-modal="modal-exit" class="btn btn--lg btn--shine" style="width:100%;justify-content:center;margin-top:20px">Разобрать мою ситуацию</a>
+    </div>
+  </div>
+</div>
+
 <!-- ========== sticky bottom CTA bar ========== -->
 <div class="stickybar" id="stickybar">
   <p>Готовы освободить бизнес от рутины? Настроим систему, которая заберёт её на себя.</p>
@@ -1475,7 +1545,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   (function(){
     var modals = {
       booking: document.getElementById('modal-booking'),
-      contact: document.getElementById('modal-contact')
+      contact: document.getElementById('modal-contact'),
+      exit: document.getElementById('modal-exit')
     };
     var lastFocus = null;
 
@@ -1523,6 +1594,31 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         if(e.key === 'Escape' && modal.classList.contains('open')) closeModal(modal);
       });
     });
+
+    /* ---- deep-link: other pages (e.g. about-ru.html) can link here to open a modal directly ---- */
+    if(location.hash === '#open-booking' || location.hash === '#open-contact'){
+      var deepKey = location.hash === '#open-contact' ? 'contact' : 'booking';
+      history.replaceState(null, '', location.pathname + location.search);
+      setTimeout(function(){ openModal(deepKey); }, 80);
+    }
+
+    /* ---- exit-intent: once per tab, only on desktop, only if no modal is already open ---- */
+    (function(){
+      var shownKey = 'metrawen_exit_shown';
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var isTouch = window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+      if(isTouch || reduce) return;
+      function anyModalOpen(){ return Object.keys(modals).some(function(k){ return modals[k] && modals[k].classList.contains('open'); }); }
+      function maybeShow(){
+        try{ if(sessionStorage.getItem(shownKey)) return; }catch(err){}
+        if(anyModalOpen()) return;
+        try{ sessionStorage.setItem(shownKey, '1'); }catch(err){}
+        openModal('exit');
+      }
+      document.addEventListener('mouseout', function(e){
+        if(!e.relatedTarget && e.clientY < 10) maybeShow();
+      });
+    })();
 
     /* ---- booking: calendar + slots + details step ---- */
     (function(){
@@ -1733,7 +1829,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   var io = new IntersectionObserver(function(es){
     es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
   },{rootMargin:'0px 0px -12% 0px'});
-  document.querySelectorAll('.rv, .format-row').forEach(function(el){ io.observe(el); });
+  document.querySelectorAll('.rv, .format-row, .process-step, .process-list').forEach(function(el){ io.observe(el); });
 
   /* ---------- format cards: 3d tilt on hover ---------- */
   document.querySelectorAll('.format-row__inner').forEach(function(card){
@@ -1921,20 +2017,20 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 
   if(reduce) return;
 
-  /* ---- day scene ---- */
+  /* ---- day scene: 12 tasks, 3 per direction, so all four read as equally loaded ---- */
   var TASKS = [
-    {t:'«Какие у вас цены?»',      x:2,  y:8,  d:0},
-    {t:'перенос в таблицу',        x:12, y:26, d:0},
-    {t:'«Какие у вас цены?»',      x:19, y:44, d:1},
-    {t:'подтвердить запись',       x:27, y:12, d:0},
-    {t:'счёт вручную',             x:34, y:58, d:0},
-    {t:'«Какие у вас цены?»',      x:41, y:30, d:1},
-    {t:'напомнить о визите',       x:49, y:70, d:0},
-    {t:'перенос в CRM',            x:56, y:18, d:1},
-    {t:'«Вы работаете сегодня?»',  x:63, y:48, d:0},
-    {t:'догнать неоплату',         x:70, y:80, d:0},
-    {t:'перенос в таблицу',        x:77, y:36, d:1},
-    {t:'свести отчёт за день',     x:86, y:62, d:0}
+    {t:'ищет клиента вручную',          x:2,  y:8,  d:0},
+    {t:'рассылка по одному',            x:12, y:26, d:0},
+    {t:'«Какие у вас цены?»',           x:19, y:44, d:1},
+    {t:'подтвердить запись',            x:27, y:12, d:0},
+    {t:'перенос в таблицу',             x:34, y:58, d:0},
+    {t:'кто не ответил, написать снова',x:41, y:30, d:1},
+    {t:'напомнить о визите',            x:49, y:70, d:0},
+    {t:'перенос в CRM',                 x:56, y:18, d:1},
+    {t:'пишет первой в директ',         x:63, y:48, d:0},
+    {t:'догнать неоплату',              x:70, y:80, d:0},
+    {t:'ведёт список в заметках',       x:77, y:36, d:1},
+    {t:'свести отчёт за день',          x:86, y:62, d:0}
   ];
   var bar = document.getElementById('day-bar');
   var els = TASKS.map(function(o){
@@ -1951,9 +2047,9 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   var G = [document.getElementById('g1'),document.getElementById('g2'),document.getElementById('g3')];
   var daySteps = [].slice.call(document.querySelectorAll('#day-steps li'));
   var sysSteps = [].slice.call(document.querySelectorAll('#sys-steps li'));
-  var nodes = [].slice.call(document.querySelectorAll('#pipe-row .node'));
-  var pipe = document.getElementById('pipe'), branch = document.getElementById('branch');
-  var pipeT = document.getElementById('pipe-t'), day = document.getElementById('day');
+  var dirCards = [].slice.call(document.querySelectorAll('#dir4 .dir4__card'));
+  var branch = document.getElementById('branch');
+  var day = document.getElementById('day');
 
   function prog(section){
     var track = section.querySelector('.stage__track');
@@ -1982,15 +2078,13 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     F[0].textContent = Math.round(e*62) + '%';
     F[1].textContent = Math.round(e*140);
     F[2].textContent = (e*6).toFixed(1);
-    daySteps.forEach(function(li,i){ li.classList.toggle('on', p > i*0.22 + 0.04); });
+    daySteps.forEach(function(li,i){ li.classList.toggle('on', p > i*(0.86/Math.max(1,daySteps.length-1)) + 0.04); });
 
     /* — block 03 — */
     var q = prog(secSys), qe = ease(q);
-    pipe.style.setProperty('--p', Math.min(1, qe*1.05).toFixed(3));
-    nodes.forEach(function(n,i){ n.classList.toggle('on', q > i*0.15 + 0.05); });
+    dirCards.forEach(function(c,i){ c.classList.toggle('on', q > i*(0.86/Math.max(1,dirCards.length-1)) + 0.05); });
     branch.classList.toggle('on', q > 0.72);
-    pipeT.textContent = '0:' + String(Math.round(qe*11)).padStart(2,'0');
-    sysSteps.forEach(function(li,i){ li.classList.toggle('on', q > i*0.2 + 0.04); });
+    sysSteps.forEach(function(li,i){ li.classList.toggle('on', q > i*(0.86/Math.max(1,sysSteps.length-1)) + 0.04); });
     G[0].textContent = Math.round(qe*78) + '%';
     G[1].textContent = Math.round(qe*9 + (q>0.02?1:0));
     G[2].textContent = Math.round(qe*14);
