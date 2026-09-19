@@ -48,7 +48,7 @@ button{font:inherit;color:inherit}
   background:color-mix(in srgb,var(--base) 74%,transparent);border-bottom:1px solid var(--hair)}
 .topbar__in{display:flex;align-items:center;gap:20px;height:70px}
 .mark{font-weight:600;font-size:.9375rem;letter-spacing:.32em;margin-right:-.32em;white-space:nowrap}
-.mark-logo{display:block;height:19px;width:auto}
+.mark-logo{display:block;height:26px;width:auto}
 .footer-brand .mark-logo{height:26px;margin-bottom:14px}
 .topnav{display:none;gap:2px;margin-left:12px}
 .topnav a{padding:9px 11px;font-size:.9375rem;font-weight:500;color:var(--text-dim);transition:color .25s}
@@ -397,7 +397,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .aiadv-card__ix{display:block;font-family:var(--font-mono);font-size:1.75rem;font-weight:600;color:var(--accent-hi);letter-spacing:-.01em;margin-bottom:14px}
 .aiadv-card h3{font-size:1.0625rem;font-weight:650;letter-spacing:-.01em;margin-bottom:8px}
 .aiadv-card p{font-size:.875rem;color:var(--text-dim);line-height:1.55}
-.aiadv-note{margin-top:clamp(28px,3vw,40px);text-align:center;font-size:.9375rem;color:var(--text-dim);max-width:68ch;margin-inline:auto;line-height:1.6}
+.aiadv-cta{margin-top:clamp(32px,3.4vw,44px);text-align:center;max-width:62ch;margin-inline:auto;display:flex;flex-direction:column;align-items:center;gap:22px}
+.aiadv-note{font-size:clamp(1.0625rem,1.4vw,1.1875rem);color:var(--text);line-height:1.65;font-weight:450}
 @media(min-width:820px){.industries-grid{grid-template-columns:repeat(2,1fr)}}
 /* при нечётном числе карточек последняя занимает всю ширину, чтобы не оставалась дыра */
 @media(min-width:820px){
@@ -452,7 +453,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 
 /* ---------- процесс работы: от разбора до внедрения ---------- */
 .process-list{margin-top:clamp(56px,6vw,80px);position:relative;display:grid;gap:clamp(36px,4vw,0px)}
-@media(min-width:860px){.process-list{grid-template-columns:repeat(4,1fr);gap:24px}}
+@media(min-width:860px){.process-list{grid-template-columns:repeat(5,1fr);gap:20px}}
 .process-line{display:none}
 @media(min-width:860px){
   .process-line{display:block;position:absolute;left:0;right:0;top:27px;height:1px;background:var(--hair-2);z-index:0;overflow:hidden}
@@ -471,48 +472,91 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   font-weight:600;transition:border-color .4s var(--ease),box-shadow .4s var(--ease)}
 .process-step.in .process-step__n{border-color:var(--accent);box-shadow:0 0 0 6px rgba(var(--accent-rgb),.12)}
 .process-step h3{margin-top:18px;font-size:1.125rem;font-weight:650;letter-spacing:-.01em}
-.process-step p{margin-top:8px;font-size:.9063rem;color:var(--text-dim);line-height:1.6;max-width:32ch}
+.process-step p{margin-top:8px;font-size:.9063rem;color:var(--text-dim);line-height:1.6;max-width:40ch}
+@media(min-width:860px){.process-step p{max-width:none;padding-right:12px}}
 @media(prefers-reduced-motion:reduce){.process-step{opacity:1;transform:none}.process-line i{transition:none}}
 
 /* ---------- 05 форматы внедрения — крупные плавающие карточки ---------- */
-.formats-list{margin-top:clamp(56px,7vw,88px);display:flex;flex-direction:column;gap:clamp(28px,4vw,44px);perspective:1600px}
-.format-row{position:relative;opacity:0;transform:translateX(-34px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
-.format-row.in{opacity:1;transform:none}
-.format-row:nth-of-type(2){transition-delay:.08s}
-.format-row:nth-of-type(3){transition-delay:.08s}
-.format-row:nth-of-type(4){transition-delay:.08s}
-.format-row__inner{position:relative;background:linear-gradient(160deg,rgba(26,24,20,.7),rgba(14,14,13,.6));
-  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);border:1px solid var(--hair-2);border-radius:26px;
-  padding:clamp(34px,4vw,52px);display:grid;gap:clamp(24px,3.4vw,40px);will-change:transform;
-  box-shadow:0 26px 40px -28px rgba(0,0,0,.7),0 4px 10px -4px rgba(0,0,0,.4);
-  transition:transform .12s linear,box-shadow .4s var(--ease),border-color .4s var(--ease);
+.formats-grid{margin-top:clamp(48px,6vw,72px);display:flex;flex-direction:column;gap:clamp(20px,2.4vw,28px)}
+.format-card{position:relative;display:grid;gap:clamp(20px,3vw,32px);opacity:0;transform:translateY(24px);
+  transition:opacity .7s var(--ease),transform .7s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease);
+  background:linear-gradient(160deg,rgba(26,24,20,.7),rgba(14,14,13,.6));
+  border:1px solid var(--hair-2);border-radius:24px;padding:clamp(28px,3.2vw,40px);
+  box-shadow:0 22px 40px -30px rgba(0,0,0,.7);will-change:transform;
   animation:formatFloat 7s ease-in-out infinite}
-.format-row:nth-of-type(1) .format-row__inner{animation-delay:0s}
-.format-row:nth-of-type(2) .format-row__inner{animation-delay:.7s}
-.format-row:nth-of-type(3) .format-row__inner{animation-delay:1.4s}
-.format-row:nth-of-type(4) .format-row__inner{animation-delay:2.1s}
-.format-row__inner:hover{border-color:var(--accent);box-shadow:0 46px 80px -30px rgba(0,0,0,.7),0 8px 22px -8px rgba(var(--accent-rgb),.25)}
-@keyframes formatFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-.format-row--hi .format-row__inner{border-color:rgba(var(--accent-rgb),.5);background:linear-gradient(160deg,rgba(196,161,101,.1),rgba(20,19,17,.55))}
-@media(min-width:900px){.format-row__inner{grid-template-columns:1fr 1.7fr;align-items:start}}
-.format-row__head{display:flex;flex-direction:column;gap:12px;position:relative}
-.format-row__idx{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.1em;color:var(--text-faint);opacity:.7}
-.format-row__badge{align-self:flex-start;font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.08em;text-transform:uppercase;
+@media(min-width:840px){.format-card{grid-template-columns:1.3fr 1fr;align-items:center}}
+.format-card.in{opacity:1;transform:none}
+.format-card:nth-of-type(1){animation-delay:0s}
+.format-card:nth-of-type(2){animation-delay:.7s}
+.format-card:nth-of-type(3){animation-delay:1.4s}
+.format-card:nth-of-type(4){animation-delay:2.1s}
+.format-card:hover{border-color:var(--accent);box-shadow:0 40px 70px -30px rgba(0,0,0,.7),0 8px 20px -8px rgba(var(--accent-rgb),.22)}
+@keyframes formatFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.format-card.in:hover{transform:translateY(-4px)}
+.format-card--hi{border-color:rgba(var(--accent-rgb),.5);background:linear-gradient(160deg,rgba(196,161,101,.1),rgba(20,19,17,.55))}
+.format-card__top{display:flex;align-items:center;gap:12px}
+.format-card__idx{font-family:var(--font-mono);font-size:.8125rem;letter-spacing:.1em;color:var(--text-faint);opacity:.7}
+.format-card__badge{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.08em;text-transform:uppercase;
   color:var(--accent-hi);background:rgba(var(--accent-rgb),.14);border-radius:999px;padding:5px 12px}
-.format-row__head h3{font-size:clamp(1.5rem,2vw,1.875rem);font-weight:650;letter-spacing:-.015em;line-height:1.15}
-.format-row__scope{font-family:var(--font-mono);font-size:.8125rem;letter-spacing:.02em;color:var(--text-faint)}
-.format-row__cta{margin-top:8px;font-size:.9375rem;font-weight:600;color:var(--accent-hi);display:inline-flex;align-items:center;gap:6px}
-.format-row__cta svg{width:14px;height:14px;transition:transform .25s var(--ease)}
-.format-row__inner:hover .format-row__cta svg{transform:translateX(3px)}
-.format-row__body p{font-size:1.0313rem;color:var(--text-dim);line-height:1.65}
-.format-row__grid{margin-top:18px;display:grid;gap:20px}
-@media(min-width:620px){.format-row__grid{grid-template-columns:repeat(3,1fr)}}
-.format-row__grid h4{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);margin-bottom:9px}
-.format-row__grid ul{display:flex;flex-direction:column;gap:8px}
-.format-row__grid li{display:flex;gap:8px;font-size:.875rem;color:var(--text-dim);line-height:1.45}
-.format-row__grid li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);flex:none;margin-top:7px}
-.format-row__grid span{font-size:.875rem;color:var(--text-dim);line-height:1.55;display:block}
-@media(prefers-reduced-motion:reduce){.format-row{opacity:1;transform:none}.format-row__inner{animation:none}}
+.format-card h3{margin-top:20px;font-size:clamp(1.5rem,2.2vw,2rem);font-weight:650;letter-spacing:-.015em;line-height:1.15}
+.format-card p{margin-top:14px;font-size:1.0313rem;color:var(--text-dim);line-height:1.6;max-width:46ch}
+.format-card__more{margin-top:22px;font-size:.9375rem;font-weight:600;color:var(--accent-hi);display:inline-flex;align-items:center;gap:6px}
+.format-card__more svg{width:14px;height:14px;transition:transform .25s var(--ease)}
+.format-card:hover .format-card__more svg{transform:translateX(3px)}
+.format-card__art{width:100%;max-width:280px;justify-self:center}
+.format-card__art svg{width:100%;height:auto;display:block}
+@media(max-width:839px){.format-card__art{max-width:220px;margin-inline:auto}}
+@media(prefers-reduced-motion:reduce){.format-card{opacity:1;transform:none;animation:none}}
+
+/* ---------- иллюстрации карточек форматов (общие art-* примитивы) ---------- */
+.art-float{animation:artFloat 9s ease-in-out infinite}
+@keyframes artFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.art-float--b{animation-duration:7.5s;animation-delay:-2.2s}
+.art-float--c{animation-duration:8.4s;animation-delay:-4.6s}
+
+.art-panel{fill:rgba(16,15,14,.72);stroke:var(--hair-2);stroke-width:1}
+.art-panel--hi{stroke:rgba(var(--accent-rgb),.45)}
+.art-line{stroke:var(--hair-2);stroke-width:1;fill:none}
+.art-bar{fill:rgba(var(--text-rgb),.14)}
+.art-bar--hi{fill:rgba(var(--accent-rgb),.5)}
+.art-label{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em;fill:var(--text-faint)}
+
+.art-scan{animation:artScan 4.6s cubic-bezier(.45,0,.2,1) infinite}
+@keyframes artScan{
+  0%{transform:translateY(0);opacity:0}
+  10%{opacity:1}
+  72%{opacity:1}
+  100%{transform:translateY(150px);opacity:0}
+}
+
+.art-dot{fill:var(--accent);animation:artType 1.6s ease-in-out infinite}
+.art-dot:nth-of-type(2){animation-delay:.2s}
+.art-dot:nth-of-type(3){animation-delay:.4s}
+@keyframes artType{0%,100%{opacity:.28}45%{opacity:1}}
+
+.art-col{fill:rgba(var(--accent-rgb),.45);transform-box:fill-box;transform-origin:50% 100%;
+  animation:artGrow 3.8s ease-in-out infinite}
+.art-col:nth-of-type(2){animation-delay:.25s}
+.art-col:nth-of-type(3){animation-delay:.5s}
+.art-col:nth-of-type(4){animation-delay:.75s}
+.art-col:nth-of-type(5){animation-delay:1s;fill:rgba(var(--accent-rgb),.85)}
+@keyframes artGrow{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+
+.art-pulse{fill:var(--accent);opacity:0;animation:artPulse 3.4s linear infinite}
+.art-pulse--2{animation-delay:1.15s}
+.art-pulse--3{animation-delay:2.3s}
+@keyframes artPulse{0%{opacity:0;transform:translate(0,0)}12%{opacity:.95}88%{opacity:.95}100%{opacity:0;transform:translate(var(--dx,60px),var(--dy,0px))}}
+
+.art-swatch{animation:artSwatch 5s ease-in-out infinite}
+.art-swatch:nth-of-type(2){animation-delay:.4s}
+.art-swatch:nth-of-type(3){animation-delay:.8s}
+@keyframes artSwatch{0%,100%{opacity:.55}50%{opacity:1}}
+
+@media(prefers-reduced-motion:reduce){
+  .art-float,.art-scan,.art-dot,.art-col,.art-pulse,.art-swatch{animation:none}
+  .art-scan,.art-pulse{opacity:0}
+  .art-col{transform:scaleY(.8)}
+}
 
 /* ---------- 06 трансформация: до / после ---------- */
 /* ---------- textured dark bg — reserved for a couple of standout blocks ---------- */
@@ -607,7 +651,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .ctaline p{font-size:1.0625rem;color:var(--text-dim);max-width:44ch}
 .growth-chain{margin-top:clamp(48px,5vw,72px)}
 .growth-chain__lead{font-size:clamp(1rem,1.25vw,1.1875rem);color:var(--text-dim);max-width:62ch;margin-bottom:28px;line-height:1.55}
-.growth-chain__row{display:flex;flex-wrap:nowrap;align-items:center;gap:14px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px;mask-image:linear-gradient(90deg,#000 96%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 96%,transparent)}
+.growth-chain__row{display:flex;flex-wrap:wrap;align-items:center;gap:14px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px;padding-right:4px}
 .growth-chain__row::-webkit-scrollbar{display:none}
 .growth-chain__item{font-family:var(--font-mono);font-size:clamp(.8125rem,1vw,.9375rem);letter-spacing:.03em;line-height:1.3;
   padding:16px 24px;border:1px solid var(--hair-2);border-radius:999px;color:var(--text);white-space:nowrap;background:rgba(16,15,14,.45);
@@ -690,10 +734,11 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       <div class="navitem">
         <a href="#s-formats">AI-системы <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <div class="dropdown">
-          <a href="#format-audit">AI Opportunity Audit</a>
-          <a href="#format-starter">AI Employee — Starter</a>
-          <a href="#format-pro">AI Employee — Pro</a>
-          <a href="#format-custom">AI System</a>
+          <a href="ai-audit-ru.html">AI Opportunity Audit</a>
+          <a href="ai-starter-ru.html">AI Employee — Starter</a>
+          <a href="ai-pro-ru.html">AI Employee — Pro</a>
+          <a href="ai-custom-ru.html">AI System</a>
+          <a href="#s-formats" class="more">все форматы на главной</a>
         </div>
       </div>
       <div class="navitem">
@@ -752,7 +797,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="hero__wash" aria-hidden="true"></div>
 
   <div class="hero__in">
-    <p class="eyebrow rv">Бизнес-системы на основе ИИ</p>
+    <p class="eyebrow rv">AI-сотрудники и AI-отделы для бизнеса</p>
     <h1 id="h-hero" class="rv">Автоматизируем рутинную работу бизнеса, чтобы команда занималась <em>тем, что действительно важно.</em></h1>
     <p class="lede hero__lede rv">Снимаем с бизнеса рутину: привлечение клиентов, заявки, продажи, напоминания, отчётность. Эту работу может закрывать отдельный AI‑сотрудник или целая AI‑команда, а решения остаются за вами.</p>
     <div class="hero__actions rv">
@@ -839,13 +884,13 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       <div class="wrap stage__grid">
         <div>
           <p class="eyebrow rv">Что берёт на себя AI-сотрудник или AI-отдел</p>
-          <h2 class="h2 rv" id="h-sys" style="margin-block:22px 20px">Не чат-бот на входящие. AI-сотрудники на все четыре направления бизнеса.</h2>
+          <h2 class="h2 rv" id="h-sys" style="margin-block:22px 20px;max-width:34ch">AI-сотрудники сразу на все четыре направления бизнеса, а не один чат-бот на входящие</h2>
           <p class="lede rv">Не один помощник для команды, а AI-сотрудники и AI-отделы, которые параллельно закрывают рутину в привлечении, продажах, сервисе и операциях: сами находят клиентов и пишут первыми, ведут рассылки и допродажи, отвечают на обращения и выполняют действие в CRM, готовят документы и сводят отчёт. Всё, что выходит за правила, уходит человеку с готовым контекстом.</p>
           <ol class="steps" id="sys-steps">
-            <li data-s="0"><span class="ix">01</span><div><span class="dir-tag">Привлечение</span><h3>Ищет клиентов и пишет первой</h3><p>По заданным критериям находит потенциальных клиентов и делает первый контакт — без ручного поиска и рассылки.</p></div></li>
-            <li data-s="1"><span class="ix">02</span><div><span class="dir-tag">Продажи</span><h3>Ведёт рассылки и допродажи сама</h3><p>Сегментирует базу, готовит сообщения, отправляет их по расписанию и напоминает о повторном заказе, без ручной работы каждую неделю.</p></div></li>
-            <li data-s="2"><span class="ix">03</span><div><span class="dir-tag">Клиентский сервис</span><h3>Принимает обращения и отвечает</h3><p>WhatsApp, Telegram, LINE, почта, форма на сайте, звонок: один вход вместо пяти окон; понимает, что нужно, и сама бронирует, оформляет заказ или обновляет карточку в CRM.</p></div></li>
-            <li data-s="3"><span class="ix">04</span><div><span class="dir-tag">Операции</span><h3>Готовит документы и сводит отчёт</h3><p>Готовит счёт или подтверждение, напоминает об оплате и вечером сводит цифры дня без участия человека.</p></div></li>
+            <li data-s="0"><span class="ix">01</span><div><span class="dir-tag">Привлечение</span><h3>Ищут клиентов и пишут первыми</h3><p>По заданным критериям находят потенциальных клиентов и делают первый контакт — без ручного поиска и рассылки.</p></div></li>
+            <li data-s="1"><span class="ix">02</span><div><span class="dir-tag">Продажи</span><h3>Ведут рассылки и допродажи</h3><p>Сегментируют базу, готовят сообщения, отправляют их по расписанию и напоминают о повторном заказе, без ручной работы каждую неделю.</p></div></li>
+            <li data-s="2"><span class="ix">03</span><div><span class="dir-tag">Клиентский сервис</span><h3>Принимают обращения и отвечают</h3><p>WhatsApp, Telegram, LINE, почта, форма на сайте, звонок: один вход вместо пяти окон; понимают, что нужно, и выполняют действие — бронируют, оформляют заказ или обновляют карточку в CRM.</p></div></li>
+            <li data-s="3"><span class="ix">04</span><div><span class="dir-tag">Операции</span><h3>Готовят документы и сводят отчёт</h3><p>Готовят счёт или подтверждение, напоминают об оплате и вечером сводят цифры дня без участия человека.</p></div></li>
           </ol>
         </div>
 
@@ -853,24 +898,24 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <div class="dir4" id="dir4">
             <div class="dir4__card" data-n="0">
               <span class="dir4__tag">Привлечение</span>
-              <p>Сама находит клиентов по заданным критериям и первой пишет им в удобный канал.</p>
+              <p>Находят клиентов по заданным критериям и первыми выходят с ними на связь в удобном канале.</p>
             </div>
             <div class="dir4__card" data-n="1">
               <span class="dir4__tag">Продажи</span>
-              <p>Ведёт рассылки, напоминания и допродажи по расписанию, без ручной работы каждую неделю.</p>
+              <p>Ведут рассылки, напоминания и допродажи по расписанию, без ручной работы каждую неделю.</p>
             </div>
             <div class="dir4__card" data-n="2">
               <span class="dir4__tag">Клиентский сервис</span>
-              <p>Принимает обращение из любого канала, понимает его и сама выполняет действие в CRM.</p>
+              <p>Принимают обращение из любого канала, понимают его и выполняют нужное действие в CRM.</p>
               <p class="dir4__mini"><span>Приём</span><i></i><span>Понимание</span><i></i><span>Действие</span><i></i><span>Результат</span></p>
             </div>
             <div class="dir4__card" data-n="3">
               <span class="dir4__tag">Операции</span>
-              <p>Готовит документы, напоминает об оплате и сама сводит отчёт в конце дня.</p>
+              <p>Готовят документы, напоминают об оплате и сводят отчёт в конце дня.</p>
             </div>
           </div>
           <div class="branch" id="branch">
-            <div class="branch__c branch__c--sys"><b>Система закрывает сама</b>
+            <div class="branch__c branch__c--sys"><b>AI-сотрудники закрывают сами</b>
               <p>Типовые задачи по всем четырём направлениям: ответы, записи, рассылки, счета, статусы заказов, напоминания, ежедневный отчёт.</p></div>
             <div class="branch__c branch__c--hum"><b>Человек решает</b>
               <p>Спецусловия, крупные сделки, конфликты, исключения: приходят к человеку уже собранными, с историей и предложением.</p></div>
@@ -890,27 +935,28 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     <div class="growth-chain rv">
       <p class="growth-chain__lead">Освобождённые часы — это не пауза, а ресурс: время идёт в развитие, а не в рутину. Дальше это считается в цифрах:</p>
       <div class="growth-chain__row">
-        <span class="growth-chain__item">Экономия часов и денег</span>
+        <span class="growth-chain__item">Экономия 20–40 ч и денег в месяц</span>
         <span class="growth-chain__pair">
           <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
-          <span class="growth-chain__item">Время на развитие бизнеса</span>
+          <span class="growth-chain__item">70–80% этого времени — в развитие</span>
         </span>
         <span class="growth-chain__pair">
           <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
-          <span class="growth-chain__item">Рост эффективности</span>
+          <span class="growth-chain__item">+20–30% эффективности процессов</span>
         </span>
         <span class="growth-chain__pair">
           <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
-          <span class="growth-chain__item">Больше клиентов и повторных заказов</span>
+          <span class="growth-chain__item">+20–40% заявок и повторных заказов</span>
         </span>
         <span class="growth-chain__pair">
           <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
-          <span class="growth-chain__item growth-chain__item--final">Рост прибыли и рост компании</span>
+          <span class="growth-chain__item growth-chain__item--final">Рост прибыли на 15–30%</span>
         </span>
       </div>
+      <p class="note" style="margin-top:14px">Цифры иллюстративные: реальные считаем на разборе вашего бизнеса.</p>
     </div>
     <div class="ctaline">
-      <p>Разберём ваши процессы и покажем, что из этого можно передать системе, а что должно остаться за людьми.</p>
+      <p>Разберём ваши процессы и покажем, что из этого можно передать AI-сотрудникам, а что должно остаться за людьми.</p>
       <button class="btn btn--lg" data-open-modal="contact">Забронировать бесплатную стратегическую сессию
         <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></button>
     </div>
@@ -923,8 +969,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="wrap">
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Шире, чем входящие обращения</p>
-      <h2 class="h2 rv" id="h-directions" style="margin-top:20px;max-width:none">От поиска клиентов до отчётности: система под конкретный бизнес</h2>
-      <p class="lede rv" style="max-width:none">METRAWEN — это не только ответы на входящие: система может закрывать привлечение клиентов, продажи и внутренние операции так же, как поддержку. Набор направлений каждый раз собирается под конкретный бизнес, а не берётся из шаблона.</p>
+      <h2 class="h2 rv" id="h-directions" style="margin-top:20px;max-width:none">От поиска клиентов до отчётности: AI-сотрудники под конкретный бизнес</h2>
+      <p class="lede rv" style="max-width:none">METRAWEN — это не только ответы на входящие: AI-сотрудники и AI-отделы закрывают привлечение клиентов, продажи и внутренние операции так же, как поддержку. Набор направлений каждый раз собирается под конкретный бизнес, а не берётся из шаблона.</p>
     </div>
 
     <div class="dir-grid">
@@ -985,8 +1031,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="wrap">
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Отрасли</p>
-      <h2 class="h2 rv" id="h-industries" style="margin-top:20px;max-width:none">Что система решает в вашей отрасли</h2>
-      <p class="lede rv" style="max-width:none">Задачи и выгоды в каждой отрасли разные, поэтому и система под них собирается отдельно, а не по общему шаблону.</p>
+      <h2 class="h2 rv" id="h-industries" style="margin-top:20px;max-width:none">Что решают AI-сотрудники и AI-отделы в вашей отрасли</h2>
+      <p class="lede rv" style="max-width:none">Задачи и выгоды в каждой отрасли разные, поэтому и AI-сотрудник или AI-отдел под них собирается отдельно, а не по общему шаблону.</p>
     </div>
 
     <div class="industries-grid">
@@ -1100,6 +1146,178 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   </div>
 </section>
 
+<section class="sec" id="s-formats" aria-labelledby="h-formats">
+  <div class="wrap">
+    <div class="dir-head">
+      <p class="eyebrow rv" style="justify-content:center">Форматы внедрения</p>
+      <h2 class="h2 rv" id="h-formats" style="margin-top:20px;max-width:none">От отдельного AI‑сотрудника до целого отдела</h2>
+      <p class="lede rv" style="max-width:none">Формат растёт вместе с бизнесом: отдельный AI‑сотрудник&nbsp;→ AI‑команда&nbsp;→ AI‑отдел&nbsp;→ комплексная система. Начинать не обязательно с большого: можно закрыть одну задачу и расширяться по мере результата.</p>
+    </div>
+
+    <div class="formats-grid">
+      <a class="format-card rv" href="ai-audit-ru.html">
+        <div>
+          <div class="format-card__top">
+            <span class="format-card__idx">01</span>
+            <span class="format-card__badge">Быстрый старт</span>
+          </div>
+          <h3>AI Opportunity Audit</h3>
+          <p>Полный аудит бизнес-процессов и метрик: что автоматизировать в первую очередь, а что не трогать.</p>
+          <span class="format-card__more">Подробнее об аудите
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+        <div class="format-card__art" aria-hidden="true">
+          <svg viewBox="0 0 220 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="fcScanGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="rgb(196,161,101)" stop-opacity="0"/>
+                <stop offset=".5" stop-color="rgb(196,161,101)" stop-opacity=".7"/>
+                <stop offset="1" stop-color="rgb(196,161,101)" stop-opacity="0"/>
+              </linearGradient>
+              <clipPath id="fcAuditClip"><rect x="14" y="14" width="130" height="100" rx="12"/></clipPath>
+            </defs>
+            <g class="art-float">
+              <rect class="art-panel" x="14" y="14" width="130" height="100" rx="12"/>
+              <g clip-path="url(#fcAuditClip)">
+                <rect class="art-bar" x="30" y="76" width="14" height="26" rx="3"/>
+                <rect class="art-bar--hi" x="54" y="56" width="14" height="46" rx="3"/>
+                <rect class="art-bar" x="78" y="66" width="14" height="36" rx="3"/>
+                <rect class="art-bar--hi" x="102" y="42" width="14" height="60" rx="3"/>
+                <rect class="art-bar" x="126" y="88" width="12" height="14" rx="3"/>
+                <rect class="art-scan" x="14" y="14" width="130" height="3" fill="url(#fcScanGrad)"/>
+              </g>
+              <text class="art-label" x="14" y="130">АУДИТ</text>
+              <path class="art-line" d="M144 60 H188"/>
+              <circle class="art-pulse" cx="144" cy="60" r="3" style="--dx:44px;--dy:0px"/>
+              <circle class="art-panel--hi" cx="198" cy="60" r="18" fill="rgba(196,161,101,.12)" stroke="rgba(196,161,101,.5)"/>
+              <text class="art-label" x="198" y="64" text-anchor="middle" style="font-size:10px">100%</text>
+            </g>
+          </svg>
+        </div>
+      </a>
+
+      <a class="format-card format-card--hi rv" href="ai-starter-ru.html">
+        <div>
+          <div class="format-card__top">
+            <span class="format-card__idx">02</span>
+            <span class="format-card__badge">Популярный выбор</span>
+          </div>
+          <h3>AI Employee · Starter</h3>
+          <p>Один AI-сотрудник закрывает одну роль полностью — заявки, запись или поддержку, без ручной доработки.</p>
+          <span class="format-card__more">Подробнее о Starter
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+        <div class="format-card__art" aria-hidden="true">
+          <svg viewBox="0 0 220 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="art-line" d="M50 75 H96"/>
+            <circle class="art-pulse" cx="50" cy="75" r="3" style="--dx:46px;--dy:0px"/>
+            <g class="art-float">
+              <rect class="art-panel" x="10" y="52" width="40" height="46" rx="12"/>
+              <path d="M22 88 v10 l14-10 z" fill="rgba(16,15,14,.72)" stroke="rgba(196,161,101,.45)" stroke-width="1"/>
+              <circle class="art-dot" cx="22" cy="68" r="3"/>
+              <circle class="art-dot" cx="34" cy="68" r="3"/>
+            </g>
+            <g class="art-float art-float--b">
+              <rect class="art-panel--hi" x="96" y="30" width="110" height="90" rx="14"/>
+              <circle cx="120" cy="56" r="12" fill="rgba(196,161,101,.16)" stroke="rgba(196,161,101,.55)"/>
+              <rect class="art-bar--hi" x="140" y="48" width="52" height="9" rx="4.5"/>
+              <rect class="art-bar" x="140" y="63" width="40" height="7" rx="3.5"/>
+              <rect class="art-bar" x="112" y="86" width="80" height="7" rx="3.5"/>
+              <rect class="art-bar" x="112" y="99" width="56" height="7" rx="3.5"/>
+              <text class="art-label" x="112" y="27" style="font-size:9px">1 РОЛЬ, ПОЛНОСТЬЮ</text>
+            </g>
+          </svg>
+        </div>
+      </a>
+
+      <a class="format-card rv" href="ai-pro-ru.html">
+        <div>
+          <div class="format-card__top">
+            <span class="format-card__idx">03</span>
+            <span class="format-card__badge">Комплексно</span>
+          </div>
+          <h3>AI Employee · Pro</h3>
+          <p>Целый AI-отдел вместо нескольких штатных ролей: продажи, поддержка и документы работают параллельно.</p>
+          <span class="format-card__more">Подробнее о Pro
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+        <div class="format-card__art" aria-hidden="true">
+          <svg viewBox="0 0 220 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="art-line" d="M56 40 H100 V70"/>
+            <path class="art-line" d="M56 75 H100"/>
+            <path class="art-line" d="M56 110 H100 V80"/>
+            <circle class="art-pulse" cx="56" cy="40" r="3" style="--dx:44px;--dy:30px"/>
+            <circle class="art-pulse art-pulse--2" cx="56" cy="75" r="3" style="--dx:44px;--dy:0px"/>
+            <circle class="art-pulse art-pulse--3" cx="56" cy="110" r="3" style="--dx:44px;--dy:-30px"/>
+            <g class="art-float">
+              <rect class="art-panel" x="10" y="26" width="46" height="28" rx="10"/>
+              <circle class="art-swatch" cx="26" cy="40" r="7" fill="rgb(196,161,101)"/>
+              <text class="art-label" x="38" y="44" style="font-size:9px">Продажи</text>
+            </g>
+            <g class="art-float art-float--b">
+              <rect class="art-panel" x="10" y="61" width="46" height="28" rx="10"/>
+              <circle class="art-swatch" cx="26" cy="75" r="7" fill="rgba(242,236,223,.55)"/>
+              <text class="art-label" x="38" y="79" style="font-size:9px">Сервис</text>
+            </g>
+            <g class="art-float art-float--c">
+              <rect class="art-panel" x="10" y="96" width="46" height="28" rx="10"/>
+              <circle class="art-swatch" cx="26" cy="110" r="7" fill="rgb(143,194,164)"/>
+              <text class="art-label" x="38" y="114" style="font-size:9px">Документы</text>
+            </g>
+            <g class="art-float">
+              <rect class="art-panel--hi" x="100" y="34" width="106" height="82" rx="14"/>
+              <text class="art-label" x="112" y="58" style="font-size:11px">AI-ОТДЕЛ</text>
+              <rect class="art-bar--hi" x="112" y="70" width="82" height="8" rx="4"/>
+              <rect class="art-bar" x="112" y="86" width="60" height="7" rx="3.5"/>
+              <rect class="art-bar" x="112" y="99" width="70" height="7" rx="3.5"/>
+            </g>
+          </svg>
+        </div>
+      </a>
+
+      <a class="format-card rv" href="ai-custom-ru.html">
+        <div>
+          <div class="format-card__top">
+            <span class="format-card__idx">04</span>
+            <span class="format-card__badge">Под задачу</span>
+          </div>
+          <h3>AI System (Custom)</h3>
+          <p>Комплекс из AI-сотрудников и AI-отделов, собранный в единую систему под структуру вашего бизнеса.</p>
+          <span class="format-card__more">Подробнее о Custom
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+        <div class="format-card__art" aria-hidden="true">
+          <svg viewBox="0 0 220 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="art-line" d="M110 75 L44 30"/>
+            <path class="art-line" d="M110 75 L44 75"/>
+            <path class="art-line" d="M110 75 L44 120"/>
+            <path class="art-line" d="M110 75 L176 30"/>
+            <path class="art-line" d="M110 75 L176 120"/>
+            <circle class="art-pulse" cx="110" cy="75" r="3" style="--dx:-58px;--dy:-38px"/>
+            <circle class="art-pulse art-pulse--2" cx="110" cy="75" r="3" style="--dx:58px;--dy:-38px"/>
+            <circle class="art-pulse art-pulse--3" cx="110" cy="75" r="3" style="--dx:0px;--dy:44px"/>
+            <g class="art-float">
+              <circle class="art-swatch" cx="44" cy="30" r="12" fill="rgba(196,161,101,.7)"/>
+              <circle class="art-swatch" cx="44" cy="75" r="12" fill="rgba(242,236,223,.5)"/>
+              <circle class="art-swatch" cx="44" cy="120" r="12" fill="rgba(143,194,164,.7)"/>
+              <circle class="art-swatch" cx="176" cy="30" r="12" fill="rgba(196,161,101,.4)"/>
+              <circle class="art-swatch" cx="176" cy="120" r="12" fill="rgba(242,236,223,.35)"/>
+            </g>
+            <g class="art-float art-float--b">
+              <circle class="art-panel--hi" cx="110" cy="75" r="26" fill="rgba(196,161,101,.14)" stroke="rgba(196,161,101,.55)"/>
+              <text class="art-label" x="92" y="79" style="font-size:10px">СИСТЕМА</text>
+            </g>
+          </svg>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- ========== 04b · Digital-услуги (короткий тизер, подробности на digital-ru.html) ========== -->
 <section class="sec pack" id="s-pack" aria-labelledby="h-pack">
   <div class="wrap" style="text-align:center">
@@ -1112,138 +1330,12 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   </div>
 </section>
 
-<!-- ========== 05 · ФОРМАТЫ ВНЕДРЕНИЯ ========== -->
-<section class="sec" id="s-formats" aria-labelledby="h-formats">
-  <div class="wrap">
-    <div class="dir-head">
-      <p class="eyebrow rv" style="justify-content:center">Форматы внедрения</p>
-      <h2 class="h2 rv" id="h-formats" style="margin-top:20px;max-width:none">От отдельного AI‑помощника до целого отдела</h2>
-      <p class="lede rv" style="max-width:none">Формат растёт вместе с бизнесом: отдельный AI‑помощник&nbsp;→ AI‑работник&nbsp;→ AI‑команда&nbsp;→ AI‑отдел&nbsp;→ комплексная система. Начинать не обязательно с большого: можно закрыть одну задачу и расширяться по мере результата.</p>
-    </div>
-
-    <div class="formats-list">
-      <div class="format-row" id="format-audit">
-        <div class="format-row__inner">
-        <div class="format-row__head">
-          <span class="format-row__idx">01</span>
-          <span class="format-row__badge">Быстрый старт</span>
-          <h3>AI Opportunity Audit</h3>
-          <span class="format-row__scope">Разбор процессов, 3–5 рабочих дней</span>
-          <a class="format-row__cta" href="#" data-open-modal="contact">Обсудить аудит
-            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </div>
-        <div class="format-row__body">
-          <p>Полный разбор бизнес-процессов, а не только «рутины»: смотрим на привлечение, продажи, сервис и операции целиком и точечно показываем, что и где стоит улучшить, что автоматизировать, а что решить сайтом, ботом, одним AI-сотрудником или целым AI-отделом.</p>
-          <div class="format-row__grid">
-            <div><h4>Что входит</h4>
-              <ul>
-                <li>Карта всех процессов и повторяющихся задач</li>
-                <li>Точки роста: сайт, бот, AI-сотрудник или AI-отдел под каждую</li>
-                <li>Приоритеты по эффекту и сложности</li>
-                <li>План внедрения с оценкой сроков и бюджета</li>
-              </ul>
-            </div>
-            <div><h4>Кому подходит</h4><span>Бизнесу, который ещё не уверен, что и в каком порядке улучшать: сайт, воронку продаж, поддержку или внутренние операции, и хочет сначала увидеть картину целиком.</span></div>
-            <div><h4>Зачем</h4><span>Снижает риск: вы вкладываетесь в разбор, а не сразу в разработку, и получаете план с реальными сроками, бюджетом и ожидаемой отдачей по каждому пункту.</span></div>
-          </div>
-        </div>
-        </div>
-      </div>
-
-      <div class="format-row format-row--hi" id="format-starter">
-        <div class="format-row__inner">
-        <div class="format-row__head">
-          <span class="format-row__idx">02</span>
-          <span class="format-row__badge">Популярный выбор</span>
-          <h3>AI Employee · Starter</h3>
-          <span class="format-row__scope">Одно направление, 1–2 недели</span>
-          <a class="format-row__cta" href="#" data-open-modal="contact">Обсудить Starter
-            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </div>
-        <div class="format-row__body">
-          <p>Один AI-сотрудник на одну конкретную роль: например администратор, который принимает заявки и ведёт запись, или сотрудник поддержки, который отвечает на типовые вопросы, полностью и без ручной доработки за ним.</p>
-          <div class="format-row__grid">
-            <div><h4>Что входит</h4>
-              <ul>
-                <li>1–2 канала обращений (сайт, WhatsApp, Telegram, Instagram)</li>
-                <li>Интеграция с календарём или CRM</li>
-                <li>Ежемесячная донастройка сценариев</li>
-              </ul>
-            </div>
-            <div><h4>Кому подходит</h4><span>Бизнесу с одной явной точкой боли: заявки теряются, запись ведётся вручную или типовые вопросы отнимают время администратора или менеджера.</span></div>
-            <div><h4>Зачем</h4><span>На практике это обычно 40–80 часов ручной работы в месяц, которые снимаются с команды уже в первые недели, и заметно меньше упущенных заявок из-за медленного ответа.</span></div>
-          </div>
-        </div>
-        </div>
-      </div>
-
-      <div class="format-row" id="format-pro">
-        <div class="format-row__inner">
-        <div class="format-row__head">
-          <span class="format-row__idx">03</span>
-          <span class="format-row__badge">Комплексно</span>
-          <h3>AI Employee · Pro</h3>
-          <span class="format-row__scope">Несколько направлений, 3–5 недель</span>
-          <a class="format-row__cta" href="#" data-open-modal="contact">Обсудить Pro
-            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </div>
-        <div class="format-row__body">
-          <p>Полноценный AI-отдел вместо нескольких штатных ролей сразу: например отдел продаж, который квалифицирует лидов и ведёт переписку, или отдел поддержки и документооборота, с эскалацией нестандартных случаев человеку, чтобы контроль оставался за командой.</p>
-          <div class="format-row__grid">
-            <div><h4>Что входит</h4>
-              <ul>
-                <li>Все каналы обращений одновременно</li>
-                <li>Документы, напоминания, отчётность</li>
-                <li>Приоритетная поддержка и донастройка</li>
-              </ul>
-            </div>
-            <div><h4>Кому подходит</h4><span>Бизнесу, где рутина уже распределена по нескольким процессам: продажи, поддержка, документы, и это фактически работа 2–4 сотрудников, которую стоит собрать в одну систему.</span></div>
-            <div><h4>Зачем</h4><span>Экономия обычно эквивалентна фонду оплаты 1–3 штатных сотрудников в месяц, при этом клиент ведётся от первого касания до закрытых документов без разрозненных инструментов и ручных передач.</span></div>
-          </div>
-        </div>
-        </div>
-      </div>
-
-      <div class="format-row" id="format-custom">
-        <div class="format-row__inner">
-        <div class="format-row__head">
-          <span class="format-row__idx">04</span>
-          <span class="format-row__badge">Под задачу</span>
-          <h3>AI System (Custom)</h3>
-          <span class="format-row__scope">Индивидуально, от 6 недель</span>
-          <a class="format-row__cta" href="#" data-open-modal="contact">Обсудить систему
-            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </div>
-        <div class="format-row__body">
-          <p>Комплекс из нескольких AI-сотрудников и AI-отделов под нестандартные процессы: несколько направлений бизнеса, собственные данные и особые требования к безопасности или интеграциям.</p>
-          <div class="format-row__grid">
-            <div><h4>Что входит</h4>
-              <ul>
-                <li>Архитектура под вашу специфику</li>
-                <li>Собственные интеграции и данные</li>
-                <li>Выделенное сопровождение</li>
-              </ul>
-            </div>
-            <div><h4>Кому подходит</h4><span>Компаниям со сложной структурой: несколько отделов, филиалов или нетиповых процессов, где готовые пакеты не закрывают задачу.</span></div>
-            <div><h4>Зачем</h4><span>Система строится вокруг реальной архитектуры бизнеса, а не подгоняет бизнес под шаблон, и растёт вместе с ним дальше.</span></div>
-          </div>
-        </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ========== 05c · AI-СОТРУДНИК VS ЧЕЛОВЕК ========== -->
 <section class="sec bg-textured" id="s-aiadv" aria-labelledby="h-aiadv">
   <div class="wrap">
     <div class="dir-head">
-      <p class="eyebrow rv" style="justify-content:center">Почему AI, а не ещё один найм</p>
-      <h2 class="h2 rv" id="h-aiadv" style="margin-top:20px;max-width:none">Мы не только снимаем рутину — во многих случаях AI-сотрудник заменяет сотрудника целиком</h2>
+      <p class="eyebrow rv" style="justify-content:center">AI-сотрудник против найма в штат</p>
+      <h2 class="h2 rv" id="h-aiadv" style="margin-top:20px;max-width:none">Мы не только снимаем рутину — во многих случаях AI-сотрудник закрывает целую штатную позицию</h2>
       <p class="lede rv" style="max-width:none">METRAWEN — это не просто помощник для команды: AI-сотрудники и AI-отделы берут на себя роль одного специалиста, нескольких или целого отдела там, где это оправдано, и делают это с преимуществами, которых нет у человека в найме.</p>
     </div>
 
@@ -1254,7 +1346,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         <p>Отвечает клиенту в 3 часа ночи так же быстро, как в обед, без ночных смен и переработок.</p>
       </div>
       <div class="aiadv-card rv">
-        <span class="aiadv-card__ix">0</span>
+        <span class="aiadv-card__ix">365</span>
         <h3>Не уходит на выходные и в отпуск</h3>
         <p>Праздники, больничные и отпуска не создают провалов в обслуживании клиентов и во внутренних процессах.</p>
       </div>
@@ -1271,7 +1363,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       <div class="aiadv-card rv">
         <span class="aiadv-card__ix">∞</span>
         <h3>Говорит на любом языке клиента</h3>
-        <p>Ведёт переписку, готовит документы и отвечает на звонки на нужном языке мгновенно, без переводчика и найма отдельного сотрудника под рынок.</p>
+        <p>Ведёт переписку и готовит документы на нужном языке клиента мгновенно, без переводчика и найма отдельного сотрудника под рынок.</p>
       </div>
       <div class="aiadv-card rv">
         <span class="aiadv-card__ix">x5</span>
@@ -1280,7 +1372,11 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       </div>
     </div>
 
-    <p class="aiadv-note rv">Формат подбирается под задачу: где-то это один AI-сотрудник на конкретную функцию, где-то — целый AI-отдел вместо нескольких штатных ролей. Разбираем это на AI Opportunity Audit и предлагаем формат, который реально закрывает вашу рутину, а не подгоняет её под шаблон.</p>
+    <div class="aiadv-cta">
+      <p class="aiadv-note rv">Формат подбирается под задачу: где-то это один AI-сотрудник на конкретную функцию, где-то — целый AI-отдел вместо нескольких штатных ролей. Разбираем это на AI Opportunity Audit и предлагаем формат, который реально закрывает вашу рутину, а не подгоняет её под шаблон.</p>
+      <a class="btn btn--lg btn--shine rv" href="#" data-open-modal="contact">Обсудить, что подойдёт вам
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></a>
+    </div>
   </div>
 </section>
 
@@ -1312,6 +1408,11 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       </div>
       <div class="process-step">
         <div class="process-step__n">04</div>
+        <h3>Тестирование и передача команде</h3>
+        <p>Проверяем сценарии на реальных диалогах и кейсах, показываем команде, как работать с системой и в каких случаях подключается человек, чтобы контроль оставался у вас.</p>
+      </div>
+      <div class="process-step">
+        <div class="process-step__n">05</div>
         <h3>Поддержка и рост</h3>
         <p>Смотрим на результат вместе по реальным цифрам, донастраиваем сценарии и расширяем систему на новые направления и роли по мере готовности бизнеса.</p>
       </div>
@@ -1369,7 +1470,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         </div>
         <div class="compare-item">
           <b>Ответ за секунды, в любое время</b>
-          <span>Система отвечает сразу: днём, ночью, в выходной, без задержек, и это обычно до 30% меньше упущенных заявок из-за медленного первого ответа.</span>
+          <span>AI-сотрудник отвечает сразу: днём, ночью, в выходной, без задержек, и это обычно до 30% меньше упущенных заявок из-за медленного первого ответа.</span>
         </div>
         <div class="compare-item">
           <b>Карточка клиента обновляется сама</b>
@@ -1377,7 +1478,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         </div>
         <div class="compare-item">
           <b>Напоминания уходят по расписанию</b>
-          <span>Система сама напоминает о визите и догоняет неоплаченный счёт вовремя, что на практике снижает число неявок и просрочек на 15–25%.</span>
+          <span>AI-сотрудник сам напоминает о визите и догоняет неоплаченный счёт вовремя, что на практике снижает число неявок и просрочек на 15–25%.</span>
         </div>
         <div class="compare-item">
           <b>Отчёт готов в реальном времени</b>
@@ -1385,7 +1486,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         </div>
         <div class="compare-item">
           <b>AI‑сотрудник ищет клиентов постоянно</b>
-          <span>Привлечение идёт фоном каждый день, а не только когда у менеджера есть свободная минута, что на практике даёт дополнительный поток обработанных лидов без нового найма.</span>
+          <span>Привлечение идёт фоном каждый день, а не только когда у менеджера есть свободная минута, что на практике даёт до 20–40% дополнительных обработанных лидов в месяц без нового найма.</span>
         </div>
         <div class="compare-item">
           <b>AI‑отдел закрывает работу нескольких ролей сразу</b>
@@ -1409,7 +1510,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <span>Сколько стоит автоматизация?</span>
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="faq-item__a"><p>Точную стоимость называем после бесплатного разбора процессов: она зависит от формата (аудит, отдельный AI‑работник или комплексная система) и от того, сколько направлений закрывает система. Фиксированного тарифа нет намеренно: цена всегда привязана к объёму реальной работы.</p></div>
+        <div class="faq-item__a"><p>Точную стоимость называем после бесплатного разбора процессов: она зависит от формата (аудит, отдельный AI‑сотрудник или комплексная система из нескольких AI-отделов) и от того, сколько направлений закрывают AI-сотрудники. Фиксированного тарифа нет намеренно: цена всегда привязана к объёму реальной работы.</p></div>
       </div>
       <div class="faq-item rv">
         <button class="faq-item__q" type="button" aria-expanded="false">
@@ -1423,14 +1524,14 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <span>Автоматизация заменит сотрудников?</span>
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="faq-item__a"><p>Смотря о какой роли речь. Если задача укладывается в чёткий процесс (приём заявок, ответы на типовые вопросы, документы, напоминания), AI-сотрудник закрывает её полностью и часто заменяет позицию администратора или сотрудника поддержки целиком, а не просто помогает. Нестандартные случаи и решения, где нужен контекст конкретного человека, всегда уходят живому сотруднику с уже готовой картиной, поэтому команда не теряет контроль там, где это важно.</p></div>
+        <div class="faq-item__a"><p>Смотря о какой роли речь. AI-сотрудник — это не только приём заявок и ответы на типовые вопросы: он может вести первичные продажи и квалификацию лидов, искать и прогревать клиентов как хантер, готовить контент и рассылки в маркетинге, вести документы и отчётность, а в формате AI-отдела — закрывать сразу несколько таких ролей параллельно. Там, где задача укладывается в чёткий процесс, AI-сотрудник закрывает её полностью и часто заменяет отдельную штатную позицию целиком, а не просто помогает человеку. Нестандартные случаи и решения, где нужен контекст и полномочия конкретного человека, всегда уходят живому сотруднику с уже готовой картиной, поэтому команда не теряет контроль там, где это важно.</p></div>
       </div>
       <div class="faq-item rv">
         <button class="faq-item__q" type="button" aria-expanded="false">
           <span>С какими бизнесами вы работаете?</span>
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="faq-item__a"><p>С бизнесом любого профиля: система строится под ваши процессы, а не под конкретную отрасль. Чаще всего к нам приходят отели и виллы, клиники и стоматологии, салоны красоты, агентства, интернет-магазины и недвижимость — примеры того, что решает система, есть в разделе «Отрасли» выше. Если вашего направления там нет, это не значит, что решение не подойдёт: обсудим на бесплатном разборе.</p></div>
+        <div class="faq-item__a"><p>С бизнесом любого профиля: AI-сотрудников и AI-отделы собираем под ваши процессы, а не под конкретную отрасль. Чаще всего к нам приходят отели и виллы, рестораны и кафе, клиники и стоматологии, салоны красоты, агентства, интернет-магазины и недвижимость — примеры того, что решают AI-сотрудники, есть в разделе «Отрасли» выше. Если вашего направления там нет, это не значит, что решение не подойдёт: обсудим на бесплатном разборе.</p></div>
       </div>
       <div class="faq-item rv">
         <button class="faq-item__q" type="button" aria-expanded="false">
@@ -1451,14 +1552,14 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <span>Как понять, что нужно: Starter, Pro или Custom?</span>
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="faq-item__a"><p>Если рутина сосредоточена в одном месте (например теряются заявки или типовые вопросы отнимают время администратора), обычно достаточно Starter, одного AI-сотрудника на эту роль. Если рутина размазана по нескольким процессам сразу, продажи, поддержка и документы, это чаще Pro, AI-отдел вместо нескольких ролей. Custom нужен, когда речь о нескольких направлениях бизнеса сразу или нестандартных требованиях к интеграциям и безопасности. Точный формат определяем на AI Opportunity Audit, а не угадываем заранее.</p></div>
+        <div class="faq-item__a"><p>Если рутина сосредоточена в одной роли — например, теряются заявки, продажи не доходят до оплаты или хантинг клиентов ведётся вручную, — обычно достаточно Starter: одного AI-сотрудника на эту функцию. Если рутина размазана по нескольким процессам сразу — продажи, поддержка, маркетинг и документы, — это чаще Pro: AI-отдел вместо нескольких штатных ролей одновременно. Custom нужен, когда речь о нескольких направлениях бизнеса сразу или нестандартных требованиях к интеграциям и безопасности. Точный формат определяем на AI Opportunity Audit, а не угадываем заранее.</p></div>
       </div>
       <div class="faq-item rv">
         <button class="faq-item__q" type="button" aria-expanded="false">
           <span>AI-сотрудник может работать с клиентами на разных языках?</span>
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-        <div class="faq-item__a"><p>Да, это одно из практических преимуществ перед человеком: AI-сотрудник ведёт переписку, отвечает на звонки и готовит документы на нужном языке клиента мгновенно, без переводчика и без найма отдельного сотрудника под каждый рынок. Это особенно актуально для бизнеса, который работает с разноязычной аудиторией, например в Таиланде или на международном рынке.</p></div>
+        <div class="faq-item__a"><p>Да, это одно из практических преимуществ перед человеком: AI-сотрудник ведёт переписку и готовит документы на нужном языке клиента мгновенно, без переводчика и без найма отдельного сотрудника под каждый рынок. Это особенно актуально для бизнеса, который работает с разноязычной аудиторией — в Азии, Европе или на любом другом международном рынке.</p></div>
       </div>
     </div>
   </div>
@@ -1559,9 +1660,32 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             <span>Email или мессенджер для связи</span>
             <input type="text" name="contact" required placeholder="email, WhatsApp, Telegram, LINE">
           </label>
+          <label class="field"><span>Ваша отрасль</span>
+              <select name="industry">
+                <option value="" selected>Отрасль не указана</option>
+                <option>Отели и виллы</option>
+                <option>Рестораны и кафе</option>
+                <option>Клиники и стоматологии</option>
+                <option>Салоны красоты и spa</option>
+                <option>Туризм и экскурсии</option>
+                <option>Недвижимость и аренда</option>
+                <option>Интернет-магазины</option>
+                <option>Розничная торговля</option>
+                <option>Агентства и B2B</option>
+                <option>Образование и курсы</option>
+                <option>Фитнес-студии</option>
+                <option>Производство и логистика</option>
+                <option>Профессиональные услуги</option>
+                <option>Другое</option>
+              </select>
+          </label>
           <label class="field">
             <span>Коротко о бизнесе (необязательно)</span>
             <textarea name="note" rows="2" placeholder="Чем занимаетесь и что хотелось бы автоматизировать"></textarea>
+          </label>
+          <label class="checkline">
+            <input type="checkbox" name="consent" required>
+            <span>Согласен(-на) на обработку персональных данных. Данные не передаются третьим лицам.</span>
           </label>
           <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
           <div style="display:flex;gap:12px;margin-top:6px">
@@ -1685,13 +1809,25 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 
 <!-- ========== sticky bottom CTA bar ========== -->
 <div class="stickybar" id="stickybar">
-  <p>Готовы освободить бизнес от рутины? Настроим систему, которая заберёт её на себя.</p>
+  <p>Готовы освободить бизнес от рутины? Настроим AI-сотрудников, которые заберут её на себя.</p>
   <button class="btn btn--sm" data-open-modal="contact">Забронировать бесплатную стратегическую сессию</button>
 </div>
 
 <script>
 (function(){
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- re-land on the hash target after cross-page nav (images/fonts can shift layout after the browser's own jump) ---------- */
+  if(location.hash){
+    var fixAnchor = function(){
+      var t = document.getElementById(location.hash.slice(1));
+      if(t) t.scrollIntoView({block:'start'});
+    };
+    window.addEventListener('load', function(){
+      fixAnchor();
+      setTimeout(fixAnchor, 350);
+    });
+  }
 
   /* ---------- отправка заявки на /api/lead ---------- */
   function sendLead(formKey, data){
@@ -1927,6 +2063,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         sendLead('booking', {
           name: fieldValue(form, '[name="name"]'),
           contact: contact,
+          industry: fieldValue(form, '[name="industry"]'),
           message: fieldValue(form, '[name="note"]'),
           website: fieldValue(form, '[name="website"]'),
           slot: selectedDate.getDate() + ' ' + MONTHS[selectedDate.getMonth()] + ', ' + selectedSlot + tz
@@ -2257,6 +2394,10 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     return Math.min(1, Math.max(0, -r.top / total));
   }
   function ease(p){ return p<.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2; }
+  /* счётчики и цифры должны ощутимо двигаться с первого же пикселя скролла,
+     а не «зависать» на старте из-за плавного ease-in-out — поэтому у них своя,
+     почти линейная кривая с чуть более быстрым стартом */
+  function countEase(p){ return Math.pow(p, .82); }
 
   var secDay = document.getElementById('s-day'), secSys = document.getElementById('s-sys');
   var raf2 = null;
@@ -2265,17 +2406,17 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     raf2 = null;
 
     /* — block 02 — */
-    var p = prog(secDay), e = ease(p);
+    var p = prog(secDay), e = ease(p), ce = countEase(p);
     day.style.setProperty('--p', e.toFixed(3));
     els.forEach(function(el,i){
       var th = (i+1)/(TASKS.length+1) * 0.62;
       el.classList.toggle('on', p > th);
     });
-    dayPct.textContent = Math.round(e*62);
-    dayCnt.textContent = Math.round(e*118);
-    F[0].textContent = Math.round(e*62) + '%';
-    F[1].textContent = Math.round(e*140);
-    F[2].textContent = (e*6).toFixed(1);
+    dayPct.textContent = Math.round(ce*62);
+    dayCnt.textContent = Math.round(ce*118);
+    F[0].textContent = Math.round(ce*62) + '%';
+    F[1].textContent = Math.round(ce*140);
+    F[2].textContent = (ce*6).toFixed(1);
     daySteps.forEach(function(li,i){ li.classList.toggle('on', p > i*(0.42/Math.max(1,daySteps.length-1)) + 0.03); });
 
     /* — block 03 — */
@@ -2283,9 +2424,10 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     dirCards.forEach(function(c,i){ c.classList.toggle('on', q > i*(0.36/Math.max(1,dirCards.length-1)) + 0.04); });
     branch.classList.toggle('on', q > 0.5);
     sysSteps.forEach(function(li,i){ li.classList.toggle('on', q > i*(0.42/Math.max(1,sysSteps.length-1)) + 0.03); });
-    /* счётчики должны успевать досчитать и «отстояться» видимыми, пока секция ещё закреплена,
-       поэтому считаем их по укороченной шкале (0..0.55), а не по всей длине пина (0..1) */
-    var qg = Math.min(1, q / 0.55), qge = ease(qg);
+    /* считаем по всей длине пина (0..1) с почти линейной кривой, чтобы цифры
+       двигались заметно всё время скролла, а не «зависали» в начале и не
+       замирали заранее до конца закреплённой секции */
+    var qge = countEase(q);
     G[0].textContent = Math.round(qge*78) + '%';
     G[1].textContent = Math.round(qge*9 + (q>0.02?1:0));
     G[2].textContent = Math.round(qge*28);
