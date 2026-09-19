@@ -131,7 +131,7 @@ button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
 .pill-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--hair-2);border-radius:999px;
   font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.04em;color:var(--text-dim)}
 .pill-tag i{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}
-#booking-form,#contact-form{margin-top:18px;display:flex;flex-direction:column;gap:13px}
+#booking-form,#contact-form,#digital-contact-form{margin-top:24px;display:flex;flex-direction:column;gap:14px}
 .field{display:flex;flex-direction:column;gap:7px}
 .field span{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint)}
 .field input,.field select,.field textarea{font-family:inherit;font-size:.9375rem;color:var(--text);background:rgba(255,255,255,.03);
@@ -625,6 +625,67 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .hero-d .lede{margin-top:20px}
 .hero-d__cta{margin-top:32px;display:flex;flex-wrap:wrap;gap:14px}
 
+/* ---- герой: текст слева, собирающаяся схема справа ---- */
+.hero-d__grid{display:grid;gap:clamp(40px,5vw,72px);align-items:center}
+@media(min-width:1024px){.hero-d__grid{grid-template-columns:1.04fr .96fr}}
+.hero-d__art{position:relative;width:100%;max-width:560px;margin-inline:auto}
+.hero-d__art svg{width:100%;height:auto;display:block;overflow:visible}
+@media(max-width:600px){.hero-d__art{display:none}}
+
+.art-float{animation:artFloat 9s ease-in-out infinite}
+@keyframes artFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.art-float--b{animation-duration:7.5s;animation-delay:-2.2s}
+.art-float--c{animation-duration:8.4s;animation-delay:-4.6s}
+
+.art-panel{fill:rgba(16,15,14,.72);stroke:var(--hair-2);stroke-width:1}
+.art-panel--hi{stroke:rgba(var(--accent-rgb),.45)}
+.art-line{stroke:var(--hair-2);stroke-width:1;fill:none}
+.art-bar{fill:rgba(var(--text-rgb),.14)}
+.art-bar--hi{fill:rgba(var(--accent-rgb),.5)}
+.art-label{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em;fill:var(--text-faint)}
+
+/* сканирующая полоса по макету сайта */
+.art-scan{animation:artScan 4.6s cubic-bezier(.45,0,.2,1) infinite}
+@keyframes artScan{
+  0%{transform:translateY(0);opacity:0}
+  10%{opacity:1}
+  72%{opacity:1}
+  100%{transform:translateY(150px);opacity:0}
+}
+
+/* точки набора в облаке бота */
+.art-dot{fill:var(--accent);animation:artType 1.6s ease-in-out infinite}
+.art-dot:nth-of-type(2){animation-delay:.2s}
+.art-dot:nth-of-type(3){animation-delay:.4s}
+@keyframes artType{0%,100%{opacity:.28}45%{opacity:1}}
+
+/* столбики аналитики */
+.art-col{fill:rgba(var(--accent-rgb),.45);transform-box:fill-box;transform-origin:50% 100%;
+  animation:artGrow 3.8s ease-in-out infinite}
+.art-col:nth-of-type(2){animation-delay:.25s}
+.art-col:nth-of-type(3){animation-delay:.5s}
+.art-col:nth-of-type(4){animation-delay:.75s}
+.art-col:nth-of-type(5){animation-delay:1s;fill:rgba(var(--accent-rgb),.85)}
+@keyframes artGrow{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+
+/* импульс, бегущий по связям между блоками */
+.art-pulse{fill:var(--accent);opacity:0;animation:artPulse 3.4s linear infinite}
+.art-pulse--2{animation-delay:1.15s}
+.art-pulse--3{animation-delay:2.3s}
+@keyframes artPulse{0%{opacity:0;transform:translate(0,0)}12%{opacity:.95}88%{opacity:.95}100%{opacity:0;transform:translate(var(--dx,60px),var(--dy,0px))}}
+
+/* палитра фирменного стиля */
+.art-swatch{animation:artSwatch 5s ease-in-out infinite}
+.art-swatch:nth-of-type(2){animation-delay:.4s}
+.art-swatch:nth-of-type(3){animation-delay:.8s}
+@keyframes artSwatch{0%,100%{opacity:.55}50%{opacity:1}}
+
+@media(prefers-reduced-motion:reduce){
+  .art-float,.art-scan,.art-dot,.art-col,.art-pulse,.art-swatch{animation:none}
+  .art-scan,.art-pulse{opacity:0}
+  .art-col{transform:scaleY(.8)}
+}
+
 .terms-grid{margin-top:clamp(40px,5vw,56px);display:grid;gap:14px}
 @media(min-width:760px){.terms-grid{grid-template-columns:repeat(2,1fr)}}
 .terms-card{background:rgba(14,14,13,.55);border:1px solid var(--hair-2);border-radius:16px;
@@ -680,6 +741,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="wrap topbar__in">
     <a class="mark" href="index.html">METRAWEN</a>
     <nav class="topnav" aria-label="Основная навигация">
+      <a href="index.html">Главная</a>
       <a href="index.html#s-formats">AI-системы</a>
       <a href="index.html#s-industries">Отрасли</a>
       <a href="digital-ru.html" class="current">Digital-услуги</a>
@@ -695,6 +757,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 
 <div class="mnav-panel" id="mnav-panel" hidden>
   <nav aria-label="Мобильная навигация">
+    <a href="index.html">Главная</a>
     <a href="index.html#s-formats">AI-системы</a>
     <a href="index.html#s-industries">Отрасли</a>
     <a href="digital-ru.html">Digital-услуги</a>
@@ -707,14 +770,93 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 <main>
 <!-- ========== hero ========== -->
 <section class="sec hero-d" aria-labelledby="h-hero">
-  <div class="wrap">
-    <p class="eyebrow rv">Digital-услуги</p>
-    <h1 class="h2 rv" id="h-hero" style="margin-top:20px;max-width:26ch">Упаковка бизнеса рядом с автоматизацией, а не отдельным заказом</h1>
-    <p class="lede rv">AI-система работает лучше, когда сайт объясняет бизнес с первого экрана, а бот и данные собраны в единый стиль. Здесь — сайты, боты, фирменный стиль и аналитика: то, без чего автоматизация не производит впечатления на клиента.</p>
-    <div class="hero-d__cta rv">
-      <a class="btn btn--lg btn--shine" href="#calculator">Рассчитать проект
-        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></a>
-      <button class="btn-quiet" data-open-modal="digital-contact">Обсудить проект</button>
+  <div class="wrap hero-d__grid">
+    <div>
+      <p class="eyebrow rv">Digital-услуги</p>
+      <h1 class="h2 rv" id="h-hero" style="margin-top:20px;max-width:26ch">Упаковка бизнеса рядом с автоматизацией, а не отдельным заказом</h1>
+      <p class="lede rv">AI-система работает лучше, когда сайт объясняет бизнес с первого экрана, а бот и данные собраны в единый стиль. Здесь — сайты, боты, фирменный стиль и аналитика: то, без чего автоматизация не производит впечатления на клиента.</p>
+      <div class="hero-d__cta rv">
+        <a class="btn btn--lg btn--shine" href="#calculator">Рассчитать проект
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></a>
+        <button class="btn-quiet" data-open-modal="digital-contact">Обсудить проект</button>
+      </div>
+    </div>
+
+    <div class="hero-d__art rv" role="img" aria-label="Схема: сайт, фирменный стиль, бот и аналитика собираются в одну систему">
+      <svg viewBox="0 0 520 470" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="artScanGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="rgb(196,161,101)" stop-opacity="0"/>
+            <stop offset=".5" stop-color="rgb(196,161,101)" stop-opacity=".75"/>
+            <stop offset="1" stop-color="rgb(196,161,101)" stop-opacity="0"/>
+          </linearGradient>
+          <clipPath id="artWinClip"><rect x="34" y="60" width="300" height="196" rx="14"/></clipPath>
+        </defs>
+
+        <!-- связи между блоками -->
+        <path class="art-line" d="M334 132 H404"/>
+        <path class="art-line" d="M334 196 H382 V300"/>
+        <path class="art-line" d="M184 256 V336"/>
+        <circle class="art-pulse" cx="334" cy="132" r="3" style="--dx:70px;--dy:0px"/>
+        <circle class="art-pulse art-pulse--2" cx="334" cy="196" r="3" style="--dx:48px;--dy:104px"/>
+        <circle class="art-pulse art-pulse--3" cx="184" cy="256" r="3" style="--dx:0px;--dy:80px"/>
+
+        <!-- сайт -->
+        <g class="art-float">
+          <rect class="art-panel art-panel--hi" x="34" y="60" width="300" height="196" rx="14"/>
+          <path class="art-line" d="M34 92 H334"/>
+          <circle cx="54" cy="76" r="3.5" fill="rgba(242,236,223,.28)"/>
+          <circle cx="68" cy="76" r="3.5" fill="rgba(242,236,223,.18)"/>
+          <circle cx="82" cy="76" r="3.5" fill="rgba(242,236,223,.18)"/>
+          <g clip-path="url(#artWinClip)">
+            <rect class="art-bar--hi" x="56" y="112" width="128" height="13" rx="6.5"/>
+            <rect class="art-bar" x="56" y="138" width="176" height="7" rx="3.5"/>
+            <rect class="art-bar" x="56" y="153" width="140" height="7" rx="3.5"/>
+            <rect x="56" y="178" width="86" height="26" rx="13" fill="rgba(196,161,101,.85)"/>
+            <rect class="art-bar" x="220" y="112" width="92" height="92" rx="10"/>
+            <path class="art-line" d="M232 180 l22-24 18 18 14-12 20 22" stroke="rgba(242,236,223,.25)"/>
+            <circle cx="248" cy="134" r="7" fill="rgba(242,236,223,.18)"/>
+            <rect class="art-scan" x="34" y="98" width="300" height="2.5" fill="url(#artScanGrad)"/>
+          </g>
+          <text class="art-label" x="34" y="278">САЙТ</text>
+        </g>
+
+        <!-- фирменный стиль -->
+        <g class="art-float art-float--b">
+          <rect class="art-panel" x="404" y="96" width="94" height="72" rx="14"/>
+          <circle class="art-swatch" cx="428" cy="126" r="11" fill="rgb(196,161,101)"/>
+          <circle class="art-swatch" cx="452" cy="126" r="11" fill="rgba(242,236,223,.55)"/>
+          <circle class="art-swatch" cx="476" cy="126" r="11" fill="rgb(143,194,164)"/>
+          <rect class="art-bar" x="420" y="148" width="62" height="6" rx="3"/>
+          <text class="art-label" x="404" y="190">СТИЛЬ</text>
+        </g>
+
+        <!-- бот -->
+        <g class="art-float art-float--c">
+          <rect class="art-panel art-panel--hi" x="330" y="300" width="164" height="84" rx="16"/>
+          <path d="M352 384 v18 l22-18 z" fill="rgba(16,15,14,.72)" stroke="rgba(196,161,101,.45)" stroke-width="1"/>
+          <rect class="art-bar" x="352" y="322" width="96" height="7" rx="3.5"/>
+          <rect class="art-bar" x="352" y="337" width="68" height="7" rx="3.5"/>
+          <g>
+            <circle class="art-dot" cx="356" cy="362" r="4"/>
+            <circle class="art-dot" cx="372" cy="362" r="4"/>
+            <circle class="art-dot" cx="388" cy="362" r="4"/>
+          </g>
+          <text class="art-label" x="330" y="424">БОТ</text>
+        </g>
+
+        <!-- аналитика -->
+        <g class="art-float art-float--b">
+          <rect class="art-panel" x="34" y="336" width="240" height="98" rx="14"/>
+          <rect class="art-col" x="62" y="358" width="22" height="54" rx="5"/>
+          <rect class="art-col" x="96" y="358" width="22" height="54" rx="5"/>
+          <rect class="art-col" x="130" y="358" width="22" height="54" rx="5"/>
+          <rect class="art-col" x="164" y="358" width="22" height="54" rx="5"/>
+          <rect class="art-col" x="198" y="358" width="22" height="54" rx="5"/>
+          <path class="art-line" d="M50 412 H258"/>
+          <text class="art-label" x="34" y="456">ДАННЫЕ</text>
+        </g>
+      </svg>
     </div>
   </div>
 </section>
@@ -1142,6 +1284,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <input type="checkbox" name="consent" required style="margin-top:3px">
           <span>Согласен(-на) на обработку персональных данных. Данные не передаются третьим лицам.</span>
         </label>
+        <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
         <button type="submit" class="btn btn--lg btn--shine" style="width:100%;justify-content:center;margin-top:20px">Отправить заявку</button>
       </form>
     </div>
@@ -1209,6 +1352,32 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       if(!form) return;
       form.addEventListener('submit', function(e){
         e.preventDefault();
+        function val(sel){ var el = form.querySelector(sel); return el ? el.value : ''; }
+        if(location.protocol === 'file:'){ formState.hidden = true; successState.hidden = false; return; }
+        var params = new URLSearchParams(location.search);
+        var utm = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']
+          .map(function(k){ var v = params.get(k); return v ? k + '=' + v : null; })
+          .filter(Boolean).join(' ');
+        try{
+          fetch('/api/lead', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+              form: 'digital-contact',
+              name: val('[name="name"]'),
+              company: val('[name="company"]'),
+              contact: val('[name="contact"]'),
+              message: val('[name="message"]'),
+              website: val('[name="website"]'),
+              page: location.pathname + location.search,
+              referrer: document.referrer || '',
+              utm: utm
+            }),
+            keepalive: true
+          }).then(function(r){
+            if(!r.ok) console.error('lead: сервер вернул', r.status);
+          }).catch(function(err){ console.error('lead: отправка не прошла', err); });
+        }catch(err){ console.error('lead: отправка не прошла', err); }
         formState.hidden = true;
         successState.hidden = false;
       });

@@ -281,6 +281,12 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .stage__grid{display:grid;gap:clamp(36px,5vw,64px);width:100%}
 @media(min-width:1080px){.stage__grid{grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);align-items:center;gap:clamp(48px,5vw,88px)}}
 
+/* на узких экранах содержимое закреплённого блока выше вьюпорта и налезало бы на
+   следующую секцию, поэтому закрепление отключаем и блок идёт обычным потоком */
+@media(max-width:900px){
+  .stage__pin{position:static;min-height:0;padding-block:clamp(56px,9vw,84px)}
+  .stage__track{height:auto}
+}
 .steps{display:grid;gap:2px;margin-top:34px;border-top:1px solid var(--hair)}
 .steps li{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:17px 0;border-bottom:1px solid var(--hair);
   opacity:.34;transition:opacity .5s var(--ease)}
@@ -375,6 +381,16 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 /* ---------- 04c отрасли: цифры и конкретика ---------- */
 .industries-grid{margin-top:clamp(40px,5vw,60px);display:grid;gap:20px}
 @media(min-width:820px){.industries-grid{grid-template-columns:repeat(2,1fr)}}
+/* при нечётном числе карточек последняя занимает всю ширину, чтобы не оставалась дыра */
+@media(min-width:820px){
+  .industries-grid .industry-card:last-child:nth-child(odd){grid-column:1 / -1}
+  .industries-grid .industry-card:last-child:nth-child(odd) .industry-card__inner{flex-direction:row;flex-wrap:wrap;align-items:center;gap:clamp(22px,2.6vw,40px)}
+  .industries-grid .industry-card:last-child:nth-child(odd) .industry-card__top{flex:0 0 clamp(200px,17vw,260px);align-items:center}
+  .industries-grid .industry-card:last-child:nth-child(odd) > .industry-card__inner > p{flex:1 1 26%;margin:0;min-width:240px}
+  .industries-grid .industry-card:last-child:nth-child(odd) .industry-card__stats{flex:1 1 40%;padding-top:0;border-top:none;border-left:1px solid var(--hair);padding-left:clamp(20px,2.4vw,32px);gap:clamp(20px,2.4vw,34px)}
+  .industries-grid .industry-card:last-child:nth-child(odd) .industry-card__stats > div{min-width:170px}
+  .industries-grid .industry-card:last-child:nth-child(odd) .industry-card__cta{margin-top:0;padding-top:0;align-self:center;flex:none;white-space:nowrap}
+}
 .industries-more{margin-top:22px;text-align:center;font-size:.9063rem;color:var(--text-dim)}
 .industries-more a{color:var(--accent-hi);font-weight:600;text-decoration:underline;text-underline-offset:3px}
 .industry-card{position:relative;opacity:0;transform:scale(.94) translateY(16px);
@@ -391,6 +407,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .industry-card:nth-of-type(4) .industry-card__inner{animation-delay:1.5s}
 .industry-card:nth-of-type(5) .industry-card__inner{animation-delay:2s}
 .industry-card:nth-of-type(6) .industry-card__inner{animation-delay:2.5s}
+.industry-card:nth-of-type(7) .industry-card__inner{animation-delay:3s}
 @keyframes industryFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .industry-card__inner::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s var(--ease);
   background:radial-gradient(220px circle at var(--mx) var(--my),rgba(var(--accent-rgb),.16),transparent 70%)}
@@ -568,13 +585,43 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   padding-top:clamp(26px,3vw,40px);border-top:1px solid var(--hair)}
 .ctaline p{font-size:1.0625rem;color:var(--text-dim);max-width:44ch}
 .growth-chain{margin-top:clamp(48px,5vw,72px)}
-.growth-chain__lead{font-size:.9375rem;color:var(--text-dim);max-width:56ch;margin-bottom:18px}
-.growth-chain__row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 4px}
-.growth-chain__item{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.03em;line-height:1.3;
-  padding:10px 14px;border:1px solid var(--hair-2);border-radius:999px;color:var(--text);white-space:nowrap;background:rgba(16,15,14,.4)}
-.growth-chain__item--final{color:var(--accent-hi);border-color:var(--accent);background:rgba(var(--accent-rgb),.08)}
-.growth-chain__arrow{width:14px;height:14px;flex:none;color:var(--text-faint)}
-@media(max-width:640px){.growth-chain__item{white-space:normal}.growth-chain__arrow{transform:rotate(90deg)}}
+.growth-chain__lead{font-size:clamp(1rem,1.25vw,1.1875rem);color:var(--text-dim);max-width:62ch;margin-bottom:28px;line-height:1.55}
+.growth-chain__row{display:flex;flex-wrap:wrap;align-items:center;gap:14px 8px}
+.growth-chain__item{font-family:var(--font-mono);font-size:clamp(.8125rem,1vw,.9375rem);letter-spacing:.03em;line-height:1.3;
+  padding:16px 24px;border:1px solid var(--hair-2);border-radius:999px;color:var(--text);white-space:nowrap;background:rgba(16,15,14,.45);
+  opacity:0;transform:translateY(12px) scale(.95);
+  transition:opacity .6s var(--ease),transform .6s var(--ease),border-color .35s var(--ease),background .35s var(--ease)}
+.growth-chain.in .growth-chain__item{opacity:1;transform:none}
+.growth-chain__item:hover{border-color:var(--accent);background:rgba(var(--accent-rgb),.08)}
+.growth-chain__item--final{color:var(--accent-hi);border-color:var(--accent);background:rgba(var(--accent-rgb),.1);font-weight:600}
+.growth-chain.in .growth-chain__item--final{animation:growthPulse 3s ease-in-out 1.8s infinite}
+@keyframes growthPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),0)}
+  50%{box-shadow:0 0 0 8px rgba(var(--accent-rgb),.10)}
+}
+.growth-chain__arrow{width:18px;height:18px;flex:none;color:var(--accent);
+  opacity:0;transform:translateX(-8px);
+  transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.growth-chain.in .growth-chain__arrow{opacity:.8;transform:none}
+/* стрелка и следующая плашка переносятся вместе, чтобы стрелка не повисала в конце строки */
+.growth-chain__pair{display:inline-flex;align-items:center;gap:8px}
+.growth-chain__row > *:nth-child(1) .growth-chain__item,
+.growth-chain__row > *:nth-child(1){transition-delay:.05s}
+.growth-chain__row > *:nth-child(2) *{transition-delay:.22s}
+.growth-chain__row > *:nth-child(3) *{transition-delay:.39s}
+.growth-chain__row > *:nth-child(4) *{transition-delay:.56s}
+.growth-chain__row > *:nth-child(5) *{transition-delay:.73s}
+@media(max-width:700px){
+  .growth-chain__row{flex-direction:column;align-items:flex-start;gap:10px}
+  .growth-chain__pair{flex-direction:column;align-items:flex-start;gap:10px}
+  .growth-chain__item{white-space:normal}
+  .growth-chain__arrow{transform:rotate(90deg) translateX(-8px)}
+  .growth-chain.in .growth-chain__arrow{transform:rotate(90deg)}
+}
+@media(prefers-reduced-motion:reduce){
+  .growth-chain__item,.growth-chain__arrow{opacity:1;transform:none;transition:none}
+  .growth-chain.in .growth-chain__item--final{animation:none}
+}
 
 .note{margin-top:14px;font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;color:var(--text-faint);line-height:1.6}
 .endnote{padding-block:56px;border-top:1px solid var(--hair);font-family:var(--font-mono);font-size:.6875rem;
@@ -720,7 +767,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 
 <!-- ========== 02 · КУДА УХОДИТ ДЕНЬ ========== -->
 <section class="sec stage" id="s-day" aria-labelledby="h-day">
-  <div class="stage__track" style="--track:360vh">
+  <div class="stage__track" style="--track:260vh">
     <div class="stage__pin">
       <div class="wrap stage__grid">
         <div>
@@ -767,7 +814,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 
 <!-- ========== 03 · ЧТО БЕРЁТ НА СЕБЯ METRAWEN ========== -->
 <section class="sec stage" id="s-sys" aria-labelledby="h-sys">
-  <div class="stage__track" style="--track:380vh">
+  <div class="stage__track" style="--track:260vh">
     <div class="stage__pin">
       <div class="wrap stage__grid">
         <div>
@@ -824,14 +871,22 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       <p class="growth-chain__lead">Освобождённые часы — это не пауза, а ресурс: время идёт в развитие, а не в рутину. Дальше это считается в цифрах:</p>
       <div class="growth-chain__row">
         <span class="growth-chain__item">Экономия часов и денег</span>
-        <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
-        <span class="growth-chain__item">Время на развитие бизнеса</span>
-        <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
-        <span class="growth-chain__item">Рост эффективности</span>
-        <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
-        <span class="growth-chain__item">Больше клиентов и повторных заказов</span>
-        <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
-        <span class="growth-chain__item growth-chain__item--final">Рост прибыли и рост компании</span>
+        <span class="growth-chain__pair">
+          <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span class="growth-chain__item">Время на развитие бизнеса</span>
+        </span>
+        <span class="growth-chain__pair">
+          <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span class="growth-chain__item">Рост эффективности</span>
+        </span>
+        <span class="growth-chain__pair">
+          <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span class="growth-chain__item">Больше клиентов и повторных заказов</span>
+        </span>
+        <span class="growth-chain__pair">
+          <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span class="growth-chain__item growth-chain__item--final">Рост прибыли и рост компании</span>
+        </span>
       </div>
     </div>
     <div class="ctaline">
@@ -927,6 +982,21 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <div><b>до 30%</b><span>меньше упущенных броней из-за медленного ответа</span></div>
         </div>
           <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Отели и виллы">Обсудить для «Отели и виллы»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+
+      <div class="industry-card rv" id="ind-restaurants">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Рестораны и кафе</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI принимает брони столиков и отвечает на вопросы о меню, часах работы и доставке, пока зал занят гостями.</p>
+        <div class="industry-card__stats">
+          <div><b>24/7</b><span>бронь столика и ответ гостю без участия хостес</span></div>
+          <div><b>меньше</b><span>потерянных броней в часы пиковой загрузки</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Рестораны и кафе">Обсудить для «Рестораны и кафе»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </div>
       </div>
 
@@ -1412,6 +1482,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             <span>Коротко о бизнесе (необязательно)</span>
             <textarea name="note" rows="2" placeholder="Чем занимаетесь и что хотелось бы автоматизировать"></textarea>
           </label>
+          <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
           <div style="display:flex;gap:12px;margin-top:6px">
             <button type="button" class="btn-quiet" id="booking-back">Назад к выбору времени</button>
             <button type="submit" class="btn btn--lg btn--shine" style="flex:1;justify-content:center">Подтвердить бронь</button>
@@ -1482,13 +1553,13 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
               <input type="checkbox" name="consent" required>
               <span>Согласен(-на) на обработку персональных данных. Данные не передаются третьим лицам.</span>
             </label>
+            <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
           </form>
         </div>
 
         <aside class="contact-side">
           <p class="eyebrow">Связаться</p>
-          <p style="margin-top:12px;font-size:.875rem;color:var(--text-dim);line-height:1.55">Обычно отвечаем в течение 30 минут.</p>
-          <p class="contact-side__label">Email</p>
+          <p class="contact-side__label" style="margin-top:14px">Email</p>
           <p class="contact-side__val">hello@metrawen.com</p>
           <p class="contact-side__label">География</p>
           <p class="contact-side__val">Азия, Европа, США, Россия и СНГ</p>
@@ -1540,6 +1611,37 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 <script>
 (function(){
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- отправка заявки на /api/lead ---------- */
+  function sendLead(formKey, data){
+    /* на локально открытом файле отправлять некуда, эндпоинт живёт только на сервере */
+    if(location.protocol === 'file:') return;
+    var params = new URLSearchParams(location.search);
+    var utm = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term']
+      .map(function(k){ var v = params.get(k); return v ? k + '=' + v : null; })
+      .filter(Boolean).join(' ');
+    var payload = {
+      form: formKey,
+      page: location.pathname + location.search,
+      referrer: document.referrer || '',
+      utm: utm
+    };
+    Object.keys(data || {}).forEach(function(k){ if(data[k]) payload[k] = data[k]; });
+    try{
+      fetch('/api/lead', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).then(function(r){
+        if(!r.ok) console.error('lead: сервер вернул', r.status);
+      }).catch(function(err){ console.error('lead: отправка не прошла', err); });
+    }catch(err){ console.error('lead: отправка не прошла', err); }
+  }
+  function fieldValue(form, selector){
+    var el = form.querySelector(selector);
+    return el ? el.value : '';
+  }
 
   /* ---------- modals: booking (calendar) + contact (wide form) ---------- */
   (function(){
@@ -1741,6 +1843,13 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         e.preventDefault();
         var contact = form.querySelector('[name="contact"]').value;
         var tz = isManualTime ? ' (по вашему времени)' : ' (ICT)';
+        sendLead('booking', {
+          name: fieldValue(form, '[name="name"]'),
+          contact: contact,
+          message: fieldValue(form, '[name="note"]'),
+          website: fieldValue(form, '[name="website"]'),
+          slot: selectedDate.getDate() + ' ' + MONTHS[selectedDate.getMonth()] + ', ' + selectedSlot + tz
+        });
         successText.textContent = 'Забронировали ' + selectedDate.getDate() + ' ' + MONTHS[selectedDate.getMonth()] + ' в ' + selectedSlot + tz + '. Пришлём подтверждение на ' + contact + '.';
         stepDetails.hidden = true;
         var mainBookingBody = document.querySelector('#modal-booking .modal__body:not(.modal__success)');
@@ -1778,6 +1887,14 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       if(!form) return;
       form.addEventListener('submit', function(e){
         e.preventDefault();
+        sendLead('contact', {
+          name: fieldValue(form, '[name="name"]'),
+          company: fieldValue(form, '[name="company"]'),
+          contact: fieldValue(form, '[name="contact"]'),
+          industry: fieldValue(form, '[name="industry"]'),
+          message: fieldValue(form, '[name="message"]'),
+          website: fieldValue(form, '[name="website"]')
+        });
         formState.hidden = true;
         successState.hidden = false;
       });
@@ -2070,7 +2187,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     var p = prog(secDay), e = ease(p);
     day.style.setProperty('--p', e.toFixed(3));
     els.forEach(function(el,i){
-      var th = (i+1)/(TASKS.length+1) * 0.86;
+      var th = (i+1)/(TASKS.length+1) * 0.62;
       el.classList.toggle('on', p > th);
     });
     dayPct.textContent = Math.round(e*62);
@@ -2078,16 +2195,16 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     F[0].textContent = Math.round(e*62) + '%';
     F[1].textContent = Math.round(e*140);
     F[2].textContent = (e*6).toFixed(1);
-    daySteps.forEach(function(li,i){ li.classList.toggle('on', p > i*(0.86/Math.max(1,daySteps.length-1)) + 0.04); });
+    daySteps.forEach(function(li,i){ li.classList.toggle('on', p > i*(0.42/Math.max(1,daySteps.length-1)) + 0.03); });
 
     /* — block 03 — */
     var q = prog(secSys), qe = ease(q);
-    dirCards.forEach(function(c,i){ c.classList.toggle('on', q > i*(0.86/Math.max(1,dirCards.length-1)) + 0.05); });
-    branch.classList.toggle('on', q > 0.72);
-    sysSteps.forEach(function(li,i){ li.classList.toggle('on', q > i*(0.86/Math.max(1,sysSteps.length-1)) + 0.04); });
+    dirCards.forEach(function(c,i){ c.classList.toggle('on', q > i*(0.36/Math.max(1,dirCards.length-1)) + 0.04); });
+    branch.classList.toggle('on', q > 0.5);
+    sysSteps.forEach(function(li,i){ li.classList.toggle('on', q > i*(0.42/Math.max(1,sysSteps.length-1)) + 0.03); });
     G[0].textContent = Math.round(qe*78) + '%';
     G[1].textContent = Math.round(qe*9 + (q>0.02?1:0));
-    G[2].textContent = Math.round(qe*14);
+    G[2].textContent = Math.round(qe*28);
 
     if(q > 0.06){ els.forEach(function(el,i){ el.classList.toggle('gone', q > 0.06 + i*0.045); }); }
     else { els.forEach(function(el){ el.classList.remove('gone'); }); }
