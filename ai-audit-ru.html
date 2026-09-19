@@ -418,7 +418,9 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .industry-card__stats{display:flex;gap:28px;padding-top:16px;border-top:1px solid var(--hair)}
 .industry-card__stats b{display:block;font-size:1.375rem;font-weight:650;color:var(--accent-hi);letter-spacing:-.01em}
 .industry-card__stats span{font-size:.8125rem;color:var(--text-faint);line-height:1.4;display:block;margin-top:3px}
-.industry-card__cta{margin-top:auto;padding-top:16px;display:inline-flex;align-items:center;gap:8px;font-size:.875rem;font-weight:600;color:var(--accent-hi);align-self:flex-start;transition:gap .25s var(--ease)}
+.industry-card__cta{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:8px;font-size:.875rem;font-weight:600;color:var(--accent-hi);align-self:stretch;
+  padding:12px 16px;border:1px solid rgba(var(--accent-rgb),.4);border-radius:12px;background:rgba(var(--accent-rgb),.07);text-align:center;transition:gap .25s var(--ease),border-color .25s var(--ease),background .25s var(--ease)}
+.industry-card__cta:hover{border-color:var(--accent);background:rgba(var(--accent-rgb),.14)}
 .industry-card__cta svg{width:14px;height:14px;transition:transform .25s var(--ease)}
 .industry-card__inner:hover .industry-card__cta{gap:12px}
 .industry-card__inner:hover .industry-card__cta svg{transform:translateX(3px)}
@@ -1046,28 +1048,6 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 </section>
 
 <!-- ========== примеры ========== -->
-<section class="sec bg-textured" id="cases" aria-labelledby="h-cases">
-  <div class="wrap">
-    <div class="dir-head">
-      <p class="eyebrow rv" style="justify-content:center">Примеры находок</p>
-      <h2 class="h2 rv" id="h-cases" style="margin-top:20px;max-width:none">Что обычно находится на аудите</h2>
-    </div>
-    <div class="industries-grid">
-      <div class="industry-card rv"><div class="industry-card__inner">
-        <div class="industry-card__top"><h3>Клиника</h3></div>
-        <p class="case-line case-line--was"><b>Было</b><span>администратор вручную отвечает на однотипные вопросы о ценах и записи, теряя до трети рабочего дня.</span></p>
-        <p class="case-line case-line--now"><b>Стало</b><span>аудит показал: 70% обращений закрываются одним и тем же набором ответов — кандидат номер один на AI-сотрудника Starter.</span></p>
-        <span class="case-tag"><i></i>Демо в разработке</span>
-      </div></div>
-      <div class="industry-card rv"><div class="industry-card__inner">
-        <div class="industry-card__top"><h3>Агентство недвижимости</h3></div>
-        <p class="case-line case-line--was"><b>Было</b><span>заявки идут в 4 разных канала, часть теряется между менеджерами, отчёт по неделе собирается вручную.</span></p>
-        <p class="case-line case-line--now"><b>Стало</b><span>аудит выявил разрыв между приёмом заявки и её попаданием в CRM — точка роста, закрытая AI-отделом Pro.</span></p>
-        <span class="case-tag"><i></i>Демо в разработке</span>
-      </div></div>
-    </div>
-  </div>
-</section>
 
 <!-- ===== AI-сотрудник против штата ===== -->
 <section class="sec" id="ai-vs-staff" aria-labelledby="h-advs">
@@ -1189,7 +1169,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <label class="field"><span>Бизнес</span><input type="text" name="company" placeholder="Название бизнеса"></label>
         </div>
         <label class="field"><span>Email или мессенджер</span><input type="text" name="contact" required placeholder="email, WhatsApp, Telegram, LINE"></label>
-        <label class="field"><span>Что нужно сделать</span><textarea name="message" rows="6" placeholder="Опишите задачу своими словами"></textarea></label>
+        <label class="field"><span>Что нужно сделать</span><textarea name="message" rows="6" placeholder="Опишите задачу своими словами — если пока сами не знаете, что именно нужно, оставьте поле пустым: поможем определиться на созвоне"></textarea></label>
         <label style="display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:.8125rem;color:var(--text-dim);line-height:1.5">
           <input type="checkbox" name="consent" required style="margin-top:3px">
           <span>Согласен(-на) на обработку персональных данных. Данные не передаются третьим лицам.</span>

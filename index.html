@@ -117,8 +117,8 @@ button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
 .modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:24px}
 .modal.open{display:flex}
 .modal__backdrop{position:absolute;inset:0;background:rgba(6,6,5,.72);backdrop-filter:blur(6px);animation:modalFade .25s var(--ease)}
-.modal__panel{position:relative;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;background:var(--base);
-  border:1px solid var(--hair-2);border-radius:20px;padding:clamp(28px,4vw,44px);box-shadow:0 40px 90px -20px rgba(0,0,0,.6);
+.modal__panel{position:relative;width:100%;max-width:560px;max-height:94vh;overflow-y:auto;background:var(--base);
+  border:1px solid var(--hair-2);border-radius:20px;padding:clamp(22px,3.4vw,36px);box-shadow:0 40px 90px -20px rgba(0,0,0,.6);
   animation:modalUp .32s var(--ease)}
 @keyframes modalFade{from{opacity:0}to{opacity:1}}
 @keyframes modalUp{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
@@ -133,7 +133,9 @@ button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
 .pill-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--hair-2);border-radius:999px;
   font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.04em;color:var(--text-dim)}
 .pill-tag i{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}
-#booking-form,#contact-form{margin-top:18px;display:flex;flex-direction:column;gap:13px}
+#booking-form,#contact-form{margin-top:12px;display:flex;flex-direction:column;gap:11px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+@media(max-width:560px){.field-row{grid-template-columns:1fr}}
 .field{display:flex;flex-direction:column;gap:7px}
 .field span{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint)}
 .field input,.field select,.field textarea{font-family:inherit;font-size:.9375rem;color:var(--text);background:rgba(255,255,255,.03);
@@ -442,8 +444,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .industry-card__stats{display:flex;gap:28px;padding-top:16px;border-top:1px solid var(--hair)}
 .industry-card__stats b{display:block;font-size:1.375rem;font-weight:650;color:var(--accent-hi);letter-spacing:-.01em}
 .industry-card__stats span{font-size:.8125rem;color:var(--text-faint);line-height:1.4;display:block;margin-top:3px}
-.industry-card__cta{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-size:.8438rem;font-weight:600;color:var(--accent-hi);align-self:flex-start;
-  padding:10px 16px;border:1px solid rgba(var(--accent-rgb),.4);border-radius:999px;background:rgba(var(--accent-rgb),.07);
+.industry-card__cta{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:8px;font-size:.8438rem;font-weight:600;color:var(--accent-hi);align-self:stretch;
+  padding:12px 16px;border:1px solid rgba(var(--accent-rgb),.4);border-radius:12px;background:rgba(var(--accent-rgb),.07);text-align:center;
   transition:gap .25s var(--ease),border-color .25s var(--ease),background .25s var(--ease)}
 .industry-card__cta:hover{border-color:var(--accent);background:rgba(var(--accent-rgb),.14)}
 .industry-card__cta svg{width:14px;height:14px;transition:transform .25s var(--ease)}
@@ -763,9 +765,9 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       <div class="navitem">
         <a href="digital-ru.html">Digital-услуги <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <div class="dropdown">
-          <a href="digital-ru.html#svc-sites">Сайты и лендинги</a>
-          <a href="digital-ru.html#svc-bots">Telegram / LINE / WhatsApp боты</a>
-          <a href="digital-ru.html#svc-data">Дашборды и аналитика конкурентов</a>
+          <a href="digital-ru.html">Сайты и лендинги</a>
+          <a href="digital-ru.html">Telegram / LINE / WhatsApp боты</a>
+          <a href="digital-ru.html">Дашборды и аналитика конкурентов</a>
           <a href="digital-ru.html" class="more">и другие digital-услуги</a>
         </div>
       </div>
@@ -935,7 +937,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     <div class="growth-chain rv">
       <p class="growth-chain__lead">Освобождённые часы — это не пауза, а ресурс: время идёт в развитие, а не в рутину. Дальше это считается в цифрах:</p>
       <div class="growth-chain__row">
-        <span class="growth-chain__item">Экономия 20–40 ч и денег в месяц</span>
+        <span class="growth-chain__item">Экономия 20–40 ч в месяц</span>
         <span class="growth-chain__pair">
           <svg class="growth-chain__arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>
           <span class="growth-chain__item">70–80% этого времени — в развитие</span>
@@ -1204,7 +1206,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             <span class="format-card__badge">Популярный выбор</span>
           </div>
           <h3>AI Employee · Starter</h3>
-          <p>Один AI-сотрудник закрывает одну роль полностью — заявки, запись или поддержку, без ручной доработки.</p>
+          <p>Один AI-сотрудник закрывает одну роль полностью — заявки, продажи, запись, поддержку, аналитику и другие функции — без ручной доработки за ним.</p>
           <span class="format-card__more">Подробнее о Starter
             <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </span>
@@ -1652,14 +1654,16 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       <div class="book-grid" id="book-step-details" hidden>
         <form id="booking-form" style="grid-column:1/-1;max-width:440px;margin-inline:auto;width:100%">
           <p class="book-selected" id="booking-selected-summary"></p>
-          <label class="field">
-            <span>Как вас зовут</span>
-            <input type="text" name="name" required placeholder="Имя">
-          </label>
-          <label class="field">
-            <span>Email или мессенджер для связи</span>
-            <input type="text" name="contact" required placeholder="email, WhatsApp, Telegram, LINE">
-          </label>
+          <div class="field-row">
+            <label class="field">
+              <span>Как вас зовут</span>
+              <input type="text" name="name" required placeholder="Имя">
+            </label>
+            <label class="field">
+              <span>Email или мессенджер для связи</span>
+              <input type="text" name="contact" required placeholder="email, WhatsApp, Telegram, LINE">
+            </label>
+          </div>
           <label class="field"><span>Ваша отрасль</span>
               <select name="industry">
                 <option value="" selected>Отрасль не указана</option>
@@ -1752,7 +1756,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             </label>
             <label class="field">
               <span>Что хотите автоматизировать</span>
-              <textarea name="message" rows="2" placeholder="Расскажите о бизнесе и о том, где сейчас больше всего ручной рутины"></textarea>
+              <textarea name="message" rows="2" placeholder="Расскажите о бизнесе и о том, где сейчас больше всего ручной рутины — если пока не уверены, что именно автоматизировать, оставьте поле пустым: поможем разобраться"></textarea>
             </label>
             <label class="checkline">
               <input type="checkbox" name="consent" required>
@@ -1879,12 +1883,24 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       var first = modal.querySelector('input,select,textarea,button.slot-btn');
       if(first) setTimeout(function(){ first.focus(); }, 60);
     }
+    var deepLinkOpened = false;
     function closeModal(modal){
       modal.classList.remove('open');
       modal.setAttribute('aria-hidden','true');
       var anyOpen = Object.keys(modals).some(function(k){ return modals[k].classList.contains('open'); });
       if(!anyOpen) document.body.style.overflow = '';
       if(lastFocus) lastFocus.focus();
+      /* if this modal was opened via a deep-link from another page (about-ru.html и т.п.),
+         closing it should return the person to that page, not just leave them on the bare homepage */
+      if(!anyOpen && deepLinkOpened){
+        deepLinkOpened = false;
+        var ref = document.referrer;
+        try{
+          if(ref && new URL(ref).origin === location.origin && new URL(ref).pathname !== location.pathname){
+            location.href = ref;
+          }
+        }catch(err){}
+      }
     }
     document.querySelectorAll('[data-open-modal]').forEach(function(btn){
       btn.addEventListener('click', function(e){
@@ -1918,6 +1934,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     if(location.hash === '#open-booking' || location.hash === '#open-contact'){
       var deepKey = location.hash === '#open-contact' ? 'contact' : 'booking';
       history.replaceState(null, '', location.pathname + location.search);
+      deepLinkOpened = true;
       setTimeout(function(){ openModal(deepKey); }, 80);
     }
 
