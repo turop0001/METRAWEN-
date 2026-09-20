@@ -52,6 +52,19 @@ button{font:inherit;color:inherit}
 .topnav a{padding:9px 11px;font-size:.9375rem;font-weight:500;color:var(--text-dim);transition:color .25s}
 .topnav a:hover,.topnav a.current{color:var(--text)}
 .topbar .btn{margin-left:auto}
+/* topnav dropdown (Отрасли / AI-системы / Digital-услуги) */
+.topnav .navitem{position:relative;padding-bottom:24px;margin-bottom:-24px}
+.topnav .navitem>a{display:flex;align-items:center;gap:5px}
+.topnav .navitem>a svg{width:9px;height:9px;flex:none;opacity:.65;transition:transform .2s ease}
+.topnav .navitem:hover>a svg,.topnav .navitem:focus-within>a svg{transform:rotate(180deg)}
+.dropdown{position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  min-width:248px;background:var(--base);border:1px solid var(--hair-2);border-radius:16px;padding:8px;
+  box-shadow:0 30px 60px -16px rgba(0,0,0,.65);
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,visibility .18s ease}
+.topnav .navitem:hover .dropdown,.topnav .navitem:focus-within .dropdown{opacity:1;visibility:visible;pointer-events:auto}
+.dropdown a{display:block;padding:10px 14px;border-radius:9px;font-size:.875rem;font-weight:500;color:var(--text-dim);white-space:nowrap;transition:background .18s ease,color .18s ease}
+.dropdown a:hover,.dropdown a:focus-visible{background:rgba(var(--accent-rgb),.12);color:var(--text)}
+.dropdown a.more{color:var(--text-faint);font-style:normal}
 @media(min-width:1080px){.topnav{display:flex}}
 
 .mnav-toggle{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:40px;height:40px;margin-left:auto;background:none;border:1px solid var(--hair-2);border-radius:10px;cursor:pointer;flex:none}
