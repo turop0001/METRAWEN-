@@ -128,8 +128,9 @@ button{font:inherit;color:inherit}
 .adv-grid{margin-top:clamp(40px,5vw,64px);display:grid;gap:16px}
 @media(min-width:640px){.adv-grid{grid-template-columns:repeat(2,1fr)}}
 @media(min-width:1000px){.adv-grid{grid-template-columns:repeat(4,1fr)}}
-.adv-card{background:rgba(14,14,13,.55);border:1px solid var(--hair-2);border-radius:16px;padding:clamp(20px,2.2vw,26px)}
-.adv-card b{font-size:1.0625rem;font-weight:650;display:block}
+.adv-card{background:rgba(14,14,13,.55);border:1px solid var(--hair-2);border-radius:16px;padding:clamp(20px,2.2vw,26px);transition:border-color .25s,background .25s,transform .25s}
+.adv-card:hover{border-color:var(--accent);background:rgba(196,161,101,.08);transform:translateY(-2px)}
+.adv-card b{font-size:1.0625rem;font-weight:650;display:block;color:var(--accent-hi)}
 .adv-card span{font-size:.875rem;color:var(--text-dim);line-height:1.55;display:block;margin-top:8px}
 .value-card{background:rgba(14,14,13,.55);border:1px solid var(--hair-2);border-radius:16px;
   padding:clamp(26px,2.6vw,32px);display:flex;flex-direction:column;gap:12px}

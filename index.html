@@ -458,7 +458,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 @media(min-width:860px){.process-list{grid-template-columns:repeat(5,1fr);gap:20px}}
 .process-line{display:none}
 @media(min-width:860px){
-  .process-line{display:block;position:absolute;left:0;right:0;top:27px;height:1px;background:var(--hair-2);z-index:0;overflow:hidden}
+  .process-line{display:block;position:absolute;left:0;right:20%;top:27px;height:1px;background:var(--hair-2);z-index:0;overflow:hidden}
   .process-line i{position:absolute;inset:0;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--accent),var(--accent-hi));
     transition:transform 1.4s var(--ease)}
   .process-list.in .process-line i{transform:scaleX(1)}
@@ -885,9 +885,9 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     <div class="stage__pin">
       <div class="wrap stage__grid">
         <div>
-          <p class="eyebrow rv">Что берёт на себя AI-сотрудник или AI-отдел</p>
-          <h2 class="h2 rv" id="h-sys" style="margin-block:22px 20px;max-width:34ch">AI-сотрудники сразу на все четыре направления бизнеса, а не один чат-бот на входящие</h2>
-          <p class="lede rv">Не один помощник для команды, а AI-сотрудники и AI-отделы, которые параллельно закрывают рутину в привлечении, продажах, сервисе и операциях: сами находят клиентов и пишут первыми, ведут рассылки и допродажи, отвечают на обращения и выполняют действие в CRM, готовят документы и сводят отчёт. Всё, что выходит за правила, уходит человеку с готовым контекстом.</p>
+          <p class="eyebrow rv">Тот же день — но без вас</p>
+          <h2 class="h2 rv" id="h-sys" style="margin-block:22px 20px;max-width:34ch">Те же четыре направления, но их закрывают AI-сотрудники, а не один чат-бот на входящие</h2>
+          <p class="lede rv">Не один помощник для команды, а AI-сотрудники и AI-отделы, которые параллельно снимают ту самую рутину из четырёх направлений выше: сами находят клиентов и пишут первыми, ведут рассылки и допродажи, отвечают на обращения и выполняют действие в CRM, готовят документы и сводят отчёт. Всё, что выходит за правила, уходит человеку с готовым контекстом.</p>
           <ol class="steps" id="sys-steps">
             <li data-s="0"><span class="ix">01</span><div><span class="dir-tag">Привлечение</span><h3>Ищут клиентов и пишут первыми</h3><p>По заданным критериям находят потенциальных клиентов и делают первый контакт — без ручного поиска и рассылки.</p></div></li>
             <li data-s="1"><span class="ix">02</span><div><span class="dir-tag">Продажи</span><h3>Ведут рассылки и допродажи</h3><p>Сегментируют базу, готовят сообщения, отправляют их по расписанию и напоминают о повторном заказе, без ручной работы каждую неделю.</p></div></li>
@@ -972,7 +972,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Шире, чем входящие обращения</p>
       <h2 class="h2 rv" id="h-directions" style="margin-top:20px;max-width:none">От поиска клиентов до отчётности: AI-сотрудники под конкретный бизнес</h2>
-      <p class="lede rv" style="max-width:none">METRAWEN — это не только ответы на входящие: AI-сотрудники и AI-отделы закрывают привлечение клиентов, продажи и внутренние операции так же, как поддержку. Набор направлений каждый раз собирается под конкретный бизнес, а не берётся из шаблона.</p>
+      <p class="lede rv" style="max-width:none">METRAWEN — это не только ответы на входящие: AI-сотрудники и AI-отделы закрывают привлечение клиентов, продажи и внутренние операции так же, как поддержку. Хантер ищет клиентов и выходит на связь первым, Продажник ведёт рассылки и допродажи, Аналитик и Маркетолог считают метрики и готовят кампании, Контент-менеджер и дизайнер закрывают материалы для сайта и соцсетей — набор ролей каждый раз собирается под конкретный бизнес, а не берётся из шаблона.</p>
     </div>
 
     <div class="dir-grid">
@@ -1228,7 +1228,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
               <rect class="art-bar" x="140" y="63" width="40" height="7" rx="3.5"/>
               <rect class="art-bar" x="112" y="86" width="80" height="7" rx="3.5"/>
               <rect class="art-bar" x="112" y="99" width="56" height="7" rx="3.5"/>
-              <text class="art-label" x="112" y="27" style="font-size:9px">1 РОЛЬ, ПОЛНОСТЬЮ</text>
+              <text class="art-label" x="112" y="27" style="font-size:9px">1 РОЛЬ</text>
             </g>
           </svg>
         </div>
@@ -1375,7 +1375,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     </div>
 
     <div class="aiadv-cta">
-      <p class="aiadv-note rv">Формат подбирается под задачу: где-то это один AI-сотрудник на конкретную функцию, где-то — целый AI-отдел вместо нескольких штатных ролей. Разбираем это на AI Opportunity Audit и предлагаем формат, который реально закрывает вашу рутину, а не подгоняет её под шаблон.</p>
+      <p class="aiadv-note rv">Формат — один AI-сотрудник на функцию или целый AI-отдел вместо нескольких ролей — подбираем на AI Opportunity Audit под вашу задачу.</p>
       <a class="btn btn--lg btn--shine rv" href="#" data-open-modal="contact">Обсудить, что подойдёт вам
         <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></a>
     </div>
