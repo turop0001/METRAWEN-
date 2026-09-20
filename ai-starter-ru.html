@@ -652,6 +652,10 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .art-bar{fill:rgba(var(--text-rgb),.14)}
 .art-bar--hi{fill:rgba(var(--accent-rgb),.5)}
 .art-label{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em;fill:var(--text-faint)}
+.art-role{fill:rgba(16,15,14,.55);stroke:var(--hair-2);stroke-width:1}
+.art-role--on{fill:rgba(var(--accent-rgb),.85);stroke:rgba(var(--accent-rgb),.85)}
+.art-role-label{font-family:var(--font-mono);font-size:7.5px;letter-spacing:.04em;fill:var(--text-faint);text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.art-role-label--on{fill:#141210;font-weight:600}
 
 /* сканирующая полоса по макету сайта */
 .art-scan{animation:artScan 4.6s cubic-bezier(.45,0,.2,1) infinite}
@@ -833,6 +837,24 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 
     <div class="hero-d__art rv" role="img" aria-label="Схема: один канал обращений закрывается одним AI-сотрудником полностью">
       <svg viewBox="0 0 520 470" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- меню позиций: одна выбрана из шести -->
+        <g class="art-roles" aria-hidden="true">
+          <text class="art-label" x="40" y="14" style="font-size:8.5px">6 ПОЗИЦИЙ &middot; ВЫБРАНА ОДНА</text>
+          <circle class="art-role art-role--on" cx="55" cy="34" r="13"/>
+          <text class="art-role-label art-role-label--on" x="55" y="34">ХАН</text>
+          <circle class="art-role" cx="141" cy="34" r="13"/>
+          <text class="art-role-label" x="141" y="34">ПРО</text>
+          <circle class="art-role" cx="227" cy="34" r="13"/>
+          <text class="art-role-label" x="227" y="34">МАР</text>
+          <circle class="art-role" cx="313" cy="34" r="13"/>
+          <text class="art-role-label" x="313" y="34">АСС</text>
+          <circle class="art-role" cx="399" cy="34" r="13"/>
+          <text class="art-role-label" x="399" y="34">АНЛ</text>
+          <circle class="art-role" cx="485" cy="34" r="13"/>
+          <text class="art-role-label" x="485" y="34">КОН</text>
+          <path class="art-line" d="M55 47 L340 70" stroke-dasharray="3 4"/>
+          <circle class="art-pulse art-pulse--3" cx="55" cy="47" r="3" style="--dx:285px;--dy:23px"/>
+        </g>
         <path class="art-line" d="M170 210 H300"/>
         <circle class="art-pulse" cx="170" cy="210" r="3.5" style="--dx:130px;--dy:0px"/>
 
@@ -854,7 +876,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         <g class="art-float art-float--b">
           <rect class="art-panel art-panel--hi" x="300" y="70" width="200" height="260" rx="22"/>
           <circle class="art-panel--hi" cx="340" cy="120" r="22" fill="rgba(196,161,101,.16)" stroke="rgba(196,161,101,.55)"/>
-          <text class="art-label" x="322" y="102" style="font-size:9px">1 ПОЗИЦИЯ</text>
+          <text class="art-label" x="322" y="102" style="font-size:9px">АКТИВНА: ХАНТЕР</text>
           <rect class="art-bar--hi" x="376" y="108" width="96" height="11" rx="5.5"/>
           <rect class="art-bar" x="376" y="128" width="72" height="8" rx="4"/>
           <path class="art-line" d="M320 168 H480"/>
@@ -863,7 +885,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <rect class="art-bar" x="320" y="218" width="130" height="8" rx="4"/>
           <path class="art-line" d="M320 240 H480"/>
           <circle class="art-swatch" cx="332" cy="262" r="7" fill="rgb(143,194,164)"/>
-          <text class="art-label" x="348" y="266" style="font-size:9px">ЗАПИСЬ ПОДТВЕРЖДЕНА</text>
+          <text class="art-label" x="348" y="266" style="font-size:9px">ЗАДАЧА ЗАКРЫТА</text>
           <rect class="art-bar" x="320" y="286" width="94" height="7" rx="3.5"/>
           <text class="art-label" x="320" y="316">AI-СОТРУДНИК · STARTER</text>
         </g>
