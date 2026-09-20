@@ -136,7 +136,7 @@ button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
 #booking-form,#contact-form{margin-top:12px;display:flex;flex-direction:column;gap:11px}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
 @media(max-width:560px){.field-row{grid-template-columns:1fr}}
-.field{display:flex;flex-direction:column;gap:7px}
+.field{display:flex;flex-direction:column;gap:10px}
 .field span{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint)}
 .field input,.field select,.field textarea{font-family:inherit;font-size:.9375rem;color:var(--text);background:rgba(255,255,255,.03);
   border:1px solid var(--hair-2);border-radius:10px;padding:12px 14px;outline:none;transition:border-color .2s,background .2s;resize:vertical;width:100%}
@@ -146,7 +146,7 @@ button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
   padding-right:38px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;cursor:pointer;
   background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="%238C876F" stroke-width="1.4"/></svg>');background-repeat:no-repeat;background-position:right 14px center}
 .field select option{background:var(--base);color:var(--text)}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media(max-width:600px){.field-row{grid-template-columns:1fr}}
 .checkline{display:flex;align-items:flex-start;gap:10px;font-size:.8125rem;color:var(--text-dim);line-height:1.5}
 .checkline input{margin-top:3px;flex:none}
@@ -608,6 +608,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 }
 
 /* four-direction system panel (заменяет старый единый "маршрут одного обращения") */
+.dir4__lead{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text-faint);margin-bottom:14px}
 .dir4{position:relative;border:1px solid var(--hair);background:rgba(14,14,13,.5);padding:clamp(26px,3.2vw,40px) clamp(22px,2.6vw,32px);
   transform:perspective(1700px) rotateX(3deg);transform-origin:50% 100%;
   display:grid;gap:clamp(14px,1.8vw,20px)}
@@ -897,23 +899,24 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         </div>
 
         <div>
+          <p class="dir4__lead">Почему это AI-сотрудник, а не ещё один человек в штате</p>
           <div class="dir4" id="dir4">
             <div class="dir4__card" data-n="0">
-              <span class="dir4__tag">Привлечение</span>
-              <p>Находят клиентов по заданным критериям и первыми выходят с ними на связь в удобном канале.</p>
+              <span class="dir4__tag">24/7 · 365</span>
+              <p>Работают ночью, в выходные и праздники: клиент из другого часового пояса получает ответ сразу, а не утром в понедельник.</p>
             </div>
             <div class="dir4__card" data-n="1">
-              <span class="dir4__tag">Продажи</span>
-              <p>Ведут рассылки, напоминания и допродажи по расписанию, без ручной работы каждую неделю.</p>
-            </div>
-            <div class="dir4__card" data-n="2">
-              <span class="dir4__tag">Клиентский сервис</span>
-              <p>Принимают обращение из любого канала, понимают его и выполняют нужное действие в CRM.</p>
+              <span class="dir4__tag">Секунды вместо часов</span>
+              <p>Отвечают за секунды в любом канале, пока заявка ещё горячая и человек не ушёл к тому, кто ответил первым.</p>
               <p class="dir4__mini"><span>Приём</span><i></i><span>Понимание</span><i></i><span>Действие</span><i></i><span>Результат</span></p>
             </div>
+            <div class="dir4__card" data-n="2">
+              <span class="dir4__tag">Масштаб без найма</span>
+              <p>Десять обращений или тысяча в пиковый сезон — нагрузка растёт, штат и фонд оплаты остаются прежними.</p>
+            </div>
             <div class="dir4__card" data-n="3">
-              <span class="dir4__tag">Операции</span>
-              <p>Готовят документы, напоминают об оплате и сводят отчёт в конце дня.</p>
+              <span class="dir4__tag">Стабильное качество</span>
+              <p>Не выгорают, не забывают регламент и не уходят с накопленным опытом: правила настраиваются один раз и работают одинаково каждый день.</p>
             </div>
           </div>
           <div class="branch" id="branch">
@@ -1621,7 +1624,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     <div class="modal__body">
       <p class="pill-tag"><i></i> Бесплатно · 30 минут · без питча</p>
       <h3 id="booking-title" class="modal__h1">Забронировать стратегическую сессию</h3>
-      <p class="modal__lede">Разберём, где именно в вашем бизнесе автоматизация может дать наибольший эффект. Без презентации услуг.</p>
+      <p class="modal__lede">Разберём, где именно в вашем бизнесе автоматизация может дать наибольший эффект. Проведём в удобном для вас формате — звонком или в переписке. Без презентации услуг.</p>
 
       <div class="book-grid" id="book-step-datetime">
         <div class="book-cal">
@@ -1721,7 +1724,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       <div class="contact-grid">
         <div>
           <h3 id="contact-title" class="modal__h1">Давайте поговорим об автоматизации для вашего бизнеса</h3>
-          <p class="modal__lede" style="max-width:none">Разберём ваши процессы и покажем, где именно автоматизация сэкономит время и снимет рутину с команды.</p>
+          <p class="modal__lede" style="max-width:none">Оставьте заявку — ответим в течение 30 минут. Разберём процессы в удобном формате: звонком или в переписке.</p>
           <a href="#" data-open-modal="booking" data-switch-modal="modal-contact" class="book-cta">
             <span class="book-cta__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9.5h17M8 3v3.6M16 3v3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
             <span class="book-cta__body"><b>Выбрать время в календаре</b></span>
@@ -1805,7 +1808,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     <div class="modal__body">
       <p class="eyebrow">Персональный разбор</p>
       <h3 id="exit-title" class="modal__h1">Не уверены, с чего начать?</h3>
-      <p class="modal__lede">Опишите ситуацию в двух словах: подскажем, какой формат подойдёт именно вам. Разбор бесплатный, без обязательств.</p>
+      <p class="modal__lede">Пары слов достаточно — подскажем, какой формат подойдёт именно вам. Бесплатно и без обязательств.</p>
       <a href="#" data-open-modal="contact" data-switch-modal="modal-exit" class="btn btn--lg btn--shine" style="width:100%;justify-content:center;margin-top:20px">Разобрать мою ситуацию</a>
     </div>
   </div>

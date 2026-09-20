@@ -138,8 +138,8 @@ button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
 .pill-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--hair-2);border-radius:999px;
   font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.04em;color:var(--text-dim)}
 .pill-tag i{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}
-#booking-form,#contact-form,#digital-contact-form{margin-top:24px;display:flex;flex-direction:column;gap:14px}
-.field{display:flex;flex-direction:column;gap:7px}
+#booking-form,#contact-form,#digital-contact-form{margin-top:26px;display:flex;flex-direction:column;gap:20px}
+.field{display:flex;flex-direction:column;gap:10px}
 .field span{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint)}
 .field input,.field select,.field textarea{font-family:inherit;font-size:.9375rem;color:var(--text);background:rgba(255,255,255,.03);
   border:1px solid var(--hair-2);border-radius:10px;padding:12px 14px;outline:none;transition:border-color .2s,background .2s;resize:vertical;width:100%}
@@ -149,7 +149,7 @@ button.btn,button.btn--lg,button.btn--sm{font-family:inherit;appearance:none}
   padding-right:38px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;cursor:pointer;
   background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="%238C876F" stroke-width="1.4"/></svg>');background-repeat:no-repeat;background-position:right 14px center}
 .field select option{background:var(--base);color:var(--text)}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media(max-width:600px){.field-row{grid-template-columns:1fr}}
 .checkline{display:flex;align-items:flex-start;gap:10px;font-size:.8125rem;color:var(--text-dim);line-height:1.5}
 .checkline input{margin-top:3px;flex:none}
@@ -715,38 +715,76 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .case-line--now b{color:var(--green);background:var(--green-dim)}
 .case-line--now span{color:var(--text)}
 
-/* ---- calculator ---- */
-.calc-box{margin-top:clamp(48px,5vw,64px);border:1px solid var(--hair-2);border-radius:26px;
-  background:rgba(14,14,13,.55);padding:clamp(28px,3.4vw,48px)}
-.calc-step{padding-block:clamp(24px,2.6vw,32px);border-top:1px solid var(--hair)}
-.calc-step:first-child{border-top:none;padding-top:0}
-.calc-step__h{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-hi);
-  display:flex;align-items:center;gap:10px}
-.calc-step__title{margin-top:8px;font-size:1.125rem;font-weight:650;letter-spacing:-.01em}
-.calc-types{margin-top:18px;display:flex;flex-wrap:wrap;gap:10px}
-.calc-type{padding:12px 18px;border-radius:12px;border:1px solid var(--hair-2);background:rgba(255,255,255,.02);
-  font-size:.9063rem;font-weight:500;color:var(--text-dim);cursor:pointer;transition:border-color .25s,color .25s,background .25s}
-.calc-type:hover{color:var(--text);border-color:var(--hair-3)}
-.calc-type.active{color:var(--accent-ink);background:var(--accent);border-color:var(--accent);font-weight:600}
-.calc-opts{margin-top:18px;display:grid;gap:10px}
-@media(min-width:640px){.calc-opts{grid-template-columns:repeat(2,1fr)}}
-.calc-opt{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:12px;border:1px solid var(--hair-2);
-  background:rgba(255,255,255,.015);cursor:pointer;transition:border-color .25s,background .25s}
-.calc-opt:hover{border-color:var(--hair-3)}
-.calc-opt input{margin-top:3px;accent-color:var(--accent);flex:none}
-.calc-opt__body{display:flex;flex-direction:column;gap:2px}
-.calc-opt__body b{font-size:.875rem;font-weight:600;color:var(--text)}
-.calc-opt__body span{font-size:.8125rem;color:var(--text-dim);line-height:1.5}
-.calc-group[hidden]{display:none}
-.calc-result{margin-top:clamp(28px,3vw,36px);padding-top:clamp(24px,2.6vw,32px);border-top:1px solid var(--hair);
-  display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px}
-.calc-result__num{font-family:var(--font-mono)}
-.calc-result__num b{display:block;font-size:clamp(1.75rem,3vw,2.375rem);font-weight:600;color:var(--accent-hi);letter-spacing:-.02em}
-.calc-result__num small{display:block;margin-top:6px;font-size:.8125rem;color:var(--text-faint);max-width:44ch;line-height:1.5;
-  font-family:var(--font-body)}
-.calc-result__monthly{margin-top:8px;font-size:.8125rem;color:var(--text-dim)}
-.calc-result__cta{display:flex;flex-wrap:wrap;gap:12px}
-
+/* ---- calculator v2 ---- */
+.calc2{margin-top:clamp(40px,4.4vw,56px);display:grid;gap:clamp(20px,2.4vw,30px);align-items:start}
+@media(min-width:1000px){.calc2{grid-template-columns:minmax(0,1fr) 340px}}
+.calc2__cur{display:flex;justify-content:flex-end;margin-bottom:14px}
+.calc2__seg{display:inline-flex;border:1px solid var(--hair-2);border-radius:999px;padding:3px;gap:2px;background:rgba(255,255,255,.02)}
+.calc2__seg button{font-family:var(--font-mono);font-size:.8125rem;padding:6px 16px;border-radius:999px;border:none;
+  background:transparent;color:var(--text-faint);cursor:pointer;transition:background .2s,color .2s}
+.calc2__seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.calc2__cat{border:1px solid var(--hair-2);border-radius:18px;background:rgba(14,14,13,.5);
+  padding:clamp(20px,2.2vw,26px);margin-bottom:16px}
+.calc2__cat-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.calc2__cat-h b{font-size:1.0625rem;font-weight:650;letter-spacing:-.01em}
+.calc2__cat-h span{font-size:.8125rem;color:var(--text-faint)}
+.calc2__list{margin-top:16px;display:grid;gap:8px}
+.calc2__opt{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:start;gap:12px;
+  padding:13px 15px;border:1px solid var(--hair-2);border-radius:13px;cursor:pointer;
+  transition:border-color .2s,background .2s}
+.calc2__opt:hover{border-color:var(--hair-3)}
+.calc2__opt.on{border-color:rgba(var(--accent-rgb),.5);background:rgba(var(--accent-rgb),.06)}
+.calc2__opt input{margin-top:3px;accent-color:var(--accent);flex:none}
+.calc2__txt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.calc2__txt b{font-size:.9062rem;font-weight:600;color:var(--text)}
+.calc2__txt span{font-size:.8125rem;color:var(--text-dim);line-height:1.5}
+.calc2__amt{font-family:var(--font-mono);font-size:.875rem;color:var(--text);white-space:nowrap;padding-top:1px}
+.calc2__info{width:20px;height:20px;flex:none;border-radius:50%;border:1px solid var(--hair-3);background:transparent;
+  color:var(--text-faint);font-size:.6875rem;line-height:1;cursor:pointer;transition:border-color .2s,color .2s}
+.calc2__info:hover{border-color:var(--accent);color:var(--accent)}
+.calc2__pop{display:none;position:absolute;left:14px;right:14px;top:calc(100% - 6px);z-index:30;
+  border:1px solid var(--hair-3);border-radius:13px;background:var(--base);padding:15px 16px;
+  box-shadow:0 26px 54px -18px rgba(0,0,0,.75);font-size:.8125rem;line-height:1.6;color:var(--text-dim)}
+.calc2__pop.open{display:block}
+.calc2__pop b{display:block;color:var(--text);font-size:.875rem;margin-bottom:6px}
+.calc2__pop-x{display:block;margin-top:12px;background:none;border:none;padding:0;color:var(--accent);font-size:.8125rem;cursor:pointer;text-align:left}
+.calc2__row{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;align-items:center;gap:12px;
+  padding:13px 15px;border:1px solid var(--hair-2);border-radius:13px}
+.calc2__row.on{border-color:rgba(var(--accent-rgb),.5);background:rgba(var(--accent-rgb),.06)}
+.calc2__stp{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--hair-2);border-radius:999px;padding:2px}
+.calc2__stp button{width:26px;height:26px;border-radius:50%;border:none;background:transparent;color:var(--text-dim);
+  font-size:.9375rem;line-height:1;cursor:pointer;transition:background .2s,color .2s}
+.calc2__stp button:hover{background:rgba(var(--accent-rgb),.14);color:var(--text)}
+.calc2__qty{font-family:var(--font-mono);font-size:.875rem;min-width:22px;text-align:center}
+.calc2__side{position:relative}
+@media(min-width:1000px){.calc2__side{position:sticky;top:90px}}
+.calc2__panel{border:1px solid rgba(var(--accent-rgb),.28);border-radius:18px;background:rgba(18,17,16,.92);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:clamp(20px,2.2vw,24px)}
+.calc2__lbl{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint)}
+.calc2__total{font-family:var(--font-mono);font-size:clamp(1.75rem,3.2vw,2.25rem);font-weight:600;letter-spacing:-.02em;margin-top:6px}
+.calc2__mo{margin-top:6px;font-family:var(--font-mono);font-size:.9375rem;color:var(--accent-hi)}
+.calc2__rows{margin-top:16px;border-top:1px solid var(--hair);padding-top:12px;display:grid;gap:7px;
+  max-height:320px;overflow-y:auto}
+.calc2__rows .r{display:flex;justify-content:space-between;gap:12px;font-size:.8125rem;color:var(--text-dim);line-height:1.45}
+.calc2__rows .r span:last-child{font-family:var(--font-mono);white-space:nowrap;color:var(--text)}
+.calc2__rows .r.mo span:last-child{color:var(--accent-hi)}
+.calc2__rows .r.disc span{color:rgb(143,194,164)}
+.calc2__rows .r.up span:last-child{color:var(--text-faint)}
+.calc2__empty{font-size:.8125rem;color:var(--text-faint);line-height:1.55}
+.calc2__meta{margin-top:14px;border-top:1px solid var(--hair);padding-top:12px;display:grid;gap:6px}
+.calc2__meta div{display:flex;justify-content:space-between;font-size:.8125rem;color:var(--text-dim)}
+.calc2__meta b{font-family:var(--font-mono);font-weight:500;color:var(--text)}
+.calc2__panel .btn{width:100%;justify-content:center;margin-top:16px}
+.calc2__hint{margin-top:12px;font-size:.75rem;color:var(--text-faint);line-height:1.55}
+.calc2__bar{display:none}
+@media(max-width:999px){
+  .calc2__bar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;align-items:center;justify-content:space-between;
+    gap:14px;padding:12px 18px;border-top:1px solid rgba(var(--accent-rgb),.3);background:rgba(18,17,16,.96);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .calc2__bar b{font-family:var(--font-mono);font-size:1.125rem}
+  .calc2__bar small{display:block;font-size:.6875rem;color:var(--text-faint)}
+  .calc2__bar .btn{margin:0}
+}
 /* ---- compare labels reuse (small tweak: allow generic before/after without red/green cue on 'own effort') ---- */
 </style>
 </head>
@@ -1121,103 +1159,41 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="wrap">
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Рассчитать проект</p>
-      <h2 class="h2 rv" id="h-calc" style="margin-top:20px;max-width:none">Что нужно сделать?</h2>
-      <p class="lede rv" style="max-width:none">Отметьте тип продукта и нужные опции — ниже сразу появится ориентировочная стоимость. Точный бюджет собираем после короткого обсуждения.</p>
+      <h2 class="h2 rv" id="h-calc" style="margin-top:20px;max-width:none">Соберите проект и сразу увидите цену</h2>
+      <p class="lede rv" style="max-width:none">Отмечайте нужные услуги — стоимость, состав и срок считаются на ходу. Можно взять одну услугу, можно собрать набор: от трёх позиций включается скидка за объём. Рядом с каждой услугой есть «?» с подробным описанием.</p>
     </div>
 
-    <div class="calc-box rv">
-      <div class="calc-step">
-        <p class="calc-step__h">Шаг 1</p>
-        <p class="calc-step__title">Тип продукта</p>
-        <div class="calc-types" id="calc-types">
-          <button type="button" class="calc-type active" data-type="site" data-base="24900">Сайт / лендинг</button>
-          <button type="button" class="calc-type" data-type="shop" data-base="34900">Интернет-магазин</button>
-          <button type="button" class="calc-type" data-type="bot" data-base="19900">Бот для мессенджеров</button>
-          <button type="button" class="calc-type" data-type="other" data-base="0">Другой digital-продукт</button>
-        </div>
+    <div class="calc2__cur rv">
+      <div class="calc2__seg" role="group" aria-label="Валюта">
+        <button type="button" data-cur="rub" aria-pressed="true">₽</button>
+        <button type="button" data-cur="usd" aria-pressed="false">$</button>
       </div>
+    </div>
 
-      <div class="calc-step">
-        <p class="calc-step__h">Шаг 2</p>
-        <p class="calc-step__title">Параметры проекта</p>
+    <div class="calc2 rv">
+      <div class="calc2__main" id="calc2-main"></div>
 
-        <div class="calc-opts calc-group" data-group="site">
-          <label class="calc-opt"><input type="checkbox" data-price="7900" data-label="Ещё одна страница сайта"><span class="calc-opt__body"><b>Ещё одна страница сайта</b><span>Отдельная посадочная под вторую услугу или акцию</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="5900" data-label="Домен, хостинг и аналитика"><span class="calc-opt__body"><b>Домен, хостинг и аналитика</b><span>Подключаем ваш домен к хостингу и настраиваем аналитику</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="15900" data-label="SEO-структура"><span class="calc-opt__body"><b>SEO-структура</b><span>Чтобы сайт находили в поиске, а не только по рекламе</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="9900" data-label="Вторая языковая версия сайта"><span class="calc-opt__body"><b>Вторая языковая версия сайта</b><span>Те же страницы и структура сайта переведены на английский или другой язык</span></span></label>
-        </div>
-
-        <div class="calc-opts calc-group" data-group="shop" hidden>
-          <label class="calc-opt"><input type="checkbox" data-price="9900" data-label="Приём оплаты на сайте"><span class="calc-opt__body"><b>Приём оплаты на сайте</b><span>Кнопка «оплатить» с чеком, без переводов на карту</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="7900" data-label="Ещё одна страница каталога"><span class="calc-opt__body"><b>Ещё одна страница каталога</b><span>Отдельная категория или посадочная под акцию</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="15900" data-label="SEO-структура"><span class="calc-opt__body"><b>SEO-структура</b><span>Чтобы магазин находили в поиске, а не только по рекламе</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="9900" data-label="Подключение к CRM"><span class="calc-opt__body"><b>Подключение к CRM</b><span>Заказы попадают в вашу amoCRM, Битрикс24 или похожую систему</span></span></label>
-        </div>
-
-        <div class="calc-opts calc-group" data-group="bot" hidden>
-          <div style="grid-column:1/-1">
-            <p class="calc-step__title" style="font-size:.9375rem;margin-top:0;margin-bottom:2px">Каналы: где должен отвечать бот</p>
-            <p class="note" style="margin:0">Отметьте один или несколько, первый канал входит в базовую стоимость</p>
+      <aside class="calc2__side">
+        <div class="calc2__panel">
+          <p class="calc2__lbl">Разовая стоимость</p>
+          <div class="calc2__total" id="calc2-total">0 ₽</div>
+          <div class="calc2__mo" id="calc2-mo" hidden></div>
+          <div class="calc2__rows" id="calc2-rows"></div>
+          <div class="calc2__meta">
+            <div><span>Срок разовых работ</span><b id="calc2-term">—</b></div>
+            <div><span>Кругов правок</span><b id="calc2-revs">2</b></div>
           </div>
-          <label class="calc-opt"><input type="checkbox" data-price="0" data-label="Telegram" checked><span class="calc-opt__body"><b>Telegram</b><span>Входит в базовую стоимость</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="14900" data-label="WhatsApp"><span class="calc-opt__body"><b>WhatsApp</b><span>Тот же сценарий диалога, что и в Telegram</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="14900" data-label="LINE"><span class="calc-opt__body"><b>LINE</b><span>Актуально для клиентов из Таиланда и Азии</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="24900" data-label="MAX"><span class="calc-opt__body"><b>MAX</b><span>Только для ИП или ООО: сейчас такие правила у площадки</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="9900" data-label="Подключение к CRM"><span class="calc-opt__body"><b>Подключение к CRM</b><span>Заявки от бота создаются в вашей CRM автоматически</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="34900" data-label="Персональная мини-CRM"><span class="calc-opt__body"><b>Персональная мини-CRM</b><span>Своя система учёта клиентов, если готовой ещё нет</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="39900" data-label="AI-ассистент по вашим материалам"><span class="calc-opt__body"><b>AI-ассистент по вашим материалам</b><span>Отвечает клиентам строго по вашим прайсам и регламентам</span></span></label>
+          <button class="btn btn--lg btn--shine" type="button" id="calc2-send">Отправить эту сборку
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></button>
+          <p class="calc2__hint">Это предварительный расчёт. Точную смету и срок подтверждаем после короткого знакомства с задачей — звонком или в переписке.</p>
         </div>
-
-        <div class="calc-opts calc-group" data-group="other" hidden>
-          <label class="calc-opt"><input type="checkbox" data-price="5900" data-label="Домен, хостинг и аналитика"><span class="calc-opt__body"><b>Домен, хостинг и аналитика</b><span>Базовая техническая часть для любого digital-продукта</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="39900" data-label="AI-ассистент по вашим материалам"><span class="calc-opt__body"><b>AI-ассистент по вашим материалам</b><span>Отвечает пользователям строго по вашим документам</span></span></label>
-        </div>
-        <p class="note" id="calc-other-note" hidden style="margin-top:14px">Формат нестандартный — после обсуждения соберём смету индивидуально, диапазон ниже ориентировочный.</p>
-      </div>
-
-      <div class="calc-step">
-        <p class="calc-step__h">Шаг 3</p>
-        <p class="calc-step__title">Дополнительные опции</p>
-        <div class="calc-opts">
-          <label class="calc-opt"><input type="checkbox" data-price="14900" data-label="Логотип и фирменный стиль"><span class="calc-opt__body"><b>Логотип и фирменный стиль</b><span>Единый вид на сайте, в канале и в соцсетях</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="9900" data-label="Тексты: 10 штук разово"><span class="calc-opt__body"><b>Тексты: 10 штук разово</b><span>Разовая покупка, не подписка на контент</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="12900" data-label="Сбор данных о рынке"><span class="calc-opt__body"><b>Сбор данных о рынке</b><span>Цены и позиции конкурентов из открытых источников</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="12900" data-label="Автоотчёт в таблице"><span class="calc-opt__body"><b>Автоотчёт в таблице</b><span>Таблица считает сама, формулы и графики без ручной сводки</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="19900" data-label="Обработка фото"><span class="calc-opt__body"><b>Обработка фото</b><span>Ретушь и оформление в едином стиле: каталог, интерьер или карточки товаров (свою фотосъёмку не делаем, работаем с готовыми кадрами)</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="9900" data-label="Настройка аналитики и целей"><span class="calc-opt__body"><b>Настройка аналитики и целей</b><span>Метрика, GA4 или аналог с настроенными целями по заявкам</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="17900" data-label="Мультиязычность бота или сервиса (2+ языка)"><span class="calc-opt__body"><b>Мультиязычность бота или сервиса (2+ языка)</b><span>Ответы, меню и уведомления на 2+ языках — актуально для бота, магазина или CRM с международной аудиторией</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="12900" data-label="Встроенный калькулятор: простой"><span class="calc-opt__body"><b>Встроенный калькулятор: простой</b><span>Расчёт по 2-3 параметрам без сложной логики, как виджет для быстрой оценки</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="26900" data-label="Встроенный калькулятор: сложный"><span class="calc-opt__body"><b>Встроенный калькулятор: сложный</b><span>Многошаговый расчёт с условиями, вариантами и зависимостями между полями — как этот калькулятор</span></span></label>
-          <label class="calc-opt"><input type="checkbox" data-price="0" data-label="Срочный запуск (+20% к стоимости)" id="calc-urgent"><span class="calc-opt__body"><b>Срочный запуск (+20%)</b><span>Быстрее стандартного срока: команда переставляет приоритеты под ваш проект</span></span></label>
-        </div>
-      </div>
-
-      <div class="calc-step">
-        <p class="calc-step__h">Шаг 4 · ежемесячно</p>
-        <p class="calc-step__title">Регулярные услуги (считаются отдельно)</p>
-        <div class="calc-opts">
-          <label class="calc-opt"><input type="checkbox" class="calc-monthly" data-price="24900" data-label="Ведение Telegram-канала, до 15 постов/мес"><span class="calc-opt__body"><b>Ведение Telegram-канала · до 15 постов</b><span>Контент-план, публикация, ответы на комментарии — именно для Telegram-канала</span></span></label>
-          <label class="calc-opt"><input type="checkbox" class="calc-monthly" data-price="39900" data-label="Ведение Telegram-канала, до 30 постов/мес"><span class="calc-opt__body"><b>Ведение Telegram-канала · до 30 постов</b><span>Тот же контент-план и публикация, но для более активного канала</span></span></label>
-          <label class="calc-opt"><input type="checkbox" class="calc-monthly" data-price="9900" data-label="Рассылки по базе бота"><span class="calc-opt__body"><b>Рассылки по базе бота</b><span>Разные сообщения для разных групп подписчиков</span></span></label>
-          <label class="calc-opt"><input type="checkbox" class="calc-monthly" data-price="9900" data-label="Отчёт по конкурентам"><span class="calc-opt__body"><b>Отчёт по конкурентам</b><span>Раз в месяц: цены, новые услуги, отзывы конкурентов</span></span></label>
-          <label class="calc-opt"><input type="checkbox" class="calc-monthly" data-price="7900" data-label="Поддержка и доработки"><span class="calc-opt__body"><b>Поддержка и доработки</b><span>Мелкие правки и быстрая реакция на поломки</span></span></label>
-        </div>
-      </div>
-
-      <div class="calc-result">
-        <div class="calc-result__num">
-          <span class="note" style="margin:0">Ориентировочная стоимость</span>
-          <b id="calc-total">от 24 900 ₽</b>
-          <small>Точный бюджет зависит от состава проекта и уточняется после обсуждения — это не окончательная цена.</small>
-          <div class="calc-result__monthly" id="calc-monthly-total" hidden></div>
-        </div>
-        <div class="calc-result__cta">
-          <button type="button" class="btn btn--lg btn--shine" id="calc-get-quote">Получить точный расчёт</button>
-          <button type="button" class="btn-quiet" data-open-modal="digital-contact">Обсудить проект</button>
-        </div>
-      </div>
+      </aside>
     </div>
+  </div>
+
+  <div class="calc2__bar" id="calc2-bar" hidden>
+    <div><b id="calc2-bar-total">0 ₽</b><small id="calc2-bar-sub">ничего не выбрано</small></div>
+    <button class="btn btn--sm" type="button" id="calc2-bar-send">Отправить</button>
   </div>
 </section>
 
@@ -1320,14 +1296,14 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     <div class="modal__body" id="digital-contact-form-state">
       <p class="eyebrow">Digital-услуги</p>
       <h3 id="digital-contact-title" class="modal__h1">Расскажите о задаче</h3>
-      <p class="modal__lede">Ответим в течение 30 минут и уточним детали, если что-то важное не поместилось в форму.</p>
+      <p class="modal__lede">Оставьте заявку — ответим в течение 30 минут. Детали уточним при ответе.</p>
       <form id="digital-contact-form">
         <div class="field-row">
           <label class="field"><span>Имя</span><input type="text" name="name" required placeholder="Ваше имя"></label>
           <label class="field"><span>Бизнес</span><input type="text" name="company" placeholder="Название бизнеса"></label>
         </div>
         <label class="field"><span>Email или мессенджер</span><input type="text" name="contact" required placeholder="email, WhatsApp, Telegram, LINE"></label>
-        <label class="field"><span>Что нужно сделать</span><textarea name="message" rows="6" placeholder="Опишите задачу своими словами — если пока сами не знаете, что именно нужно, оставьте поле пустым: поможем определиться на созвоне"></textarea></label>
+        <label class="field"><span>Что нужно сделать</span><textarea name="message" rows="6" placeholder="Пары слов достаточно. Можно оставить пустым — уточним при ответе"></textarea></label>
         <label style="display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:.8125rem;color:var(--text-dim);line-height:1.5">
           <input type="checkbox" name="consent" required style="margin-top:3px">
           <span>Согласен(-на) на обработку персональных данных. Данные не передаются третьим лицам.</span>
@@ -1515,87 +1491,354 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     });
   })();
 
-  /* ---------- calculator ---------- */
+  /* ---------- calculator v2 ---------- */
   (function(){
-    var typeButtons = document.querySelectorAll('.calc-type');
-    var groups = document.querySelectorAll('.calc-group');
-    var otherNote = document.getElementById('calc-other-note');
-    var totalEl = document.getElementById('calc-total');
-    var monthlyEl = document.getElementById('calc-monthly-total');
-    var quoteBtn = document.getElementById('calc-get-quote');
-    if(!typeButtons.length) return;
+    var main = document.getElementById('calc2-main');
+    if(!main) return;
 
-    var TYPE_LABELS = { site:'Сайт / лендинг', shop:'Интернет-магазин', bot:'Бот для мессенджеров', other:'Другой digital-продукт' };
-    var activeType = 'site';
-    var activeBase = 24900;
-
-    function fmt(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
-
-    function selectType(btn){
-      typeButtons.forEach(function(b){ b.classList.remove('active'); });
-      btn.classList.add('active');
-      activeType = btn.getAttribute('data-type');
-      activeBase = parseInt(btn.getAttribute('data-base'), 10) || 0;
-      groups.forEach(function(g){ g.hidden = g.getAttribute('data-group') !== activeType; });
-      if(otherNote) otherNote.hidden = activeType !== 'other';
-      recalc();
+    var RATE = 82;                 /* ориентировочный курс для показа цены в $ */
+    var CUR  = 'rub';
+    function fmt(n){ return Math.round(n).toLocaleString('ru-RU'); }
+    function money(rub, suf){
+      var s = (CUR === 'rub') ? fmt(rub) + ' ₽' : '$' + fmt(rub / RATE);
+      return s + (suf || '');
     }
-    typeButtons.forEach(function(btn){
-      btn.addEventListener('click', function(){ selectType(btn); });
-    });
 
-    var URGENT_PCT = 0.2;
-    function recalc(){
-      var oneTime = activeBase;
-      var monthly = 0;
-      document.querySelectorAll('.calc-opt input[type="checkbox"]').forEach(function(cb){
-        if(!cb.checked) return;
-        if(cb.id === 'calc-urgent') return;
-        var group = cb.closest('.calc-group');
-        if(group && group.hidden) return;
-        var price = parseInt(cb.getAttribute('data-price'), 10) || 0;
-        if(cb.classList.contains('calc-monthly')) monthly += price;
-        else oneTime += price;
+    /* ===== разовые услуги по категориям (без дублей: каждая услуга встречается один раз) ===== */
+    var CATS = [
+      { id:'site', nm:'Сайт и страницы', note:'Всё, что показывает вас клиенту', items:[
+        {id:'a_site',  nm:'Сайт-одностраничник', rub:24900, days:4,
+         sol:'Страница, на которую можно вести рекламу и подписчиков',
+         pop:'Одна страница, где человек за минуту понимает, что вы предлагаете, сколько это стоит и как заказать. Тексты, дизайн, форма заявки и настройка — всё внутри.'},
+        {id:'a_page',  nm:'Ещё одна страница сайта', rub:7900, days:2,
+         sol:'Отдельная посадочная под вторую услугу или акцию',
+         pop:'Когда услуг несколько, вести всю рекламу на одну страницу — терять деньги. Отдельная страница под направление окупается почти всегда.'},
+        {id:'a_lang',  nm:'Вторая языковая версия', rub:9900, days:2,
+         sol:'Тот же сайт на английском или другом языке',
+         pop:'Перевожу и адаптирую все тексты, добавляю переключатель языков. Формулировки переписываются под другой рынок, это не дословный перевод.'},
+        {id:'a_domain',nm:'Домен, хостинг и аналитика', rub:5900, days:1,
+         sol:'Подключение домена к хостингу и настройка аналитики',
+         pop:'Если домен уже куплен — привязываю его к хостингу и настраиваю аналитику посещений. Если домена ещё нет, подскажу, где купить: само доменное имя оплачивается отдельно у регистратора.'},
+        {id:'a_anim',  nm:'Кастомная анимация и скролл-эффекты', rub:9900, days:2,
+         sol:'Блоки появляются при прокрутке, а не просто лежат на странице',
+         pop:'Индивидуальная анимация под прокрутку: элементы плавно проявляются, линии дорисовываются по мере скролла. Делает страницу заметно живее шаблонных решений и почти не влияет на скорость загрузки.'}
+      ]},
+      { id:'bots', nm:'Боты и AI-ассистенты', note:'Отвечают клиентам и собирают заявки', items:[
+        {id:'a_bot',    nm:'Чат-бот в Telegram', rub:19900, days:4,
+         sol:'Отвечает клиентам и собирает заявки, пока вы заняты',
+         pop:'Бот здоровается, задаёт нужные вопросы, считает примерную стоимость и записывает заявку. Вам приходит уведомление, заявка падает в таблицу или CRM.'},
+        {id:'a_bot_max',nm:'Чат-бот в MAX', rub:24900, days:5,
+         sol:'Тот же сценарный бот в российском мессенджере MAX',
+         pop:'По логике не отличается от Telegram-бота: здоровается, задаёт вопросы, считает стоимость, записывает заявку. Платформа новее, документация местами неудобная, поэтому срок и цена чуть выше. Токен на бота выдаётся только ИП и ООО.'},
+        {id:'a_bot_mig',nm:'Перенос бота из Telegram в MAX', rub:21900, days:3,
+         sol:'Уже работающий бот получает вторую версию в MAX',
+         pop:'Переношу готовые сценарии вашего Telegram-бота на MAX Bot API. Логика и тексты уже написаны, поэтому это дешевле и быстрее разработки с нуля. Оба бота могут работать параллельно — клиенты сами выбирают мессенджер.'},
+        {id:'a_ai',     nm:'AI-ассистент на частые вопросы', rub:39500, days:6,
+         sol:'Отвечает на типовые вопросы о компании, ценах и услугах, остальное — человеку',
+         pop:'Это лёгкий AI-ассистент, а не полноценный AI-сотрудник. Он закрывает стандартные вопросы клиентов — что вы делаете, сколько это стоит, какие условия и сроки — своими словами, но строго по вашим прайсам и материалам. Как только вопрос выходит за рамки типового и нужен развёрнутый разбор, а не короткий быстрый ответ, ассистент передаёт диалог живому сотруднику. Если нужен не ответчик на вопросы, а AI-сотрудник, который целиком ведёт роль — продажи, сервис, аналитику — это отдельный формат «AI-сотрудник» (Starter/Pro/Custom), от 79 500 ₽.'}
+      ]},
+      { id:'sales', nm:'Продажи, данные и учёт', note:'Куда попадают заявки и деньги', items:[
+        {id:'a_crm_link',nm:'Подключение к вашей CRM', rub:9900, days:2,
+         sol:'Связываем сайт и бота с уже существующей системой',
+         pop:'Если у вас уже есть amoCRM, Битрикс24 или похожая система — связываю её с сайтом и ботом, чтобы заявки создавались там автоматически. Если готовой CRM нет, смотрите следующий пункт: это разные работы и вместе они не нужны.'},
+        {id:'a_crm_own', nm:'Персональная мини-CRM', rub:34900, days:8,
+         sol:'Своя система учёта клиентов, если готовой нет',
+         pop:'Собираю простую систему под ваш процесс: карточки клиентов, этапы сделки, напоминания, отчёт по деньгам за месяц. Часть времени уходит на тестирование логики переходов между этапами. Отдельное подключение к чужой CRM в этом случае не требуется.'},
+        {id:'a_pay',     nm:'Приём оплаты на сайте', rub:9900, days:2,
+         sol:'Кнопка «оплатить» с чеком, без переводов на карту',
+         pop:'Подключаю готовый платёжный сервис — ЮKassa, Робокассу или Stripe — к вашему сайту. Оформление самого сервиса на вашей стороне, я делаю техническую часть подключения.'},
+        {id:'a_sheets',  nm:'Автоотчёт в таблице', rub:12900, days:2,
+         sol:'Таблица считает сама, без ручной сводки по вечерам',
+         pop:'Таблица, куда данные попадают автоматически, а формулы и графики считают выручку, заявки и остатки. Вместо ручного сведения цифр в конце дня — готовый отчёт.'},
+        {id:'a_data',    nm:'Сбор данных о рынке', rub:12900, days:3,
+         sol:'Цены и позиции конкурентов в одной таблице',
+         pop:'Собираю то, что лежит в открытом доступе: цены, услуги, отзывы, контакты. Работаю только с открытыми источниками, чищу дубли и отдаю готовую таблицу.'}
+      ]},
+      { id:'promo', nm:'Продвижение и контент', note:'Чтобы вас находили и понимали', items:[
+        {id:'a_seo',   nm:'SEO-структура сайта', rub:15900, days:3,
+         sol:'Чтобы сайт находили в поиске, а не только по рекламе',
+         pop:'Собираю, что именно люди ищут в вашей нише, раскладываю запросы по страницам, прописываю заголовки и описания для поисковиков. Разовая работа по структуре — регулярное продвижение считается отдельно.'},
+        {id:'a_ident', nm:'Логотип и фирменный стиль', rub:14900, days:3,
+         sol:'Единый вид на сайте, в канале и в соцсетях',
+         pop:'Логотип в трёх вариантах, обложки, аватары, цвета и шрифты. На выходе — набор файлов и короткое руководство, как всем этим пользоваться.'},
+        {id:'a_texts', nm:'Тексты: 10 штук разово', rub:9900, days:3,
+         sol:'Разовый пакет текстов, не подписка',
+         pop:'Десять текстов под вашу задачу после короткого брифа. Это разовая покупка — для регулярного контента ниже есть помесячный конструктор.'},
+        {id:'a_reels', nm:'Сценарии для Reels и Shorts', rub:12900, days:4,
+         sol:'8–12 роликов по готовому плану',
+         pop:'На каждый ролик: зацепка в первые секунды, текст целиком, что показывать в кадре, титры. Вам остаётся снять и смонтировать.'}
+      ]},
+      { id:'widgets', nm:'Виджеты и инструменты', note:'Интерактив на вашем сайте', items:[
+        {id:'a_calc',    nm:'Калькулятор стоимости на сайт', rub:14900, days:3,
+         sol:'Посетитель отмечает опции и сразу видит цену',
+         pop:'Виджет расчёта на вашу страницу: набор опций, мгновенный подсчёт, отправка заявки с готовой сборкой. Подходит для услуг с понятным набором параметров.'},
+        {id:'a_calc_pro',nm:'Калькулятор с валютами и сложной логикой', rub:24900, days:5,
+         sol:'То же самое плюс валюты, скидки и зависимые опции',
+         pop:'Полноценный калькулятор, как этот: переключение валют, скидки за объём, разовые и ежемесячные позиции одновременно, состав заказа сбоку. Подходит, если вариантов комплектации много и клиенту нужна точная цена без менеджера.'}
+      ]}
+    ];
+
+    /* ===== ежемесячные ===== */
+    var CONTENT = [
+      {id:'c_post',   nm:'Пост для Telegram-канала', rub:1200, max:30,
+       sol:'Готовый текст под вашу тему и аудиторию',
+       pop:'Один пост объёмом 400–800 знаков: заголовок, структура и призыв к действию, если он нужен. Пишу после короткого брифа о теме и аудитории канала.'},
+      {id:'c_article',nm:'Статья или лонгрид', rub:3900, max:8,
+       sol:'Развёрнутый материал: разбор, кейс, гайд',
+       pop:'Материал на 4 000–7 000 знаков: разбор темы, инструкция или кейс с примерами, со структурой, подзаголовками и выводом. Публикуется как самостоятельный текст на сайте или в канале.'},
+      {id:'c_letter', nm:'Письмо для email-рассылки', rub:1900, max:8,
+       sol:'Одно письмо в вашу цепочку',
+       pop:'Готовое письмо: тема, текст, призыв к действию. Приветственное, продающее или напоминание. Настройка самого сервиса рассылок в стоимость письма не входит.'}
+    ];
+
+    var CHANNEL = [
+      {id:'ch_none', nm:'Не нужно', rub:0, sol:'Ведение канала не требуется'},
+      {id:'ch_light',nm:'Ведение канала: до 15 постов в месяц', rub:24900,
+       sol:'Контент-план, публикация, ответы на комментарии',
+       pop:'Веду Telegram-канал: контент-план, публикация до 15 постов в месяц, ответы на комментарии, короткий отчёт по росту. Подходит, когда важна регулярность без ежедневного темпа.'},
+      {id:'ch_heavy',nm:'Ведение канала: до 30 постов в месяц', rub:39900,
+       sol:'Ежедневные публикации, рубрики, работа с комментариями',
+       pop:'Ежедневные публикации, постоянные рубрики, обложки, ответы на комментарии, разбор статистики и корректировка плана. Для каналов, которые растут на охватах.'}
+    ];
+
+    var MONTHLY = [
+      {id:'m_mail',   nm:'Рассылки по базе бота', rub:9900,
+       sol:'Разные сообщения для разных групп подписчиков',
+       pop:'Все, кто писал вашему боту, остаются в базе. Делим их на группы — спрашивал цену, купил, пропал — и отправляем каждой своё. Это не одинаковая рассылка всем подряд.'},
+      {id:'m_data',   nm:'Отчёт по конкурентам', rub:9900,
+       sol:'Раз в месяц: цены, новые услуги, отзывы',
+       pop:'Раз в месяц собираю по конкурентам из открытых источников цены, новые услуги и отзывы. Присылаю сводку с цифрами и выводами.'},
+      {id:'m_support',nm:'Поддержка и доработки', rub:7900,
+       sol:'Мелкие правки и быстрая реакция на поломки',
+       pop:'Правки текстов и цен, мелкие изменения в боте и на сайте, быстрая реакция, если что-то сломалось.'}
+    ];
+
+    var CONDS = [
+      {id:'x_urgent',nm:'Срочно, вне очереди', pct:35, sol:'Срок сокращается примерно вдвое',
+       pop:'Ваш проект встаёт первым в очередь и делается в сжатом графике. Наценка покрывает работу в приоритете, срок при этом сокращается примерно вдвое.'},
+      {id:'x_revs',  nm:'4 круга правок вместо 2', pct:10, sol:'Если согласование идёт через нескольких человек',
+       pop:'Круг правок — один заход корректировок после показа результата: вы смотрите, присылаете правки, я вношу. По умолчанию таких заходов два, этой опцией их становится четыре.'}
+    ];
+
+    /* ===== рендер ===== */
+    function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+    function popHTML(o){
+      if(!o.pop) return '';
+      return '<button class="calc2__info" type="button" data-pop="' + o.id + '" aria-label="Подробнее о услуге ' + esc(o.nm) + '">?</button>';
+    }
+    function popBody(o){
+      if(!o.pop) return '';
+      return '<span class="calc2__pop" id="pop-' + o.id + '"><b>' + esc(o.nm) + '</b>' + esc(o.pop) +
+             '<button class="calc2__pop-x" type="button" data-close="' + o.id + '">Свернуть</button></span>';
+    }
+    function optHTML(type, name, o, suf){
+      return '<label class="calc2__opt" data-id="' + o.id + '">' +
+        '<input type="' + type + '" name="' + name + '" value="' + o.id + '"' + (o.id === 'ch_none' ? ' checked' : '') + '>' +
+        '<span class="calc2__txt"><b>' + esc(o.nm) + '</b><span>' + esc(o.sol || '') + '</span></span>' +
+        popHTML(o) +
+        '<span class="calc2__amt">' + (o.rub ? money(o.rub, suf) : (o.pct ? '+' + o.pct + '%' : '')) + '</span>' +
+        popBody(o) + '</label>';
+    }
+
+    function render(){
+      var html = '';
+      CATS.forEach(function(c){
+        html += '<div class="calc2__cat"><div class="calc2__cat-h"><b>' + esc(c.nm) + '</b><span>' + esc(c.note) + '</span></div>' +
+                '<div class="calc2__list">' + c.items.map(function(o){ return optHTML('checkbox','add',o,''); }).join('') + '</div></div>';
       });
-      var urgentCb = document.getElementById('calc-urgent');
-      if(urgentCb && urgentCb.checked) oneTime = Math.round(oneTime * (1 + URGENT_PCT));
-      if(totalEl) totalEl.textContent = 'от ' + fmt(oneTime) + ' ₽';
-      if(monthlyEl){
-        if(monthly > 0){
-          monthlyEl.hidden = false;
-          monthlyEl.textContent = '+ от ' + fmt(monthly) + ' ₽/мес за регулярные услуги';
-        } else {
-          monthlyEl.hidden = true;
-          monthlyEl.textContent = '';
-        }
-      }
-    }
-    document.querySelectorAll('.calc-opt input[type="checkbox"]').forEach(function(cb){
-      cb.addEventListener('change', recalc);
-    });
-    recalc();
 
-    if(quoteBtn){
-      quoteBtn.addEventListener('click', function(){
-        var selected = [];
-        var monthlySelected = [];
-        document.querySelectorAll('.calc-opt input[type="checkbox"]:checked').forEach(function(cb){
-          var group = cb.closest('.calc-group');
-          if(group && group.hidden) return;
-          var label = cb.getAttribute('data-label') || '';
-          if(cb.classList.contains('calc-monthly')) monthlySelected.push(label);
-          else selected.push(label);
+      html += '<div class="calc2__cat"><div class="calc2__cat-h"><b>Ежемесячно</b><span>Считается отдельной строкой, не входит в разовую сумму</span></div><div class="calc2__list">';
+      html += CONTENT.map(function(c){
+        return '<div class="calc2__row" data-cid="' + c.id + '">' +
+          '<span class="calc2__txt"><b>' + esc(c.nm) + '</b><span>' + esc(c.sol) + ' · ' + money(c.rub) + ' за штуку</span></span>' +
+          popHTML(c) +
+          '<span class="calc2__stp"><button type="button" data-act="dec" data-cid="' + c.id + '" aria-label="Меньше">−</button>' +
+          '<span class="calc2__qty" id="qty-' + c.id + '">0</span>' +
+          '<button type="button" data-act="inc" data-cid="' + c.id + '" aria-label="Больше">+</button></span>' +
+          '<span class="calc2__amt" id="amt-' + c.id + '">' + money(0) + '</span>' + popBody(c) + '</div>';
+      }).join('');
+      html += CHANNEL.map(function(o){ return optHTML('radio','channel',o,' / мес'); }).join('');
+      html += MONTHLY.map(function(o){ return optHTML('checkbox','mon',o,' / мес'); }).join('');
+      html += '</div></div>';
+
+      html += '<div class="calc2__cat"><div class="calc2__cat-h"><b>Условия</b><span>Влияют только на разовые работы, не на подписки</span></div>' +
+              '<div class="calc2__list">' + CONDS.map(function(o){ return optHTML('checkbox','cond',o,''); }).join('') + '</div></div>';
+
+      main.innerHTML = html;
+      bind();
+      calc();
+    }
+
+    function bind(){
+      main.querySelectorAll('input').forEach(function(i){ i.addEventListener('change', calc); });
+
+      main.querySelectorAll('.calc2__stp button').forEach(function(b){
+        b.addEventListener('click', function(){
+          var id = b.dataset.cid, unit = CONTENT.filter(function(u){ return u.id === id; })[0];
+          var el = document.getElementById('qty-' + id);
+          var v = parseInt(el.textContent, 10) || 0;
+          if(b.dataset.act === 'inc' && v < unit.max) v++;
+          if(b.dataset.act === 'dec' && v > 0) v--;
+          el.textContent = v;
+          document.getElementById('amt-' + id).textContent = money(v * unit.rub);
+          calc();
         });
-        var lines = [];
-        lines.push('Тип продукта: ' + (TYPE_LABELS[activeType] || activeType));
-        if(selected.length) lines.push('Опции: ' + selected.join(', '));
-        if(monthlySelected.length) lines.push('Регулярные услуги: ' + monthlySelected.join(', '));
-        lines.push('Ориентировочная стоимость: ' + (totalEl ? totalEl.textContent : ''));
-        var textarea = document.querySelector('#digital-contact-form textarea[name="message"]');
-        if(textarea) textarea.value = lines.join('\n');
-        if(window.__digitalOpenModal) window.__digitalOpenModal('digital-contact');
+      });
+
+      main.querySelectorAll('.calc2__info').forEach(function(b){
+        b.addEventListener('click', function(e){
+          e.preventDefault(); e.stopPropagation();
+          var el = document.getElementById('pop-' + b.dataset.pop);
+          var was = el.classList.contains('open');
+          main.querySelectorAll('.calc2__pop').forEach(function(p){ p.classList.remove('open'); });
+          if(!was) el.classList.add('open');
+        });
+      });
+      main.querySelectorAll('.calc2__pop-x').forEach(function(b){
+        b.addEventListener('click', function(e){
+          e.preventDefault(); e.stopPropagation();
+          document.getElementById('pop-' + b.dataset.close).classList.remove('open');
+        });
+      });
+      main.querySelectorAll('.calc2__pop').forEach(function(p){
+        p.addEventListener('click', function(e){ e.stopPropagation(); });
       });
     }
+    document.addEventListener('click', function(){
+      main.querySelectorAll('.calc2__pop').forEach(function(p){ p.classList.remove('open'); });
+    });
+
+    /* ===== расчёт ===== */
+    var state = { lines: [], total: 0, monthly: 0, term: '—' };
+
+    function allAddons(){
+      var out = [];
+      CATS.forEach(function(c){ c.items.forEach(function(o){ out.push(o); }); });
+      return out;
+    }
+
+    function calc(){
+      var ADD = allAddons();
+      var picked = [].slice.call(main.querySelectorAll('input[name=add]:checked')).map(function(i){
+        return ADD.filter(function(a){ return a.id === i.value; })[0];
+      });
+      var chanInput = main.querySelector('input[name=channel]:checked');
+      var chan = CHANNEL.filter(function(t){ return t.id === (chanInput ? chanInput.value : 'ch_none'); })[0];
+      var mons = [].slice.call(main.querySelectorAll('input[name=mon]:checked')).map(function(i){
+        return MONTHLY.filter(function(m){ return m.id === i.value; })[0];
+      });
+      var conds = [].slice.call(main.querySelectorAll('input[name=cond]:checked')).map(function(i){ return i.value; });
+      var urgent = conds.indexOf('x_urgent') > -1;
+      var revs4  = conds.indexOf('x_revs') > -1;
+
+      main.querySelectorAll('.calc2__opt').forEach(function(l){
+        var inp = l.querySelector('input');
+        l.classList.toggle('on', !!(inp && inp.checked) && l.dataset.id !== 'ch_none');
+      });
+      main.querySelectorAll('.calc2__row').forEach(function(r){
+        var q = parseInt(document.getElementById('qty-' + r.dataset.cid).textContent, 10) || 0;
+        r.classList.toggle('on', q > 0);
+      });
+
+      /* разовые: сумма, скидка за объём, надбавки */
+      var sum  = picked.reduce(function(s,a){ return s + a.rub; }, 0);
+      var days = picked.reduce(function(s,a){ return s + a.days; }, 0);
+      var n = picked.length;
+      var disc = n >= 5 ? .18 : n >= 4 ? .12 : n >= 3 ? .07 : 0;
+      var discAmt = Math.round(sum * disc);
+      sum -= discAmt;
+      var afterDisc = sum;
+      if(revs4)  sum = Math.round(sum * 1.10);
+      var afterRevs = sum;
+      if(urgent){ sum = Math.round(sum * 1.35); days = Math.max(2, Math.round(days * 0.55)); }
+
+      /* ежемесячные */
+      var contentSum = CONTENT.reduce(function(s,c){
+        var q = parseInt(document.getElementById('qty-' + c.id).textContent, 10) || 0;
+        return s + q * c.rub;
+      }, 0);
+      var monSum = chan.rub + mons.reduce(function(s,m){ return s + m.rub; }, 0) + contentSum;
+
+      /* состав заказа */
+      var rows = [];
+      picked.forEach(function(a){ rows.push([a.nm, money(a.rub), '']); });
+      if(disc) rows.push(['Скидка за объём · ' + n + ' поз. · −' + Math.round(disc*100) + '%', '−' + money(discAmt), 'disc']);
+      if(revs4)  rows.push(['4 круга правок (+10%)', '+' + money(afterRevs - afterDisc), 'up']);
+      if(urgent) rows.push(['Срочный запуск (+35%)', '+' + money(sum - afterRevs), 'up']);
+      CONTENT.forEach(function(c){
+        var q = parseInt(document.getElementById('qty-' + c.id).textContent, 10) || 0;
+        if(q > 0) rows.push([c.nm + ' × ' + q, money(q * c.rub) + ' / мес', 'mo']);
+      });
+      if(chan.rub) rows.push([chan.nm, money(chan.rub) + ' / мес', 'mo']);
+      mons.forEach(function(m){ rows.push([m.nm, money(m.rub) + ' / мес', 'mo']); });
+
+      var term = days ? (days <= 2 ? days + ' дня' : (days - 1) + '–' + (days + 2) + ' дней') : '—';
+
+      document.getElementById('calc2-total').textContent = money(sum);
+      var moEl = document.getElementById('calc2-mo');
+      moEl.hidden = !monSum;
+      moEl.textContent = monSum ? '+ ' + money(monSum) + ' ежемесячно' : '';
+      document.getElementById('calc2-rows').innerHTML = rows.length
+        ? rows.map(function(r){ return '<div class="r ' + r[2] + '"><span>' + esc(r[0]) + '</span><span>' + r[1] + '</span></div>'; }).join('')
+        : '<p class="calc2__empty">Пока ничего не выбрано. Отметьте нужные услуги — состав и сумма появятся здесь.</p>';
+      document.getElementById('calc2-term').textContent = term;
+      document.getElementById('calc2-revs').textContent = revs4 ? '4' : '2';
+
+      var bar = document.getElementById('calc2-bar');
+      var hasAny = rows.length > 0;
+      bar.hidden = !hasAny;
+      document.getElementById('calc2-bar-total').textContent = money(sum);
+      document.getElementById('calc2-bar-sub').textContent = monSum
+        ? ('+ ' + money(monSum) + ' в месяц · ' + n + ' поз.')
+        : (n ? n + ' поз. · срок ' + term : 'ничего не выбрано');
+
+      state = { lines: rows, total: money(sum), monthly: monSum ? money(monSum) : '', term: term, count: n };
+    }
+
+    /* ===== валюта ===== */
+    document.querySelectorAll('.calc2__seg button').forEach(function(b){
+      b.addEventListener('click', function(){
+        if(CUR === b.dataset.cur) return;
+        CUR = b.dataset.cur;
+        document.querySelectorAll('.calc2__seg button').forEach(function(x){
+          x.setAttribute('aria-pressed', String(x.dataset.cur === CUR));
+        });
+        /* сохраняем выбранное при перерисовке */
+        var checked = [].slice.call(main.querySelectorAll('input:checked')).map(function(i){ return i.value; });
+        var qty = {};
+        CONTENT.forEach(function(c){ qty[c.id] = parseInt(document.getElementById('qty-' + c.id).textContent, 10) || 0; });
+        render();
+        checked.forEach(function(v){
+          var el = main.querySelector('input[value="' + v + '"]');
+          if(el) el.checked = true;
+        });
+        CONTENT.forEach(function(c){
+          if(qty[c.id]){
+            document.getElementById('qty-' + c.id).textContent = qty[c.id];
+            document.getElementById('amt-' + c.id).textContent = money(qty[c.id] * c.rub);
+          }
+        });
+        calc();
+      });
+    });
+
+    /* ===== отправка сборки в форму ===== */
+    function sendBuild(){
+      var lines = [];
+      if(state.count) lines.push('Разовые работы:');
+      state.lines.forEach(function(r){ lines.push('· ' + r[0] + ' — ' + r[1]); });
+      lines.push('Итого разово: ' + state.total);
+      if(state.monthly) lines.push('Ежемесячно: ' + state.monthly);
+      lines.push('Ориентировочный срок: ' + state.term);
+      var textarea = document.querySelector('#digital-contact-form textarea[name="message"]');
+      if(textarea) textarea.value = lines.join('\n');
+      if(window.__digitalOpenModal) window.__digitalOpenModal('digital-contact');
+    }
+    document.getElementById('calc2-send').addEventListener('click', sendBuild);
+    document.getElementById('calc2-bar-send').addEventListener('click', sendBuild);
+
+    render();
   })();
 })();
 </script>
