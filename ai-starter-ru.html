@@ -823,7 +823,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     <div>
       <p class="eyebrow rv">Формат 02 · Популярный выбор</p>
       <h1 class="h2 rv" id="h-hero" style="margin-top:20px;max-width:22ch">AI Employee Starter: один AI-сотрудник закрывает одну роль полностью</h1>
-      <p class="lede rv">Не помощник и не подсказчик человеку, а самостоятельный AI-сотрудник на конкретную роль: Хантер для поиска клиентов и первого контакта, Продажник для рассылок и допродаж, приём заявок и запись, поддержка, Аналитик для отчётности или Контент-менеджер для текстов и материалов. Отвечает, уточняет, доводит до записи или оплаты и передаёт остальное дальше — без вашего участия в рутине.</p>
+      <p class="lede rv">Starter — это не ассистент и не помощник оператору, а самостоятельный AI-сотрудник на конкретную позицию: Хантер для поиска клиентов и первого контакта, Продажник для рассылок и допродаж, Маркетолог для контента и рекламы, Ассистент для приёма заявок и записи, Аналитик для отчётности или Контент-мейкер для текстов и материалов. Ведёт свою часть работы от начала до результата и передаёт остальное дальше — без вашего участия в рутине.</p>
       <div class="hero-d__cta rv">
         <button class="btn btn--lg btn--shine" data-open-modal="starter-contact">Обсудить Starter
           <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></button>
@@ -847,14 +847,14 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             <circle class="art-dot" cx="90" cy="230" r="4.5"/>
             <circle class="art-dot" cx="108" cy="230" r="4.5"/>
           </g>
-          <text class="art-label" x="40" y="300">ЗАЯВКА КЛИЕНТА</text>
+          <text class="art-label" x="40" y="300">ЗАДАЧА / ЗАЯВКА / ДИАЛОГ</text>
         </g>
 
         <!-- AI-сотрудник -->
         <g class="art-float art-float--b">
           <rect class="art-panel art-panel--hi" x="300" y="70" width="200" height="260" rx="22"/>
           <circle class="art-panel--hi" cx="340" cy="120" r="22" fill="rgba(196,161,101,.16)" stroke="rgba(196,161,101,.55)"/>
-          <text class="art-label" x="322" y="102" style="font-size:9px">1 РОЛЬ</text>
+          <text class="art-label" x="322" y="102" style="font-size:9px">1 ПОЗИЦИЯ</text>
           <rect class="art-bar--hi" x="376" y="108" width="96" height="11" rx="5.5"/>
           <rect class="art-bar" x="376" y="128" width="72" height="8" rx="4"/>
           <path class="art-line" d="M320 168 H480"/>
@@ -881,6 +881,55 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         <path class="art-line" d="M150 270 V330"/>
         <circle class="art-pulse art-pulse--2" cx="150" cy="270" r="3" style="--dx:0px;--dy:60px"/>
       </svg>
+      <div class="role-tags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;justify-content:center">
+        <span class="pill-tag">Хантер</span><span class="pill-tag">Продажник</span><span class="pill-tag">Маркетолог</span>
+        <span class="pill-tag">Ассистент</span><span class="pill-tag">Аналитик</span><span class="pill-tag">Контент-мейкер</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== доступные роли ========== -->
+<section class="sec bg-textured" id="roles" aria-labelledby="h-roles">
+  <div class="wrap">
+    <div class="dir-head">
+      <p class="eyebrow rv" style="justify-content:center">Какие позиции закрывает Starter</p>
+      <h2 class="h2 rv" id="h-roles" style="margin-top:20px;max-width:none">Один AI-сотрудник — любая из этих позиций</h2>
+      <p class="lede rv">Выбираете одну роль под самую горячую рутину в бизнесе — остальные можно добавить позже.</p>
+    </div>
+    <div class="industries-grid">
+      <div class="industry-card rv"><div class="industry-card__inner">
+        <div class="industry-card__top"><h3>Хантер</h3></div>
+        <p>Ищет и квалифицирует новых клиентов, выходит на первый контакт в мессенджерах, email и соцсетях.</p>
+      </div></div>
+      <div class="industry-card rv"><div class="industry-card__inner">
+        <div class="industry-card__top"><h3>Продажник</h3></div>
+        <p>Ведёт переписку с лидом, отвечает на возражения, считает стоимость и доводит до оплаты или сделки.</p>
+      </div></div>
+      <div class="industry-card rv"><div class="industry-card__inner">
+        <div class="industry-card__top"><h3>Маркетолог</h3></div>
+        <p>Готовит тексты и черновики рекламных кампаний, следит за метриками и подсказывает, что усилить.</p>
+      </div></div>
+      <div class="industry-card rv"><div class="industry-card__inner">
+        <div class="industry-card__top"><h3>Проджект-менеджер</h3></div>
+        <p>Ставит задачи, напоминает о дедлайнах, собирает статус по проекту и держит команду в графике.</p>
+      </div></div>
+      <div class="industry-card rv"><div class="industry-card__inner">
+        <div class="industry-card__top"><h3>Контент-мейкер</h3></div>
+        <p>Пишет посты, описания и материалы по вашему тону голоса — от черновика до готовой публикации.</p>
+      </div></div>
+      <div class="industry-card rv"><div class="industry-card__inner">
+        <div class="industry-card__top"><h3>Ассистент</h3></div>
+        <p>Принимает заявки, записывает на услугу, отвечает на частые вопросы клиентов в любое время суток.</p>
+      </div></div>
+      <div class="industry-card rv"><div class="industry-card__inner">
+        <div class="industry-card__top"><h3>Аналитик</h3></div>
+        <p>Собирает данные из CRM и каналов в понятные отчёты и цифры — без ручной сборки таблиц вручную.</p>
+      </div></div>
+      <div class="industry-card rv"><div class="industry-card__inner">
+        <div class="industry-card__top"><h3>Поддержка</h3></div>
+        <p>Закрывает типовые обращения клиентов сразу, а сложные случаи передаёт человеку вместе с контекстом.</p>
+      </div></div>
     </div>
   </div>
 </section>
@@ -891,7 +940,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Что входит</p>
       <h2 class="h2 rv" id="h-what" style="margin-top:20px;max-width:none">Одна функция — но закрытая до конца</h2>
-      <p class="lede rv" style="max-width:none">Starter — это не консультант и не подсказчик оператору: AI-сотрудник сам ведёт диалог от первого сообщения до результата в одной выбранной роли.</p>
+      <p class="lede rv" style="max-width:none">Starter — это не подсказка человеку и не чат-бот со скриптами: AI-сотрудник самостоятельно закрывает одну выбранную позицию целиком — от первого контакта с клиентом до результата, в любой роли: продажи, приём заявок, поддержка, аналитика или контент.</p>
     </div>
     <div class="industries-grid">
       <div class="industry-card rv"><div class="industry-card__inner">
@@ -927,7 +976,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="wrap">
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Кому подходит</p>
-      <h2 class="h2 rv" id="h-who" style="margin-top:20px;max-width:none">Когда рутина сосредоточена в одной роли</h2>
+      <h2 class="h2 rv" id="h-who" style="margin-top:20px;max-width:none">Когда одна позиция в компании тормозит весь процесс</h2>
     </div>
     <div class="terms-grid">
       <div class="terms-card rv">
@@ -955,7 +1004,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="wrap">
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Что это даёт на практике</p>
-      <h2 class="h2 rv" id="h-econ" style="margin-top:20px;max-width:none">Сколько времени и клиентов сохраняет одна роль</h2>
+      <h2 class="h2 rv" id="h-econ" style="margin-top:20px;max-width:none">Сколько времени и клиентов сохраняет один AI-сотрудник на своей позиции</h2>
     </div>
     <div class="stat-row">
       <div class="stat-row__item rv"><span class="stat-row__num">24/7</span><span class="stat-row__label">без выходных и задержек в ответе клиенту</span></div>
@@ -972,14 +1021,15 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="wrap">
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Разница на практике</p>
-      <h2 class="h2 rv" id="h-compare" style="margin-top:20px;max-width:none">Один человек на потоке и один AI-сотрудник на роли</h2>
+      <h2 class="h2 rv" id="h-compare" style="margin-top:20px;max-width:none">Один человек на потоке и один AI-сотрудник на позиции</h2>
     </div>
     <div class="compare-wrap">
       <div class="compare-card compare-card--before rv">
         <div class="compare-card__head"><span class="compare-card__ico" aria-hidden="true">✕</span><b>Без AI-сотрудника</b></div>
         <div class="compare-item"><b>Ответ с задержкой</b><span>Клиент пишет в любое время, а отвечают ему только в рабочие часы, если сотрудник свободен.</span></div>
-        <div class="compare-item"><b>Однотипные вопросы отнимают день</b><span>Большая часть рабочего времени уходит на одни и те же вопросы о цене и наличии.</span></div>
+        <div class="compare-item"><b>Однотипные вопросы отнимают день</b><span>Большая часть рабочего времени уходит на одни и те же вопросы о цене и наличии — вместо продаж, контента или роста.</span></div>
         <div class="compare-item"><b>Записи теряются</b><span>Часть заявок фиксируется в блокноте или не фиксируется вовсе — история обращений неполная.</span></div>
+        <div class="compare-item"><b>Найм и обучение на позицию</b><span>Поиск, адаптация и текучка на рутинной позиции — отдельная статья времени и денег.</span></div>
       </div>
       <div class="compare-mid" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="compare-card compare-card--after rv">
@@ -987,6 +1037,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         <div class="compare-item"><b>Отвечает мгновенно</b><span>Клиент получает ответ сразу, в любое время суток, без ожидания рабочих часов.</span></div>
         <div class="compare-item"><b>Рутинные вопросы — не нагрузка</b><span>AI-сотрудник закрывает повторяющиеся вопросы сам, а человек включается только в нестандартных случаях.</span></div>
         <div class="compare-item"><b>Каждое обращение зафиксировано</b><span>Запись, статус и контакт автоматически попадают в CRM — история обращений полная и без дублей.</span></div>
+        <div class="compare-item"><b>Позиция закрыта с первого дня</b><span>Не нужно нанимать и обучать человека под одну функцию — AI-сотрудник выходит на полную мощность сразу после запуска.</span></div>
       </div>
     </div>
   </div>
@@ -1037,7 +1088,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   <div class="wrap">
     <p class="eyebrow rv" style="justify-content:center">Почему AI-сотрудник, а не помощник человеку</p>
     <h2 class="h2 rv" id="h-advs" style="margin-top:20px;text-align:center;margin-inline:auto;max-width:26ch">Starter — это самостоятельная штатная единица</h2>
-    <p class="lede rv" style="text-align:center;margin-inline:auto;max-width:70ch">Даже один AI-сотрудник на одну роль работает не как подсказчик человеку, а как полноценная замена этой функции — со своими преимуществами перед человеком в найме.</p>
+    <p class="lede rv" style="text-align:center;margin-inline:auto;max-width:70ch">Даже один AI-сотрудник на одну позицию работает не как подсказка человеку рядом, а как полноценная замена этой функции — со своими преимуществами перед человеком в найме.</p>
     <div class="adv-grid">
       <div class="adv-card rv"><b>Работает 24/7</b><span>Без ночных смен, выходных и отпусков — отвечает клиенту в любое время одинаково быстро.</span></div>
       <div class="adv-card rv"><b>Всегда лоялен и на пике</b><span>Не выгорает и не теряет мотивацию к концу дня — сотое обращение обслуживается так же внимательно, как первое.</span></div>
@@ -1061,7 +1112,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     <div class="faq-list">
       <div class="faq-item rv">
         <button class="faq-item__q" type="button">Чем Starter отличается от Pro?<svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
-        <div class="faq-item__a"><p>Starter — это один AI-сотрудник на одну роль: например, только приём заявок или только запись. <a href="ai-pro-ru.html">Pro</a> — это уже AI-отдел из нескольких ролей, работающих параллельно: продажи, поддержка и документы одновременно.</p></div>
+        <div class="faq-item__a"><p>Starter — это один AI-сотрудник на одну позицию: Хантер, Продажник, Маркетолог, Ассистент, Аналитик, Контент-мейкер или любая другая роль, которую вы выбираете первой. <a href="ai-pro-ru.html">Pro</a> — это уже AI-отдел из нескольких таких сотрудников, работающих параллельно: например, продажи, поддержка и документы одновременно.</p></div>
       </div>
       <div class="faq-item rv">
         <button class="faq-item__q" type="button">Можно начать с одной роли и расширить позже?<svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
@@ -1077,7 +1128,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       </div>
       <div class="faq-item rv">
         <button class="faq-item__q" type="button">Нужно ли менять текущую CRM?<svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
-        <div class="faq-item__a"><p>Нет: подключаемся к тому, что уже используется — CRM, таблице или мессенджеру. Менять инфраструктуру ради одного AI-сотрудника не нужно.</p></div>
+        <div class="faq-item__a"><p>Нет: подключаемся к тому, что уже используется — CRM, таблице или мессенджеру. Менять инфраструктуру ради одного AI-сотрудника не нужно. Если своей системы ещё нет или текущая не подходит, можем разработать индивидуальную CRM под ваш бизнес — с нуля и под конкретные процессы.</p></div>
       </div>
     </div>
   </div>
@@ -1087,7 +1138,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 <section class="sec">
   <div class="wrap">
     <div class="ctaline">
-      <p>Выберите одну роль, которая отнимает больше всего времени — обсудим, как AI-сотрудник закроет её полностью.</p>
+      <p>Хантер, Продажник, Маркетолог, Ассистент, Аналитик или другая позиция — выберите то, что отнимает больше всего времени, и обсудим, как AI-сотрудник закроет её полностью, от первого дня.</p>
       <button class="btn btn--lg" data-open-modal="starter-contact">Обсудить Starter
         <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></button>
     </div>

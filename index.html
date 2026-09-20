@@ -1648,14 +1648,14 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       <div class="book-manual" id="book-manual" style="margin-top:18px;padding-top:18px;border-top:1px solid var(--hair)">
         <button type="button" class="btn-quiet" id="book-manual-toggle">Ни один слот не подходит? Указать своё время</button>
         <div id="book-manual-fields" hidden style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-top:14px">
-          <label class="field" style="flex:1;min-width:160px"><span>Удобная дата</span><input type="date" id="book-manual-date"></label>
+          <label class="field" style="flex:1;min-width:160px"><span>Удобная дата</span><input type="text" id="book-manual-date" inputmode="numeric" maxlength="10" placeholder="ДД.ММ.ГГГГ"></label>
           <label class="field" style="flex:1;min-width:140px"><span>Удобное время</span><input type="time" id="book-manual-time"></label>
           <button type="button" class="btn btn--sm" id="book-manual-submit">Продолжить</button>
         </div>
       </div>
 
       <div class="book-grid" id="book-step-details" hidden>
-        <form id="booking-form" style="grid-column:1/-1;max-width:440px;margin-inline:auto;width:100%">
+        <form id="booking-form" style="grid-column:1/-1;max-width:600px;margin-inline:auto;width:100%">
           <p class="book-selected" id="booking-selected-summary"></p>
           <div class="field-row">
             <label class="field">
@@ -1663,7 +1663,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
               <input type="text" name="name" required placeholder="Имя">
             </label>
             <label class="field">
-              <span>Email или мессенджер для связи</span>
+              <span>Email или мессенджер</span>
               <input type="text" name="contact" required placeholder="email, WhatsApp, Telegram, LINE">
             </label>
           </div>
@@ -1758,8 +1758,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
                 </select>
             </label>
             <label class="field">
-              <span>Что хотите автоматизировать</span>
-              <textarea name="message" rows="2" placeholder="Расскажите о бизнесе и о том, где сейчас больше всего ручной рутины — если пока не уверены, что именно автоматизировать, оставьте поле пустым: поможем разобраться"></textarea>
+              <span>Что нужно сделать</span>
+              <textarea name="message" rows="2" placeholder="Пары слов достаточно. Можно оставить пустым — уточним при ответе"></textarea>
             </label>
             <label class="checkline">
               <input type="checkbox" name="consent" required>
@@ -2051,10 +2051,20 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       if(manualToggle) manualToggle.addEventListener('click', function(){
         manualFields.hidden = !manualFields.hidden;
       });
+      if(manualDate) manualDate.addEventListener('input', function(){
+        var digits = manualDate.value.replace(/\D/g,'').slice(0,8);
+        var out = digits;
+        if(digits.length > 4) out = digits.slice(0,2) + '.' + digits.slice(2,4) + '.' + digits.slice(4);
+        else if(digits.length > 2) out = digits.slice(0,2) + '.' + digits.slice(2);
+        manualDate.value = out;
+      });
       if(manualSubmit) manualSubmit.addEventListener('click', function(){
         if(!manualDate.value || !manualTime.value) return;
-        var parts = manualDate.value.split('-').map(Number);
-        selectedDate = new Date(parts[0], parts[1]-1, parts[2]);
+        var m = manualDate.value.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+        if(!m) { manualDate.focus(); return; }
+        var d = new Date(Number(m[3]), Number(m[2])-1, Number(m[1]));
+        if(isNaN(d.getTime())) { manualDate.focus(); return; }
+        selectedDate = d;
         selectedSlot = manualTime.value;
         isManualTime = true;
         goToDetails();
