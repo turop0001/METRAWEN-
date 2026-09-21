@@ -1746,6 +1746,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             <span class="book-cta__body"><b>Выбрать время в календаре</b></span>
             <svg class="book-cta__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
+          <p class="note" id="contact-slot-summary" style="margin-top:12px;margin-bottom:0;color:var(--accent-hi);cursor:pointer" hidden></p>
           <p class="note" style="margin-top:12px;margin-bottom:0">Или заполните форму ниже: ответим в течение 30 минут.</p>
 
           <form id="contact-form">
@@ -1782,6 +1783,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
               <span>Согласен(-на) на обработку персональных данных. Данные не передаются третьим лицам.</span>
             </label>
             <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+            <input type="hidden" name="slot" id="contact-selected-slot">
           </form>
         </div>
 
@@ -1893,6 +1895,37 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     var lastFocus = null;
 
     var bookingBackBtn = document.getElementById('booking-back-to-contact');
+    var bookingFromContact = false;
+    function syncContactToBooking(){
+      var cf = document.getElementById('contact-form');
+      var bf = document.getElementById('booking-form');
+      if(!cf || !bf) return;
+      var pairs = [['name','name'],['contact','contact'],['industry','industry']];
+      pairs.forEach(function(p){
+        var cEl = cf.querySelector('[name="'+p[0]+'"]');
+        var bEl = bf.querySelector('[name="'+p[1]+'"]');
+        if(cEl && bEl && cEl.value) bEl.value = cEl.value;
+      });
+      var cMsg = cf.querySelector('[name="message"]'), bNote = bf.querySelector('[name="note"]');
+      if(cMsg && bNote && cMsg.value) bNote.value = cMsg.value;
+      var cConsent = cf.querySelector('[name="consent"]'), bConsent = bf.querySelector('[name="consent"]');
+      if(cConsent && bConsent && cConsent.checked) bConsent.checked = true;
+    }
+    function syncBookingToContact(){
+      var cf = document.getElementById('contact-form');
+      var bf = document.getElementById('booking-form');
+      if(!cf || !bf) return;
+      var pairs = [['name','name'],['contact','contact'],['industry','industry']];
+      pairs.forEach(function(p){
+        var bEl = bf.querySelector('[name="'+p[1]+'"]');
+        var cEl = cf.querySelector('[name="'+p[0]+'"]');
+        if(bEl && cEl && bEl.value) cEl.value = bEl.value;
+      });
+      var bNote = bf.querySelector('[name="note"]'), cMsg = cf.querySelector('[name="message"]');
+      if(bNote && cMsg && bNote.value) cMsg.value = bNote.value;
+      var bConsent = bf.querySelector('[name="consent"]'), cConsent = cf.querySelector('[name="consent"]');
+      if(bConsent && cConsent && bConsent.checked) cConsent.checked = true;
+    }
     function openModal(key){
       var modal = modals[key];
       if(!modal) return;
@@ -1907,7 +1940,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     function closeModal(modal){
       modal.classList.remove('open');
       modal.setAttribute('aria-hidden','true');
-      if(modal.id === 'modal-booking' && bookingBackBtn) bookingBackBtn.hidden = true;
+      if(modal.id === 'modal-booking'){ if(bookingBackBtn) bookingBackBtn.hidden = true; bookingFromContact = false; }
       var anyOpen = Object.keys(modals).some(function(k){ return modals[k].classList.contains('open'); });
       if(!anyOpen) document.body.style.overflow = '';
       if(lastFocus) lastFocus.focus();
@@ -1931,6 +1964,8 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         openModal(btn.getAttribute('data-open-modal'));
         if(btn.getAttribute('data-open-modal') === 'booking' && switchFrom === 'modal-contact' && bookingBackBtn){
           bookingBackBtn.hidden = false;
+          bookingFromContact = true;
+          syncContactToBooking();
         }
         var presetIndustry = btn.getAttribute('data-preset-industry');
         if(presetIndustry){
@@ -1950,8 +1985,19 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     });
     if(bookingBackBtn){
       bookingBackBtn.addEventListener('click', function(){
+        syncBookingToContact();
         closeModal(document.getElementById('modal-booking'));
         openModal('contact');
+      });
+    }
+    var contactSlotSummary = document.getElementById('contact-slot-summary');
+    if(contactSlotSummary){
+      contactSlotSummary.addEventListener('click', function(){
+        closeModal(document.getElementById('modal-contact'));
+        openModal('booking');
+        if(bookingBackBtn) bookingBackBtn.hidden = false;
+        bookingFromContact = true;
+        syncContactToBooking();
       });
     }
     document.querySelectorAll('.modal').forEach(function(modal){
@@ -2160,7 +2206,20 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         if(!selectedDate || !selectedSlot) return;
         closeManualCal();
         var tz = isManualTime ? ' (ваше время)' : ' (ICT)';
-        summary.textContent = selectedDate.getDate() + ' ' + MONTHS[selectedDate.getMonth()] + ', ' + selectedSlot + tz;
+        var slotText = selectedDate.getDate() + ' ' + MONTHS[selectedDate.getMonth()] + ', ' + selectedSlot + tz;
+        if(bookingFromContact){
+          var cf = document.getElementById('contact-form');
+          if(cf){
+            var slotInput = cf.querySelector('[name="slot"]');
+            if(slotInput) slotInput.value = slotText;
+          }
+          var slotSummary = document.getElementById('contact-slot-summary');
+          if(slotSummary){ slotSummary.hidden = false; slotSummary.textContent = 'Выбранное время: ' + slotText + ' \u00b7 изменить'; }
+          closeModal(document.getElementById('modal-booking'));
+          openModal('contact');
+          return;
+        }
+        summary.textContent = slotText;
         stepDatetime.hidden = true; stepDetails.hidden = false;
         if(modalPanel) modalPanel.scrollTop = 0;
       }
@@ -2231,14 +2290,19 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           contact: fieldValue(form, '[name="contact"]'),
           industry: fieldValue(form, '[name="industry"]'),
           message: fieldValue(form, '[name="message"]'),
-          website: fieldValue(form, '[name="website"]')
+          website: fieldValue(form, '[name="website"]'),
+          slot: fieldValue(form, '[name="slot"]')
         });
         formState.hidden = true;
         successState.hidden = false;
       });
       document.querySelectorAll('[data-close-modal]').forEach(function(el){
         el.addEventListener('click', function(){
-          setTimeout(function(){ formState.hidden = false; successState.hidden = true; form.reset(); }, 250);
+          setTimeout(function(){
+            formState.hidden = false; successState.hidden = true; form.reset();
+            var slotSummary = document.getElementById('contact-slot-summary');
+            if(slotSummary){ slotSummary.hidden = true; slotSummary.textContent = ''; }
+          }, 250);
         });
       });
     })();
