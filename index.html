@@ -215,7 +215,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   display:flex;align-items:center;gap:12px}
 .eyebrow::before{content:"";width:26px;height:1px;background:var(--accent);opacity:.7;flex:none}
 
-.sec{position:relative;padding-block:clamp(84px,11vw,168px)}
+.sec{position:relative;padding-block:clamp(72px,9vw,136px)}
 .sec.pack{padding-block:clamp(56px,7vw,104px)}
 .sec.pack::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 140% at 50% 0%,rgba(var(--accent-rgb),.06),transparent 70%)}
 .sec + .sec{border-top:1px solid var(--hair)}
@@ -622,9 +622,10 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .dir4__tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--hair-3);flex:none;transition:background .4s}
 .dir4__card.on .dir4__tag::before{background:var(--accent)}
 .dir4__card p{margin-top:12px;font-size:.9375rem;line-height:1.5;color:var(--text-dim)}
-.dir4__mini{margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;
-  font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.03em;color:var(--text-faint)}
-.dir4__mini i{width:10px;height:1px;background:var(--hair-3);flex:none}
+.dir4__mini{margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 5px;font-family:var(--font-mono)}
+.dir4__mini span{font-size:.6875rem;letter-spacing:.02em;line-height:1.3;color:var(--text-dim);
+  padding:5px 10px;border:1px solid var(--hair-2);border-radius:999px;background:rgba(255,255,255,.03);white-space:nowrap}
+.dir4__mini svg{width:11px;height:11px;flex:none;color:var(--accent);opacity:.8}
 .branch{position:relative;margin-top:clamp(34px,3.8vw,52px);padding-top:clamp(28px,3.2vw,42px);border-top:1px dashed rgba(var(--text-rgb),.16);
   display:grid;gap:16px;opacity:.3;transition:opacity .5s var(--ease)}
 .branch.on{opacity:1}
@@ -655,7 +656,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .ctaline p{font-size:1.0625rem;color:var(--text-dim);max-width:44ch}
 .growth-chain{margin-top:clamp(48px,5vw,72px)}
 .growth-chain__lead{font-size:clamp(1rem,1.25vw,1.1875rem);color:var(--text-dim);max-width:62ch;margin-bottom:28px;line-height:1.55}
-.growth-chain__row{display:flex;flex-wrap:wrap;align-items:center;gap:14px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px;padding-right:4px}
+.growth-chain__row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px;padding-right:4px}
 .growth-chain__row::-webkit-scrollbar{display:none}
 .growth-chain__item{font-family:var(--font-mono);font-size:clamp(.8125rem,1vw,.9375rem);letter-spacing:.03em;line-height:1.3;
   padding:16px 24px;border:1px solid var(--hair-2);border-radius:999px;color:var(--text);white-space:nowrap;background:rgba(16,15,14,.45);
@@ -987,7 +988,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
             <div class="dir4__card" data-n="1">
               <span class="dir4__tag">Секунды вместо часов</span>
               <p>Отвечают за секунды в любом канале, пока заявка ещё горячая и человек не ушёл к тому, кто ответил первым.</p>
-              <p class="dir4__mini"><span>Приём</span><i></i><span>Понимание</span><i></i><span>Действие</span><i></i><span>Результат</span></p>
+              <p class="dir4__mini"><span>Приём</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Понимание</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Действие</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Результат</span></p>
             </div>
             <div class="dir4__card" data-n="2">
               <span class="dir4__tag">Масштаб без найма</span>
@@ -1045,129 +1046,6 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></button>
     </div>
     <p class="note">Стоимость внедрения определяется после разбора и приходит отдельным коммерческим предложением.</p>
-  </div>
-</section>
-
-<!-- ========== 04a · ОТРАСЛИ: цифры и конкретика ========== -->
-<section class="sec bg-textured" id="s-industries" aria-labelledby="h-industries">
-  <div class="wrap">
-    <div class="dir-head">
-      <p class="eyebrow rv" style="justify-content:center">Отрасли</p>
-      <h2 class="h2 rv" id="h-industries" style="margin-top:20px;max-width:none">Что решают AI-сотрудники и AI-отделы в вашей отрасли</h2>
-      <p class="lede rv" style="max-width:none">Задачи и выгоды в каждой отрасли разные, поэтому и решение под них собирается отдельно, а не по общему шаблону.</p>
-    </div>
-
-    <div class="industries-grid">
-      <div class="industry-card rv" id="ind-hotels">
-        <div class="industry-card__inner">
-        <div class="industry-card__top">
-          <h3>Отели и виллы</h3>
-          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </div>
-        <p>AI-сотрудник отвечает на вопросы о бронировании и заезде в любое время суток, пока команда занимается гостями на месте.</p>
-        <p class="dir4__mini"><span>Запрос о заезде ночью</span><i></i><span>Гость получил ответ и цену</span><i></i><span>Бронь зафиксирована</span><i></i><span>Подтверждение ушло на почту</span></p>
-        <div class="industry-card__stats">
-          <div><b>24/7</b><span>ответ на бронирование, без ночной смены на телефоне</span></div>
-          <div><b>до 30%</b><span>меньше упущенных броней из-за медленного ответа</span></div>
-        </div>
-          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Отели и виллы">Обсудить для «Отели и виллы»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-        </div>
-      </div>
-
-      <div class="industry-card rv" id="ind-restaurants">
-        <div class="industry-card__inner">
-        <div class="industry-card__top">
-          <h3>Рестораны и кафе</h3>
-          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </div>
-        <p>AI-сотрудник принимает брони столиков и отвечает на вопросы о меню, часах работы и доставке, пока зал занят гостями.</p>
-        <p class="dir4__mini"><span>Бронь пришла в 22:40</span><i></i><span>Гость получил подтверждение</span><i></i><span>Столик закреплён в системе</span><i></i><span>Напоминание ушло за час до визита</span></p>
-        <div class="industry-card__stats">
-          <div><b>24/7</b><span>бронь столика и ответ гостю без участия хостес</span></div>
-          <div><b>меньше</b><span>потерянных броней в часы пиковой загрузки</span></div>
-        </div>
-          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Рестораны и кафе">Обсудить для «Рестораны и кафе»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-        </div>
-      </div>
-
-      <div class="industry-card rv" id="ind-clinics">
-        <div class="industry-card__inner">
-        <div class="industry-card__top">
-          <h3>Клиники и стоматологии</h3>
-          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </div>
-        <p>AI-сотрудник ведёт запись и отвечает на типовые вопросы пациентов, чтобы администратор занимался приёмом, а не телефоном.</p>
-        <p class="dir4__mini"><span>Заявка на приём в выходной</span><i></i><span>Пациент получил слот записи</span><i></i><span>Карточка создана в CRM</span><i></i><span>Напоминание ушло за день до визита</span></p>
-        <div class="industry-card__stats">
-          <div><b>до 25%</b><span>меньше пропущенных визитов благодаря напоминаниям</span></div>
-          <div><b>минуты</b><span>среднее время ответа на заявку вместо часов</span></div>
-        </div>
-          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Клиники и стоматологии">Обсудить для «Клиники и стоматологии»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-        </div>
-      </div>
-
-      <div class="industry-card rv" id="ind-beauty">
-        <div class="industry-card__inner">
-        <div class="industry-card__top">
-          <h3>Салоны красоты и spa</h3>
-          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </div>
-        <p>AI-сотрудник принимает запись и напоминает о визите, снижая число забытых процедур и разгружая администратора.</p>
-        <div class="industry-card__stats">
-          <div><b>до 20%</b><span>меньше неявок благодаря автоматическим напоминаниям</span></div>
-          <div><b>24/7</b><span>запись на услугу без участия администратора</span></div>
-        </div>
-          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Салоны красоты и spa">Обсудить для «Салоны красоты и spa»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-        </div>
-      </div>
-
-      <div class="industry-card rv" id="ind-agencies">
-        <div class="industry-card__inner">
-        <div class="industry-card__top">
-          <h3>Агентства и B2B</h3>
-          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </div>
-        <p>AI-отдел продаж квалифицирует входящих лидов и ведёт первичную переписку, пока команда фокусируется на переговорах и сделках.</p>
-        <div class="industry-card__stats">
-          <div><b>быстрее</b><span>первый ответ лиду, пока он ещё не ушёл к конкуренту</span></div>
-          <div><b>больше</b><span>заявок обрабатывается тем же составом команды</span></div>
-        </div>
-          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Агентства и B2B">Обсудить для «Агентства и B2B»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-        </div>
-      </div>
-
-      <div class="industry-card rv" id="ind-shops">
-        <div class="industry-card__inner">
-        <div class="industry-card__top">
-          <h3>Интернет-магазины</h3>
-          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </div>
-        <p>AI-сотрудник поддержки отвечает на вопросы о заказе, доставке и наличии, снимая с поддержки основной поток типовых обращений.</p>
-        <div class="industry-card__stats">
-          <div><b>24/7</b><span>ответ покупателю в любое время, включая пик распродаж</span></div>
-          <div><b>меньше</b><span>нагрузка на поддержку по типовым вопросам</span></div>
-        </div>
-          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Интернет-магазины">Обсудить для «Интернет-магазины»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-        </div>
-      </div>
-
-      <div class="industry-card rv" id="ind-realestate">
-        <div class="industry-card__inner">
-        <div class="industry-card__top">
-          <h3>Недвижимость (продажа/аренда)</h3>
-          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </div>
-        <p>AI-сотрудник обрабатывает входящие по объектам и назначает показы, пока агент занимается непосредственно сделками.</p>
-        <div class="industry-card__stats">
-          <div><b>быстрее</b><span>ответ по объекту, пока интерес покупателя ещё свежий</span></div>
-          <div><b>больше</b><span>показов проводится без потери входящих лидов</span></div>
-        </div>
-          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Недвижимость и аренда">Обсудить для «Недвижимость и аренда»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-        </div>
-      </div>
-    </div>
-
-    <p class="industries-more rv">Не видите свою отрасль? <a href="#" data-open-modal="contact">Оставьте заявку на консультацию</a> — разберём именно ваш случай.</p>
   </div>
 </section>
 
@@ -1230,6 +1108,133 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         <p>Ставит задачи команде, распределяет нестандартные случаи по нужным людям и передаёт их с готовым контекстом, а не с нуля.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ========== 04a · ОТРАСЛИ: цифры и конкретика ========== -->
+<section class="sec bg-textured" id="s-industries" aria-labelledby="h-industries">
+  <div class="wrap">
+    <div class="dir-head">
+      <p class="eyebrow rv" style="justify-content:center">Отрасли</p>
+      <h2 class="h2 rv" id="h-industries" style="margin-top:20px;max-width:none">Что решают AI-сотрудники и AI-отделы в вашей отрасли</h2>
+      <p class="lede rv" style="max-width:none">Задачи и выгоды в каждой отрасли разные, поэтому и решение под них собирается отдельно, а не по общему шаблону.</p>
+    </div>
+
+    <div class="industries-grid">
+      <div class="industry-card rv" id="ind-hotels">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Отели и виллы</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI-сотрудник отвечает на вопросы о бронировании и заезде в любое время суток, пока команда занимается гостями на месте.</p>
+        <p class="dir4__mini"><span>Запрос о заезде ночью</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Гость получил ответ и цену</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Бронь зафиксирована</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Подтверждение ушло на почту</span></p>
+        <div class="industry-card__stats">
+          <div><b>24/7</b><span>ответ на бронирование, без ночной смены на телефоне</span></div>
+          <div><b>до 30%</b><span>меньше упущенных броней из-за медленного ответа</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Отели и виллы">Обсудить для «Отели и виллы»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+
+      <div class="industry-card rv" id="ind-restaurants">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Рестораны и кафе</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI-сотрудник принимает брони столиков и заказы на доставку, отвечает на вопросы о меню и часах работы, пока зал и кухня заняты гостями.</p>
+        <p class="dir4__mini"><span>Заказ на доставку пришёл в 21:15</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Клиент получил подтверждение и стоимость</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Заказ передан на кухню и курьеру</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Статус доставки обновляется сам</span></p>
+        <div class="industry-card__stats">
+          <div><b>24/7</b><span>приём брони столика и заказа на доставку без хостес</span></div>
+          <div><b>меньше</b><span>потерянных заказов и броней в часы пиковой загрузки</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Рестораны и кафе">Обсудить для «Рестораны и кафе»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+
+      <div class="industry-card rv" id="ind-clinics">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Клиники и стоматологии</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI-сотрудник ведёт запись и отвечает на типовые вопросы пациентов, чтобы администратор занимался приёмом, а не телефоном.</p>
+        <p class="dir4__mini"><span>Заявка на приём в выходной</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Пациент получил слот записи</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Карточка создана в CRM</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Напоминание ушло за день до визита</span></p>
+        <div class="industry-card__stats">
+          <div><b>до 25%</b><span>меньше пропущенных визитов благодаря напоминаниям</span></div>
+          <div><b>минуты</b><span>среднее время ответа на заявку вместо часов</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Клиники и стоматологии">Обсудить для «Клиники и стоматологии»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+
+      <div class="industry-card rv" id="ind-beauty">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Салоны красоты и spa</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI-сотрудник принимает запись и напоминает о визите, снижая число забытых процедур и разгружая администратора.</p>
+        <p class="dir4__mini"><span>Клиентка пишет в Instagram вечером</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Свободный слот предложен сразу</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Запись зафиксирована в календаре</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Напоминание ушло за день до визита</span></p>
+        <div class="industry-card__stats">
+          <div><b>до 20%</b><span>меньше неявок благодаря автоматическим напоминаниям</span></div>
+          <div><b>24/7</b><span>запись на услугу без участия администратора</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Салоны красоты и spa">Обсудить для «Салоны красоты и spa»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+
+      <div class="industry-card rv" id="ind-agencies">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Агентства и B2B</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI-отдел продаж квалифицирует входящих лидов и ведёт первичную переписку, пока команда фокусируется на переговорах и сделках.</p>
+        <p class="dir4__mini"><span>Заявка с сайта пришла ночью</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Лид получил уточняющие вопросы</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Ответы попали в CRM с приоритетом</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Менеджер получил лида с контекстом</span></p>
+        <div class="industry-card__stats">
+          <div><b>быстрее</b><span>первый ответ лиду, пока он ещё не ушёл к конкуренту</span></div>
+          <div><b>больше</b><span>заявок обрабатывается тем же составом команды</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Агентства и B2B">Обсудить для «Агентства и B2B»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+
+      <div class="industry-card rv" id="ind-shops">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Интернет-магазины</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI-сотрудник поддержки отвечает на вопросы о заказе, доставке и наличии, снимая с поддержки основной поток типовых обращений.</p>
+        <p class="dir4__mini"><span>Вопрос "где мой заказ" в чате</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Статус и трек-номер отправлены сразу</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Данные сверены с курьерской службой</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Ответ ушёл без участия оператора</span></p>
+        <div class="industry-card__stats">
+          <div><b>24/7</b><span>ответ покупателю в любое время, включая пик распродаж</span></div>
+          <div><b>меньше</b><span>нагрузка на поддержку по типовым вопросам</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Интернет-магазины">Обсудить для «Интернет-магазины»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+
+      <div class="industry-card rv" id="ind-realestate">
+        <div class="industry-card__inner">
+        <div class="industry-card__top">
+          <h3>Недвижимость (продажа/аренда)</h3>
+          <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <p>AI-сотрудник обрабатывает входящие по объектам и назначает показы, пока агент занимается непосредственно сделками.</p>
+        <p class="dir4__mini"><span>Запрос по объявлению пришёл вечером</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Клиент получил фото и цену сразу</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Показ назначен в календаре агента</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg><span>Агент получил бриф перед встречей</span></p>
+        <div class="industry-card__stats">
+          <div><b>быстрее</b><span>ответ по объекту, пока интерес покупателя ещё свежий</span></div>
+          <div><b>больше</b><span>показов проводится без потери входящих лидов</span></div>
+        </div>
+          <a class="industry-card__cta" href="#" data-open-modal="contact" data-preset-industry="Недвижимость и аренда">Обсудить для «Недвижимость и аренда»<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+    </div>
+
+    <p class="industries-more rv">Не видите свою отрасль? <a href="#" data-open-modal="contact">Оставьте заявку на консультацию</a> — разберём именно ваш случай.</p>
   </div>
 </section>
 
