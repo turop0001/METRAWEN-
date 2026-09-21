@@ -1050,7 +1050,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 </section>
 
 <!-- ========== 04 · НАПРАВЛЕНИЯ АВТОМАТИЗАЦИИ ========== -->
-<section class="sec" id="s-directions" aria-labelledby="h-directions">
+<section class="sec" id="s-directions" aria-labelledby="h-directions" style="padding-bottom:clamp(40px,5vw,64px)">
   <div class="wrap">
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Шире, чем входящие обращения</p>
@@ -1112,12 +1112,12 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 </section>
 
 <!-- ========== 04a · ОТРАСЛИ: цифры и конкретика ========== -->
-<section class="sec bg-textured" id="s-industries" aria-labelledby="h-industries">
+<section class="sec bg-textured" id="s-industries" aria-labelledby="h-industries" style="padding-top:clamp(40px,5vw,64px)">
   <div class="wrap">
     <div class="dir-head">
       <p class="eyebrow rv" style="justify-content:center">Отрасли</p>
       <h2 class="h2 rv" id="h-industries" style="margin-top:20px;max-width:none">Что решают AI-сотрудники и AI-отделы в вашей отрасли</h2>
-      <p class="lede rv" style="max-width:none">Задачи и выгоды в каждой отрасли разные, поэтому и решение под них собирается отдельно, а не по общему шаблону.</p>
+      <p class="lede rv" style="max-width:none">Задачи и выгоды в каждой отрасли разные, поэтому и решение под них собирается отдельно, а не по общему шаблону. Ниже — как это выглядит в конкретных сценариях: от первого сообщения до продажи, допродажи и отчёта, только уже под вашу отрасль.</p>
     </div>
 
     <div class="industries-grid">
@@ -2357,7 +2357,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
   /* ---------- reveal on enter ---------- */
   var io = new IntersectionObserver(function(es){
     es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  },{rootMargin:'0px 0px -12% 0px'});
+  },{rootMargin:'0px 0px 0px 0px'});
   document.querySelectorAll('.rv, .format-row, .process-step, .process-list').forEach(function(el){ io.observe(el); });
 
   /* ---------- format cards: 3d tilt on hover ---------- */
