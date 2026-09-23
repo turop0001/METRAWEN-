@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMÉ Beauty Studio: Telegram-бот записи (демо)</title>
+<meta name="description" content="Кликабельный прототип Telegram-бота для записи в салон красоты: выбор услуги, мастера и времени, подтверждение и уведомление администратору.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232B211C'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' text-anchor='middle' fill='%23C9A08C'%3EL%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --page:#F5EFE6;
+    --ink:#2B211C;
+    --ink-soft:#6E6156;
+    --accent:#C9A08C;
+    --accent-deep:#B4876F;
+    --sage:#8FA894;
+    --tg-head:#FFFFFF;
+    --tg-wall:#DCD2C1;
+    --tg-in:#FFFFFF;
+    --tg-out:#EFFDDE;
+    --tg-time:#8A9AA9;
+    --tg-link:#3A7BBF;
+    --kb:rgba(58,44,35,0.52);
+    --kb-hover:rgba(58,44,35,0.66);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--page);color:var(--ink);-webkit-font-smoothing:antialiased;
+  }
+  .page{max-width:1180px;margin:0 auto;padding:40px 28px 48px;}
+  .intro{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;margin-bottom:32px;flex-wrap:wrap;}
+  .intro h1{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;font-weight:600;font-size:clamp(26px,3vw,36px);line-height:1.15;max-width:18ch;}
+  .intro p{margin-top:12px;color:var(--ink-soft);font-size:15.5px;max-width:52ch;line-height:1.55;}
+  .restart{background:var(--ink);color:var(--page);border:none;border-radius:999px;padding:13px 22px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .restart:hover{background:var(--accent-deep);}
+
+  .stage{display:grid;grid-template-columns:400px 1fr;gap:36px;align-items:start;}
+  .tabs{display:none;}
+
+  /* ---------- PHONE ---------- */
+  .phone{
+    width:400px;height:800px;background:#1D1714;border-radius:52px;padding:12px;
+    box-shadow:0 40px 80px -30px rgba(43,33,28,0.45), 0 0 0 1px rgba(43,33,28,0.2);
+  }
+  .screen{width:100%;height:100%;border-radius:41px;overflow:hidden;display:flex;flex-direction:column;background:var(--tg-wall);position:relative;}
+  .statusbar{height:40px;background:var(--tg-head);display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:14px;font-weight:600;flex-shrink:0;}
+  .statusbar .notch{width:110px;height:28px;background:#1D1714;border-radius:0 0 16px 16px;position:absolute;left:50%;top:0;transform:translateX(-50%);}
+
+  .tg-head{background:var(--tg-head);display:flex;align-items:center;gap:12px;padding:8px 14px 10px;border-bottom:1px solid rgba(0,0,0,0.07);flex-shrink:0;}
+  .tg-back{color:var(--tg-link);font-size:22px;line-height:1;width:18px;}
+  .avatar{width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:19px;flex-shrink:0;}
+  .avatar.av-admin{background:var(--sage);color:#fff;font-family:inherit;font-size:14px;font-weight:600;}
+  .tg-title{flex:1;min-width:0;}
+  .tg-title strong{display:block;font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tg-title span{font-size:13px;color:var(--tg-time);}
+  .tg-title span.typing{color:var(--tg-link);}
+
+  .chat{
+    flex:1;overflow-y:auto;padding:12px 10px 10px;display:flex;flex-direction:column;gap:6px;
+    background-color:var(--tg-wall);
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,0.18) 0 2px, transparent 3px),
+      radial-gradient(circle at 70% 70%, rgba(255,255,255,0.14) 0 2px, transparent 3px),
+      radial-gradient(circle at 45% 85%, rgba(143,168,148,0.16) 0 3px, transparent 4px);
+    background-size:46px 46px, 62px 62px, 80px 80px;
+    scroll-behavior:smooth;
+  }
+  .chat > *{flex-shrink:0;}
+  .msg{max-width:84%;padding:7px 11px 6px;border-radius:14px;font-size:14.5px;line-height:1.42;position:relative;white-space:pre-line;word-wrap:break-word;box-shadow:0 1px 1px rgba(0,0,0,0.08);animation:pop .22s cubic-bezier(.16,1,.3,1);}
+  .msg.in{background:var(--tg-in);align-self:flex-start;border-bottom-left-radius:4px;}
+  .msg.out{background:var(--tg-out);align-self:flex-end;border-bottom-right-radius:4px;}
+  .msg .time{float:right;font-size:11px;color:var(--tg-time);margin:6px 0 -2px 10px;}
+  .msg.out .time{color:#5FA35A;}
+  .msg b{font-weight:600;}
+  .service{align-self:center;background:rgba(58,44,35,0.42);color:#fff;font-size:12.5px;padding:4px 11px;border-radius:12px;margin:6px 0;animation:pop .22s ease;text-align:center;max-width:86%;}
+
+  .kb{align-self:flex-start;width:84%;display:flex;flex-direction:column;gap:3px;margin-top:-2px;animation:pop .22s ease;}
+  .kb-row{display:flex;gap:3px;}
+  .kb button,.kb a{
+    flex:1;background:var(--kb);color:#fff;border:none;border-radius:8px;padding:9px 6px;
+    font-size:13.5px;font-weight:500;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none;
+    backdrop-filter:blur(6px);transition:background .15s, transform .1s;line-height:1.25;
+  }
+  .kb button:hover,.kb a:hover{background:var(--kb-hover);}
+  .kb button:active{transform:scale(0.98);}
+  .kb .back{background:rgba(58,44,35,0.34);}
+  .kb.dead{opacity:0.45;pointer-events:none;}
+
+  .typing-bubble{align-self:flex-start;background:var(--tg-in);border-radius:14px;border-bottom-left-radius:4px;padding:11px 14px;display:flex;gap:4px;box-shadow:0 1px 1px rgba(0,0,0,0.08);}
+  .typing-bubble i{width:7px;height:7px;border-radius:50%;background:#A8B3BD;animation:blink 1.2s infinite;}
+  .typing-bubble i:nth-child(2){animation-delay:.15s;}
+  .typing-bubble i:nth-child(3){animation-delay:.3s;}
+
+  .reply-kb{background:#F1F1F1;padding:6px;display:none;flex-shrink:0;border-top:1px solid rgba(0,0,0,0.06);}
+  .reply-kb.show{display:block;}
+  .reply-kb button{width:100%;background:#fff;border:none;border-radius:8px;padding:11px;font-size:14.5px;color:var(--tg-link);font-weight:500;cursor:pointer;font-family:inherit;box-shadow:0 1px 1px rgba(0,0,0,0.1);}
+
+  .composer{background:var(--tg-head);display:flex;align-items:center;gap:8px;padding:8px 10px 22px;flex-shrink:0;border-top:1px solid rgba(0,0,0,0.06);}
+  .composer input{flex:1;border:1px solid #E1E4E8;border-radius:20px;padding:10px 14px;font-size:14.5px;font-family:inherit;outline:none;background:#fff;color:var(--ink);}
+  .composer input:focus{border-color:var(--tg-link);}
+  .composer button{width:38px;height:38px;border-radius:50%;border:none;background:var(--tg-link);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .composer button svg{width:18px;height:18px;}
+
+  /* ---------- ADMIN ---------- */
+  .admin{background:#fff;border-radius:22px;overflow:hidden;display:flex;flex-direction:column;height:800px;box-shadow:0 30px 60px -34px rgba(43,33,28,0.35), 0 0 0 1px rgba(43,33,28,0.08);}
+  .admin-note{padding:14px 18px;font-size:13.5px;color:var(--ink-soft);background:var(--page);border-bottom:1px solid rgba(43,33,28,0.08);line-height:1.5;}
+  .admin .chat{background-color:#E6EBEF;background-image:none;padding:16px 18px;gap:10px;}
+  .admin .msg{max-width:92%;font-size:14px;}
+  .admin .msg .from{display:block;font-size:13px;font-weight:600;color:var(--accent-deep);margin-bottom:3px;}
+  .admin .kb{width:92%;}
+  .admin .kb button{background:rgba(58,123,191,0.12);color:var(--tg-link);backdrop-filter:none;}
+  .admin .kb button:hover{background:rgba(58,123,191,0.2);}
+  .admin-empty{margin:auto;text-align:center;color:#7B8793;font-size:14px;max-width:30ch;line-height:1.5;}
+
+  .footnote{margin-top:28px;font-size:12.5px;color:var(--ink-soft);text-align:center;}
+
+  @keyframes pop{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  @keyframes blink{0%,80%,100%{opacity:.3;}40%{opacity:1;}}
+  @media (prefers-reduced-motion: reduce){.msg,.kb,.service{animation:none;}.chat{scroll-behavior:auto;}}
+
+  @media (max-width:900px){
+    .page{padding:24px 14px 32px;}
+    .intro{margin-bottom:18px;}
+    .stage{grid-template-columns:1fr;gap:0;}
+    .tabs{display:flex;background:#fff;border-radius:999px;padding:4px;margin-bottom:16px;box-shadow:0 0 0 1px rgba(43,33,28,0.08);}
+    .tabs button{flex:1;border:none;background:none;padding:10px;border-radius:999px;font-size:14px;font-weight:500;color:var(--ink-soft);cursor:pointer;font-family:inherit;}
+    .tabs button.active{background:var(--ink);color:var(--page);}
+    .badge{display:inline-block;min-width:18px;height:18px;border-radius:9px;background:#E05A47;color:#fff;font-size:11px;line-height:18px;padding:0 5px;margin-left:6px;}
+    .badge:empty{display:none;}
+    .phone{width:100%;max-width:400px;height:min(780px, calc(100dvh - 150px));margin:0 auto;border-radius:44px;padding:9px;}
+    .screen{border-radius:36px;}
+    .admin{height:min(780px, calc(100dvh - 150px));}
+    .stage[data-view="client"] .admin{display:none;}
+    .stage[data-view="admin"] .phone{display:none;}
+  }
+
+  .features{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;max-width:640px;}
+  .features span{font-size:12.5px;background:#fff;border:1px solid rgba(43,33,28,0.1);padding:6px 11px;border-radius:999px;color:var(--ink);}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid rgba(43,33,28,0.08);background:var(--page);}
+  .stats div{padding:12px 14px;border-right:1px solid rgba(43,33,28,0.08);}
+  .stats div:last-child{border-right:none;}
+  .stats strong{display:block;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;}
+  .stats span{font-size:12px;color:var(--ink-soft);}
+  .mcard{display:flex;gap:10px;align-items:center;margin-top:8px;padding:8px;background:#F6F3EE;border-radius:10px;white-space:normal;}
+  .mcard img,.mcard span{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+  .mcard span{display:flex;align-items:center;justify-content:center;background:var(--accent);color:#fff;font-size:13px;font-weight:600;}
+  .mcard b{display:block;font-size:13.5px;}
+  .mcard small{font-size:12px;color:var(--ink-soft);line-height:1.3;display:block;}
+  .admin .kb button:disabled{opacity:.7;cursor:default;}
+  @media (max-width:480px){ .stats strong{font-size:15px;} .stats div{padding:10px 8px;} .stats span{font-size:11px;} }
+  .tiers{display:grid;grid-template-columns:1fr 1.4fr;gap:12px;margin-top:18px;max-width:760px;}
+  .tier{background:#fff;border:1px solid rgba(43,33,28,0.1);border-radius:16px;padding:14px;}
+  .tier-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;font-size:14px;}
+  .tier-h span{font-weight:600;color:var(--accent-deep);}
+  .tier .features{margin-top:0;}
+  .tier .features span{background:var(--page);border:none;}
+  .tier-note{margin-top:10px !important;font-size:13px !important;}
+  .pro-tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;background:var(--accent-deep);color:#fff;padding:2px 6px;border-radius:5px;vertical-align:1px;}
+  @media (max-width:700px){ .tiers{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="intro">
+    <div>
+      <h1>Telegram-бот записи для LUMÉ Beauty Studio</h1>
+      <p>Кликабельный прототип: пройдите запись как клиентка, а справа посмотрите, что в этот же момент получает администратор салона.</p>
+      <div class="tiers">
+        <div class="tier"><div class="tier-h"><b>Базовый</b><span>19 900 ₽</span></div><div class="features"><span>Запись к мастеру за 40 секунд</span><span>Выбор услуги, мастера и времени</span><span>Уведомление администратору</span></div></div>
+        <div class="tier"><div class="tier-h"><b>PRO</b><span>34 900 ₽</span></div><div class="features"><span>Допродажа к услуге</span><span>Перенос и отмена без звонка</span><span>Напоминание за 2 часа</span><span>Сбор отзывов на Яндекс Картах</span><span>Файл в календарь</span><span>Статистика для админа</span></div></div>
+      </div>
+      <p class="tier-note">Функции PRO отмечены в чате меткой <span class="pro-tag">PRO</span></p>
+    </div>
+    <button class="restart" id="restart">Начать заново</button>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="active" data-view="client">Чат клиентки</button>
+    <button data-view="admin">Администратор<span class="badge" id="badge"></span></button>
+  </div>
+
+  <div class="stage" id="stage" data-view="client">
+    <div class="phone">
+      <div class="screen">
+        <div class="statusbar"><span id="clock">9:41</span><div class="notch"></div><span>5G</span></div>
+        <div class="tg-head">
+          <div class="tg-back">‹</div>
+          <div class="avatar">L</div>
+          <div class="tg-title"><strong>LUMÉ Beauty Studio</strong><span id="botStatus">бот</span></div>
+        </div>
+        <div class="chat" id="chat"></div>
+        <div class="reply-kb" id="replyKb"><button id="shareContact">📱 Поделиться контактом</button></div>
+        <form class="composer" id="composer">
+          <input id="input" type="text" autocomplete="off" placeholder="Сообщение">
+          <button type="submit" aria-label="Отправить"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10.1 15.5 12 3.4 13.9z"/></svg></button>
+        </form>
+      </div>
+    </div>
+
+    <div class="admin">
+      <div class="tg-head">
+        <div class="avatar av-admin">АД</div>
+        <div class="tg-title"><strong>LUMÉ · Записи</strong><span>закрытый чат администраторов, 3 участника</span></div>
+      </div>
+      <div class="stats" title="Статистика доступна в версии PRO">
+        <div><strong id="stBook">0</strong><span>записей</span></div>
+        <div><strong id="stSum">0 ₽</strong><span>сумма записей</span></div>
+        <div><strong id="stUp">0</strong><span>допродаж</span></div>
+        <div><strong id="stCancel">0</strong><span>отмен · <span class="pro-tag">PRO</span></span></div>
+      </div>
+      <div class="chat" id="adminChat"></div>
+    </div>
+  </div>
+
+  <p class="footnote">Демонстрационный прототип для портфолио METRAWEN Digital. Салон, мастера и расписание вымышлены, реальные сообщения не отправляются.<br>Telegram-бот в METRAWEN: Базовый 19 900 ₽, PRO со всеми функциями демо 34 900 ₽.</p>
+</div>
+
+<script>
+(function(){
+  /* ================= ДАННЫЕ ================= */
+  var ADDRESS = 'ул. Малая Бронная, 12 (вход со двора, 2 этаж)';
+  var MAP = 'https://yandex.ru/maps/?text=%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%2C%20%D0%9C%D0%B0%D0%BB%D0%B0%D1%8F%20%D0%91%D1%80%D0%BE%D0%BD%D0%BD%D0%B0%D1%8F%2C%2012';
+  var U = 'https://images.unsplash.com/photo-';
+  var MASTERS = {
+    'Анна Белова':     {role:'колорист, стилист', exp:9, rate:'4.9', img:U+'1494790108377-be9c29b29330?auto=format&fit=crop&w=96&h=96&q=70'},
+    'Ксения Орлова':   {role:'стилист', exp:5, rate:'4.8'},
+    'Ольга Миронова':  {role:'мастер маникюра', exp:6, rate:'5.0', img:U+'1509967419530-da38b4704bc6?auto=format&fit=crop&w=96&h=96&q=70'},
+    'Вера Лаптева':    {role:'мастер маникюра и бровей', exp:4, rate:'4.9'},
+    'Полина Зуева':    {role:'бровист, лешмейкер', exp:5, rate:'4.9'},
+    'Дарья Кузнецова': {role:'косметолог', exp:8, rate:'5.0', img:U+'1489424731084-a5d8b219a5bb?auto=format&fit=crop&w=96&h=96&q=70'},
+    'Елена Громова':   {role:'косметолог', exp:6, rate:'4.8'}
+  };
+  var CATS = [
+    {id:'nails', btn:'Маникюр/педикюр', title:'Маникюр и педикюр 💅', masters:['Ольга Миронова','Вера Лаптева'], addon:['Дизайн на 2 ногтя',300,'Клиентки часто добавляют его к покрытию'], services:[
+      ['Маникюр классический',1800,60],['Маникюр + покрытие гель-лак',2500,90],['Педикюр',2200,75],['Педикюр + покрытие гель-лак',3400,105]]},
+    {id:'hair', btn:'Стрижка/укладка', title:'Стрижка и укладка', masters:['Анна Белова','Ксения Орлова'], addon:['Уходовая маска Davines',900,'Волосы после неё блестят до двух недель'], services:[
+      ['Женская стрижка',2800,60],['Мужская стрижка',2000,45],['Укладка',2500,45]]},
+    {id:'color', btn:'Окрашивание', title:'Окрашивание', masters:['Анна Белова','Ксения Орлова'], addon:['Уход Olaplex',1500,'Защищает волосы во время окрашивания'], services:[
+      ['Окрашивание в один тон',4200,120],['Тонирование',3500,90],['Балаяж',9500,240]]},
+    {id:'brows', btn:'Брови/ресницы', title:'Брови и ресницы ✨', masters:['Полина Зуева','Вера Лаптева'], addon:['Окрашивание ресниц',500,'Займёт всего 10 минут'], services:[
+      ['Коррекция + окрашивание бровей',1500,45],['Ламинирование бровей',2400,60],['Ламинирование ресниц',2800,75]]},
+    {id:'cosmo', btn:'Косметология', title:'Косметология лица', masters:['Дарья Кузнецова','Елена Громова'], addon:['Альгинатная маска',700,'Успокаивает кожу после процедуры'], services:[
+      ['Комбинированная чистка',4500,90],['Пилинг',3000,45],['Уходовая процедура',3800,60]]}
+  ];
+  var TIMES = ['10:00','11:00','12:30','14:00','15:30','17:00','18:30','19:30'];
+  var WD = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  var WD_FULL = ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+  var MON = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+
+  /* ================= СОСТОЯНИЕ ================= */
+  var S, hist, busy, bookingSeq, unread, stats, keepName, keepPhone;
+  function freshState(){ return {cat:null, svc:null, addon:null, addonAsked:false, master:null, slot:null, name:'', phone:'', booked:false, bookingId:null, resched:false}; }
+
+  var chat = document.getElementById('chat');
+  var adminChat = document.getElementById('adminChat');
+  var input = document.getElementById('input');
+  var replyKb = document.getElementById('replyKb');
+  var statusEl = document.getElementById('botStatus');
+
+  /* ================= УТИЛИТЫ ================= */
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function rub(n){ return n.toLocaleString('ru-RU').replace(/\s/g,' ') + ' ₽'; }
+  function now(){ var d = new Date(); return d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0'); }
+  function hash(s){ var h = 0; for(var i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) >>> 0; } return h; }
+  function cat(){ return CATS.find(function(c){ return c.id === S.cat; }); }
+  function scrollDown(el){ el.scrollTop = el.scrollHeight; }
+  function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+  function total(){ return S.svc[1] + (S.addon ? S.addon[1] : 0); }
+  function duration(){ return S.svc[2] + (S.addon ? 15 : 0); }
+  function initials(n){ return n.split(' ').map(function(x){ return x[0]; }).join(''); }
+
+  function slotsFor(master){
+    var out = [];
+    for(var d=1; d<=4; d++){
+      var day = new Date(); day.setHours(0,0,0,0); day.setDate(day.getDate()+d);
+      var picked = TIMES.filter(function(t){ return hash(master + d + t) % 5 < 2; }).slice(0,3);
+      if(picked.length < 2) picked = [TIMES[(hash(master)+d)%TIMES.length], TIMES[(hash(master)+d+3)%TIMES.length]].sort();
+      picked.forEach(function(t){ out.push({date:day, time:t, master:master}); });
+    }
+    return out;
+  }
+  function slotsAny(){
+    var all = [];
+    cat().masters.forEach(function(m){ all = all.concat(slotsFor(m)); });
+    var byKey = {};
+    all.forEach(function(s){ var k = s.date.getTime() + s.time; if(!byKey[k]) byKey[k] = s; });
+    var list = Object.keys(byKey).map(function(k){ return byKey[k]; });
+    list.sort(function(a,b){ return a.date - b.date || a.time.localeCompare(b.time); });
+    var perDay = {}, res = [];
+    list.forEach(function(s){ var k = s.date.getTime(); perDay[k] = (perDay[k]||0) + 1; if(perDay[k] <= 3) res.push(s); });
+    return res;
+  }
+  function slotLabel(s){ return WD[s.date.getDay()] + ' ' + s.time; }
+  function slotFull(s){ return WD_FULL[s.date.getDay()] + ', ' + s.date.getDate() + ' ' + MON[s.date.getMonth()] + ', ' + s.time; }
+  function sameSlot(a,b){ return a && b && a.date.getTime() === b.date.getTime() && a.time === b.time; }
+  function masterText(){ return S.master === 'any' ? S.slot.master + ' (подобрали свободного мастера)' : S.slot.master; }
+  function low1(s){ return s.charAt(0).toLowerCase() + s.slice(1); }
+  function svcText(){ return S.svc[0] + (S.addon ? ' + ' + low1(S.addon[0]) : ''); }
+
+  /* ================= ВЫВОД СООБЩЕНИЙ ================= */
+  function killKeyboards(){ chat.querySelectorAll('.kb').forEach(function(k){ k.classList.add('dead'); }); }
+  function addUser(text){
+    var m = document.createElement('div'); m.className = 'msg out';
+    m.innerHTML = esc(text) + '<span class="time">' + now() + ' ✓✓</span>';
+    chat.appendChild(m); scrollDown(chat);
+  }
+  function addService(text, target){
+    var el = document.createElement('div'); el.className = 'service'; el.textContent = text;
+    (target || chat).appendChild(el); scrollDown(target || chat);
+  }
+  function renderKb(rows, target){
+    var box = document.createElement('div'); box.className = 'kb';
+    rows.forEach(function(row){
+      var r = document.createElement('div'); r.className = 'kb-row';
+      row.forEach(function(b){
+        var el;
+        if(b.url){ el = document.createElement('a'); el.href = b.url; el.target = '_blank'; el.rel = 'noopener'; }
+        else { el = document.createElement('button'); el.type = 'button'; }
+        el.textContent = b.t;
+        if(b.back) el.classList.add('back');
+        if(b.fn) el.addEventListener('click', function(){ if(busy) return; if(!target){ busy = true; box.classList.add('dead'); } b.fn(el); });
+        r.appendChild(el);
+      });
+      box.appendChild(r);
+    });
+    (target || chat).appendChild(box);
+  }
+  function botSay(html, rows){
+    busy = true; killKeyboards();
+    var t = document.createElement('div'); t.className = 'typing-bubble'; t.innerHTML = '<i></i><i></i><i></i>';
+    chat.appendChild(t); scrollDown(chat);
+    statusEl.textContent = 'печатает…'; statusEl.className = 'typing';
+    return wait(420 + Math.min(html.replace(/<[^>]+>/g,'').length * 4, 500)).then(function(){
+      t.remove(); statusEl.textContent = 'бот'; statusEl.className = '';
+      var m = document.createElement('div'); m.className = 'msg in';
+      m.innerHTML = html + '<span class="time">' + now() + '</span>';
+      chat.appendChild(m);
+      if(rows && rows.length) renderKb(rows);
+      scrollDown(chat); busy = false;
+    });
+  }
+  function adminPost(html, rows){
+    var empty = document.getElementById('adminEmpty'); if(empty) empty.remove();
+    var m = document.createElement('div'); m.className = 'msg in';
+    m.innerHTML = '<span class="from">LUMÉ Bot</span>' + html + '<span class="time">' + now() + '</span>';
+    adminChat.appendChild(m);
+    if(rows) renderKb(rows, adminChat);
+    scrollDown(adminChat);
+    if(document.getElementById('stage').dataset.view === 'client' && window.innerWidth <= 900){ unread++; document.getElementById('badge').textContent = unread; }
+  }
+  function renderStats(){
+    document.getElementById('stBook').textContent = stats.book;
+    document.getElementById('stSum').textContent = rub(stats.sum);
+    document.getElementById('stUp').textContent = stats.up;
+    document.getElementById('stCancel').textContent = stats.cancel;
+  }
+
+  /* ================= НАВИГАЦИЯ ================= */
+  function b(t, fn, selected){ return {t:(selected ? '✓ ' : '') + t, fn:fn}; }
+  function current(){ return hist[hist.length-1]; }
+  function go(step, userLabel){ if(userLabel) addUser(userLabel); hist.push(step); return render(step); }
+  function back(){ addUser('← Назад'); hist.pop(); return render(current()); }
+  function toMenu(label){ if(label) addUser(label); S.resched = false; hist = ['menu']; return render('menu'); }
+  function afterService(){ return cat().addon ? 'addon' : 'masters'; }
+  function pickSlot(s){
+    S.slot = s;
+    if(S.resched){ addUser(slotLabel(s)); S.resched = false; book(); hist.push('confirm'); render('confirm'); return; }
+    go('name', slotLabel(s));
+  }
+
+  var STEPS = {
+    menu: function(){ return {
+      text:'Здравствуйте! Я помощник LUMÉ Beauty Studio 🌿\nПомогу записаться на удобное время.', noBack:true,
+      kb:[[b('Записаться', function(){ go('categories','Записаться'); })],
+          [b('Мои записи · PRO', function(){ go('mine','Мои записи'); }), b('Услуги и цены', function(){ go('prices','Услуги и цены'); })],
+          [b('Адрес и часы', function(){ go('address','Адрес и часы работы'); }), b('Администратор', function(){ go('ask','Написать администратору'); })]]
+    };},
+    mine: function(){
+      if(!S.booked) return {text:'У вас пока нет активных записей.', kb:[[b('Записаться', function(){ go('categories','Записаться'); })]]};
+      return {text:'Ваша запись #' + S.bookingId + ':\n<b>' + esc(svcText()) + '</b>\n' + esc(S.slot.master) + '\n' + slotFull(S.slot) + '\nК оплате в салоне: ' + rub(total()),
+        kb:[[b('Перенести', function(){ S.resched = true; go('slots','Перенести'); }), b('Отменить', cancel)]]};
+    },
+    prices: function(){
+      var t = CATS.map(function(c){ return '<b>' + c.title.replace(/ [^\sА-Яа-яё]+$/,'') + '</b>\n' + c.services.map(function(s){ return s[0] + ', ' + rub(s[1]); }).join('\n'); }).join('\n\n');
+      return {text:t + '\n\nТочную стоимость мастер назовёт до начала процедуры.', kb:[[b('Записаться', function(){ go('categories','Записаться'); })]]};
+    },
+    address: function(){ return {
+      text:'📍 Москва, ' + ADDRESS + '\n5 минут пешком от м. Пушкинская.\n\n🕘 Ежедневно с 9:00 до 21:00, без выходных.',
+      kb:[[{t:'Открыть на карте', url:MAP}]]
+    };},
+    ask: function(){ return {text:'Напишите вопрос одним сообщением ниже. Администратор ответит здесь же в течение 15 минут (с 9:00 до 21:00).', input:'Ваш вопрос администратору'}; },
+    asked: function(){ return {text:'Передали ваш вопрос администратору ✨ Ответ придёт в этот чат.', kb:[[b('В главное меню', function(){ toMenu('В главное меню'); })]]}; },
+    categories: function(){ return {
+      text:'Какая услуга вас интересует?',
+      kb:CATS.map(function(c){ return [b(c.btn, function(){ if(S.cat !== c.id){ S.svc = null; S.addon = null; S.addonAsked = false; S.master = null; S.slot = null; } S.cat = c.id; go('services', c.btn); }, S.cat === c.id)]; })
+    };},
+    services: function(){ var c = cat(); return {
+      text:'<b>' + c.title + '</b>\nВыберите услугу:',
+      kb:c.services.map(function(s){ return [b(s[0] + ' · ' + rub(s[1]), function(){ if(!S.svc || S.svc[0] !== s[0]){ S.slot = null; S.addon = null; S.addonAsked = false; } S.svc = s; go(afterService(), s[0]); }, S.svc && S.svc[0] === s[0])]; })
+    };},
+    addon: function(){ var a = cat().addon; return {
+      pre:'PRO · допродажа к услуге',
+      text:'Добавить к услуге <b>' + low1(a[0]) + '</b> за ' + rub(a[1]) + '?\n' + a[2] + '.',
+      kb:[[b('Да, добавить +' + rub(a[1]), function(){ S.addon = a; go('masters','Да, добавить'); }, S.addon && S.addonAsked),
+           b('Нет, спасибо', function(){ S.addon = null; S.addonAsked = true; go('masters','Нет, спасибо'); }, !S.addon && S.addonAsked)]]
+    };},
+    masters: function(){
+      var c = cat();
+      S.addonAsked = true;
+      var cards = c.masters.map(function(m){
+        var d = MASTERS[m];
+        var av = d.img ? '<img src="' + d.img + '" alt="">' : '<span>' + initials(m) + '</span>';
+        return '<div class="mcard">' + av + '<div><b>' + m + '</b><small>' + d.role + ', стаж ' + d.exp + ' ' + (d.exp < 5 ? 'года' : 'лет') + ' · ★ ' + d.rate + '</small></div></div>';
+      }).join('');
+      return {
+        text:'<b>' + esc(svcText()) + '</b>, ' + rub(total()) + '\nДлительность около ' + duration() + ' мин.\n\nВыберите мастера или доверьтесь нам:' + cards,
+        kb:[c.masters.map(function(m){ return b(m.split(' ')[0], function(){ if(S.master !== m) S.slot = null; S.master = m; go('slots', m); }, S.master === m); }),
+            [b('Любой свободный', function(){ if(S.master !== 'any') S.slot = null; S.master = 'any'; go('slots','Любой свободный'); }, S.master === 'any')]]
+      };
+    },
+    slots: function(){
+      var list = S.master === 'any' ? slotsAny() : slotsFor(S.master), rows = [], row = [];
+      list.forEach(function(s){
+        row.push(b(slotLabel(s), function(){ pickSlot(s); }, sameSlot(S.slot, s) && (S.master === 'any' || S.slot.master === s.master)));
+        if(row.length === 3){ rows.push(row); row = []; }
+      });
+      if(row.length) rows.push(row);
+      var who = S.master === 'any' ? 'Показываю время всех мастеров направления' : 'Мастер: ' + S.master;
+      return {text:(S.resched ? 'Выберите новое время.\n' : 'Свободное время на ближайшие 4 дня\n') + who + '.', kb:rows};
+    },
+    name: function(){ return {text: S.name ? 'Как вас зовут? Если всё верно, просто отправьте «' + esc(S.name) + '».' : 'Как вас зовут?', input:'Ваше имя', prefill:S.name}; },
+    phone: function(){ return {text:'Ваш номер телефона для подтверждения записи.\nНажмите «Поделиться контактом» внизу или введите номер.', input:'+7 (900) 000-00-00', prefill:S.phone, contact:true}; },
+    confirm: function(){ return {
+      text:'Записали вас: <b>' + esc(svcText()) + '</b>, ' + esc(masterText()) + ', <b>' + slotFull(S.slot) + '</b>.\nК оплате в салоне: ' + rub(total()) + '\n\nЖдём вас по адресу ' + ADDRESS + '. Если планы изменятся, напишите нам в любое время 🌿',
+      kb:[[b('📅 Календарь · PRO', addToCalendar), {t:'📍 Маршрут', url:MAP}],
+          [b('🔔 Напоминание · PRO', function(){ go('reminder','Показать пример напоминания'); }), b('⭐ Отзыв · PRO', function(){ go('review','Показать запрос отзыва'); })],
+          [b('Перенести · PRO', function(){ S.resched = true; go('slots','Перенести запись'); }), b('Отменить · PRO', cancel)],
+          [b('В главное меню', function(){ toMenu('В главное меню'); })]],
+      backLabel:'← Изменить данные'
+    };},
+    reminder: function(){ return {
+      pre:'PRO · это сообщение бот сам пришлёт за 2 часа до визита',
+      text:'Напоминаем, сегодня в ' + S.slot.time + ' у вас запись на <b>' + esc(svcText()) + '</b> в LUMÉ 🌿\nМастер: ' + esc(S.slot.master) + '\nАдрес: ' + ADDRESS,
+      kb:[[b('Подтверждаю визит', function(){
+        addUser('Подтверждаю визит');
+        adminPost('✅ <b>' + esc(S.name) + '</b> подтвердила визит #' + S.bookingId + '\n' + slotFull(S.slot) + ', ' + esc(S.slot.master));
+        botSay('Отлично, ждём вас ✨', [[{t:'← Назад', fn:back, back:true}]]);
+      }), b('Опаздываю', function(){
+        addUser('Опаздываю');
+        adminPost('⏱ <b>' + esc(S.name) + '</b> предупредила об опоздании, запись #' + S.bookingId + '\nМастер ' + esc(S.slot.master) + ' получил уведомление.');
+        botSay('Спасибо, что предупредили! Мастер подождёт до 15 минут 🌿', [[{t:'← Назад', fn:back, back:true}]]);
+      })]]
+    };},
+    review: function(){
+      var stars = [1,2,3,4,5].map(function(n){ return b('★ ' + n, function(){ rate(n); }); });
+      return {pre:'PRO · это сообщение бот пришлёт через 3 часа после визита',
+        text:'Как прошёл визит к мастеру ' + esc(S.slot.master) + '? Оцените, пожалуйста, от 1 до 5.', kb:[stars]};
+    },
+    cancelled: function(){ return {
+      text:'Запись отменили. Будем рады видеть вас в другой раз 🌿', noBack:true,
+      kb:[[b('Записаться снова', function(){ addUser('Записаться снова'); S = freshState(); S.name = keepName; S.phone = keepPhone; hist = ['menu','categories']; render('categories'); })],
+          [{t:'← В главное меню', back:true, fn:function(){ toMenu('← В главное меню'); }}]]
+    };}
+  };
+
+  function render(step){
+    var r = STEPS[step]();
+    var rows = (r.kb || []).slice();
+    if(!r.noBack) rows.push([{t:r.backLabel || '← Назад', fn:back, back:true}]);
+    replyKb.classList.remove('show');
+    input.placeholder = r.input || 'Сообщение';
+    var p = r.pre ? wait(250).then(function(){ addService(r.pre); }) : Promise.resolve();
+    return p.then(function(){ return botSay(r.text, rows); }).then(function(){
+      if(r.contact) replyKb.classList.add('show');
+      if(r.input){ input.value = r.prefill || ''; if(window.innerWidth > 900) input.focus(); } else { input.value = ''; }
+    });
+  }
+
+  /* ================= ДЕЙСТВИЯ ================= */
+  function book(){
+    var isUpdate = S.booked;
+    if(!isUpdate){ bookingSeq++; S.bookingId = bookingSeq; stats.book++; stats.sum += total(); if(S.addon) stats.up++; S.bookedTotal = total(); S.bookedUp = !!S.addon; }
+    else { stats.sum += total() - S.bookedTotal; stats.up += (S.addon ? 1 : 0) - (S.bookedUp ? 1 : 0); S.bookedTotal = total(); S.bookedUp = !!S.addon; }
+    S.booked = true; renderStats();
+    var lines = [
+      (isUpdate ? '✏️ <b>Запись изменена #' : '🆕 <b>Новая запись #') + S.bookingId + '</b>',
+      'Клиент: ' + esc(S.name),
+      'Телефон: ' + esc(S.phone),
+      'Услуга: ' + esc(S.svc[0]) + ', ' + rub(S.svc[1]),
+      S.addon ? 'Допродажа: ' + esc(S.addon[0]) + ', +' + rub(S.addon[1]) : null,
+      'Итого: <b>' + rub(total()) + '</b>, около ' + duration() + ' мин.',
+      'Мастер: ' + esc(S.slot.master) + (S.master === 'any' ? ' (назначен автоматически)' : ''),
+      'Когда: ' + slotFull(S.slot),
+      'Источник: Telegram-бот'
+    ].filter(Boolean);
+    var id = S.bookingId;
+    adminPost(lines.join('\n'), [[
+      {t:'Подтвердить', fn:function(el){ el.textContent = '✓ Подтверждено'; el.disabled = true; addService('Мария подтвердила запись #' + id, adminChat); }},
+      {t:'Позвонить клиенту', fn:function(el){ el.textContent = '✓ Звонок отмечен'; el.disabled = true; }}
+    ]]);
+  }
+  function cancel(){
+    addUser('Отменить запись');
+    stats.cancel++; stats.book = Math.max(0, stats.book - 1); stats.sum -= S.bookedTotal || 0; if(S.bookedUp) stats.up--; renderStats();
+    adminPost('❌ <b>Отмена записи #' + S.bookingId + '</b>\n' + esc(S.name) + ', ' + esc(S.phone) + '\n' + esc(svcText()) + ', ' + esc(S.slot.master) + '\n' + slotFull(S.slot) + '\nОкно освободилось: бот предложит его клиентам из листа ожидания.');
+    keepName = S.name; keepPhone = S.phone;
+    S.booked = false; S.resched = false;
+    hist.push('cancelled'); render('cancelled');
+  }
+  function rate(n){
+    addUser('★ ' + n);
+    if(n >= 4){
+      adminPost('⭐ Оценка <b>' + n + '/5</b>\nКлиентка: ' + esc(S.name) + ', мастер ' + esc(S.slot.master) + '\nКлиентке отправлена ссылка на отзыв в Яндекс Картах.');
+      botSay('Спасибо, нам очень приятно! 🌿\nЕсли не сложно, оставьте пару слов на Яндекс Картах, это займёт минуту.', [[{t:'Оставить отзыв', url:MAP}],[{t:'← Назад', fn:back, back:true}]]);
+    } else {
+      adminPost('⚠️ <b>Низкая оценка ' + n + '/5</b>\nКлиентка: ' + esc(S.name) + ', ' + esc(S.phone) + '\nМастер ' + esc(S.slot.master) + ', ' + esc(S.svc[0]) + '\nПубличный отзыв не запрашивался. Позвоните клиентке сегодня.',
+        [[{t:'Взять в работу', fn:function(el){ el.textContent = '✓ Мария перезвонит'; el.disabled = true; }}]]);
+      botSay('Нам очень жаль, что визит не оправдал ожиданий. Передали администратору, он свяжется с вами сегодня и всё исправит.', [[{t:'← Назад', fn:back, back:true}]]);
+    }
+  }
+  function addToCalendar(){
+    addUser('📅 В календарь');
+    var st = new Date(S.slot.date); var hm = S.slot.time.split(':'); st.setHours(+hm[0], +hm[1]);
+    var en = new Date(st.getTime() + duration()*60000);
+    function f(d){ return d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0') + 'T' + String(d.getHours()).padStart(2,'0') + String(d.getMinutes()).padStart(2,'0') + '00'; }
+    var ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//LUMÉ//Bot//RU','BEGIN:VEVENT','UID:lume-' + S.bookingId + '@demo','DTSTAMP:' + f(new Date()),'DTSTART:' + f(st),'DTEND:' + f(en),
+      'SUMMARY:LUMÉ: ' + svcText(),'LOCATION:Москва, ул. Малая Бронная, 12','DESCRIPTION:Мастер ' + S.slot.master + '. Итого ' + total() + ' руб.',
+      'BEGIN:VALARM','TRIGGER:-PT2H','ACTION:DISPLAY','DESCRIPTION:Запись в LUMÉ','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+    try{
+      var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics], {type:'text/calendar'})); a.download = 'lume-zapis.ics';
+      document.body.appendChild(a); a.click(); a.remove();
+    }catch(e){}
+    botSay('Отправила файл для календаря 📅 Откройте его, и запись появится в календаре телефона с напоминанием за 2 часа.', STEPS.confirm().kb.concat([[{t:'← Изменить данные', fn:back, back:true}]]));
+  }
+  function formatPhone(raw){
+    var d = raw.replace(/\D/g,'');
+    if(d.length === 11 && (d[0] === '7' || d[0] === '8')) d = d.slice(1);
+    if(d.length !== 10) return null;
+    return '+7 (' + d.slice(0,3) + ') ' + d.slice(3,6) + '-' + d.slice(6,8) + '-' + d.slice(8,10);
+  }
+  function acceptPhone(p){ S.phone = p; replyKb.classList.remove('show'); book(); hist.push('confirm'); render('confirm'); }
+
+  document.getElementById('shareContact').addEventListener('click', function(){
+    if(busy || current() !== 'phone') return;
+    var p = '+7 (916) 555-24-18';
+    addUser('📱 Контакт: ' + (S.name || 'Клиентка') + ', ' + p);
+    acceptPhone(p);
+  });
+
+  document.getElementById('composer').addEventListener('submit', function(e){
+    e.preventDefault();
+    var text = input.value.trim();
+    if(!text || busy) return;
+    input.value = '';
+    addUser(text);
+    var step = current();
+    if(text === '/start'){ S = freshState(); hist = ['menu']; render('menu'); return; }
+    if(step === 'name'){
+      if(!/^[A-Za-zА-Яа-яЁё][A-Za-zА-Яа-яЁё\s-]{1,39}$/.test(text)){ botSay('Напишите, пожалуйста, имя буквами, например «Марина».', [[{t:'← Назад', fn:back, back:true}]]); return; }
+      S.name = text.replace(/\s+/g,' '); hist.push('phone'); render('phone'); return;
+    }
+    if(step === 'phone'){
+      var p = formatPhone(text);
+      if(!p){ botSay('Не получилось распознать номер. Введите 10 цифр после +7, например 916 555 24 18, или нажмите «Поделиться контактом».', [[{t:'← Назад', fn:back, back:true}]]).then(function(){ replyKb.classList.add('show'); }); return; }
+      acceptPhone(p); return;
+    }
+    if(step === 'ask'){
+      adminPost('💬 <b>Вопрос от клиента</b>\n«' + esc(text) + '»', [[{t:'Ответить', fn:function(el){ el.textContent = '✓ Ответ отправлен'; el.disabled = true; }}]]);
+      hist.push('asked');
+      render('asked').then(function(){ return wait(1800); }).then(function(){
+        if(current() !== 'asked') return;
+        botSay('<b>Администратор Мария:</b> Здравствуйте! Уже смотрю и отвечу подробно через пару минут 🌿', [[b('В главное меню', function(){ toMenu('В главное меню'); })]]);
+      });
+      return;
+    }
+    botSay('Я понимаю кнопки под сообщениями 🌿 Нажмите нужный вариант или отправьте /start, чтобы начать сначала.', [[b('В главное меню', function(){ toMenu('В главное меню'); })]]);
+  });
+
+  /* ================= ЗАПУСК ================= */
+  function start(){
+    chat.innerHTML = '';
+    adminChat.innerHTML = '<div class="admin-empty" id="adminEmpty">Пока пусто. Запишитесь через бота слева: карточка записи, допродажа и оценка клиента появятся здесь.</div>';
+    unread = 0; document.getElementById('badge').textContent = '';
+    S = freshState(); hist = ['menu']; busy = false; keepName = ''; keepPhone = ''; bookingSeq = 1042;
+    stats = {book:0, sum:0, up:0, cancel:0}; renderStats();
+    replyKb.classList.remove('show'); input.value = '';
+    addService('Сегодня');
+    addUser('/start');
+    render('menu');
+  }
+  document.getElementById('restart').addEventListener('click', function(){ if(!busy) start(); });
+  document.querySelectorAll('#tabs button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('#tabs button').forEach(function(x){ x.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('stage').dataset.view = btn.dataset.view;
+      if(btn.dataset.view === 'admin'){ unread = 0; document.getElementById('badge').textContent = ''; scrollDown(adminChat); }
+      else scrollDown(chat);
+    });
+  });
+  var clock = document.getElementById('clock'); clock.textContent = now();
+  setInterval(function(){ clock.textContent = now(); }, 30000);
+  start();
+})();
+</script>
+</body>
+</html>

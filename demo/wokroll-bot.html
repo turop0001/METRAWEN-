@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WOK &amp; ROLL: Telegram-бот доставки (демо)</title>
+<meta name="description" content="Кликабельный прототип Telegram-бота доставки еды: меню с фото, корзина с пересчётом, оформление, оплата, статус доставки и уведомление на кухню.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23E4572E'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='900' font-size='22' text-anchor='middle' fill='%23fff'%3EW%26amp;R%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --page:#FBF7F2;
+    --ink:#1C1A17;
+    --ink-soft:#6B635B;
+    --chili:#E4572E;
+    --chili-deep:#C8431D;
+    --tg-head:#17212B;
+    --tg-wall:#0E1621;
+    --tg-in:#182533;
+    --tg-out:#2B5278;
+    --tg-text:#F2F4F6;
+    --tg-time:#6D7F8F;
+    --tg-link:#6AB3F3;
+    --kb:rgba(43,82,120,0.62);
+    --kb-hover:rgba(43,82,120,0.85);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--page);color:var(--ink);-webkit-font-smoothing:antialiased;}
+  .page{max-width:1180px;margin:0 auto;padding:40px 28px 48px;}
+  .intro{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;margin-bottom:30px;flex-wrap:wrap;}
+  .brandline{font-size:13px;font-weight:800;letter-spacing:0.08em;color:var(--chili);margin-bottom:10px;}
+  .intro h1{font-weight:800;font-size:clamp(26px,3vw,36px);line-height:1.12;letter-spacing:-0.02em;max-width:20ch;}
+  .intro p{margin-top:12px;color:var(--ink-soft);font-size:15.5px;max-width:54ch;line-height:1.55;}
+  .features{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;max-width:660px;}
+  .features span{font-size:12.5px;background:#fff;border:1px solid rgba(28,26,23,0.1);padding:6px 11px;border-radius:999px;}
+  .restart{background:var(--chili);color:#fff;border:none;border-radius:999px;padding:13px 22px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .restart:hover{background:var(--chili-deep);}
+
+  .stage{display:grid;grid-template-columns:400px 1fr;gap:36px;align-items:start;}
+  .tabs{display:none;}
+
+  .phone{width:400px;height:820px;background:#0B0B0D;border-radius:52px;padding:12px;box-shadow:0 40px 80px -30px rgba(28,26,23,0.5), 0 0 0 1px rgba(28,26,23,0.25);}
+  .screen{width:100%;height:100%;border-radius:41px;overflow:hidden;display:flex;flex-direction:column;background:var(--tg-wall);position:relative;color:var(--tg-text);}
+  .statusbar{height:40px;background:var(--tg-head);display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:14px;font-weight:600;flex-shrink:0;}
+  .notch{width:110px;height:28px;background:#0B0B0D;border-radius:0 0 16px 16px;position:absolute;left:50%;top:0;transform:translateX(-50%);z-index:5;}
+  .tg-head{background:var(--tg-head);display:flex;align-items:center;gap:12px;padding:8px 14px 10px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
+  .tg-back{color:var(--tg-link);font-size:22px;line-height:1;width:18px;}
+  .avatar{width:38px;height:38px;border-radius:50%;background:var(--chili);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:900;flex-shrink:0;letter-spacing:-0.02em;}
+  .avatar.av-k{background:#F0A63A;color:#1C1A17;font-size:18px;}
+  .tg-title{flex:1;min-width:0;}
+  .tg-title strong{display:block;font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tg-title span{font-size:13px;color:var(--tg-time);}
+  .tg-title span.typing{color:var(--tg-link);}
+
+  .chat{flex:1;overflow-y:auto;padding:12px 10px 10px;display:flex;flex-direction:column;gap:6px;scroll-behavior:smooth;
+    background-color:var(--tg-wall);
+    background-image:radial-gradient(circle at 25% 25%, rgba(106,179,243,0.07) 0 2px, transparent 3px),radial-gradient(circle at 75% 60%, rgba(228,87,46,0.07) 0 3px, transparent 4px);
+    background-size:44px 44px, 70px 70px;}
+  .msg{max-width:84%;padding:7px 11px 6px;border-radius:14px;font-size:14.5px;line-height:1.42;position:relative;white-space:pre-line;word-wrap:break-word;animation:pop .22s cubic-bezier(.16,1,.3,1);}
+  .msg.in{background:var(--tg-in);align-self:flex-start;border-bottom-left-radius:4px;}
+  .msg.out{background:var(--tg-out);align-self:flex-end;border-bottom-right-radius:4px;}
+  .msg .time{float:right;font-size:11px;color:var(--tg-time);margin:6px 0 -2px 10px;}
+  .msg.out .time{color:#8FB8DC;}
+  .msg b{font-weight:600;}
+  .chat > *{flex-shrink:0;}
+  .msg.photo{padding:0;overflow:hidden;width:84%;}
+  .msg.photo img{width:100%;height:170px;object-fit:cover;display:block;}
+  .msg.photo .cap{padding:8px 11px 7px;}
+  .msg.photo .price{color:#F0A63A;font-weight:600;}
+  .msg.photo .muted{color:#9FB0BF;font-size:13.5px;}
+  .service{align-self:center;background:rgba(255,255,255,0.12);color:#fff;font-size:12.5px;padding:4px 11px;border-radius:12px;margin:6px 0;text-align:center;max-width:86%;animation:pop .22s ease;}
+
+  .kb{align-self:flex-start;width:84%;display:flex;flex-direction:column;gap:3px;margin-top:-2px;animation:pop .22s ease;}
+  .kb-row{display:flex;gap:3px;}
+  .kb button,.kb a{flex:1;background:var(--kb);color:#fff;border:none;border-radius:8px;padding:9px 6px;font-size:13.5px;font-weight:500;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none;transition:background .15s, transform .1s;line-height:1.25;}
+  .kb button:hover,.kb a:hover{background:var(--kb-hover);}
+  .kb button:active{transform:scale(0.98);}
+  .kb .back{background:rgba(255,255,255,0.08);}
+  .kb .qty{flex:0 0 44px;font-size:17px;font-weight:600;}
+  .kb .lbl{background:rgba(255,255,255,0.05);cursor:default;}
+  .kb .go{background:#2F8F5B;}
+  .kb .go:hover{background:#27794C;}
+  .kb.dead{opacity:0.4;pointer-events:none;}
+
+  .typing-bubble{align-self:flex-start;background:var(--tg-in);border-radius:14px;border-bottom-left-radius:4px;padding:11px 14px;display:flex;gap:4px;}
+  .typing-bubble i{width:7px;height:7px;border-radius:50%;background:#6D7F8F;animation:blink 1.2s infinite;}
+  .typing-bubble i:nth-child(2){animation-delay:.15s;}
+  .typing-bubble i:nth-child(3){animation-delay:.3s;}
+
+  .toast{position:absolute;left:50%;top:104px;transform:translate(-50%,-10px);background:rgba(20,28,37,0.96);color:#fff;font-size:14px;padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:6;white-space:nowrap;box-shadow:0 10px 30px rgba(0,0,0,0.4);}
+  .toast.show{opacity:1;transform:translate(-50%,0);}
+
+  .reply-kb{background:#1E2C3A;padding:6px;display:none;flex-shrink:0;}
+  .reply-kb.show{display:block;}
+  .reply-kb button{width:100%;background:#2B3A49;border:none;border-radius:8px;padding:11px;font-size:14.5px;color:var(--tg-link);font-weight:500;cursor:pointer;font-family:inherit;}
+  .composer{background:var(--tg-head);display:flex;align-items:center;gap:8px;padding:8px 10px 22px;flex-shrink:0;}
+  .composer input{flex:1;border:1px solid #2B3A49;border-radius:20px;padding:10px 14px;font-size:14.5px;font-family:inherit;outline:none;background:#0F1923;color:var(--tg-text);}
+  .composer input::placeholder{color:#6D7F8F;}
+  .composer input:focus{border-color:var(--tg-link);}
+  .composer button{width:38px;height:38px;border-radius:50%;border:none;background:#3E88D0;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .composer button svg{width:18px;height:18px;}
+
+  .track{white-space:normal;margin-top:6px;}
+  .track div{display:flex;gap:9px;align-items:center;padding:3px 0;color:#6D7F8F;font-size:14px;}
+  .track div.done{color:#9FD8B1;}
+  .track div.now{color:#fff;font-weight:600;}
+  .track i{width:9px;height:9px;border-radius:50%;background:#3A4B5C;flex-shrink:0;font-style:normal;}
+  .track .done i{background:#4CB27A;}
+  .track .now i{background:#F0A63A;box-shadow:0 0 0 4px rgba(240,166,58,0.25);}
+
+  /* KITCHEN */
+  .admin{background:#fff;border-radius:22px;overflow:hidden;display:flex;flex-direction:column;height:820px;box-shadow:0 30px 60px -34px rgba(28,26,23,0.35), 0 0 0 1px rgba(28,26,23,0.08);}
+  .admin .tg-head{background:#fff;border-bottom:1px solid rgba(0,0,0,0.07);color:var(--ink);}
+  .admin .tg-title span{color:#7B8793;}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid rgba(28,26,23,0.08);background:#FFF6EE;}
+  .stats div{padding:12px 14px;border-right:1px solid rgba(28,26,23,0.08);}
+  .stats div:last-child{border-right:none;}
+  .stats strong{display:block;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;}
+  .stats span{font-size:12px;color:var(--ink-soft);}
+  .admin .chat{background:#EEF1F4;background-image:none;padding:16px 18px;gap:10px;color:var(--ink);}
+  .admin .msg{max-width:92%;font-size:14px;background:#fff;box-shadow:0 1px 1px rgba(0,0,0,0.06);}
+  .admin .msg .from{display:block;font-size:13px;font-weight:600;color:var(--chili);margin-bottom:3px;}
+  .admin .msg .time{color:#9AA6B2;}
+  .admin .service{background:rgba(28,26,23,0.38);}
+  .admin-empty{margin:auto;text-align:center;color:#7B8793;font-size:14px;max-width:32ch;line-height:1.5;}
+
+  .footnote{margin-top:28px;font-size:12.5px;color:var(--ink-soft);text-align:center;line-height:1.6;}
+
+  @keyframes pop{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  @keyframes blink{0%,80%,100%{opacity:.3;}40%{opacity:1;}}
+  @media (prefers-reduced-motion: reduce){.msg,.kb,.service{animation:none;}.chat{scroll-behavior:auto;}}
+
+  @media (max-width:900px){
+    .page{padding:24px 14px 32px;}
+    .stage{grid-template-columns:1fr;gap:0;}
+    .tabs{display:flex;background:#fff;border-radius:999px;padding:4px;margin-bottom:16px;box-shadow:0 0 0 1px rgba(28,26,23,0.08);}
+    .tabs button{flex:1;border:none;background:none;padding:10px;border-radius:999px;font-size:14px;font-weight:600;color:var(--ink-soft);cursor:pointer;font-family:inherit;}
+    .tabs button.active{background:var(--ink);color:#fff;}
+    .badge{display:inline-block;min-width:18px;height:18px;border-radius:9px;background:var(--chili);color:#fff;font-size:11px;line-height:18px;padding:0 5px;margin-left:6px;}
+    .badge:empty{display:none;}
+    .phone{width:100%;max-width:400px;height:min(800px, calc(100dvh - 150px));margin:0 auto;border-radius:44px;padding:9px;}
+    .screen{border-radius:36px;}
+    .admin{height:min(800px, calc(100dvh - 150px));}
+    .stage[data-view="client"] .admin{display:none;}
+    .stage[data-view="admin"] .phone{display:none;}
+  }
+  @media (max-width:480px){ .stats strong{font-size:15px;} .stats div{padding:10px 8px;} .stats span{font-size:11px;} }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="intro">
+    <div>
+      <div class="brandline">WOK &amp; ROLL</div>
+      <h1>Telegram-бот доставки азиатской кухни</h1>
+      <p>Кликабельный прототип: соберите заказ как клиент, а справа посмотрите, как он в ту же секунду приходит на кухню.</p>
+      <div class="features">
+        <span>Меню с фото и составом</span>
+        <span>Корзина с пересчётом в реальном времени</span>
+        <span>Счётчик до бесплатной доставки</span>
+        <span>Допродажа напитка</span>
+        <span>Геолокация и оплата онлайн</span>
+        <span>Живой статус доставки</span>
+        <span>Заказ сразу на кухне</span>
+      </div>
+    </div>
+    <button class="restart" id="restart">Начать заново</button>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="active" data-view="client">Чат клиента</button>
+    <button data-view="admin">Кухня<span class="badge" id="badge"></span></button>
+  </div>
+
+  <div class="stage" id="stage" data-view="client">
+    <div class="phone">
+      <div class="screen">
+        <div class="statusbar"><span id="clock">9:41</span><div class="notch"></div><span>5G</span></div>
+        <div class="tg-head">
+          <div class="tg-back">‹</div>
+          <div class="avatar">W&amp;R</div>
+          <div class="tg-title"><strong>WOK &amp; ROLL | Доставка</strong><span id="botStatus">бот</span></div>
+        </div>
+        <div class="toast" id="toast"></div>
+        <div class="chat" id="chat"></div>
+        <div class="reply-kb" id="replyKb"><button id="shareGeo">📍 Отправить геолокацию</button></div>
+        <form class="composer" id="composer">
+          <input id="input" type="text" autocomplete="off" placeholder="Сообщение">
+          <button type="submit" aria-label="Отправить"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10.1 15.5 12 3.4 13.9z"/></svg></button>
+        </form>
+      </div>
+    </div>
+
+    <div class="admin">
+      <div class="tg-head">
+        <div class="avatar av-k">👨‍🍳</div>
+        <div class="tg-title"><strong>WOK &amp; ROLL · Кухня</strong><span>повара, менеджер и курьеры, 6 участников</span></div>
+      </div>
+      <div class="stats">
+        <div><strong id="stOrders">0</strong><span>заказов</span></div>
+        <div><strong id="stRevenue">0 ₽</strong><span>выручка</span></div>
+        <div><strong id="stAvg">0 ₽</strong><span>средний чек</span></div>
+        <div><strong id="stUp">0</strong><span>допродаж</span></div>
+      </div>
+      <div class="chat" id="adminChat"></div>
+    </div>
+  </div>
+
+  <p class="footnote">Демонстрационный прототип для портфолио METRAWEN Digital. Ресторан, меню и цены вымышлены, реальные заказы не создаются.<br>Telegram-бот с корзиной под ключ в METRAWEN: 39 900 ₽.</p>
+</div>
+
+<script>
+(function(){
+  /* ================= ДАННЫЕ ================= */
+  var U = 'https://images.unsplash.com/photo-', Q = '?auto=format&fit=crop&w=640&h=400&q=70';
+  var CATS = [
+    {id:'rolls', btn:'Роллы 🍣', title:'Роллы 🍣', items:[
+      {id:'phila', n:'Ролл Филадельфия', s:'Филадельфия', d:'лосось, сливочный сыр, огурец, 8 шт', p:420, img:'1579871494447-9811cf80d66c'},
+      {id:'cali', n:'Ролл Калифорния', s:'Калифорния', d:'краб, авокадо, огурец, икра тобико, 8 шт', p:390, img:'1583623025817-d180a2221d0a'},
+      {id:'set', n:'Сет «Wok & Roll»', s:'Сет Wok&Roll', d:'Филадельфия, Калифорния, запечённый с угрём, 24 шт', p:1490, img:'1553621042-f6e147245754'}]},
+    {id:'wok', btn:'Wok-лапша 🍜', title:'Wok-лапша 🍜', items:[
+      {id:'udon', n:'Удон с курицей терияки', s:'Удон терияки', d:'курица, овощи, соус терияки, кунжут', p:450, img:'1585032226651-759b368d7246'},
+      {id:'beef', n:'Острая лапша с говядиной', s:'Лапша с говядиной', d:'яичная лапша, говядина, чили, болгарский перец', p:520, img:'1612929633738-8fe44f7ec841'},
+      {id:'padthai', n:'Пад тай с креветками', s:'Пад тай', d:'рисовая лапша, креветки, арахис, лайм', p:560, img:'1559314809-0d155014e29e'}]},
+    {id:'soups', btn:'Супы 🥣', title:'Супы 🥣', items:[
+      {id:'tomyum', n:'Том ям с креветками', s:'Том ям', d:'кокосовое молоко, креветки, грибы, лемонграсс', p:490, img:'1548943487-a2e4e43b4853'},
+      {id:'ramen', n:'Рамен с яйцом', s:'Рамен', d:'насыщенный бульон, чашу, яйцо, нори', p:460, img:'1557872943-16a5ac26437e'},
+      {id:'laksa', n:'Лакса с курицей', s:'Лакса', d:'кокосовый карри-бульон, курица, лайм', p:470, img:'1617093727343-374698b1b08d'}]},
+    {id:'drinks', btn:'Напитки 🥤', title:'Напитки 🥤', items:[
+      {id:'tea', n:'Холодный чай с лимоном', s:'Холодный чай', d:'0,4 л, домашний', p:190, img:'1556679343-c7306c1976bc'},
+      {id:'lemon', n:'Лимонад мята-лайм', s:'Лимонад мята-лайм', d:'0,4 л, свежая мята и лайм', p:210, img:'1621263764928-df1444c5e859'},
+      {id:'mojito', n:'Мохито безалкогольный', s:'Мохито', d:'0,4 л, лайм, мята, содовая', p:230, img:'1513558161293-cdaf765ed2fd'}]},
+    {id:'desserts', btn:'Десерты 🍰', title:'Десерты 🍰', items:[
+      {id:'tiramisu', n:'Тирамису', s:'Тирамису', d:'маскарпоне, савоярди, какао', p:290, img:'1631206753348-db44968fd440'},
+      {id:'cheese', n:'Черничный чизкейк', s:'Чизкейк', d:'нью-йорк, черничный соус', p:310, img:'1533134242443-d4fd215305ad'},
+      {id:'oreo', n:'Шоколадный десерт с орео', s:'Десерт с орео', d:'шоколадный мусс, печенье орео, сливки', p:280, img:'1563805042-7684c019e1cb'}]}
+  ];
+  var ITEMS = {}; CATS.forEach(function(c){ c.items.forEach(function(it){ it.cat = c.id; ITEMS[it.id] = it; }); });
+  var FREE = 1500, FEE = 199, UPSELL = 'lemon';
+  var STAGES = ['Заказ принят','Готовим 👨‍🍳','Курьер в пути 🛵','Доставлено ✅'];
+
+  /* ================= СОСТОЯНИЕ ================= */
+  var cart, order, hist, busy, screen, unread, stats, timers, orderSeq, cartMsg, upsellAsked, upsold, trackEls, catId, draft;
+  var chat = document.getElementById('chat'), adminChat = document.getElementById('adminChat');
+  var input = document.getElementById('input'), replyKb = document.getElementById('replyKb'), statusEl = document.getElementById('botStatus');
+
+  /* ================= УТИЛИТЫ ================= */
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function rub(n){ return n.toLocaleString('ru-RU').replace(/\s/g,' ') + ' ₽'; }
+  function now(){ var d = new Date(); return d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0'); }
+  function wait(ms){ return new Promise(function(r){ var t = setTimeout(r, ms); timers.push(t); }); }
+  function scrollDown(el){ el.scrollTop = el.scrollHeight; }
+  function count(){ return Object.keys(cart).reduce(function(a,k){ return a + cart[k]; }, 0); }
+  function subtotal(){ return Object.keys(cart).reduce(function(a,k){ return a + cart[k] * ITEMS[k].p; }, 0); }
+  function fee(sub){ return sub >= FREE || sub === 0 ? 0 : FEE; }
+  function lines(c){ return Object.keys(c).map(function(k){ return ITEMS[k].n + ' × ' + c[k] + ' = ' + rub(c[k]*ITEMS[k].p); }); }
+  function cartLabel(){ return '🛒 Мой заказ (' + count() + ')'; }
+  function toast(t){ var el = document.getElementById('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(function(){ el.classList.remove('show'); }, 1400); }
+  function updateCartButtons(){ chat.querySelectorAll('[data-cart]').forEach(function(b){ b.textContent = cartLabel(); }); }
+
+  /* ================= ВЫВОД ================= */
+  function killKeyboards(){ chat.querySelectorAll('.kb').forEach(function(k){ if(+k.dataset.screen !== screen) k.classList.add('dead'); }); }
+  function addUser(text){ var m = document.createElement('div'); m.className = 'msg out'; m.innerHTML = esc(text) + '<span class="time">' + now() + ' ✓✓</span>'; chat.appendChild(m); scrollDown(chat); }
+  function addService(text, target){ var el = document.createElement('div'); el.className = 'service'; el.textContent = text; (target||chat).appendChild(el); scrollDown(target||chat); }
+  function buildKb(rows, target){
+    var box = document.createElement('div'); box.className = 'kb';
+    if(!target) box.dataset.screen = screen;
+    rows.forEach(function(row){
+      var r = document.createElement('div'); r.className = 'kb-row';
+      row.forEach(function(b){
+        var el;
+        if(b.url){ el = document.createElement('a'); el.href = b.url; el.target = '_blank'; el.rel = 'noopener'; }
+        else { el = document.createElement('button'); el.type = 'button'; }
+        el.textContent = b.t;
+        if(b.cls) el.className = b.cls;
+        if(b.back) el.classList.add('back');
+        if(b.cart) el.dataset.cart = '1';
+        if(b.fn) el.addEventListener('click', function(){
+          if(busy) return;
+          if(!target && !b.stay){ busy = true; box.classList.add('dead'); }
+          b.fn(el);
+        });
+        r.appendChild(el);
+      });
+      box.appendChild(r);
+    });
+    return box;
+  }
+  function msgEl(html, cls){ var m = document.createElement('div'); m.className = 'msg in' + (cls ? ' ' + cls : ''); m.innerHTML = html + '<span class="time">' + now() + '</span>'; return m; }
+  function typing(){
+    busy = true;
+    var t = document.createElement('div'); t.className = 'typing-bubble'; t.innerHTML = '<i></i><i></i><i></i>';
+    chat.appendChild(t); scrollDown(chat); statusEl.textContent = 'печатает…'; statusEl.className = 'typing';
+    return function(){ t.remove(); statusEl.textContent = 'бот'; statusEl.className = ''; };
+  }
+  function botSay(html, rows, cls){
+    killKeyboards();
+    var done = typing();
+    return wait(380 + Math.min(html.replace(/<[^>]+>/g,'').length * 3, 450)).then(function(){
+      done();
+      var m = msgEl(html, cls); chat.appendChild(m);
+      if(rows && rows.length) chat.appendChild(buildKb(rows));
+      scrollDown(chat); busy = false; return m;
+    });
+  }
+  function notify(html, rows){
+    var m = msgEl(html); chat.appendChild(m);
+    if(rows) chat.appendChild(buildKb(rows));
+    scrollDown(chat); return m;
+  }
+  function kitchen(html, rows){
+    var e = document.getElementById('adminEmpty'); if(e) e.remove();
+    var m = document.createElement('div'); m.className = 'msg in';
+    m.innerHTML = '<span class="from">WOK &amp; ROLL Bot</span>' + html + '<span class="time">' + now() + '</span>';
+    adminChat.appendChild(m);
+    if(rows) adminChat.appendChild(buildKb(rows, adminChat));
+    scrollDown(adminChat);
+    if(document.getElementById('stage').dataset.view === 'client' && window.innerWidth <= 900){ unread++; document.getElementById('badge').textContent = unread; }
+  }
+  function renderStats(){
+    document.getElementById('stOrders').textContent = stats.orders;
+    document.getElementById('stRevenue').textContent = rub(stats.rev);
+    document.getElementById('stAvg').textContent = rub(stats.orders ? Math.round(stats.rev / stats.orders) : 0);
+    document.getElementById('stUp').textContent = stats.up;
+  }
+
+  /* ================= НАВИГАЦИЯ ================= */
+  function current(){ return hist[hist.length-1]; }
+  function go(step, label){ if(label) addUser(label); hist.push(step); return render(step); }
+  function back(){ addUser('← Назад'); hist.pop(); return render(current()); }
+  function toMenu(label){ if(label) addUser(label); hist = ['home']; return render('home'); }
+  function backRow(label, fn){ return [{t:label || '← Назад', fn:fn || back, back:true}]; }
+  function navRow(){ return [{t:cartLabel(), cart:true, fn:function(){ go('cart', 'Мой заказ'); }}]; }
+
+  function add(id, el){
+    cart[id] = (cart[id] || 0) + 1;
+    toast('Добавлено в корзину ✅');
+    if(el) el.textContent = '+ Ещё · в корзине ' + cart[id];
+    updateCartButtons();
+  }
+
+  /* ================= ЭКРАНЫ ================= */
+  function render(step){
+    screen++; replyKb.classList.remove('show'); input.placeholder = 'Сообщение'; input.value = '';
+    return SCREENS[step]();
+  }
+  var SCREENS = {
+    home: function(){
+      return botSay('Добро пожаловать в <b>WOK &amp; ROLL</b> 🍜\nГолодны? Соберём заказ за минуту.', [
+        [{t:'🍜 Меню', fn:function(){ go('cats','Меню'); }}, {t:cartLabel(), cart:true, fn:function(){ go('cart','Мой заказ'); }}],
+        [{t:'🛵 Статус доставки', fn:function(){ go('track','Статус доставки'); }}, {t:'🔥 Акции', fn:function(){ go('promo','Акции'); }}]]);
+    },
+    cats: function(){
+      return botSay('Что будем есть? 😋', CATS.map(function(c){ return [{t:c.btn, fn:function(){ catId = c.id; go('cat', c.btn); }}]; }).concat([navRow(), backRow()]));
+    },
+    cat: function(){
+      var c = CATS.find(function(x){ return x.id === catId; });
+      killKeyboards();
+      var done = typing();
+      return wait(500).then(function(){
+        done();
+        c.items.forEach(function(it){
+          var m = msgEl('<img src="' + U + it.img + Q + '" alt="' + esc(it.n) + '" loading="lazy"><div class="cap"><b>' + esc(it.n) + '</b> <span class="price">' + rub(it.p) + '</span>\n<span class="muted">' + esc(it.d) + '</span></div>', 'photo');
+          m.querySelector('.time').remove();
+          chat.appendChild(m);
+          chat.appendChild(buildKb([[{t:cart[it.id] ? '+ Ещё · в корзине ' + cart[it.id] : '+ Добавить', stay:true, fn:function(el){ add(it.id, el); }}]]));
+        });
+        chat.appendChild(msgEl('Добавляйте сколько угодно, корзина пересчитается сама 👇'));
+        chat.appendChild(buildKb([navRow(), [{t:'Другая категория', fn:function(){ go('cats','Другая категория'); }}], backRow()]));
+        scrollDown(chat); busy = false;
+      });
+    },
+    cart: function(){
+      if(!count()) return botSay('Корзина пока пустая 🥲\nЗагляните в меню, там много вкусного.', [[{t:'🍜 Меню', fn:function(){ go('cats','Меню'); }}], backRow()]);
+      return botSay(cartHtml(), cartKb()).then(function(m){ cartMsg = m; cartMsg._kb = m.nextSibling; });
+    },
+    upsell: function(){
+      var it = ITEMS[UPSELL];
+      return botSay('Добавить к заказу <b>' + it.n + '</b> за ' + rub(it.p) + '? 🥤\nС острым отлично освежает.', [
+        [{t:(upsold ? '✓ ' : '') + 'Да, добавить', fn:function(){ if(!upsold){ cart[UPSELL] = (cart[UPSELL]||0) + 1; upsold = true; updateCartButtons(); } upsellAsked = true; go('address','Да, добавить'); }},
+         {t:(upsellAsked && !upsold ? '✓ ' : '') + 'Нет, спасибо', fn:function(){ if(upsold){ cart[UPSELL]--; if(cart[UPSELL] <= 0) delete cart[UPSELL]; upsold = false; updateCartButtons(); } upsellAsked = true; go('address','Нет, спасибо'); }}], backRow()]);
+    },
+    address: function(){
+      return botSay('Куда доставить? 📍\nНапишите адрес: улица, дом, квартира. Или отправьте геолокацию кнопкой внизу.', [backRow()]).then(function(){
+        replyKb.classList.add('show'); input.placeholder = 'Улица, дом, квартира'; input.value = draft.address || '';
+      });
+    },
+    pay: function(){
+      return botSay('Как будете оплачивать?', [
+        [{t:(draft.pay === 'card' ? '✓ ' : '') + '💳 Картой онлайн', fn:function(){ draft.pay = 'card'; go('comment','Картой онлайн'); }}],
+        [{t:(draft.pay === 'cash' ? '✓ ' : '') + '💵 Наличными курьеру', fn:function(){ draft.pay = 'cash'; go('comment','Наличными курьеру'); }}], backRow()]);
+    },
+    comment: function(){
+      return botSay('Комментарий к заказу? ✍️\nНапример, код домофона или «без лука». Если не нужен, нажмите кнопку.', [
+        [{t:'Без комментария', fn:function(){ draft.comment = ''; addUser('Без комментария'); placeOrder(); }}], backRow()]).then(function(){
+        input.placeholder = 'Комментарий курьеру или кухне'; input.value = draft.comment || '';
+      });
+    },
+    done: function(){
+      var o = order;
+      var rows = [[{t:'🛵 Отследить заказ', fn:function(){ go('track','Отследить заказ'); }}]];
+      if(o.pay === 'card' && !o.paid) rows.unshift([{t:'💳 Оплатить ' + rub(o.total), cls:'go', stay:true, fn:function(el){ pay(el); }}]);
+      rows.push([{t:'← В главное меню', back:true, fn:function(){ toMenu('← В главное меню'); }}]);
+      return botSay(receipt(o), rows);
+    },
+    track: function(){
+      if(!order) return botSay('Активных заказов пока нет. Соберём первый? 🍜', [[{t:'🍜 Меню', fn:function(){ go('cats','Меню'); }}], backRow()]);
+      return botSay('<b>Заказ №' + order.no + '</b>\n' + trackHtml(), [backRow()]).then(function(m){ trackEls.push(m); });
+    },
+    promo: function(){
+      return botSay('🔥 <b>Акции этой недели</b>\n\n🛵 Бесплатная доставка от ' + rub(FREE) + '\n🍣 Сет «Wok & Roll» 24 шт за ' + rub(1490) + ' вместо ' + rub(1790) + '\n🎂 В день рождения десерт в подарок, просто напишите в комментарии к заказу', [[{t:'🍜 В меню', fn:function(){ go('cats','В меню'); }}], backRow()]);
+    }
+  };
+
+  /* ================= КОРЗИНА ================= */
+  function cartHtml(){
+    var sub = subtotal(), f = fee(sub), left = FREE - sub;
+    var t = '<b>🛒 Ваш заказ, ' + count() + ' шт.</b>\n\n' + lines(cart).join('\n') + '\n\nСумма блюд: ' + rub(sub) + '\nДоставка: ' + (f ? rub(f) : 'бесплатно') + '\n<b>Итого: ' + rub(sub + f) + '</b>';
+    t += left > 0 ? '\n\n🛵 До бесплатной доставки осталось ' + rub(left) : '\n\n🎉 Доставка бесплатная';
+    return t;
+  }
+  function cartKb(){
+    var rows = Object.keys(cart).map(function(k){
+      return [{t:'−', cls:'qty', stay:true, fn:function(){ change(k,-1); }}, {t:ITEMS[k].s + ' × ' + cart[k], cls:'lbl', stay:true}, {t:'+', cls:'qty', stay:true, fn:function(){ change(k,1); }}];
+    });
+    rows.push([{t:'✅ Оформить заказ', cls:'go', fn:function(){ addUser('Оформить заказ'); var ownDrinks = Object.keys(cart).reduce(function(a,k){ return a + (ITEMS[k].cat === 'drinks' ? cart[k] : 0); }, 0) - (upsold ? 1 : 0); hist.push(ownDrinks > 0 ? 'address' : 'upsell'); render(current()); }}]);
+    rows.push([{t:'🗑 Очистить', stay:true, fn:function(){ cart = {}; refreshCart(); updateCartButtons(); toast('Корзина очищена'); }}, {t:'➕ Добавить ещё', fn:function(){ go('cats','Добавить ещё'); }}]);
+    rows.push(backRow());
+    return rows;
+  }
+  function change(k, d){
+    cart[k] = (cart[k] || 0) + d;
+    if(cart[k] <= 0) delete cart[k];
+    refreshCart(); updateCartButtons();
+  }
+  function refreshCart(){
+    if(!cartMsg) return;
+    if(!count()){
+      cartMsg.innerHTML = 'Корзина пустая 🥲\nЗагляните в меню, там много вкусного.<span class="time">' + now() + '</span>';
+      var kb = buildKb([[{t:'🍜 Меню', fn:function(){ go('cats','Меню'); }}], backRow()]);
+      cartMsg._kb.replaceWith(kb); cartMsg._kb = kb; return;
+    }
+    cartMsg.innerHTML = cartHtml() + '<span class="time">' + now() + ' изм.</span>';
+    var nk = buildKb(cartKb());
+    cartMsg._kb.replaceWith(nk); cartMsg._kb = nk;
+  }
+
+  /* ================= ЗАКАЗ ================= */
+  function receipt(o){
+    return '<b>Ваш заказ №' + o.no + '</b> 🎉\n\n' + lines(o.items).join('\n') + '\n\nДоставка: ' + (o.fee ? rub(o.fee) : 'бесплатно') + '\n<b>Сумма: ' + rub(o.total) + '</b>\nОплата: ' + (o.pay === 'card' ? 'картой онлайн' + (o.paid ? ', оплачено ✅' : '') : 'наличными курьеру') + '\nДоставка на: ' + esc(o.address) + (o.comment ? '\nКомментарий: ' + esc(o.comment) : '') + '\n\nОриентировочное время 40-50 минут.';
+  }
+  function placeOrder(){
+    orderSeq++;
+    var sub = subtotal(), f = fee(sub);
+    order = {no:orderSeq, items:JSON.parse(JSON.stringify(cart)), sub:sub, fee:f, total:sub + f, pay:draft.pay, paid:false, address:draft.address, comment:draft.comment, stage:0, upsold:upsold};
+    stats.orders++; stats.rev += order.total; if(upsold) stats.up++; renderStats();
+    kitchen('🆕 <b>Новый заказ №' + order.no + '</b>\n' + Object.keys(order.items).map(function(k){ return '• ' + ITEMS[k].n + ' × ' + order.items[k]; }).join('\n') +
+      (upsold ? '\n↗️ Допродажа от бота: ' + ITEMS[UPSELL].n : '') +
+      '\n\nСумма: <b>' + rub(order.total) + '</b> (' + (order.fee ? 'с доставкой ' + rub(order.fee) : 'доставка бесплатно') + ')\nОплата: ' + (order.pay === 'card' ? 'картой онлайн, ожидает оплаты' : 'наличными, курьеру взять сдачу') +
+      '\nАдрес: ' + esc(order.address) + '\nКомментарий: ' + (order.comment ? esc(order.comment) : 'нет') + '\nКлиент: Алексей, @alex_k (Telegram)',
+      [[{t:'👨‍🍳 Взять в работу', fn:(function(no){ return function(el){ el.textContent = '✓ Готовит Тимур'; el.disabled = true; advance(1, no); }; })(orderSeq)}]]);
+    cart = {}; upsellAsked = false; upsold = false; var keep = draft; draft = {address:keep.address, pay:keep.pay, comment:''};
+    hist = ['home','done']; render('done');
+    schedule();
+  }
+  function pay(el){
+    el.textContent = '⏳ Проводим оплату…'; el.disabled = true;
+    setTimeout(function(){
+      order.paid = true; el.textContent = '✓ Оплачено ' + rub(order.total);
+      toast('Оплата прошла ✅');
+      kitchen('💳 Оплата по заказу №' + order.no + ' получена: ' + rub(order.total));
+    }, 1100);
+  }
+  function trackHtml(){
+    return '<div class="track">' + STAGES.map(function(s, i){ return '<div class="' + (i < order.stage ? 'done' : i === order.stage ? 'now' : '') + '"><i></i>' + s + '</div>'; }).join('') + '</div>' +
+      (order.stage === 2 ? 'Курьер Азамат, будет примерно через 15 минут.' : order.stage === 3 ? 'Приятного аппетита! 🍜' : 'Ориентировочное время 40-50 минут.');
+  }
+  function advance(to, no){
+    if(!order || (no && no !== order.no) || to <= order.stage) return;
+    order.stage = to;
+    trackEls.forEach(function(m){ if(m.isConnected) m.innerHTML = '<b>Заказ №' + order.no + '</b>\n' + trackHtml() + '<span class="time">' + now() + ' изм.</span>'; });
+    var texts = ['', 'Заказ №' + order.no + ' уже готовим 👨‍🍳 Всё свежее, без полуфабрикатов.', 'Курьер Азамат забрал заказ №' + order.no + ' и едет к вам 🛵 Будет примерно через 15 минут.', 'Заказ №' + order.no + ' доставлен ✅ Приятного аппетита! 🍜'];
+    addService('Статус заказа №' + order.no + ': ' + STAGES[to], adminChat);
+    var rows = to === 3 ? [[{t:'😍', stay:true, fn:rateFn(5)}, {t:'🙂', stay:true, fn:rateFn(4)}, {t:'😕', stay:true, fn:rateFn(2)}]] : null;
+    notify(to === 3 ? texts[3] + '\nКак вам заказ?' : texts[to], rows);
+  }
+  function rateFn(n){ return function(el){
+    el.parentNode.parentNode.classList.add('dead');
+    addUser(el.textContent);
+    if(n >= 4){ kitchen('⭐ Заказ №' + order.no + ': клиент поставил ' + n + '/5'); notify('Спасибо! Передадим поварам 🙌 В следующий раз по промокоду <b>WOKAGAIN</b> скидка 10%.'); }
+    else { kitchen('⚠️ Заказ №' + order.no + ': низкая оценка ' + n + '/5. Менеджеру связаться с клиентом @alex_k', [[{t:'Беру', fn:function(b){ b.textContent = '✓ Менеджер Ирина пишет клиенту'; b.disabled = true; }}]]); notify('Нам жаль 😔 Менеджер уже пишет вам, чтобы всё исправить.'); }
+  }; }
+  function schedule(){ var no = order.no; [[6000,1],[14000,2],[22000,3]].forEach(function(p){ timers.push(setTimeout(function(){ advance(p[1], no); }, p[0])); }); }
+
+  /* ================= ВВОД ================= */
+  document.getElementById('shareGeo').addEventListener('click', function(){
+    if(busy || current() !== 'address') return;
+    addUser('📍 Геолокация');
+    draft.address = 'ул. Пятницкая, 18, по геолокации'; replyKb.classList.remove('show');
+    hist.push('pay'); render('pay');
+  });
+  document.getElementById('composer').addEventListener('submit', function(e){
+    e.preventDefault();
+    var text = input.value.trim(); if(!text || busy) return;
+    input.value = ''; addUser(text);
+    var step = current();
+    if(text === '/start'){ toMenu(); return; }
+    if(step === 'address'){
+      if(text.length < 6 || !/\d/.test(text)){ botSay('Не хватает номера дома 🙏 Напишите, например: «Пятницкая, 18, кв. 42».', [backRow()]).then(function(){ replyKb.classList.add('show'); }); return; }
+      draft.address = text; hist.push('pay'); render('pay'); return;
+    }
+    if(step === 'comment'){ draft.comment = text.slice(0,200); placeOrder(); return; }
+    botSay('Я понимаю кнопки под сообщениями 🍜 Нажмите нужный вариант или отправьте /start.', [[{t:'В главное меню', fn:function(){ toMenu('В главное меню'); }}]]);
+  });
+
+  /* ================= ЗАПУСК ================= */
+  function start(){
+    (timers || []).forEach(clearTimeout);
+    timers = []; chat.innerHTML = '';
+    adminChat.innerHTML = '<div class="admin-empty" id="adminEmpty">Кухня ждёт заказов. Соберите заказ в боте слева, и он появится здесь со всеми позициями.</div>';
+    cart = {}; order = null; hist = ['home']; busy = false; screen = 0; unread = 0; orderSeq = 2047; cartMsg = null; upsellAsked = false; upsold = false; trackEls = []; draft = {address:'', pay:null, comment:''};
+    stats = {orders:0, rev:0, up:0}; renderStats(); document.getElementById('badge').textContent = '';
+    replyKb.classList.remove('show');
+    addService('Сегодня'); addUser('/start'); render('home');
+  }
+  document.getElementById('restart').addEventListener('click', start);
+  document.querySelectorAll('#tabs button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('#tabs button').forEach(function(x){ x.classList.remove('active'); });
+      btn.classList.add('active'); document.getElementById('stage').dataset.view = btn.dataset.view;
+      if(btn.dataset.view === 'admin'){ unread = 0; document.getElementById('badge').textContent = ''; scrollDown(adminChat); } else scrollDown(chat);
+    });
+  });
+  var clock = document.getElementById('clock'); clock.textContent = now(); setInterval(function(){ clock.textContent = now(); }, 30000);
+  start();
+})();
+</script>
+</body>
+</html>

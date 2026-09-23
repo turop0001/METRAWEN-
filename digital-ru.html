@@ -424,6 +424,10 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .industry-card__cta svg{width:14px;height:14px;transition:transform .25s var(--ease)}
 .industry-card__inner:hover .industry-card__cta{gap:12px}
 .industry-card__inner:hover .industry-card__cta svg{transform:translateX(3px)}
+.industry-card__price{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.02em;color:var(--text-faint);margin-top:12px}
+.case-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.case-tags .case-tag{margin-top:0;cursor:pointer;transition:border-color .2s var(--ease),color .2s var(--ease)}
+.case-tags .case-tag:hover{border-color:var(--accent);color:var(--text)}
 @media(prefers-reduced-motion:reduce){.industry-card{opacity:1;transform:none}.industry-card__inner{animation:none}}
 
 /* ---------- процесс работы: от разбора до внедрения ---------- */
@@ -945,6 +949,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </div>
         <p>Не визитка ради галочки, а страница, которая объясняет пользу и подводит к заявке: индивидуальный дизайн под вашу деятельность и продающие тексты в каждом блоке, без шаблонов конструктора.</p>
+        <p class="industry-card__price">Базовый 24 900 ₽ · PRO 39 900 ₽</p>
         <a class="industry-card__cta" href="#" data-open-modal="digital-contact">Обсудить сайт<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </div>
       </div>
@@ -967,6 +972,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
           <span class="industry-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </div>
         <p>Клиент пишет в полночь, а отвечаете вы утром — бот отвечает на частые вопросы, консультирует и записывает заявку сразу, в Telegram, WhatsApp или LINE, без выходных и перерывов.</p>
+        <p class="industry-card__price">Базовый от 19 900 ₽ · PRO 34 900 ₽ · Бот с корзиной 39 900 ₽</p>
         <a class="industry-card__cta" href="#" data-open-modal="digital-contact">Обсудить бота<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </div>
       </div>
@@ -1065,7 +1071,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         <div class="industry-card__top"><h3>Салон красоты · барбершоп</h3></div>
         <p class="case-line case-line--was"><b>Было</b><span>клиенты пишут в директ ночью, запись ведут в тетради, часть людей теряется до утра.</span></p>
         <p class="case-line case-line--now"><b>Стало</b><span>бот сам ведёт диалог, услуга, мастер, время, подтверждение приходит мгновенно.</span></p>
-        <span class="case-tag"><i></i>Демо в разработке</span>
+        <div class="case-tags"><a class="case-tag" href="demo/lume-bot.html" target="_blank" rel="noopener"><i></i>Бот записи</a><a class="case-tag" href="demo/lume-landing.html?v=base" target="_blank" rel="noopener"><i></i>Лендинг Базовый</a><a class="case-tag" href="demo/lume-landing.html?v=pro" target="_blank" rel="noopener"><i></i>Лендинг PRO</a></div>
         </div>
       </div>
       <div class="industry-card rv">
@@ -1073,7 +1079,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         <div class="industry-card__top"><h3>Эксперт · частная практика</h3></div>
         <p class="case-line case-line--was"><b>Было</b><span>заявки перемешаны с личной перепиской, нет истории обращений и статуса каждой.</span></p>
         <p class="case-line case-line--now"><b>Стало</b><span>бот уточняет запрос, считает стоимость и сразу уведомляет специалиста.</span></p>
-        <span class="case-tag"><i></i>Демо в разработке</span>
+        <div class="case-tags"><a class="case-tag" href="demo/expert-landing.html?v=base" target="_blank" rel="noopener"><i></i>Лендинг Базовый</a><a class="case-tag" href="demo/expert-landing.html?v=pro" target="_blank" rel="noopener"><i></i>Лендинг PRO</a></div>
         </div>
       </div>
       <div class="industry-card rv">
@@ -1081,7 +1087,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         <div class="industry-card__top"><h3>Доставка · локальный сервис</h3></div>
         <p class="case-line case-line--was"><b>Было</b><span>заказы принимают по телефону, в пиковые часы менеджер физически не успевает.</span></p>
         <p class="case-line case-line--now"><b>Стало</b><span>бот принимает заказ, считает сумму и уточняет адрес круглосуточно, без очереди на линии.</span></p>
-        <span class="case-tag"><i></i>Демо в разработке</span>
+        <div class="case-tags"><a class="case-tag" href="demo/wokroll-bot.html" target="_blank" rel="noopener"><i></i>Открыть демо бота</a></div>
         </div>
       </div>
       <div class="industry-card rv">
@@ -1523,9 +1529,18 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
     /* ===== разовые услуги по категориям (без дублей: каждая услуга встречается один раз) ===== */
     var CATS = [
       { id:'site', nm:'Сайт и страницы', note:'Всё, что показывает вас клиенту', items:[
-        {id:'a_site',  nm:'Сайт-одностраничник', rub:24900, days:4,
+        {id:'a_site',  nm:'Лендинг: Базовый', rub:24900, days:4,
          sol:'Страница, на которую можно вести рекламу и подписчиков',
-         pop:'Одна страница, где человек за минуту понимает, что вы предлагаете, сколько это стоит и как заказать. Тексты, дизайн, форма заявки и настройка — всё внутри.'},
+         pop:'Главный экран с предложением, услуги с ценами, блок о компании, форма заявки с отправкой в Telegram и контакты. Индивидуальный дизайн, продающие тексты, адаптив под телефон.'},
+        {id:'a_site_pro', nm:'Лендинг PRO', rub:39900, days:6,
+         sol:'Лендинг, который снимает сомнения клиента до звонка',
+         pop:'Всё из Базового, плюс блоки доверия: команда или эксперт с квалификацией, отзывы или кейсы с цифрами, рейтинг на первом экране, FAQ с ответами на возражения, шаги после заявки. Проверка телефона в форме, согласие на обработку данных и красивое превью ссылки в мессенджерах.'},
+        {id:'a_msite_start', nm:'Сайт Start', rub:84900, days:10,
+         sol:'Многостраничный сайт вместо одного лендинга — когда для одной страницы информации уже мало',
+         pop:'До 5 отдельных страниц (например: Главная, Услуги, О компании, Портфолио, Контакты) — каждая со своим URL, вместо блоков на одном экране. Свой адрес у каждой страницы упрощает рекламу по направлениям и лучше индексируется поисковиками. Индивидуальный дизайн и тексты под каждую страницу, форма заявки, адаптив под телефон.'},
+        {id:'a_msite_pro', nm:'Сайт PRO', rub:119500, days:15,
+         sol:'Корпоративный сайт с блогом и усиленными блоками доверия — для тех, кто работает на репутацию и SEO-трафик',
+         pop:'Всё из Start, плюс до 6 страниц с разделом блога или новостей для поискового трафика, расширенные блоки доверия (команда, сертификаты, кейсы с цифрами), проработка заголовков и описаний для поисковиков на каждой странице отдельно, формы заявок на нескольких страницах и подключение аналитики.'},
         {id:'a_page',  nm:'Ещё одна страница сайта', rub:7900, days:2,
          sol:'Отдельная посадочная под вторую услугу или акцию',
          pop:'Когда услуг несколько, вести всю рекламу на одну страницу — терять деньги. Отдельная страница под направление окупается почти всегда.'},
@@ -1540,11 +1555,17 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
          pop:'Индивидуальная анимация под прокрутку: элементы плавно проявляются, линии дорисовываются по мере скролла. Делает страницу заметно живее шаблонных решений и почти не влияет на скорость загрузки.'}
       ]},
       { id:'bots', nm:'Боты и AI-ассистенты', note:'Отвечают клиентам и собирают заявки', items:[
-        {id:'a_bot',    nm:'Чат-бот в Telegram', rub:19900, days:4,
-         sol:'Отвечает клиентам и собирает заявки, пока вы заняты',
-         pop:'Бот здоровается, задаёт нужные вопросы, считает примерную стоимость и записывает заявку. Вам приходит уведомление, заявка падает в таблицу или CRM.'},
+        {id:'a_bot',    nm:'Чат-бот в Telegram: Базовый', rub:19900, days:4,
+         sol:'Записывает клиентов и собирает заявки, пока вы заняты',
+         pop:'Бот здоровается, помогает выбрать услугу, специалиста и свободное время, а заявка сразу приходит вам в Telegram. Подходит, чтобы перестать терять клиентов, которые пишут ночью или в выходные.'},
+        {id:'a_bot_pro', nm:'Чат-бот в Telegram PRO', rub:34900, days:6,
+         sol:'Бот, который не только записывает, но и возвращает клиентов и деньги',
+         pop:'Всё из Базового, плюс допродажа дополнительной услуги при записи, перенос и отмена без звонка администратору, напоминание клиенту за 2 часа до визита, сбор отзывов после визита (довольных ведёт на Яндекс Карты, недовольных сразу передаёт вам), файл записи в календарь телефона и статистика записей и допродаж.'},
+        {id:'a_bot_shop', nm:'Telegram-бот с корзиной', rub:39900, days:7,
+         sol:'Магазин или доставка прямо в Telegram: меню, корзина, заказ',
+         pop:'Каталог с фото, составом и ценами, корзина с пересчётом суммы и подсказкой «до бесплатной доставки осталось…», оформление с адресом или геолокацией, выбор оплаты, статусы заказа для клиента и мгновенное уведомление на кухню или менеджеру со всеми позициями. Допродажа напитка или соуса при оформлении.'},
         {id:'a_bot_max',nm:'Чат-бот в MAX', rub:24900, days:5,
-         sol:'Тот же сценарный бот в российском мессенджере MAX',
+         sol:'Тот же сценарный бот, что и Telegram-бот Базовый, — в российском мессенджере MAX',
          pop:'По логике не отличается от Telegram-бота: здоровается, задаёт вопросы, считает стоимость, записывает заявку. Платформа новее, документация местами неудобная, поэтому срок и цена чуть выше. Токен на бота выдаётся только ИП и ООО.'},
         {id:'a_bot_mig',nm:'Перенос бота из Telegram в MAX', rub:21900, days:3,
          sol:'Уже работающий бот получает вторую версию в MAX',

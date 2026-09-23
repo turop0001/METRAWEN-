@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMÉ Beauty Studio: маникюр, стрижки, окрашивание, косметология</title>
+<meta name="description" content="Салон красоты полного цикла LUMÉ Beauty Studio в Москве: маникюр, стрижки, окрашивание, косметология, брови и ресницы. Онлайн-запись к мастеру.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="LUMÉ Beauty Studio: красота без спешки и суеты">
+<meta property="og:description" content="Маникюр, стрижки, окрашивание и уход за лицом в одном спокойном пространстве. Онлайн-запись к мастеру.">
+<meta property="og:image" content="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&h=630&q=80">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232B211C'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' text-anchor='middle' fill='%23C9A08C'%3EL%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5EFE6;
+    --bg-soft:#EFE7D9;
+    --accent:#C9A08C;
+    --accent-deep:#B4876F;
+    --ink:#2B211C;
+    --ink-soft:#6E6156;
+    --sage:#8FA894;
+    --card:#FFFFFF;
+    --maxw:1240px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;}
+  img{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  h1,h2,h3{font-family:'Playfair Display',serif;font-weight:600;line-height:1.15;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px;}
+  .warmphoto{filter:sepia(12%) saturate(112%) brightness(1.01) contrast(0.98);}
+  .portfolio-grid img{filter:sepia(14%) saturate(122%) brightness(1.05) contrast(1.07) hue-rotate(-4deg);}
+  .ico{width:36px;height:36px;color:var(--accent-deep);}
+
+  /* NAV */
+  header{position:sticky;top:0;z-index:40;background:rgba(245,239,230,0.9);backdrop-filter:blur(10px);border-bottom:1px solid rgba(43,33,28,0.08);}
+  nav{display:flex;align-items:center;justify-content:space-between;height:76px;max-width:var(--maxw);margin:0 auto;padding:0 32px;}
+  .logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;}
+  .logo span{color:var(--accent-deep);}
+  .nav-links{display:flex;gap:30px;font-size:14.5px;}
+  .nav-links a{opacity:0.82;transition:opacity .25s;}
+  .nav-links a:hover{opacity:1;}
+  .nav-cta{background:var(--ink);color:var(--bg);padding:11px 24px;border-radius:999px;font-size:14px;font-weight:500;transition:transform .25s ease, background .25s ease;}
+  .nav-cta:hover{background:var(--accent-deep);transform:translateY(-1px);}
+  .nav-cta-mobile{display:none;}
+  .burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;}
+  .burger span{width:22px;height:2px;background:var(--ink);display:block;}
+
+  /* HERO */
+  .hero{display:grid;grid-template-columns:1.05fr 0.95fr;align-items:center;gap:60px;max-width:var(--maxw);margin:0 auto;padding:64px 32px 88px;}
+  .hero-eyebrow{font-size:13.5px;color:var(--accent-deep);font-weight:500;margin-bottom:18px;}
+  .hero h1{font-size:clamp(34px,4.6vw,56px);letter-spacing:-0.01em;max-width:11ch;}
+  .hero p.lead{margin-top:22px;font-size:18px;color:var(--ink-soft);max-width:42ch;}
+  .hero-ctas{margin-top:34px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+  .btn-primary{background:var(--ink);color:var(--bg);padding:16px 30px;border-radius:999px;font-size:15px;font-weight:500;white-space:nowrap;transition:transform .25s ease, background .25s ease;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
+  .btn-primary:hover{background:var(--accent-deep);transform:translateY(-2px);}
+  .btn-ghost{padding:16px 26px;border-radius:999px;font-size:15px;font-weight:500;border:1.5px solid rgba(43,33,28,0.22);white-space:nowrap;transition:border-color .25s;}
+  .btn-ghost:hover{border-color:var(--ink);}
+  .hero-rating{margin-top:26px;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink-soft);}
+  .stars{color:var(--accent-deep);letter-spacing:2px;font-size:15px;}
+  .hero-rating strong{color:var(--ink);font-weight:600;}
+  .hero-figure{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:4/5;}
+  .hero-figure img{width:100%;height:100%;object-fit:cover;}
+  .hero-badge{position:absolute;left:22px;bottom:22px;z-index:2;background:rgba(255,255,255,0.93);backdrop-filter:blur(6px);padding:14px 18px;border-radius:14px;box-shadow:0 14px 30px rgba(43,33,28,0.14);}
+  .hero-badge strong{display:block;font-size:14px;}
+  .hero-badge small{color:var(--ink-soft);font-size:12.5px;}
+
+  /* SECTIONS */
+  section{padding:96px 0;}
+  .section-head{max-width:640px;margin-bottom:52px;}
+  .section-head h2{font-size:clamp(28px,3.4vw,40px);}
+  .section-head p{margin-top:14px;color:var(--ink-soft);font-size:16.5px;max-width:52ch;}
+
+  /* SERVICES */
+  .services{background:var(--card);}
+  .service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(43,33,28,0.08);border:1px solid rgba(43,33,28,0.08);border-radius:20px;overflow:hidden;}
+  .service-card{background:var(--card);padding:34px 28px;display:flex;flex-direction:column;gap:14px;transition:background .25s ease;}
+  .service-card:hover{background:var(--bg);}
+  .service-card h3{font-size:18.5px;font-weight:600;font-family:'Inter',sans-serif;}
+  .service-card p{font-size:14.5px;color:var(--ink-soft);}
+  .service-foot{margin-top:auto;padding-top:6px;display:flex;justify-content:space-between;align-items:center;font-size:13.5px;}
+  .service-foot em{font-style:normal;color:var(--accent-deep);font-weight:500;}
+  .service-foot a{color:var(--ink);font-weight:500;border-bottom:1px solid rgba(43,33,28,0.3);padding-bottom:1px;}
+
+  /* ABOUT */
+  .about{display:grid;grid-template-columns:0.9fr 1.1fr;gap:64px;align-items:center;}
+  .about-figure{border-radius:22px;overflow:hidden;aspect-ratio:5/6;}
+  .about-figure img{width:100%;height:100%;object-fit:cover;}
+  .about-text h2{font-size:clamp(26px,3.2vw,36px);margin-bottom:20px;max-width:14ch;}
+  .about-text p{color:var(--ink-soft);font-size:16.5px;max-width:50ch;}
+  .about-stats{display:flex;gap:40px;margin-top:36px;}
+  .about-stats strong{display:block;font-family:'Playfair Display',serif;font-size:30px;color:var(--accent-deep);}
+  .about-stats span{font-size:13px;color:var(--ink-soft);}
+
+  /* MASTERS */
+  .masters{background:var(--card);}
+  .masters-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+  .master-photo{border-radius:18px;overflow:hidden;aspect-ratio:4/5;}
+  .master-photo img{width:100%;height:100%;object-fit:cover;filter:sepia(12%) saturate(108%) contrast(1.03);}
+  .master h3{margin-top:18px;font-size:21px;}
+  .master .role{font-size:14px;color:var(--accent-deep);font-weight:500;margin-top:4px;}
+  .master p{font-size:14.5px;color:var(--ink-soft);margin-top:8px;max-width:36ch;}
+
+  /* PORTFOLIO */
+  .portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .portfolio-grid a{border-radius:16px;overflow:hidden;aspect-ratio:1/1;position:relative;}
+  .portfolio-grid img{width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.16,1,.3,1);}
+  .portfolio-grid a:hover img{transform:scale(1.045);}
+  .portfolio-caption{position:absolute;left:14px;bottom:14px;z-index:2;background:rgba(43,33,28,0.72);color:var(--bg);font-size:12.5px;padding:7px 13px;border-radius:999px;backdrop-filter:blur(4px);}
+
+  /* TESTIMONIALS */
+  .testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .testi-card{background:var(--card);border-radius:20px;padding:30px 26px;display:flex;flex-direction:column;gap:16px;}
+  .testi-top{display:flex;justify-content:space-between;align-items:center;}
+  .testi-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;filter:sepia(15%) saturate(108%) contrast(1.02);border:1px solid rgba(43,33,28,0.08);}
+  .testi-quote{font-size:15.5px;max-width:38ch;}
+  .testi-name{font-size:14px;font-weight:500;}
+  .testi-meta{font-size:13px;color:var(--ink-soft);margin-top:2px;}
+  .testi-note{margin-top:36px;font-size:12.5px;color:var(--ink-soft);text-align:center;}
+
+  /* PRICES */
+  .prices{background:var(--card);}
+  .price-groups{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .price-group{background:var(--bg);border-radius:18px;padding:28px 26px;}
+  .price-group h3{font-size:20px;margin-bottom:16px;}
+  .price-item{display:flex;justify-content:space-between;gap:16px;padding:9px 0;font-size:14.5px;}
+  .price-item span:first-child{color:var(--ink-soft);}
+  .price-item span:last-child{font-weight:500;white-space:nowrap;}
+
+  /* FAQ */
+  .faq-list{max-width:820px;}
+  .faq-list details{border-top:1px solid rgba(43,33,28,0.12);padding:22px 0;}
+  .faq-list details:last-child{border-bottom:1px solid rgba(43,33,28,0.12);}
+  .faq-list summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:20px;font-size:17px;font-weight:500;}
+  .faq-list summary::-webkit-details-marker{display:none;}
+  .faq-list summary::after{content:"+";font-size:22px;line-height:1;color:var(--accent-deep);transition:transform .25s;}
+  .faq-list details[open] summary::after{transform:rotate(45deg);}
+  .faq-list details p{margin-top:12px;color:var(--ink-soft);font-size:15.5px;max-width:64ch;}
+
+  /* BOOKING */
+  .booking{background:var(--ink);color:var(--bg);border-radius:28px;padding:64px;display:grid;grid-template-columns:0.9fr 1.1fr;gap:60px;}
+  .booking .section-head h2{color:var(--bg);}
+  .booking .section-head p{color:rgba(245,239,230,0.72);}
+  .form-grid{display:grid;gap:18px;}
+  .field label{display:block;font-size:13px;margin-bottom:8px;color:rgba(245,239,230,0.78);}
+  .field input,.field select{width:100%;padding:14px 16px;border-radius:10px;border:1px solid rgba(245,239,230,0.22);background:rgba(245,239,230,0.06);color:var(--bg);font-size:15px;font-family:'Inter',sans-serif;}
+  .field input::placeholder{color:rgba(245,239,230,0.45);}
+  .field input:focus,.field select:focus{outline:2px solid var(--accent);outline-offset:1px;background:rgba(245,239,230,0.1);}
+  .field select option{color:#000;}
+  .field.invalid input{border-color:#E08D7A;}
+  .field-error{display:none;font-size:12.5px;color:#F0A898;margin-top:6px;}
+  .field.invalid .field-error{display:block;}
+  .form-row2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .consent{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:rgba(245,239,230,0.75);cursor:pointer;}
+  .consent input{margin-top:3px;width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;}
+  .booking .btn-primary{background:var(--accent);color:var(--ink);margin-top:6px;width:100%;}
+  .booking .btn-primary:hover{background:var(--sage);}
+  .form-note{font-size:12.5px;color:rgba(245,239,230,0.55);}
+  .form-success{display:none;font-size:14px;color:var(--bg);background:rgba(143,168,148,0.25);border:1px solid rgba(143,168,148,0.5);padding:12px 14px;border-radius:10px;}
+
+  /* CONTACT */
+  .contact{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:stretch;}
+  .contact-info h2{font-size:clamp(26px,3vw,34px);margin-bottom:22px;max-width:13ch;}
+  .contact-row{display:flex;gap:16px;padding:16px 0;border-top:1px solid rgba(43,33,28,0.12);}
+  .contact-row:last-of-type{border-bottom:1px solid rgba(43,33,28,0.12);}
+  .contact-row strong{font-size:14.5px;min-width:110px;}
+  .contact-row span{font-size:14px;color:var(--ink-soft);}
+  .social-row{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap;}
+  .social-btn{padding:13px 20px;border-radius:999px;border:1.5px solid rgba(43,33,28,0.22);font-size:14px;transition:border-color .25s, background .25s;}
+  .social-btn:hover{border-color:var(--ink);background:var(--card);}
+  .route-card{background:var(--sage);border-radius:20px;padding:40px;display:flex;flex-direction:column;justify-content:space-between;gap:28px;color:var(--ink);}
+  .route-card .addr{font-family:'Playfair Display',serif;font-size:clamp(24px,2.6vw,32px);line-height:1.25;}
+  .route-card p{font-size:15px;max-width:40ch;}
+  .route-card .btn-primary{align-self:flex-start;}
+
+  footer{padding:44px 0;border-top:1px solid rgba(43,33,28,0.12);}
+  .footer-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+  .footer-row p{font-size:13px;color:var(--ink-soft);}
+
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);}
+  .reveal.in{opacity:1;transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){.reveal{opacity:1;transform:none;transition:none;}html{scroll-behavior:auto;}}
+
+  @media (max-width:900px){
+    .nav-links{display:none;}
+    .nav-cta{display:none;}
+    .burger{display:flex;}
+    .nav-cta-mobile{display:block;text-align:center;background:var(--ink);color:var(--bg);padding:14px 20px;border-radius:999px;opacity:1 !important;}
+    .hero{grid-template-columns:1fr;gap:36px;padding:40px 20px 56px;}
+    .hero-figure{order:-1;aspect-ratio:4/3;}
+    .wrap{padding:0 20px;}
+    section{padding:64px 0;}
+    .service-grid{grid-template-columns:1fr 1fr;}
+    .about{grid-template-columns:1fr;gap:32px;}
+    .about-figure{order:-1;aspect-ratio:16/10;}
+    .masters-grid{grid-template-columns:1fr 1fr 1fr;gap:14px;}
+    .master h3{font-size:17px;}
+    .master p{display:none;}
+    .portfolio-grid{grid-template-columns:1fr 1fr;}
+    .testi-grid,.price-groups{grid-template-columns:1fr;}
+    .booking{grid-template-columns:1fr;padding:36px 24px;border-radius:20px;gap:32px;}
+    .form-row2{grid-template-columns:1fr;}
+    .contact{grid-template-columns:1fr;gap:36px;}
+    .route-card{padding:28px;}
+  }
+  @media (max-width:480px){
+    .service-grid{grid-template-columns:1fr;}
+    .masters-grid{grid-template-columns:1fr;gap:28px;}
+    .master p{display:block;}
+    nav{padding:0 18px;height:66px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo">LUM<span>É</span></div>
+    <div class="nav-links">
+      <a href="#services">Услуги</a>
+      <a href="#masters" data-tier="pro">Мастера</a>
+      <a href="#portfolio">Работы</a>
+      <a href="#prices">Цены</a>
+      <a href="#faq" data-tier="pro">Вопросы</a>
+      <a href="#contact">Контакты</a>
+      <a href="#booking" class="nav-cta-mobile">Записаться</a>
+    </div>
+    <a href="#booking" class="nav-cta">Записаться</a>
+    <button class="burger" aria-label="Открыть меню"><span></span><span></span><span></span></button>
+  </nav>
+</header>
+
+<section class="hero">
+  <div>
+    <div class="hero-eyebrow">LUMÉ Beauty Studio, Москва</div>
+    <h1>Красота без спешки и суеты</h1>
+    <p class="lead">Маникюр, стрижки, окрашивание и уход за лицом в одном спокойном пространстве.</p>
+    <div class="hero-ctas">
+      <a href="#booking" class="btn-primary">Записаться</a>
+      <a href="#services" class="btn-ghost">Смотреть услуги</a>
+    </div>
+    <div class="hero-rating" data-tier="pro"><span class="stars">★★★★★</span><span><strong>4.9</strong> на Яндекс Картах, 312 отзывов</span></div>
+  </div>
+  <div class="hero-figure">
+    <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80" class="warmphoto" alt="Светлый зал студии LUMÉ с большими окнами">
+    <div class="hero-badge"><strong>Работаем с 2019 года</strong><small>Ежедневно с 9:00 до 21:00</small></div>
+  </div>
+</section>
+
+<section class="services" id="services">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Услуги студии</h2>
+      <p>Полный цикл ухода, от маникюра до косметологии лица, в одном месте и в удобное вам время.</p>
+    </div>
+    <div class="service-grid reveal">
+      <div class="service-card">
+        <svg class="ico" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M188,50a25.8,25.8,0,0,0-14,4.11V44a26,26,0,0,0-51.41-5.51A26,26,0,0,0,82,60v71l-7.530-12.1a26,26,0,0,0-45.11,25.87C60.76,211,78.51,238,128,238a86.1,86.1,0,0,0,86-86V76A26,26,0,0,0,188,50Zm14,102a74.09,74.090,0,0,1-74,74c-21,0-34.51-5.05-46.75-17.45C67.81,195,55.54,172,40.1,139.43l-.23-.43a14,14,0,0,1,24.25-14l.1.17,18.68,30A6,6,0,0,0,94,152V60a14,14,0,0,1,28,0v60a6,6,0,0,0,12,0V44a14,14,0,0,1,28,0v76a6,6,0,0,0,12,0V76a14,14,0,0,1,28,0Z"/></svg>
+        <h3>Маникюр и педикюр</h3>
+        <p>Классика, гель-лак, укрепление и восстановление ногтевой пластины.</p>
+        <div class="service-foot"><span>от <em>1 800 ₽</em></span><a href="#booking">Записаться</a></div>
+      </div>
+      <div class="service-card">
+        <svg class="ico" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M159.38,112a6,6,0,0,1,1.57-8.34l67.66-46.31a6,6,0,0,1,6.78,9.910l-67.67,46.3a6,6,0,0,1-8.34-1.56ZM237,197.09a6,6,0,0,1-8.34,1.56L136,135.27,91,166.06A34,34,0,1,1,84,156a1.8,1.8,0,0,0,.19.2L125.37,128,84.23,99.84,84,100a34,34,0,1,1,7-10.1l144.38,98.8A6,6,0,0,1,237,197.09ZM75.56,91.55a22,22,0,1,0-31.12,0,21.88,21.88,0,0,0,31.12,0ZM82,180a22,22,0,1,0-6.44,15.56h0A21.88,21.88,0,0,0,82,180Z"/></svg>
+        <h3>Стрижки и укладки</h3>
+        <p>Женские и мужские стрижки, вечерние и свадебные укладки.</p>
+        <div class="service-foot"><span>от <em>2 500 ₽</em></span><a href="#booking">Записаться</a></div>
+      </div>
+      <div class="service-card">
+        <svg class="ico" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216,26H72A38,38,0,0,0,34,64v72a22,22,0,0,0,22,22h48a2,2,0,0,1,2,2.23L98.08,207a6.74,6.74,0,0,0-.08,1,30,30,0,0,0,60,0,6.74,6.74,0,0,0-.08-1L150,160.23a2,2,0,0,1,2-2.23h48a22,22,0,0,0,22-22V32A6,6,0,0,0,216,26ZM72,38H178V80a6,6,0,0,0,12,0V38h20v68H46V64A26,26,0,0,1,72,38ZM200,146H152a14,14,0,0,0-13.86,16l0,.15L146,208.47a18,18,0,0,1-36,0l7.82-46.34,0-.15A14,14,0,0,0,104,146H56a10,10,0,0,1-10-10V118H210v18A10,10,0,0,1,200,146Z"/></svg>
+        <h3>Окрашивание и уход</h3>
+        <p>Балаяж, тонирование и уходовые процедуры для сохранения цвета.</p>
+        <div class="service-foot"><span>от <em>4 200 ₽</em></span><a href="#booking">Записаться</a></div>
+      </div>
+      <div class="service-card">
+        <svg class="ico" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M245.48,125.57c-.34-.78-8.66-19.23-27.24-37.81C201,70.54,171.38,50,128,50S55,70.54,37.76,87.76c-18.58,18.58-26.9,37-27.24,37.81a6,6,0,0,0,0,4.88c.34.77,8.66,19.22,27.24,37.8C55,185.47,84.62,206,128,206s73-20.53,90.24-37.75c18.58-18.58,26.9-37,27.24-37.8A6,6,0,0,0,245.48,125.57ZM128,194c-31.38,0-58.78-11.42-81.45-33.93A134.77,134.77,0,0,1,22.69,128,134.56,134.56,0,0,1,46.55,95.94C69.22,73.42,96.62,62,128,62s58.78,11.42,81.45,33.94A134.56,134.56,0,0,1,233.31,128C226.94,140.21,195,194,128,194Zm0-112a46,46,0,1,0,46,46A46.06,46.06,0,0,0,128,82Zm0,80a34,34,0,1,1,34-34A34,34,0,0,1,128,162Z"/></svg>
+        <h3>Брови и ресницы</h3>
+        <p>Коррекция и окрашивание бровей, ламинирование ресниц.</p>
+        <div class="service-foot"><span>от <em>1 500 ₽</em></span><a href="#booking">Записаться</a></div>
+      </div>
+      <div class="service-card">
+        <svg class="ico" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M196.89,130.94,144.4,111.6,125.06,59.11a13.92,13.92,0,0,0-26.12,0L79.6,111.6,27.11,130.94a13.92,13.92,0,0,0,0,26.12L79.6,176.4l19.34,52.49a13.92,13.92,0,0,0,26.12,0L144.4,176.4l52.49-19.34a13.92,13.92,0,0,0,0-26.12Zm-4.15,14.86-55.08,20.3a6,6,0,0,0-3.56,3.56l-20.3,55.08a1.92,1.92,0,0,1-3.6,0L89.9,169.66a6,6,0,0,0-3.56-3.56L31.26,145.8a1.92,1.92,0,0,1,0-3.6l55.08-20.3a6,6,0,0,0,3.56-3.56l20.3-55.08a1.92,1.92,0,0,1,3.6,0l20.3,55.08a6,6,0,0,0,3.56,3.56l55.08,20.3a1.92,1.92,0,0,1,0,3.6ZM146,40a6,6,0,0,1,6-6h18V16a6,6,0,0,1,12,0V34h18a6,6,0,0,1,0,12H182V64a6,6,0,0,1-12,0V46H152A6,6,0,0,1,146,40ZM246,88a6,6,0,0,1-6,6H230v10a6,6,0,0,1-12,0V94H208a6,6,0,0,1,0-12h10V72a6,6,0,0,1,12,0V82h10A6,6,0,0,1,246,88Z"/></svg>
+        <h3>Косметология лица</h3>
+        <p>Чистка, пилинги и увлажняющие процедуры под тип кожи.</p>
+        <div class="service-foot"><span>от <em>3 000 ₽</em></span><a href="#booking">Записаться</a></div>
+      </div>
+      <div class="service-card">
+        <svg class="ico" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M172.53,49.06a252.86,252.86,0,0,0-41.09-38,6,6,0,0,0-6.88,0,252.86,252.86,0,0,0-41.09,38C56.34,80.26,42,113.09,42,144a86,86,0,0,0,172,0C214,113.09,199.66,80.26,172.53,49.06ZM128,218a74.09,74.09,0,0,1-74-74c0-59.62,59-108.93,74-120.51C143,35.07,202,84.38,202,144A74.09,74.09,0,0,1,128,218Zm53.920-65A55.58,55.58,0,0,1,137,197.92a7,7,0,0,1-1,.08,6,6,0,0,1-1-11.92c17.38-2.92,32.13-17.68,35.08-35.08a6,6,0,1,1,11.84,2Z"/></svg>
+        <h3>Депиляция</h3>
+        <p>Воск и сахарная паста, деликатный уход после процедуры.</p>
+        <div class="service-foot"><span>от <em>900 ₽</em></span><a href="#booking">Записаться</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap about">
+    <div class="about-figure reveal">
+      <img src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1000&q=80" class="warmphoto" alt="Рабочие места мастеров в студии LUMÉ">
+    </div>
+    <div class="about-text reveal">
+      <h2>Пространство для себя, а не просто услуга</h2>
+      <p>В LUMÉ вы получаете не только услугу, но и час-два для себя. Работаем с 2019 года, у всех мастеров профильное образование, а раз в год каждый проходит повышение квалификации.</p>
+      <div class="about-stats">
+        <div><strong>7</strong><span>лет работы</span></div>
+        <div><strong>12</strong><span>мастеров в студии</span></div>
+        <div><strong>4.9</strong><span>средняя оценка</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="masters" id="masters" data-tier="pro">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Мастера студии</h2>
+      <p>Записывайтесь к конкретному мастеру или доверьте выбор администратору.</p>
+    </div>
+    <div class="masters-grid reveal">
+      <div class="master">
+        <div class="master-photo"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&h=750&q=75" alt="Анна Белова, колорист"></div>
+        <h3>Анна Белова</h3>
+        <div class="role">Колорист, стилист · стаж 9 лет</div>
+        <p>Сложные окрашивания и балаяж, подбирает оттенок под тон кожи.</p>
+      </div>
+      <div class="master">
+        <div class="master-photo"><img src="https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=600&h=750&q=75" alt="Ольга Миронова, мастер маникюра"></div>
+        <h3>Ольга Миронова</h3>
+        <div class="role">Мастер ногтевого сервиса · стаж 6 лет</div>
+        <p>Аппаратный маникюр, укрепление и минималистичный дизайн.</p>
+      </div>
+      <div class="master">
+        <div class="master-photo"><img src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?auto=format&fit=crop&w=600&h=750&q=75" alt="Дарья Кузнецова, косметолог"></div>
+        <h3>Дарья Кузнецова</h3>
+        <div class="role">Косметолог · стаж 8 лет</div>
+        <p>Чистки, пилинги и программы ухода для чувствительной кожи.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="portfolio">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Работы студии</h2>
+      <p>Маникюр, стрижки и окрашивания последних месяцев: то, с чем клиентки уходят домой.</p>
+    </div>
+    <div class="portfolio-grid reveal">
+      <a href="#portfolio"><img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=700&q=75" alt="Результат окрашивания волос"><span class="portfolio-caption">Окрашивание волос</span></a>
+      <a href="#portfolio"><img src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=700&q=75" alt="Укладка волос феном"><span class="portfolio-caption">Укладка волос</span></a>
+      <a href="#portfolio"><img src="https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=700&q=75" alt="Уход за лицом"><span class="portfolio-caption">Уход за лицом</span></a>
+      <a href="#portfolio"><img src="https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?auto=format&fit=crop&w=700&q=75" alt="Педикюр"><span class="portfolio-caption">Педикюр</span></a>
+      <a href="#portfolio"><img src="https://images.unsplash.com/photo-1610992015732-2449b76344bc?auto=format&fit=crop&w=700&q=75" alt="Маникюр крупным планом"><span class="portfolio-caption">Маникюр</span></a>
+      <a href="#portfolio"><img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=700&q=75" alt="Дизайн ногтей крупным планом"><span class="portfolio-caption">Дизайн ногтей</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials" data-tier="pro" style="padding-top:0;">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Что говорят клиентки</h2>
+      <p>Несколько отзывов о студии из тех, что мы получаем чаще всего.</p>
+    </div>
+    <div class="testi-grid reveal">
+      <div class="testi-card">
+        <div class="testi-top"><img class="testi-avatar" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=120&h=120&q=75" alt="Марина Ковалёва"><span class="stars">★★★★★</span></div>
+        <p class="testi-quote">Пришла впервые на окрашивание, а осталась на регулярный уход. Мастер честно сказала, что моим волосам нужен перерыв перед сложным балаяжем, и не стала делать в ущерб качеству.</p>
+        <div><div class="testi-name">Марина Ковалёва</div><div class="testi-meta">Окрашивание, мастер Анна Белова</div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-top"><img class="testi-avatar" src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=120&h=120&q=75" alt="Алина Птицына"><span class="stars">★★★★★</span></div>
+        <p class="testi-quote">Хожу на маникюр раз в три недели уже год. Ни разу не пришлось ждать дольше пяти минут, а покрытие держится до следующей записи без сколов.</p>
+        <div><div class="testi-name">Алина Птицына</div><div class="testi-meta">Маникюр, мастер Ольга Миронова</div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-top"><img class="testi-avatar" src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=120&h=120&q=75" alt="Екатерина Симонян"><span class="stars">★★★★★</span></div>
+        <p class="testi-quote">Записалась на чистку лица перед свадьбой и осталась на курс из четырёх процедур. Косметолог подробно объяснила, почему мне лучше начать с мягкого пилинга.</p>
+        <div><div class="testi-name">Екатерина Симонян</div><div class="testi-meta">Косметология, мастер Дарья Кузнецова</div></div>
+      </div>
+    </div>
+    <p class="testi-note">Имена и отзывы приведены в качестве примера оформления блока для портфолио.</p>
+  </div>
+</section>
+
+<section class="prices" id="prices">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Цены на популярные процедуры</h2>
+      <p>Итоговая стоимость зависит от длины волос, состояния ногтей и выбранных материалов. Мастер назовёт её до начала работы.</p>
+    </div>
+    <div class="price-groups reveal">
+      <div class="price-group">
+        <h3>Ногти</h3>
+        <div class="price-item"><span>Маникюр классический</span><span>1 800 ₽</span></div>
+        <div class="price-item"><span>Маникюр + гель-лак</span><span>2 500 ₽</span></div>
+        <div class="price-item"><span>Педикюр + гель-лак</span><span>3 400 ₽</span></div>
+        <div class="price-item"><span>Дизайн, 1 ноготь</span><span>от 150 ₽</span></div>
+      </div>
+      <div class="price-group">
+        <h3>Волосы</h3>
+        <div class="price-item"><span>Женская стрижка</span><span>2 800 ₽</span></div>
+        <div class="price-item"><span>Укладка</span><span>2 500 ₽</span></div>
+        <div class="price-item"><span>Окрашивание в один тон</span><span>от 4 200 ₽</span></div>
+        <div class="price-item"><span>Балаяж</span><span>от 9 500 ₽</span></div>
+      </div>
+      <div class="price-group">
+        <h3>Лицо и тело</h3>
+        <div class="price-item"><span>Комбинированная чистка</span><span>4 500 ₽</span></div>
+        <div class="price-item"><span>Пилинг</span><span>от 3 000 ₽</span></div>
+        <div class="price-item"><span>Брови: коррекция + окрашивание</span><span>1 500 ₽</span></div>
+        <div class="price-item"><span>Депиляция, голени</span><span>от 900 ₽</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" data-tier="pro">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Частые вопросы</h2>
+    </div>
+    <div class="faq-list reveal">
+      <details><summary>Как вы обрабатываете инструменты?</summary><p>Все металлические инструменты проходят три этапа: дезинфекцию, предстерилизационную очистку и стерилизацию в сухожаре. Крафт-пакет вскрывают при вас.</p></details>
+      <details><summary>На каких материалах вы работаете?</summary><p>Гель-лаки Luxio и Kodi, краски Wella и Davines, косметика для лица Christina и Holy Land. Если у вас есть аллергия, скажите администратору заранее.</p></details>
+      <details><summary>Можно ли перенести или отменить запись?</summary><p>Да, бесплатно, если предупредите не позже чем за 3 часа до визита. Написать можно в Telegram, WhatsApp или позвонить.</p></details>
+      <details><summary>Что будет, если я опоздаю?</summary><p>Мастер подождёт 15 минут. При большем опоздании предложим сократить процедуру или перенести её на ближайшее свободное окно.</p></details>
+      <details><summary>Сколько длится первый визит?</summary><p>Маникюр с покрытием занимает около 1,5 часов, окрашивание от 2 до 4 часов. Перед сложным окрашиванием проводим бесплатную консультацию.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="booking" style="padding-top:0;">
+  <div class="wrap">
+    <div class="booking reveal">
+      <div class="section-head" style="margin-bottom:0;">
+        <h2>Записаться</h2>
+        <p>Оставьте контакты, и администратор подтвердит удобное время в течение часа.</p>
+      </div>
+      <form class="form-grid" id="bookingForm" novalidate>
+        <div class="form-row2">
+          <div class="field">
+            <label for="bName">Имя</label>
+            <input id="bName" type="text" placeholder="Как к вам обращаться" required>
+            <div class="field-error">Укажите имя</div>
+          </div>
+          <div class="field">
+            <label for="bPhone">Телефон</label>
+            <input id="bPhone" type="tel" inputmode="tel" placeholder="+7 (900) 000-00-00" required>
+            <div class="field-error">Введите номер полностью: +7 и 10 цифр</div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="bService">Услуга</label>
+          <select id="bService" required>
+            <option value="" selected disabled>Выберите услугу</option>
+            <option>Маникюр и педикюр</option>
+            <option>Стрижки и укладки</option>
+            <option>Окрашивание и уход</option>
+            <option>Брови и ресницы</option>
+            <option>Косметология лица</option>
+            <option>Депиляция</option>
+          </select>
+          <div class="field-error">Выберите услугу</div>
+        </div>
+        <div class="field">
+          <label for="bTime">Удобное время</label>
+          <input id="bTime" type="text" placeholder="Например, будни после 18:00">
+        </div>
+        <label class="consent"><input type="checkbox" id="bConsent" required><span>Я соглашаюсь на обработку персональных данных в соответствии с 152-ФЗ</span></label>
+        <button type="submit" class="btn-primary">Записаться</button>
+        <div class="form-success" id="bookingSuccess">Заявка отправлена. Администратор позвонит в течение часа.</div>
+        <p class="form-note">Форма демонстрационная, реальная запись через сайт не подключена.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section id="contact" style="padding-top:0;">
+  <div class="wrap contact">
+    <div class="contact-info reveal">
+      <h2>Адрес и часы работы</h2>
+      <div class="contact-row"><strong>Адрес</strong><span>Москва, ул. Малая Бронная, 12, 5 минут от м. Пушкинская</span></div>
+      <div class="contact-row"><strong>Часы работы</strong><span>Ежедневно, 9:00-21:00</span></div>
+      <div class="contact-row"><strong>Телефон</strong><span>+7 (495) 000-00-00</span></div>
+      <div class="social-row">
+        <a href="https://t.me/" target="_blank" rel="noopener" class="social-btn">Telegram</a>
+        <a href="https://wa.me/" target="_blank" rel="noopener" class="social-btn">WhatsApp</a>
+        <a href="https://instagram.com/" target="_blank" rel="noopener" class="social-btn">Instagram</a>
+      </div>
+    </div>
+    <div class="route-card reveal">
+      <div class="addr">ул. Малая Бронная, 12<br>вход со двора, 2 этаж</div>
+      <p>Рядом городская парковка, первые 15 минут бесплатно. У входа вывеска LUMÉ и домофон 12.</p>
+      <a href="https://yandex.ru/maps/?text=%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%2C%20%D0%9C%D0%B0%D0%BB%D0%B0%D1%8F%20%D0%91%D1%80%D0%BE%D0%BD%D0%BD%D0%B0%D1%8F%2C%2012" target="_blank" rel="noopener" class="btn-primary">Построить маршрут</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-row">
+    <p>© 2026 LUMÉ Beauty Studio</p>
+    <p>Демонстрационный проект, макет для портфолио METRAWEN Digital</p>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('a[href^="#"]').forEach(function(link){
+    link.addEventListener('click', function(e){
+      var target = document.getElementById(link.getAttribute('href').slice(1));
+      if(target){
+        e.preventDefault();
+        navLinks.classList.remove('open'); navLinks.removeAttribute('style');
+        window.scrollTo({top: target.getBoundingClientRect().top + window.scrollY - 84, behavior: 'smooth'});
+      }
+    });
+  });
+
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduceMotion && 'IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){ if(entry.isIntersecting){ entry.target.classList.add('in'); io.unobserve(entry.target); } });
+    }, {threshold: 0.12});
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+  }
+
+  var burger = document.querySelector('.burger');
+  var navLinks = document.querySelector('.nav-links');
+  burger.addEventListener('click', function(){
+    if(navLinks.getAttribute('style')){ navLinks.removeAttribute('style'); return; }
+    navLinks.setAttribute('style','display:flex;position:absolute;top:'+document.querySelector('nav').offsetHeight+'px;left:0;right:0;background:var(--bg);flex-direction:column;padding:20px;gap:18px;border-bottom:1px solid rgba(43,33,28,0.08);');
+  });
+
+  // Маска телефона +7 (XXX) XXX-XX-XX
+  var phone = document.getElementById('bPhone');
+  phone.addEventListener('input', function(){
+    var d = phone.value.replace(/\D/g,'');
+    if(d.startsWith('8') || d.startsWith('7')) d = d.slice(1);
+    d = d.slice(0,10);
+    var out = '+7';
+    if(d.length) out += ' (' + d.slice(0,3);
+    if(d.length >= 3) out += ')';
+    if(d.length > 3) out += ' ' + d.slice(3,6);
+    if(d.length > 6) out += '-' + d.slice(6,8);
+    if(d.length > 8) out += '-' + d.slice(8,10);
+    phone.value = out;
+  });
+
+  document.getElementById('bookingForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var ok = true;
+    function check(id, valid){ var f = document.getElementById(id).closest('.field'); f.classList.toggle('invalid', !valid); if(!valid) ok = false; }
+    check('bName', document.getElementById('bName').value.trim().length > 1);
+    check('bPhone', phone.value.replace(/\D/g,'').length === 11);
+    check('bService', document.getElementById('bService').value !== '');
+    var consent = document.getElementById('bConsent');
+    if(!consent.checked){ ok = false; consent.parentElement.style.color = '#F0A898'; } else { consent.parentElement.style.color = ''; }
+    if(ok){ document.getElementById('bookingSuccess').style.display = 'block'; this.reset(); }
+  });
+</script>
+
+
+<!-- ===== Переключатель версий демо: Базовый / PRO ===== -->
+<style>
+  body.tier-base [data-tier="pro"]{display:none !important;}
+  .tier-switch{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:90;background:#1C1A17;color:#F5EFE6;border-radius:999px;padding:6px;display:flex;align-items:center;gap:4px;box-shadow:0 14px 40px rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.12);font-family:Inter,-apple-system,"Segoe UI",sans-serif;}
+  .tier-switch .lbl{font-size:12.5px;opacity:.7;padding:0 8px 0 12px;white-space:nowrap;}
+  .tier-switch button{border:none;background:transparent;color:inherit;font:inherit;font-size:13.5px;font-weight:600;padding:10px 16px;border-radius:999px;cursor:pointer;white-space:nowrap;}
+  .tier-switch button.on{background:#F5EFE6;color:#1C1A17;}
+  .tier-switch button small{font-weight:500;opacity:.75;margin-left:4px;}
+  .tier-hint{display:none;position:fixed;left:50%;bottom:78px;transform:translateX(-50%);z-index:89;background:#fff;color:#1C1A17;font-size:13px;line-height:1.45;padding:10px 14px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.2);max-width:min(520px,calc(100vw - 32px));text-align:center;font-family:Inter,-apple-system,"Segoe UI",sans-serif;}
+  .pro-mark{display:inline-block;vertical-align:middle;margin-left:10px;font-family:Inter,-apple-system,"Segoe UI",sans-serif;font-size:11px;font-weight:700;letter-spacing:.05em;background:#C9A08C;color:#1C1A17;padding:3px 7px;border-radius:6px;}
+  body.tier-base .pro-mark{display:none;}
+  body{padding-bottom:84px;}
+  @media (max-width:520px){ .tier-switch .lbl{display:none;} .tier-switch button{padding:10px 12px;font-size:13px;} .tier-hint{bottom:74px;} }
+</style>
+<div class="tier-hint" id="tierHint"></div>
+<div class="tier-switch" role="group" aria-label="Версия лендинга">
+  <span class="lbl">Версия демо:</span>
+  <button type="button" data-t="base">Базовый<small>24 900 ₽</small></button>
+  <button type="button" data-t="pro">PRO<small>39 900 ₽</small></button>
+</div>
+<script>
+(function(){
+  var HINT = {base:'Базовый лендинг: главный экран, услуги, о компании, цены, форма заявки в Telegram и контакты. Адаптив под телефон.',
+              pro:'PRO добавляет: блок мастеров с фото, отзывы клиентов со звёздами, рейтинг на первом экране, FAQ с ответами на возражения, проверку телефона в форме и превью для соцсетей. Блоки PRO отмечены меткой.'};
+  document.querySelectorAll('[data-tier="pro"] .section-head h2, [data-tier="pro"] > h2').forEach(function(h){
+    var m = document.createElement('span'); m.className = 'pro-mark'; m.textContent = 'PRO'; h.appendChild(m);
+  });
+  var hint = document.getElementById('tierHint'), t0;
+  function set(t, showHint){
+    document.body.classList.toggle('tier-base', t === 'base');
+    document.querySelectorAll('.tier-switch button').forEach(function(b){ b.classList.toggle('on', b.dataset.t === t); });
+    try{ var u = new URL(location.href); u.searchParams.set('v', t); history.replaceState(null,'',u); }catch(e){}
+    if(showHint){ hint.textContent = HINT[t]; hint.style.display = 'block'; clearTimeout(t0); t0 = setTimeout(function(){ hint.style.display = 'none'; }, 5000); }
+  }
+  var start = 'pro'; try{ var v = new URL(location.href).searchParams.get('v'); if(v === 'base' || v === 'pro') start = v; }catch(e){}
+  document.querySelectorAll('.tier-switch button').forEach(function(b){ b.addEventListener('click', function(){ set(b.dataset.t, true); }); });
+  set(start, false);
+  window.addEventListener("scroll", function(){ hint.style.display = "none"; }, {passive:true});
+})();
+</script>
+</body>
+</html>
