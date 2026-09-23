@@ -202,13 +202,13 @@
     <div class="admin">
       <div class="tg-head">
         <div class="avatar av-admin">АД</div>
-        <div class="tg-title"><strong>LUMÉ · Записи</strong><span>закрытый чат администраторов, 3 участника</span></div>
+        <div class="tg-title"><strong>LUMÉ · Записи <span class="pro-tag">PRO</span> статистика</strong><span>закрытый чат администраторов, 3 участника</span></div>
       </div>
       <div class="stats" title="Статистика доступна в версии PRO">
         <div><strong id="stBook">0</strong><span>записей</span></div>
         <div><strong id="stSum">0 ₽</strong><span>сумма записей</span></div>
         <div><strong id="stUp">0</strong><span>допродаж</span></div>
-        <div><strong id="stCancel">0</strong><span>отмен · <span class="pro-tag">PRO</span></span></div>
+        <div><strong id="stCancel">0</strong><span>отмен</span></div>
       </div>
       <div class="chat" id="adminChat"></div>
     </div>
@@ -603,6 +603,18 @@
   var clock = document.getElementById('clock'); clock.textContent = now();
   setInterval(function(){ clock.textContent = now(); }, 30000);
   start();
+})();
+</script>
+<script>
+/* Надёжная отправка форм: работает и в песочницах/превью, где стандартный submit заблокирован */
+(function(){
+  document.querySelectorAll('form').forEach(function(f){
+    function fire(){ f.dispatchEvent(new Event('submit', {cancelable:true, bubbles:true})); }
+    f.querySelectorAll('[type="submit"]').forEach(function(b){ b.addEventListener('click', function(e){ e.preventDefault(); fire(); }); });
+    f.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' && !e.isComposing && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox'){ e.preventDefault(); fire(); }
+    });
+  });
 })();
 </script>
 </body>

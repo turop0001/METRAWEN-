@@ -608,5 +608,17 @@
   window.addEventListener("scroll", function(){ hint.style.display = "none"; }, {passive:true});
 })();
 </script>
+<script>
+/* Надёжная отправка форм: работает и в песочницах/превью, где стандартный submit заблокирован */
+(function(){
+  document.querySelectorAll('form').forEach(function(f){
+    function fire(){ f.dispatchEvent(new Event('submit', {cancelable:true, bubbles:true})); }
+    f.querySelectorAll('[type="submit"]').forEach(function(b){ b.addEventListener('click', function(e){ e.preventDefault(); fire(); }); });
+    f.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' && !e.isComposing && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox'){ e.preventDefault(); fire(); }
+    });
+  });
+})();
+</script>
 </body>
 </html>
