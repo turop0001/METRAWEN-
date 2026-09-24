@@ -158,7 +158,7 @@ button{font:inherit;color:inherit}
 .note{margin-top:20px;font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.06em;color:var(--text-faint);line-height:1.6;text-align:center}
 
 @media(prefers-reduced-motion:reduce){.scene i{animation:none!important}.rv{opacity:1;transform:none}}
-.why-lead{text-align:center;margin:18px auto 0;max-width:40ch;font-size:clamp(1.125rem,2vw,1.375rem);line-height:1.45;color:var(--text)}
+.why-lead{text-align:center;margin:18px auto 0;max-width:62ch;font-size:clamp(1.125rem,2vw,1.375rem);line-height:1.45;color:var(--text)}
 .why-lead em{font-style:normal;color:var(--accent-hi)}
 .why-pains{margin-top:28px;display:grid;gap:12px}
 @media(min-width:760px){.why-pains{grid-template-columns:repeat(3,1fr)}}
@@ -168,6 +168,14 @@ button{font:inherit;color:inherit}
 .why-solution b{color:var(--accent-hi);font-weight:650}
 .company-card small{font-family:var(--font-mono,monospace);font-size:.75rem;letter-spacing:.08em;color:var(--accent);display:block;margin-bottom:6px}
 .founder__quote{border-left:2px solid var(--accent);padding-left:14px;color:var(--text)!important}
+.br-d{display:none}@media(min-width:760px){.br-d{display:inline}}
+.values-lede{text-align:center;margin:16px auto 0;max-width:60ch;color:var(--text-dim);font-size:1rem;line-height:1.6}
+.values-grid .value-card{position:relative;overflow:hidden;padding-top:26px;transition:border-color .3s var(--ease),transform .3s var(--ease),box-shadow .3s var(--ease)}
+.values-grid .value-card::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent 70%);opacity:.7}
+.values-grid .value-card:hover{border-color:rgba(var(--accent-rgb),.5);transform:translateY(-3px);box-shadow:0 18px 40px -24px rgba(var(--accent-rgb),.55)}
+.value-card__top{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.value-card__num{flex:0 0 auto;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-mono,monospace);font-size:.8125rem;color:var(--accent-hi);border:1px solid rgba(var(--accent-rgb),.45);background:rgba(var(--accent-rgb),.08)}
+.value-card__tag{display:inline-block;margin-top:14px;font-family:var(--font-mono,monospace);font-size:.6875rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
 </style>
 </head>
 <body>
@@ -231,7 +239,7 @@ button{font:inherit;color:inherit}
   <div class="wrap">
     <p class="eyebrow rv" style="justify-content:center">О компании</p>
     <h2 class="h2 rv" style="text-align:center;margin-inline:auto;margin-top:20px;max-width:34ch">Почему METRAWEN существует</h2>
-    <p class="why-lead rv">Малый и средний бизнес с потоком обращений теряет клиентов и деньги <em>не из-за продукта, а из-за процессов</em></p>
+    <p class="why-lead rv">Малый и средний бизнес с потоком обращений теряет клиентов и деньги не из-за продукта,<br class="br-d"> <em>а из-за процессов</em></p>
     <p class="rv" style="text-align:center;margin:10px auto 0;max-width:64ch;color:var(--text-faint);font-size:.9375rem">Отели, клиники, салоны, агентства, интернет-магазины, недвижимость и другие направления с рутиной</p>
     <div class="why-pains">
       <div class="why-pain rv"><i>01</i><span>Заявки расходятся по чатам и мессенджерам</span></div>
@@ -282,23 +290,29 @@ button{font:inherit;color:inherit}
 <!-- ===== values (2x2, superdupr-style) ===== -->
 <section class="sec">
   <div class="wrap">
-    <h2 class="h2 rv" style="text-align:center;margin-inline:auto">Как мы работаем</h2>
+    <p class="eyebrow rv" style="justify-content:center">Принципы</p>
+    <h2 class="h2 rv" style="text-align:center;margin-inline:auto;margin-top:20px">Как мы работаем</h2>
+    <p class="values-lede rv">Четыре правила, по которым строится каждый проект — от небольшого бота до полноценного AI-отдела.</p>
     <div class="values-grid">
       <div class="value-card rv">
-        <b>Результат, а не функция</b>
+        <div class="value-card__top"><span class="value-card__num">01</span><b>Результат, а не функция</b></div>
         <span>Не продаём готовый пакет функций: каждый AI-сотрудник или AI-отдел оценивается по конкретному результату — сколько заявок перестали теряться, сколько часов рутины ушло с команды и когда внедрение окупается.</span>
+        <span class="value-card__tag">Окупаемость в цифрах</span>
       </div>
       <div class="value-card rv">
-        <b>Под конкретный бизнес</b>
+        <div class="value-card__top"><span class="value-card__num">02</span><b>Под конкретный бизнес</b></div>
         <span>Не делаем универсальных решений: набор направлений и интеграций каждый раз собирается под процессы конкретной компании.</span>
+        <span class="value-card__tag">Без шаблонов</span>
       </div>
       <div class="value-card rv">
-        <b>Сначала разбор, потом решение</b>
+        <div class="value-card__top"><span class="value-card__num">03</span><b>Сначала разбор, потом решение</b></div>
         <span>Сначала смотрим на реальные процессы бизнеса и только потом предлагаем то, что даст эффект именно там, а не типовой набор функций.</span>
+        <span class="value-card__tag">Разбор → решение</span>
       </div>
       <div class="value-card rv">
-        <b>Решения остаются за бизнесом</b>
+        <div class="value-card__top"><span class="value-card__num">04</span><b>Решения остаются за бизнесом</b></div>
         <span>AI-сотрудник закрывает типовые случаи сам, а всё нестандартное уходит человеку с готовым контекстом, без потери контроля над бизнесом.</span>
+        <span class="value-card__tag">Контроль у вас</span>
       </div>
     </div>
   </div>
