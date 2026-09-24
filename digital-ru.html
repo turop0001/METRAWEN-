@@ -425,9 +425,15 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
 .industry-card__inner:hover .industry-card__cta{gap:12px}
 .industry-card__inner:hover .industry-card__cta svg{transform:translateX(3px)}
 .industry-card__price{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.02em;color:var(--text-faint);margin-top:12px}
-.case-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.case-tags .case-tag{margin-top:0;cursor:pointer;transition:border-color .2s var(--ease),color .2s var(--ease)}
-.case-tags .case-tag:hover{border-color:var(--accent);color:var(--text)}
+.case-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.case-tags .case-tag{margin-top:0;cursor:pointer;font-size:.8125rem;padding:10px 18px;border-width:1.5px;
+  color:var(--text);background:rgba(var(--accent-rgb),.1);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 8px 20px -14px rgba(var(--accent-rgb),.5);
+  transition:border-color .25s var(--ease),color .25s var(--ease),background .25s var(--ease),box-shadow .25s var(--ease),transform .25s var(--ease)}
+.case-tags .case-tag i{width:6px;height:6px;background:var(--accent-hi);box-shadow:0 0 8px 1px rgba(var(--accent-rgb),.9)}
+.case-tags .case-tag:hover{border-color:var(--accent);color:var(--accent-hi);background:rgba(var(--accent-rgb),.22);
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 14px 32px -14px rgba(var(--accent-rgb),.75),0 0 0 1px rgba(var(--accent-rgb),.3);
+  transform:translateY(-2px)}
 @media(prefers-reduced-motion:reduce){.industry-card{opacity:1;transform:none}.industry-card__inner{animation:none}}
 
 /* ---------- процесс работы: от разбора до внедрения ---------- */
@@ -1095,7 +1101,7 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         <div class="industry-card__top"><h3>Онлайн-торговля · маркетплейсы</h3></div>
         <p class="case-line case-line--was"><b>Было</b><span>цены конкурентов отслеживают вручную в таблице, решения принимают вслепую.</span></p>
         <p class="case-line case-line--now"><b>Стало</b><span>дашборд сам собирает цены и позиции конкурентов и обновляется по расписанию.</span></p>
-        <span class="case-tag"><i></i>Демо в разработке</span>
+        <div class="case-tags"><a class="case-tag" href="demo/price-dashboard.html" target="_blank" rel="noopener"><i></i>Демо: цены конкурентов</a><a class="case-tag" href="demo/content-dashboard.html" target="_blank" rel="noopener"><i></i>Демо: аналитика канала</a></div>
         </div>
       </div>
       <div class="industry-card rv">
@@ -1578,10 +1584,10 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
         {id:'a_crm_link',nm:'Подключение к вашей CRM', rub:9900, days:2,
          sol:'Связываем сайт и бота с уже существующей системой',
          pop:'Если у вас уже есть amoCRM, Битрикс24 или похожая система — связываю её с сайтом и ботом, чтобы заявки создавались там автоматически. Если готовой CRM нет, смотрите пункты «Персональная мини-CRM»: это разные работы и вместе они не нужны.'},
-        {id:'a_crm_own', nm:'Персональная мини-CRM: Базовая', rub:49500, days:10,
+        {id:'a_crm_own', nm:'Персональная мини-CRM: Базовая', rub:69500, days:10,
          sol:'Своя система учёта клиентов и сделок, если готовой CRM нет',
          pop:'Веб-система под ваш процесс, открывается с телефона и компьютера: карточки клиентов с историей обращений, воронка из 5–7 этапов с перетаскиванием сделок, задачи и напоминания, автоматическое создание сделки из заявки с сайта или бота, отчёт по выручке и сделкам за месяц, один-два пользователя. Подключение к чужой CRM в этом случае не нужно.'},
-        {id:'a_crm_pro', nm:'Персональная мини-CRM PRO', rub:89500, days:18,
+        {id:'a_crm_pro', nm:'Персональная мини-CRM PRO', rub:119500, days:18,
          sol:'CRM для команды: роли, автоматизации и аналитика по деньгам',
          pop:'Всё из Базовой, плюс несколько сотрудников с ролями и правами доступа (руководитель видит всё, менеджер только своих клиентов), несколько воронок под разные направления, автоматизации (напоминание клиенту в Telegram, задача менеджеру при зависшей сделке, смена этапа по событию), учёт оплат и дебиторки, дашборд с конверсией по этапам, выручкой по менеджерам и источникам заявок, импорт существующей базы из Excel и экспорт отчётов.'},
         {id:'a_pay',     nm:'Приём оплаты на сайте', rub:9900, days:2,
@@ -1592,7 +1598,13 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
          pop:'Таблица, куда данные попадают автоматически, а формулы и графики считают выручку, заявки и остатки. Вместо ручного сведения цифр в конце дня — готовый отчёт.'},
         {id:'a_data',    nm:'Сбор данных о рынке', rub:12900, days:3,
          sol:'Цены и позиции конкурентов в одной таблице',
-         pop:'Собираю то, что лежит в открытом доступе: цены, услуги, отзывы, контакты. Работаю только с открытыми источниками, чищу дубли и отдаю готовую таблицу.'}
+         pop:'Собираю то, что лежит в открытом доступе: цены, услуги, отзывы, контакты. Работаю только с открытыми источниками, чищу дубли и отдаю готовую таблицу.'},
+        {id:'a_dash_prices', nm:'Дашборд мониторинга цен конкурентов', rub:39900, days:7,
+         sol:'Видите цены конкурентов каждое утро и понимаете, где теряете продажи',
+         pop:'Ежедневный сбор цен конкурентов по вашим категориям, таблица сравнения с подсветкой, где вы дешевле и где дороже, график цен за 30 дней, новые товары у конкурентов и автоматические выводы: где риск потерять продажи, где можно поднять цену, кто из конкурентов снизил цены. Поддержка сбора цен дальше — отдельно, помесячно, ниже в разделе «Ежемесячно».'},
+        {id:'a_dash_content', nm:'Дашборд аналитики Telegram-канала', rub:29900, days:6,
+         sol:'Видите, какой контент приводит подписчиков, без ручных подсчётов',
+         pop:'Рост подписчиков по дням с отметкой пиков, топ публикаций с сортировкой, доля охвата по форматам (посты, видео, сторис, розыгрыши), тепловая карта лучшего времени для публикаций и автоматические рекомендации: какой формат работает лучше, когда публиковать, где проседает вовлечённость.'}
       ]},
       { id:'promo', nm:'Продвижение и контент', note:'Чтобы вас находили и понимали', items:[
         {id:'a_seo',   nm:'SEO-структура сайта', rub:15900, days:3,
@@ -1648,6 +1660,9 @@ button.btn-quiet{font-family:inherit;font-size:.9375rem}
       {id:'m_data',   nm:'Отчёт по конкурентам', rub:9900,
        sol:'Раз в месяц: цены, новые услуги, отзывы',
        pop:'Раз в месяц собираю по конкурентам из открытых источников цены, новые услуги и отзывы. Присылаю сводку с цифрами и выводами.'},
+      {id:'m_dash_prices', nm:'Дашборд цен: поддержка сбора', rub:4900,
+       sol:'Поддержка сбора цен, когда конкуренты меняют сайты',
+       pop:'Ежемесячная поддержка дашборда мониторинга цен: чиним сбор цен, если сайт конкурента изменился, добавляем новых конкурентов и категории.'},
       {id:'m_support',nm:'Поддержка и доработки', rub:7900,
        sol:'Мелкие правки и быстрая реакция на поломки',
        pop:'Правки текстов и цен, мелкие изменения в боте и на сайте, быстрая реакция, если что-то сломалось.'}
