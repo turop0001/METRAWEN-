@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Шаг вперёд — бот школы в Telegram (демо)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14161c;--sub:#5b6070;--line:#e6e5f0;--bg:#f2f1f7;
+  --accent:#5b46f0;--accent2:#22c58b;--tg:#2aa9e0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',sans-serif;color:var(--ink);background:var(--bg);overflow-x:hidden}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+.top{text-align:center;padding:22px 16px 10px}
+.top h1{font-size:19px;font-weight:800}
+.top p{font-size:13px;color:var(--sub);margin-top:6px}
+
+.tabs{display:none;justify-content:center;gap:8px;padding:8px 16px 0}
+.tabs button{padding:9px 20px;border-radius:100px;font-size:13.5px;font-weight:700;border:1.5px solid var(--line);color:var(--sub)}
+.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.stage{display:grid;grid-template-columns:380px 1fr;gap:26px;max-width:1180px;margin:20px auto 60px;padding:0 20px;align-items:start}
+
+.phone{background:#0d0d16;border-radius:34px;padding:10px;box-shadow:0 30px 70px -30px rgba(0,0,0,.5);position:sticky;top:20px}
+.phone .notch{width:90px;height:18px;background:#0d0d16;border-radius:0 0 14px 14px;margin:0 auto;position:relative;z-index:2}
+.phone-scr{background:#e8e6f5;border-radius:26px;overflow:hidden;display:flex;flex-direction:column;height:680px}
+.tg-head{background:var(--tg);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.tg-head .ava{width:34px;height:34px;border-radius:50%;background:#fff;color:var(--tg);display:flex;align-items:center;justify-content:center;font-weight:800}
+.tg-head .nm{font-weight:700;font-size:14.5px}
+.tg-head .st{font-size:11px;opacity:.85}
+.chatlog{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}
+.msg{max-width:82%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.4;animation:pop .2s}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg.bot{background:#fff;border-bottom-left-radius:4px;align-self:flex-start}
+.msg.usr{background:var(--tg);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.msg b{font-weight:700}
+.msg .cap{font-size:11px;opacity:.75;margin-top:4px;display:block}
+.kb{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;align-self:stretch}
+.kb button{flex:1;min-width:120px;background:#fff;border:1.5px solid #d7d4ea;padding:9px 10px;border-radius:12px;font-size:12.5px;font-weight:700;color:var(--tg)}
+.kb button:hover{background:#eef8ff}
+.kb button:disabled{opacity:.4;cursor:default}
+.progress-card{background:#fff;border-radius:14px;padding:12px;border:1px solid #d7d4ea;font-size:12px;align-self:flex-start;max-width:88%}
+.progress-card .row{display:flex;justify-content:space-between;margin-bottom:6px;font-weight:700}
+.pbar{height:6px;border-radius:4px;background:#e5e3f2;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--accent2)}
+.receipt{background:#fff;border-radius:14px;padding:14px;border:1px solid #d7d4ea;font-size:12.5px;align-self:flex-start;max-width:86%}
+.receipt .rr{display:flex;justify-content:space-between;padding:4px 0;color:var(--sub)}
+.receipt .rr b{color:var(--ink)}
+.receipt hr{border:none;border-top:1px dashed #d7d4ea;margin:8px 0}
+.tg-input{background:#fff;padding:10px 12px;display:flex;gap:8px;border-top:1px solid #d7d4ea}
+.tg-input input{flex:1;border:1px solid #d7d4ea;border-radius:100px;padding:10px 14px;font-size:12.5px;font-family:inherit}
+.tg-input button{width:36px;height:36px;border-radius:50%;background:var(--tg);color:#fff;font-size:15px;flex:none}
+.typing{display:flex;gap:4px;padding:8px 12px;align-self:flex-start}
+.typing span{width:6px;height:6px;border-radius:50%;background:#b7b3d4;animation:blink 1s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+.restart-row{text-align:center;margin-top:10px}
+.restart-row button{font-size:12.5px;color:var(--sub);font-weight:700;text-decoration:underline}
+
+.panel{display:flex;flex-direction:column;gap:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px}
+.card h3{font-size:15px;font-weight:800;margin-bottom:14px}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{background:#f7f6fc;border-radius:14px;padding:14px}
+.stat .v{font-size:21px;font-weight:800}
+.stat .l{font-size:11.5px;color:var(--sub);margin-top:4px}
+.stat .d{font-size:11px;font-weight:700;margin-top:6px}
+.stat .d.up{color:var(--accent2)}
+.stat .d.dn{color:#e0483f}
+
+.load-row{display:flex;flex-direction:column;gap:8px}
+.load-item{display:flex;align-items:center;gap:10px;font-size:12.5px}
+.load-item .lbl{width:150px;color:var(--sub);flex:none}
+.load-bar{flex:1;height:8px;border-radius:4px;background:#f0eff8;overflow:hidden}
+.load-bar i{display:block;height:100%;background:var(--accent)}
+.load-item .n{width:52px;text-align:right;font-weight:700;flex:none}
+
+.log{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto}
+.log-item{border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:13px}
+.log-item .row1{display:flex;justify-content:space-between;font-weight:700}
+.log-item .tag{font-size:10.5px;padding:2px 8px;border-radius:100px;font-weight:800}
+.tag.trial{background:#eef4ff;color:#2d6ce0}
+.tag.pay{background:#eafaf1;color:#1a9c68}
+.tag.hw{background:#fff3e6;color:#ff8a3d}
+.tag.q{background:#fdeef2;color:#e0487f}
+.log-item .sub{color:var(--sub);font-size:12px;margin-top:4px}
+.log-item .acts{display:flex;gap:8px;margin-top:8px}
+.log-item .acts button{padding:6px 12px;border-radius:8px;border:1.5px solid var(--line);font-size:11.5px;font-weight:700}
+.log-item .acts button.p{background:var(--ink);color:#fff;border-color:var(--ink)}
+.log-item.done{opacity:.55}
+.empty-log{text-align:center;color:var(--sub);font-size:13px;padding:20px}
+
+@media(max-width:980px){
+  .tabs{display:flex}
+  .stage{grid-template-columns:1fr;max-width:420px}
+  .phone{position:static;justify-self:center}
+  .panel{display:none}
+  .phone.hidden-m,.panel.hidden-m{display:none}
+  body.show-admin .phone{display:none}
+  body.show-admin .panel{display:flex}
+  body:not(.show-admin) .panel{display:none}
+}
+@media(max-width:420px){
+  .phone{padding:6px}
+  .phone-scr{height:76vh;border-radius:20px}
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <h1>Бот школы «Шаг вперёд» — демо</h1>
+  <p>Слева — чат ученика, справа — уведомления и статистика у администратора школы</p>
+</div>
+
+<div class="tabs">
+  <button class="on" id="tabClient">Чат ученика</button>
+  <button id="tabAdmin">Панель школы</button>
+</div>
+
+<div class="stage">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="phone-scr">
+      <div class="tg-head">
+        <div class="ava">→</div>
+        <div><div class="nm">Шаг вперёд · бот</div><div class="st">в сети</div></div>
+      </div>
+      <div class="chatlog" id="chatlog"></div>
+      <div class="tg-input">
+        <input type="text" id="freeText" placeholder="Написать сообщение...">
+        <button id="sendFree">➤</button>
+      </div>
+    </div>
+    <div class="restart-row"><button id="restartBtn">↻ Начать сценарий заново</button></div>
+  </div>
+
+  <div class="panel">
+    <div class="card">
+      <h3>Сегодня в боте</h3>
+      <div class="stat-row" id="statRow"></div>
+    </div>
+    <div class="card">
+      <h3>Загрузка вебинаров сегодня</h3>
+      <div class="load-row" id="loadRow"></div>
+    </div>
+    <div class="card">
+      <h3>Лента событий</h3>
+      <div class="log" id="logList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- state ----------
+var S={
+  stats:{trials:14,paid:4,hw:31,questions:6},
+  log:[],
+  scenario:'main',
+  step:0
+};
+var COURSES=[
+ {id:1,title:'Аналитик данных с нуля',price:79900,parts:[26633,26633,26634],start:'7 октября',mod:'Модуль 2: SQL — сложные запросы'},
+ {id:2,title:'UX/UI дизайнер',price:74900,parts:[24967,24967,24966],start:'7 октября',mod:'Модуль 1: основы композиции'},
+ {id:3,title:'Специалист по digital-маркетингу',price:64900,parts:[21633,21633,21634],start:'7 октября',mod:'Модуль 3: контекстная реклама'}
+];
+var chatlog=document.getElementById('chatlog');
+
+function scrollBottom(){chatlog.scrollTop=chatlog.scrollHeight;}
+function addMsg(who,html,extra){
+  var d=document.createElement('div');
+  d.className='msg '+who+(extra?' '+extra:'');
+  d.innerHTML=html;
+  chatlog.appendChild(d);
+  scrollBottom();
+  return d;
+}
+function addKb(buttons){
+  var wrap=document.createElement('div');wrap.className='kb';
+  buttons.forEach(function(b){
+    var btn=document.createElement('button');btn.textContent=b.t;
+    btn.addEventListener('click',function(){
+      Array.prototype.forEach.call(wrap.children,function(x){x.disabled=true;});
+      addMsg('usr',b.t);
+      typing(function(){b.on();});
+    });
+    wrap.appendChild(btn);
+  });
+  chatlog.appendChild(wrap);
+  scrollBottom();
+  return wrap;
+}
+function typing(cb,ms){
+  var t=document.createElement('div');t.className='typing';t.innerHTML='<span></span><span></span><span></span>';
+  chatlog.appendChild(t);scrollBottom();
+  setTimeout(function(){t.remove();cb();},ms||620);
+}
+function pushLog(tag,title,sub,acts){
+  S.log.unshift({tag:tag,title:title,sub:sub,acts:acts||[],id:Date.now()+Math.random()});
+  renderLog();
+}
+
+// ---------- main scenario ----------
+function startMain(){
+  chatlog.innerHTML='';
+  typing(function(){
+    addMsg('bot','Привет! 👋 Я бот школы <b>«Шаг вперёд»</b>. Помогу записаться на бесплатный урок, отвечу по расписанию и домашним заданиям.');
+    typing(function(){
+      addMsg('bot','С чего начнём?');
+      addKb([
+        {t:'🎓 Записаться на бесплатный урок',on:startTrial},
+        {t:'📚 Я уже учусь — моё расписание',on:startStudent},
+        {t:'❓ Задать вопрос куратору',on:startQuestion}
+      ]);
+    },500);
+  },400);
+}
+
+function startTrial(){
+  typing(function(){
+    addMsg('bot','Отлично! На какое направление хотите попасть?');
+    addKb(COURSES.map(function(c){
+      return {t:c.title,on:function(){pickTrialCourse(c);}};
+    }));
+  });
+}
+function pickTrialCourse(c){
+  typing(function(){
+    addMsg('bot','<b>'+c.title+'</b><br>Ближайший бесплатный урок — <b>'+c.start+'</b>, 19:00 по Москве. Продолжительность 60 минут, покажем формат занятий и программу курса.');
+    typing(function(){
+      addMsg('bot','Чтобы записать вас, поделитесь номером телефона — куратор пришлёт ссылку на встречу и напомнит заранее.');
+      addKb([{t:'📱 Поделиться контактом',on:function(){confirmTrial(c);}},{t:'Позже',on:startMain}]);
+    },550);
+  });
+}
+function confirmTrial(c){
+  typing(function(){
+    addMsg('usr','📱 Контакт отправлен');
+    typing(function(){
+      addMsg('bot','Готово! Вы записаны на бесплатный урок «'+c.title+'» — '+c.start+' в 19:00. Напомню за 30 минут до начала и пришлю ссылку.<span class="cap">Куратор свяжется с вами в течение дня, если появятся вопросы по программе.</span>');
+      pushLog('trial','Заявка на бесплатный урок',c.title+' · '+c.start,[{t:'Позвонить',cls:'p'},{t:'В CRM'}]);
+      S.stats.trials++;renderStats();
+      typing(function(){
+        addMsg('bot','Хотите, расскажу про рассрочку на этот курс, чтобы прикинуть бюджет заранее?');
+        addKb([{t:'Да, покажи оплату частями',on:function(){showPayment(c);}},{t:'Не сейчас',on:function(){endBranch('Хорошо! Ждём вас на бесплатном уроке 🎓');}}]);
+      },500);
+    },700);
+  });
+}
+function showPayment(c){
+  typing(function(){
+    var r='<div class="receipt"><div class="rr"><span>Курс</span><b>'+c.title+'</b></div><div class="rr"><span>Стоимость</span><b>'+c.price.toLocaleString('ru-RU')+' ₽</b></div><hr>'+
+      '<div class="rr"><span>1-й платёж (сегодня)</span><b>'+c.parts[0].toLocaleString('ru-RU')+' ₽</b></div>'+
+      '<div class="rr"><span>2-й платёж (через месяц)</span><b>'+c.parts[1].toLocaleString('ru-RU')+' ₽</b></div>'+
+      '<div class="rr"><span>3-й платёж (через 2 месяца)</span><b>'+c.parts[2].toLocaleString('ru-RU')+' ₽</b></div></div>';
+    addMsg('bot',r,'');
+    typing(function(){
+      addMsg('bot','Рассрочка без переплаты через партнёрский банк, первый платёж — при записи на курс. Оплатить сейчас первую часть?');
+      addKb([{t:'💳 Оплатить 1-й платёж',on:function(){payFirst(c);}},{t:'Подумаю',on:function(){endBranch('Хорошо, ссылка на оплату останется активной 3 дня.');}}]);
+    },500);
+  });
+}
+function payFirst(c){
+  typing(function(){
+    addMsg('usr','💳 Оплата подтверждена');
+    typing(function(){
+      addMsg('bot','Платёж на '+c.parts[0].toLocaleString('ru-RU')+' ₽ прошёл успешно ✅ Вы записаны на курс «'+c.title+'», старт — '+c.start+'. Куратор добавит вас в учебную группу за день до начала.');
+      pushLog('pay','Оплата 1-го платежа',c.title+' · '+c.parts[0].toLocaleString('ru-RU')+' ₽',[{t:'Квитанция'}]);
+      S.stats.paid++;renderStats();
+      endBranch(null);
+    },700);
+  });
+}
+function startQuestion(){
+  typing(function(){
+    addMsg('bot','Напишите вопрос в чат — куратор ответит в течение рабочего дня. Если нужна помощь прямо сейчас, укажите это в сообщении.');
+  });
+}
+function startStudent(){
+  typing(function(){
+    addMsg('bot','Вы учитесь на курсе <b>«Аналитик данных с нуля»</b>. Что показать?');
+    addKb([
+      {t:'📅 Ближайший вебинар',on:showSchedule},
+      {t:'📊 Мой прогресс',on:showProgress},
+      {t:'❄ Заморозить обучение',on:showFreeze}
+    ]);
+  });
+}
+function showSchedule(){
+  typing(function(){
+    addMsg('bot','Сегодня в 19:00 — вебинар «SQL: сложные запросы и оконные функции». Прислать ссылку и напомнить за 30 минут?');
+    addKb([{t:'Да, напомни',on:function(){
+      typing(function(){
+        addMsg('bot','Готово, напоминание придёт в 18:30. Вот ссылка на встречу.');
+        pushLog('hw','Напоминание о вебинаре','SQL: сложные запросы · 19:00',[]);
+        endBranch(null);
+      });
+    }},{t:'Назад',on:startStudent}]);
+  });
+}
+function showProgress(){
+  typing(function(){
+    var html='<div class="progress-card"><div class="row"><span>Модуль 2: SQL — сложные запросы</span><span>64%</span></div><div class="pbar"><i style="width:64%"></i></div></div>';
+    addMsg('bot',html);
+    typing(function(){
+      addMsg('bot','Домашнее задание по модулю 1 проверено: <b>9 из 10</b>. Комментарий куратора: «Отличная работа с оконными функциями, обратите внимание на индексы».');
+      pushLog('hw','Проверено ДЗ · Модуль 1','Оценка 9/10',[]);
+      S.stats.hw++;renderStats();
+      endBranch(null);
+    },550);
+  });
+}
+function showFreeze(){
+  typing(function(){
+    addMsg('bot','Можно заморозить обучение на срок до 4 недель — доступ к материалам сохранится, но вебинары в этот период не засчитываются. Подтвердить заморозку на 2 недели?');
+    addKb([{t:'Да, заморозить на 2 недели',on:function(){
+      typing(function(){
+        addMsg('bot','Обучение заморожено с завтрашнего дня на 2 недели. Пришлю напоминание, когда пора возвращаться.');
+        pushLog('q','Заморозка обучения','На 2 недели',[{t:'Связаться',cls:'p'}]);
+        endBranch(null);
+      });
+    }},{t:'Отмена',on:startStudent}]);
+  });
+}
+function endBranch(text){
+  typing(function(){
+    if(text)addMsg('bot',text);
+    addMsg('bot','Чем ещё помочь?');
+    addKb([
+      {t:'🎓 Бесплатный урок',on:startTrial},
+      {t:'📚 Моё расписание',on:startStudent},
+      {t:'❓ Вопрос куратору',on:startQuestion}
+    ]);
+  },500);
+}
+
+// ---------- free text ----------
+document.getElementById('sendFree').addEventListener('click',sendFreeText);
+document.getElementById('freeText').addEventListener('keydown',function(e){if(e.key==='Enter')sendFreeText();});
+function sendFreeText(){
+  var inp=document.getElementById('freeText');
+  var val=inp.value.trim();
+  if(!val)return;
+  addMsg('usr',escapeHtml(val));
+  inp.value='';
+  typing(function(){
+    addMsg('bot','Спасибо, передал вопрос куратору — он ответит в течение рабочего дня. Если хотите, можно записаться на бесплатный урок прямо сейчас.');
+    addKb([{t:'🎓 Записаться на урок',on:startTrial},{t:'Ок, жду ответа',on:function(){}}]);
+    pushLog('q','Вопрос от ученика','«'+val.slice(0,60)+(val.length>60?'…':'')+'»',[{t:'Ответить',cls:'p'}]);
+    S.stats.questions++;renderStats();
+  });
+}
+function escapeHtml(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+document.getElementById('restartBtn').addEventListener('click',function(){startMain();});
+
+// ---------- admin stats/load/log ----------
+function renderStats(){
+  var r=document.getElementById('statRow');
+  var items=[
+    {v:S.stats.trials,l:'Заявок на пробный урок',d:'+3 сегодня',cls:'up'},
+    {v:S.stats.paid,l:'Оплат курсов',d:'+1 сегодня',cls:'up'},
+    {v:S.stats.hw,l:'Проверено ДЗ',d:'+5 сегодня',cls:'up'},
+    {v:S.stats.questions,l:'Вопросов кураторам',d:'+2 сегодня',cls:'dn'}
+  ];
+  r.innerHTML=items.map(function(i){return '<div class="stat"><div class="v">'+i.v+'</div><div class="l">'+i.l+'</div><div class="d '+i.cls+'">'+i.d+'</div></div>'}).join('');
+}
+function renderLoad(){
+  var data=[
+    {t:'10:00 Основы Figma',fill:38,cap:'19/50'},
+    {t:'14:00 SQL-практика',fill:72,cap:'36/50'},
+    {t:'16:00 Q&A по проектам',fill:54,cap:'27/50'},
+    {t:'19:00 SQL: сложные запросы',fill:91,cap:'46/50'}
+  ];
+  document.getElementById('loadRow').innerHTML=data.map(function(d){
+    return '<div class="load-item"><span class="lbl">'+d.t+'</span><div class="load-bar"><i style="width:'+d.fill+'%"></i></div><span class="n">'+d.cap+'</span></div>';
+  }).join('');
+}
+function renderLog(){
+  var list=document.getElementById('logList');
+  if(!S.log.length){list.innerHTML='<div class="empty-log">Событий пока нет — пройдите сценарий в чате слева</div>';return;}
+  list.innerHTML=S.log.map(function(l,i){
+    var acts=l.acts.map(function(a,ai){return '<button class="'+(a.cls||'')+'" data-lid="'+i+'" data-ai="'+ai+'">'+a.t+'</button>'}).join('');
+    return '<div class="log-item" data-lid="'+i+'"><div class="row1"><span>'+l.title+'</span><span class="tag '+l.tag+'">'+l.tag.toUpperCase()+'</span></div><div class="sub">'+l.sub+'</div>'+(acts?'<div class="acts">'+acts+'</div>':'')+'</div>';
+  }).join('');
+  list.querySelectorAll('.acts button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var idx=+b.closest('.log-item').dataset.lid;
+      var item=list.children[idx];
+      item.classList.add('done');
+    });
+  });
+}
+
+// ---------- mobile tabs ----------
+var tabClient=document.getElementById('tabClient');
+var tabAdmin=document.getElementById('tabAdmin');
+tabClient.addEventListener('click',function(){document.body.classList.remove('show-admin');tabClient.classList.add('on');tabAdmin.classList.remove('on');});
+tabAdmin.addEventListener('click',function(){document.body.classList.add('show-admin');tabAdmin.classList.add('on');tabClient.classList.remove('on');});
+
+// ---------- init ----------
+renderStats();renderLoad();renderLog();
+startMain();
+</script>
+</body>
+</html>
