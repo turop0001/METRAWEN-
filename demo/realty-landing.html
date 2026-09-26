@@ -71,7 +71,7 @@ nav.mn a:hover{border-color:var(--acc)}
 .inp.err{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .skyline{margin-top:44px;height:150px;position:relative}
-.skyline svg{position:absolute;left:0;bottom:0;width:100%;height:100%}
+.skyline svg{position:absolute;left:0;bottom:0;width:100%;height:100%;overflow:hidden}
 /* stats */
 .stats{background:var(--ink);color:#fff;position:relative}
 .stats .sin{display:grid;grid-template-columns:repeat(4,1fr)}
@@ -307,7 +307,7 @@ dialog[open]{animation:pop .25s cubic-bezier(.2,.8,.2,1)}
   section{padding:64px 0}
   .wrap{padding:0 18px}
   .cards{grid-template-columns:1fr}
-  .stats .in{grid-template-columns:1fr 1fr}
+  .stats .sin{grid-template-columns:1fr 1fr}
   .stat{padding:22px 16px} .stat:nth-child(3){border-left:0;padding-left:0} .stat:nth-child(n+3){border-top:1px solid #31373B}
   .stat b{font-size:32px}
   .qmain{padding:24px 20px} .opts{grid-template-columns:1fr}
