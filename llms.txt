@@ -1,0 +1,15 @@
+# METRAWEN
+
+> METRAWEN builds AI employees and AI departments for small and mid-size businesses: finding customers, sales, support, marketing, analytics and reporting. Also websites, Telegram and WhatsApp bots, dashboards and CRM automation. Each system is built for the specific company.
+
+## Main pages
+- [Home](https://metrawen.com/): what METRAWEN does and for which industries
+- [About](https://metrawen.com/about.html): approach and team
+- [Digital services](https://metrawen.com/digital.html): websites, bots, brand identity, analytics, with a price calculator
+- [AI Opportunity Audit](https://metrawen.com/ai-audit.html): paid 1 to 2 day review of business processes
+- [AI Employee Starter](https://metrawen.com/ai-starter.html): one AI employee for one role
+- [AI Employee Pro](https://metrawen.com/ai-pro.html): an AI department for several roles
+- [AI System Custom](https://metrawen.com/ai-custom.html): custom set of AI employees for several business lines
+
+## Russian version
+- [Русская версия](https://metrawen.com/ru/)

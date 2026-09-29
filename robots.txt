@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /demo/
+Disallow: /ru/demo/
+Disallow: /api/
+
+Sitemap: https://metrawen.com/sitemap.xml
