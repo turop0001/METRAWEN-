@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PULSE · Fitness Club Telegram Bot</title>
+<meta name="description" content="Clickable prototype of a fitness club Telegram bot: class schedule, booking, free trial, buying and freezing a membership. METRAWEN Digital.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23121412'/%3E%3Cpath d='M5 17h6l3-7 4 13 3-6h6' fill='none' stroke='%23C8F03C' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0F110F;--panel:#171A17;--panel2:#1F231F;--line:#2A2F2A;--text:#EEF2EC;--mut:#9BA39A;--dim:#6C746B;
+  --lime:#C8F03C;--lime-d:#A9CF22;--ink:#121412;
+  --tg-bg:#DCE6D6;--tg-in:#FFFFFF;--tg-out:#E5F8C8;--tg-btn:#F2F5EF;--tg-acc:#3A8BD6;--tg-txt:#1B1F1B;--tg-mut:#7C857B;
+  --ok:#5CC98B;--bad:#EF7A5C
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,sans-serif;min-height:100vh;
+  background-image:radial-gradient(800px 420px at 90% -10%,rgba(200,240,60,.08),transparent 60%)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.page{max-width:1180px;margin:0 auto;padding:28px 24px 40px}
+.intro{display:flex;gap:24px;align-items:flex-start;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap}
+.brandline{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:13px;letter-spacing:.02em}
+.brandline i{width:26px;height:26px;border-radius:7px;background:var(--lime);display:grid;place-items:center}
+.brandline i svg{width:16px;height:16px}
+h1{font:700 clamp(26px,3.4vw,40px)/1.08 Unbounded,sans-serif;letter-spacing:-.02em;margin:12px 0 10px}
+.intro p{color:var(--mut);max-width:620px}
+.tiers{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;max-width:760px}
+.tier{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.tier.hl{border-color:rgba(200,240,60,.45)}
+.tier-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:10px}
+.tier-h b{font-weight:700}
+.tier-h>span{font:500 15px Unbounded,sans-serif;color:var(--lime);white-space:nowrap}
+.features{display:flex;flex-wrap:wrap;gap:6px}
+.features span{font-size:12.5px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:4px 10px;color:#CDD4CB}
+.tier-note{font-size:13px;margin-top:10px}
+.pro-tag{display:inline-block;font:700 10px/1 Inter,sans-serif;letter-spacing:.06em;background:var(--lime);color:var(--ink);padding:3px 5px;border-radius:4px;vertical-align:1px}
+.restart{border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px;font-weight:600;color:var(--text);background:var(--panel);white-space:nowrap}
+.restart:hover{border-color:var(--lime)}
+.tabs{display:none;gap:6px;margin-bottom:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px}
+.tabs button{flex:1;padding:10px;border-radius:9px;font-weight:600;font-size:14px;color:var(--mut);position:relative}
+.tabs button.active{background:var(--lime);color:var(--ink)}
+.badge{display:none;margin-left:6px;background:var(--bad);color:#fff;border-radius:99px;font-size:11px;padding:1px 6px;vertical-align:1px}
+.badge.on{display:inline-block}
+.stage{display:grid;grid-template-columns:400px 1fr;gap:24px;align-items:start}
+/* phone */
+.phone{background:#050605;border-radius:44px;padding:10px;box-shadow:0 40px 80px -30px rgba(0,0,0,.8),0 0 0 1px #2B2F2B}
+.screen{background:var(--tg-bg);border-radius:35px;overflow:hidden;height:760px;display:flex;flex-direction:column;position:relative;color:var(--tg-txt);font-size:14.5px}
+.screen::before{content:"";position:absolute;inset:0;opacity:.35;pointer-events:none;background-image:radial-gradient(circle at 20% 20%,rgba(255,255,255,.5) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,rgba(255,255,255,.45) 0 2px,transparent 3px);background-size:46px 46px,58px 58px}
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:10px 26px 4px;font-size:13px;font-weight:600;background:#fff;position:relative;z-index:1}
+.notch{width:96px;height:24px;background:#050605;border-radius:14px}
+.tg-head{display:flex;align-items:center;gap:10px;padding:8px 12px 10px;background:#fff;border-bottom:1px solid #E3E8E0;position:relative;z-index:1}
+.tg-back{font-size:26px;color:var(--tg-acc);line-height:1;width:16px}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--ink);display:grid;place-items:center;flex:none}
+.avatar svg{width:22px;height:22px}
+.tg-title{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.tg-title strong{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tg-title span{font-size:12.5px;color:var(--tg-mut)}
+.chat{flex:1;overflow-y:auto;padding:12px 10px 8px;display:flex;flex-direction:column;gap:6px;position:relative;z-index:1;scroll-behavior:smooth}
+.msg{max-width:86%;padding:7px 10px 6px;border-radius:14px;line-height:1.42;position:relative;box-shadow:0 1px 1px rgba(0,0,0,.08);animation:in .22s ease-out;word-wrap:break-word}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.msg.in{background:var(--tg-in);align-self:flex-start;border-bottom-left-radius:5px}
+.msg.out{background:var(--tg-out);align-self:flex-end;border-bottom-right-radius:5px}
+.msg .t{display:block;text-align:right;font-size:11px;color:var(--tg-mut);margin-top:2px}
+.msg b{font-weight:600}
+.msg .sub{color:var(--tg-mut);font-size:13px}
+.msg .pro-tag{margin-left:4px}
+.kb{display:grid;gap:4px;align-self:flex-start;width:86%;animation:in .22s ease-out}
+.kb.c2{grid-template-columns:1fr 1fr}
+.kb.c3{grid-template-columns:repeat(3,1fr)}
+.kb button{background:rgba(255,255,255,.78);backdrop-filter:blur(4px);border-radius:10px;padding:9px 8px;font-size:13.5px;font-weight:500;color:var(--tg-txt);line-height:1.25;transition:background .15s;text-align:center}
+.kb button:hover{background:#fff}
+.kb button small{display:block;font-size:11.5px;color:var(--tg-mut);font-weight:400}
+.kb button[disabled]{opacity:.45;cursor:not-allowed}
+.kb.used button{opacity:.55;pointer-events:none}
+.typing{align-self:flex-start;background:#fff;border-radius:14px;padding:10px 14px;display:flex;gap:4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#A6AFA5;animation:bl 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,60%,100%{opacity:.3}30%{opacity:1}}
+.card-m{padding:0;overflow:hidden;min-width:250px}
+.card-m .ban{height:74px;display:flex;align-items:flex-end;padding:9px 11px;color:#fff;font:700 15px Unbounded,sans-serif;letter-spacing:-.01em}
+.card-m .bd{padding:8px 11px 6px}
+.meter{height:6px;background:#E8ECE5;border-radius:3px;overflow:hidden;margin:6px 0 2px}
+.meter i{display:block;height:100%;background:#1B1F1B;border-radius:3px}
+.receipt{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.55}
+.receipt div{display:flex;justify-content:space-between;gap:12px}
+.receipt hr{border:0;border-top:1px dashed #C5CCC2;margin:5px 0}
+.reply-kb{display:none;padding:6px 8px 0;background:#F4F6F2;position:relative;z-index:1}
+.reply-kb.on{display:block}
+.reply-kb button{width:100%;background:#fff;border-radius:9px;padding:10px;font-weight:600;font-size:14px;color:var(--tg-acc);box-shadow:0 1px 1px rgba(0,0,0,.08)}
+.composer{display:flex;gap:8px;align-items:center;padding:8px 10px 14px;background:#F4F6F2;position:relative;z-index:1}
+.composer input{flex:1;border:0;background:#fff;border-radius:20px;padding:10px 14px;font-size:14.5px;color:var(--tg-txt)}
+.composer input:focus{outline:none;box-shadow:0 0 0 2px rgba(58,139,214,.3)}
+.composer button{width:38px;height:38px;border-radius:50%;background:var(--tg-acc);color:#fff;display:grid;place-items:center;flex:none}
+.composer button svg{width:18px;height:18px}
+/* admin */
+.admin{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;height:780px}
+.admin .tg-head{background:var(--panel2);border-bottom:1px solid var(--line)}
+.admin .tg-title span{color:var(--mut)}
+.av-admin{background:var(--lime);color:var(--ink);font-weight:700;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+.stats div{padding:12px 14px;border-left:1px solid var(--line)}
+.stats div:first-child{border-left:0}
+.stats strong{display:block;font:600 19px Unbounded,sans-serif;letter-spacing:-.02em;white-space:nowrap}
+.stats span{font-size:12px;color:var(--mut)}
+.sched{padding:12px 14px;border-bottom:1px solid var(--line)}
+.sched h3{font-size:12.5px;font-weight:600;color:var(--mut);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+.slot{display:grid;grid-template-columns:48px 1fr 90px 40px;gap:10px;align-items:center;font-size:13px;padding:5px 0}
+.slot b{font-weight:600}
+.slot .bar{height:6px;background:#2A2F2A;border-radius:3px;overflow:hidden}
+.slot .bar i{display:block;height:100%;background:var(--lime);transition:width .4s}
+.slot .bar i.full{background:var(--bad)}
+.slot em{font-style:normal;color:var(--mut);text-align:right;font-variant-numeric:tabular-nums}
+.admin .chat{background:transparent;padding:14px}
+.log{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;max-width:94%;align-self:flex-start;font-size:13.5px;animation:in .25s ease-out;color:var(--text)}
+.log .h{display:flex;gap:8px;align-items:center;margin-bottom:4px;font-weight:600}
+.log .h i{font-style:normal;font-size:11px;padding:2px 6px;border-radius:5px;background:#2A2F2A;color:var(--mut);font-weight:600}
+.log .h i.sale{background:var(--lime);color:var(--ink)}
+.log .h i.trial{background:#3A8BD6;color:#fff}
+.log .h i.cancel{background:var(--bad);color:#fff}
+.log .h small{margin-left:auto;color:var(--dim);font-weight:400;font-size:11.5px}
+.log p{color:#CFD6CD}
+.log .acts{display:flex;gap:6px;margin-top:8px}
+.log .acts button{font-size:12.5px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel)}
+.log .acts button:hover{border-color:var(--lime)}
+.empty-log{color:var(--dim);font-size:13.5px;text-align:center;margin:auto;max-width:280px}
+.footnote{color:var(--dim);font-size:12.5px;margin-top:22px;line-height:1.6}
+@media (max-width:980px){
+  .stage{grid-template-columns:1fr;justify-items:center}
+  .tabs{display:flex}
+  .stage[data-view=client] .admin{display:none}
+  .stage[data-view=admin] .phone{display:none}
+  .admin{width:100%;max-width:560px;height:720px}
+  .phone{width:100%;max-width:400px}
+}
+@media (max-width:520px){
+  .page{padding:18px 12px 30px}
+  .tiers{grid-template-columns:1fr}
+  .phone{padding:0;border-radius:0;box-shadow:none;background:transparent}
+  .screen{border-radius:18px;height:calc(100svh - 150px);min-height:560px}
+  .statusbar{display:none}
+  .stats{grid-template-columns:1fr 1fr}.stats div:nth-child(3){border-left:0}.stats div:nth-child(n+3){border-top:1px solid var(--line)}
+  .slot{grid-template-columns:44px 1fr 60px 36px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="intro">
+    <div>
+      <div class="brandline"><i><svg viewBox="0 0 24 24" fill="none" stroke="#121412" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h4l2-5 3 10 2-5h7"/></svg></i>PULSE Fitness Club · group classes &amp; gym floor</div>
+      <h1>Telegram Bot with&nbsp;Memberships</h1>
+      <p>Interactive prototype: book a class, buy and freeze a membership as a member, and watch on the right what the front desk sees.</p>
+      <div class="tiers">
+        <div class="tier"><div class="tier-h"><b>Class booking</b><span>$240</span></div><div class="features"><span>Schedule with open spots</span><span>Free trial class</span><span>Booking and cancellation</span><span>Front desk notification</span></div></div>
+        <div class="tier hl"><div class="tier-h"><b>With memberships <span class="pro-tag">PRO</span></b><span>$550</span></div><div class="features"><span>Membership sales and payment</span><span>Class credit tracking</span><span>Waitlist</span><span>Membership freeze</span><span>2-hour reminder</span><span>Renewals and upsells</span><span>Revenue in the staff chat</span></div></div>
+      </div>
+      <p class="tier-note" style="color:var(--mut)">Membership features are marked in the chat with a <span class="pro-tag">PRO</span> tag</p>
+    </div>
+    <button class="restart" id="restart">Start over</button>
+  </div>
+
+  <p class="wa-note" style="margin:0 0 20px;font-size:13px;color:var(--mut)">Shown as Telegram — the same bot logic works on WhatsApp.</p>
+
+  <div class="tabs" id="tabs">
+    <button class="active" data-view="client">Member chat</button>
+    <button data-view="admin">Front desk<span class="badge" id="badge"></span></button>
+  </div>
+
+  <div class="stage" id="stage" data-view="client">
+    <div class="phone">
+      <div class="screen">
+        <div class="statusbar"><span id="clock">9:41</span><div class="notch"></div><span>5G</span></div>
+        <div class="tg-head">
+          <div class="tg-back">‹</div>
+          <div class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#C8F03C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h4l2-5 3 10 2-5h7"/></svg></div>
+          <div class="tg-title"><strong>PULSE · Fitness Club</strong><span id="botStatus">bot</span></div>
+        </div>
+        <div class="chat" id="chat" aria-live="polite"></div>
+        <div class="reply-kb" id="replyKb"><button id="shareContact">📱 Share contact</button></div>
+        <form class="composer" id="composer">
+          <input id="input" type="text" autocomplete="off" placeholder="Message" aria-label="Message the bot">
+          <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10.1 15.5 12 3.4 13.9z"/></svg></button>
+        </form>
+      </div>
+    </div>
+
+    <div class="admin">
+      <div class="tg-head">
+        <div class="avatar av-admin">FD</div>
+        <div class="tg-title"><strong>PULSE · Front desk</strong><span>staff chat, 3 members</span></div>
+      </div>
+      <div class="stats">
+        <div><strong id="stSale">$0</strong><span>sales today</span></div>
+        <div><strong id="stBook">0</strong><span>bookings</span></div>
+        <div><strong id="stTrial">0</strong><span>trials</span></div>
+        <div><strong id="stWait">0</strong><span>on waitlist</span></div>
+      </div>
+      <div class="sched"><h3>Today's class capacity</h3><div id="slots"></div></div>
+      <div class="chat" id="adminChat"><div class="empty-log" id="emptyLog">Requests, bookings and sales from the bot will show up here. Start a conversation in the member chat.</div></div>
+    </div>
+  </div>
+
+  <p class="footnote">Demo with sample data. The club, trainers, schedule and prices are fictional; payments and messages are not real. Prototype for the METRAWEN Digital portfolio.<br>Telegram bot from METRAWEN: class booking $240, version with memberships and payments $550.</p>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)},$$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var nf=new Intl.NumberFormat('en-US');function rub(n){return '$'+nf.format(n)}
+function t12(t){var p=t.split(':'),h=+p[0];return ((h%12)||12)+':'+p[1]+' '+(h<12?'AM':'PM')}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var NOW=new Date();NOW.setHours(9,41,0,0);
+function dayDate(i){return new Date(NOW.getFullYear(),NOW.getMonth(),NOW.getDate()+i)}
+function dLabel(i){var d=dayDate(i);return (i===0?'Today':i===1?'Tomorrow':DN[d.getDay()])+', '+MN[d.getMonth()]+' '+d.getDate()}
+function dShort(i){var d=dayDate(i);return i===0?'Today':i===1?'Tomorrow':DN[d.getDay()]+' '+d.getDate()}
+
+/* ---------- data ---------- */
+var TYPES={
+ hiit:{n:'HIIT',c:'#E2583A',d:'High-intensity interval training for endurance, 45 minutes'},
+ yoga:{n:'Yoga',c:'#5E8C6A',d:'Hatha yoga for flexibility and a healthy back, 60 minutes'},
+ cyc:{n:'Cycle',c:'#3A6FD6',d:'Indoor cycling to music, 45 minutes'},
+ str:{n:'Functional',c:'#8A5CC4',d:'Strength training with bodyweight and kettlebells, 50 minutes'},
+ pil:{n:'Pilates',c:'#C98A2E',d:'Core strength and posture, 55 minutes'},
+ box:{n:'Boxing',c:'#2E2E2E',d:'Technique and bag-work cardio, 60 minutes'}
+};
+var TR={hiit:'Jake M.',yoga:'Sarah L.',cyc:'Chris P.',str:'Nicole R.',pil:'Hannah W.',box:'Marcus J.'};
+var TEMPLATE=[[['07:30','cyc',16],['10:00','pil',12],['12:00','str',14],['19:00','hiit',18],['20:15','yoga',16]],
+ [['07:30','hiit',18],['11:00','yoga',16],['18:30','box',12],['19:30','cyc',16],['20:30','str',14]],
+ [['08:00','str',14],['10:30','pil',12],['19:00','cyc',16],['20:00','yoga',16]]];
+var CL=[],cid=1;
+for(var di=0;di<7;di++){var tpl=TEMPLATE[di%3];tpl.forEach(function(x,j){var seed=(di*7+j*13)%11;var cap=x[2],taken=Math.min(cap,Math.round(cap*(.45+seed/20)));
+  if(di===0&&x[1]==='hiit')taken=cap; if(di===0&&x[0]==='12:00')taken=cap-2;
+  CL.push({id:cid++,day:di,t24:x[0],time:t12(x[0]),type:x[1],cap:cap,taken:taken,trial:(x[1]==='yoga'||x[1]==='str'||x[1]==='pil'),wait:[]})})}
+var SUBS=[
+ {id:'s8',n:'8-class pack',p:129,days:30,visits:8,note:'valid 30 days · $16 per class'},
+ {id:'s30',n:'Unlimited monthly',p:169,days:30,visits:Infinity,note:'all classes and gym floor · 30 days'},
+ {id:'s90',n:'Unlimited 3 months',p:429,days:90,visits:Infinity,note:'save $78 · 90 days'}
+];
+var PT={n:'Personal training session',p:75,old:95};
+
+/* ---------- state ---------- */
+var S;
+function reset(){
+  S={name:'',phone:'',sub:null,bookings:[],trialUsed:false,frozen:0,stats:{sale:0,book:0,trial:0,wait:0},unread:0,pending:null};
+  CL.forEach(function(c){c.wait=[];c.mine=false});
+}
+
+/* ---------- chat primitives ---------- */
+var chat=$('#chat'),queue=Promise.resolve();
+function time(){var d=new Date(NOW.getTime()+ (Date.now()-T0));return ((d.getHours()%12)||12)+':'+String(d.getMinutes()).padStart(2,'0')+(d.getHours()<12?' AM':' PM')}
+var T0=Date.now();
+function scroll(){chat.scrollTop=chat.scrollHeight}
+function addMsg(html,who,cls){var m=document.createElement('div');m.className='msg '+(who||'in')+(cls?' '+cls:'');m.innerHTML=html+(cls&&cls.indexOf('card-m')>=0?'':'<span class="t">'+time()+(who==='out'?' ✓✓':'')+'</span>');chat.appendChild(m);scroll();return m}
+function kb(btns,cols){var k=document.createElement('div');k.className='kb'+(cols===2?' c2':cols===3?' c3':'');
+  btns.forEach(function(b){var e=document.createElement('button');e.type='button';e.innerHTML=b[0];if(b[2])e.disabled=true;e.onclick=function(){k.classList.add('used');b[1]()};k.appendChild(e)});
+  chat.appendChild(k);scroll();return k}
+function bot(html,btns,cols,cls,delay){
+  queue=queue.then(function(){return new Promise(function(res){
+    $('#botStatus').textContent='typing…';var t=document.createElement('div');t.className='typing';t.innerHTML='<i></i><i></i><i></i>';chat.appendChild(t);scroll();
+    setTimeout(function(){t.remove();$('#botStatus').textContent='bot';addMsg(html,'in',cls);if(btns)kb(btns,cols);res()},delay==null?Math.min(900,260+html.length*2.2):delay)})});
+  return queue;
+}
+function me(text){addMsg(esc(text),'out')}
+function pro(){return ' <span class="pro-tag">PRO</span>'}
+
+/* ---------- admin ---------- */
+function admin(tag,cls,title,text,acts){
+  $('#emptyLog')&&$('#emptyLog').remove();
+  var l=document.createElement('div');l.className='log';
+  l.innerHTML='<div class="h"><i class="'+(cls||'')+'">'+tag+'</i>'+title+'<small>'+time()+'</small></div><p>'+text+'</p>'+(acts?'<div class="acts">'+acts.map(function(a,i){return '<button data-i="'+i+'">'+a[0]+'</button>'}).join('')+'</div>':'');
+  if(acts)$$('button',l);
+  if(acts)Array.prototype.forEach.call(l.querySelectorAll('.acts button'),function(b){b.onclick=function(){var a=acts[+b.dataset.i];b.parentNode.innerHTML='<span style="font-size:12.5px;color:var(--ok)">✓ '+a[1]+'</span>';if(a[2])a[2]()}});
+  var ac=$('#adminChat');ac.appendChild(l);ac.scrollTop=ac.scrollHeight;
+  if($('#stage').dataset.view==='client'&&window.innerWidth<=980){S.unread++;var b=$('#badge');b.textContent=S.unread;b.classList.add('on')}
+  renderStats();
+}
+function renderStats(){
+  $('#stSale').textContent=rub(S.stats.sale);$('#stBook').textContent=S.stats.book;$('#stTrial').textContent=S.stats.trial;$('#stWait').textContent=S.stats.wait;
+  $('#slots').innerHTML=CL.filter(function(c){return c.day===0}).map(function(c){var p=c.taken/c.cap*100;return '<div class="slot"><b>'+c.time+'</b><span>'+TYPES[c.type].n+' · '+TR[c.type]+'</span><span class="bar"><i class="'+(c.taken>=c.cap?'full':'')+'" style="width:'+p+'%"></i></span><em>'+c.taken+'/'+c.cap+'</em></div>'}).join('');
+}
+
+/* ---------- flows ---------- */
+function start(){
+  bot('Hi! I\'m the <b>PULSE</b> fitness club bot 👋<br>I can book you into classes, sell you a membership and keep track of your visits.<br><span class="sub">Your first group class is free.</span>',null,null,null,500);
+  menu();
+}
+function menu(txt){
+  bot(txt||'What would you like to do?',[
+    ['📅 Schedule',schedule],['🎟 Memberships',subs],
+    ['👤 My membership',mySub],['🆓 Free trial',trial],
+    ['💬 Ask the front desk',ask]],2);
+}
+function schedule(){me('📅 Schedule');pickDay(0)}
+function pickDay(d0){
+  var btns=[];for(var i=0;i<6;i++)(function(i){btns.push([dShort(i)+(i===d0?' ·':''),function(){showDay(i)}])})(i);
+  bot('Which day?',btns,3);
+}
+function showDay(d){
+  me(dShort(d));
+  var list=CL.filter(function(c){return c.day===d});
+  bot('<b>'+dLabel(d)+'</b><br><span class="sub">The number shows open spots. Tap a class to book it.</span>',
+    list.map(function(c){var free=c.cap-c.taken,ps=past(c);return [c.time+' · '+TYPES[c.type].n+(c.mine?' ✓':'')+'<small>'+(ps?'already started':free>0?'spots: '+free:'full, waitlist')+'</small>',function(){classCard(c)},ps]}).concat([['← Another day',function(){me('← Another day');pickDay(d)}],['Menu',function(){me('Menu');menu()}]]),2);
+}
+function classCard(c){
+  me(c.time+' · '+TYPES[c.type].n);
+  var free=c.cap-c.taken,t=TYPES[c.type];
+  var html='<div class="ban" style="background:linear-gradient(135deg,'+t.c+','+t.c+'cc)">'+t.n+'</div><div class="bd"><b>'+dLabel(c.day)+', '+c.time+'</b><br>'+t.d+'<br><span class="sub">Coach: '+TR[c.type]+' · '+(c.type==='cyc'?'Cycle studio':c.type==='yoga'||c.type==='pil'?'Studio 2':'Studio 1')+'</span><div class="meter"><i style="width:'+(c.taken/c.cap*100)+'%"></i></div><span class="sub">'+c.taken+' of '+c.cap+' spots taken</span><span class="t">'+time()+'</span></div>';
+  var btns=[];
+  if(c.mine)btns.push(['You\'re booked ✓',function(){},true]);
+  else if(free>0)btns.push(['✅ Book',function(){book(c)}]);
+  else btns.push(['⏳ Join waitlist'+pro().replace('pro-tag','pro-tag'),function(){waitlist(c)}]);
+  btns.push(['← Back to schedule',function(){me('← Back to schedule');showDay(c.day)}]);
+  bot(html,btns,1,'card-m');
+}
+function past(c){if(c.day!==0)return false;var h=+c.t24.slice(0,2),m=+c.t24.slice(3);return h*60+m<=NOW.getHours()*60+NOW.getMinutes()+30}
+function hasAccess(){return S.sub&&S.sub.left>0&&!S.frozen}
+function book(c){
+  me('✅ Book');
+  if(!hasAccess()){
+    if(S.frozen){bot('Your membership is frozen until '+S.frozenTo+'. Unfreeze and book?',[['Unfreeze',function(){me('Unfreeze');S.frozen=0;admin('FREEZE','', S.name||'Member','Unfroze membership early.');bot('Done, your membership is active.');book2(c)}],['Cancel',function(){me('Cancel');menu()}]],2);return}
+    var tr=!S.trialUsed&&c.trial;
+    bot(S.sub&&S.sub.left<=0?'You\'re out of class credits. Want to renew?':'You need a membership to book.'+(tr?' But this class qualifies for a <b>free trial</b>.':''),
+      (tr?[['🆓 Book free trial',function(){me('🆓 Book free trial');trialBook(c)}]]:[]).concat([['🎟 Choose a membership',function(){me('🎟 Choose a membership');subsList(c)}],['Menu',function(){me('Menu');menu()}]]),1);
+    return;
+  }
+  book2(c);
+}
+function book2(c){
+  c.taken++;c.mine=true;S.bookings.push(c);if(S.sub.left!==Infinity)S.sub.left--;S.stats.book++;
+  bot('You\'re booked ✅<br><b>'+TYPES[c.type].n+'</b>, '+dLabel(c.day)+' at '+c.time+'.<br><span class="sub">'+(S.sub.left===Infinity?'Unlimited: no class credit is used.':'Credits left: '+S.sub.left+' of '+S.sub.visits+'.')+' Cancel free of charge up to 3 hours before class.</span>',
+    [['📅 Add to calendar',function(){me('📅 Add to calendar');bot('Event file: <b>PULSE_'+TYPES[c.type].n+'.ics</b> 📎<br><span class="sub">Open it and the class will appear in your phone\'s calendar.</span>');menu('Anything else?')}],['Menu',function(){me('Menu');menu()}]],2);
+  admin('BOOKING','',esc(S.name||'Member')+' '+(S.phone?'· '+S.phone:''),TYPES[c.type].n+', '+dShort(c.day)+' '+c.time+' · '+c.taken+'/'+c.cap+' taken'+(S.sub.left===Infinity?' · unlimited':' · credits left '+S.sub.left));
+  renderStats();
+  if(c.day===0||c.day===1)reminder(c);
+}
+function reminder(c){
+  setTimeout(function(){
+    if(!c.mine)return;
+    bot('⏰ Reminder'+pro()+'<br><span class="sub">Here\'s the message members get 2 hours before class:</span><br>'+(c.day===0?'Today':'Tomorrow')+' at '+c.time+': <b>'+TYPES[c.type].n+'</b>. Bring water and a towel; lockers open with the wristband from the front desk.',
+     [['👍 I\'ll be there',function(){me('👍 I\'ll be there');bot('Great, see you there!')}],['Can\'t make it',function(){me('Can\'t make it');cancel(c,true)}]],2,null,700);
+  },5200);
+}
+function cancel(c,late){
+  c.taken--;c.mine=false;S.bookings=S.bookings.filter(function(x){return x!==c});
+  var back=!late&&S.sub&&S.sub.left!==Infinity;if(back)S.sub.left++;
+  bot('Booking canceled.'+(back?' The class credit is back on your membership.':late&&S.sub&&S.sub.left!==Infinity?' <span class="sub">Less than 3 hours before class: the credit is used per club policy.</span>':''));
+  admin('CANCEL','cancel',esc(S.name||'Member'),TYPES[c.type].n+', '+dShort(c.day)+' '+c.time+': a spot opened up.'+(c.wait.length?' Offered to the first person on the waitlist.':''));
+  if(c.wait.length){c.wait.shift();S.stats.wait=Math.max(0,S.stats.wait-1);c.taken++}
+  renderStats();menu('Anything else?');
+}
+function waitlist(c){
+  me('⏳ Join waitlist');
+  if(!hasAccess()&&!(S.sub)){bot('The waitlist is for members.',[['🎟 Memberships',function(){me('🎟 Memberships');subsList(c)}],['Menu',function(){me('Menu');menu()}]],2);return}
+  c.wait.push(1);S.stats.wait++;
+  bot('You\'re on the waitlist'+pro()+', number <b>'+c.wait.length+'</b>.<br><span class="sub">If someone cancels, the spot goes to you automatically and I\'ll message you.</span>');
+  admin('WAITLIST','',esc(S.name||'Member'),TYPES[c.type].n+' '+c.time+' is full, member is #'+c.wait.length+' on the waitlist.');
+  setTimeout(function(){
+    if(!c.wait.length)return;c.wait.shift();S.stats.wait--;c.mine=true;S.bookings.push(c);if(S.sub&&S.sub.left!==Infinity)S.sub.left--;S.stats.book++;
+    bot('🎉 A spot opened up!'+pro()+'<br>You\'re booked for <b>'+TYPES[c.type].n+'</b> at '+c.time+'.',[['Great',function(){me('Great');menu('Anything else?')}],['Cancel',function(){me('Cancel');cancel(c)}]],2);
+    admin('BOOKING','',esc(S.name||'Member'),'Another member canceled, spot automatically passed from the waitlist: '+TYPES[c.type].n+' '+c.time+' · '+c.taken+'/'+c.cap);
+  },6500);
+  menu('While we wait, anything else?');
+}
+
+/* trial */
+function trial(){
+  me('🆓 Free trial');
+  if(S.trialUsed||S.sub){bot(S.sub?'You already have a membership, so no trial needed 🙂':'You\'ve already used your free trial. Want to see memberships?',[['🎟 Memberships',function(){me('🎟 Memberships');subsList()}],['Menu',function(){me('Menu');menu()}]],2);return}
+  var list=CL.filter(function(c){return c.trial&&c.day<=2&&c.taken<c.cap&&!past(c)}).slice(0,6);
+  bot('Your first group class is free. <b>Yoga, Pilates and Functional</b> qualify. Pick a time:',list.map(function(c){return [dShort(c.day)+' '+c.time+'<small>'+TYPES[c.type].n+'</small>',function(){me(dShort(c.day)+' '+c.time+' · '+TYPES[c.type].n);trialBook(c)}]}),2);
+}
+function trialBook(c){
+  S.pending=c;
+  if(S.phone){trialDone();return}
+  bot('Share your contact so the front desk can get a guest wristband ready. The button is below 👇');
+  queue.then(function(){$('#replyKb').classList.add('on')});
+}
+function trialDone(){
+  var c=S.pending;S.pending=null;c.taken++;c.mine=true;S.trialUsed=true;S.bookings.push(c);S.stats.trial++;
+  bot('You\'re all set, '+esc(S.name)+'! See you at your free trial 🙌<br><b>'+TYPES[c.type].n+'</b>, '+dLabel(c.day)+' at '+c.time+'.<br><span class="sub">Arrive 15 minutes early and bring comfortable clothes and water. You\'ll sign a quick waiver at the front desk.</span>');
+  admin('TRIAL','trial',esc(S.name)+' · '+S.phone,TYPES[c.type].n+', '+dShort(c.day)+' '+c.time+'. New lead, call after class.',[['I\'ll call','marked: call after class'],['Prep wristband','wristband ready']]);
+  setTimeout(function(){bot('After your trial you get <b>15% off</b> your first membership'+pro()+', valid for 48 hours.',[['🎟 See memberships',function(){me('🎟 See memberships');S.promo=.15;subsList()}],['Later',function(){me('Later');menu('Sure! Anything else?')}]],1)},900);
+}
+$('#shareContact').onclick=function(){
+  $('#replyKb').classList.remove('on');S.name='Katie';S.phone='(646) 555-0184';
+  addMsg('<b>📱 Contact</b><br>Katie<br>(646) 555-0184','out');
+  if(S.pending&&S.pending.buy){var b=S.pending;S.pending=null;pay(b.sub,b.pt,b.c);return}
+  trialDone();
+};
+
+/* subscriptions */
+function subs(){me('🎟 Memberships');subsList()}
+function subsList(c){
+  var d=S.promo||0;
+  bot('<b>PULSE memberships</b>'+pro()+(d?'<br><span class="sub">Your 15% post-trial discount is already applied.</span>':'')+'<br><span class="sub">Every membership includes group classes, the gym floor and the sauna.</span>',
+    SUBS.map(function(s){var p=Math.round(s.p*(1-d));return [s.n+' — '+rub(p)+'<small>'+s.note+'</small>',function(){me(s.n);subCard(s,c)}]}).concat([['Menu',function(){me('Menu');menu()}]]),1);
+}
+function subCard(s,c){
+  var d=S.promo||0,p=Math.round(s.p*(1-d));
+  bot('<b>'+s.n+'</b> · '+rub(p)+(d?' <s class="sub">'+rub(s.p)+'</s>':'')+'<br>'+(s.visits===Infinity?'Unlimited classes':s.visits+' classes')+', valid for '+s.days+' days from your first visit.<br><span class="sub">Can be frozen for up to 14 days.</span><br><br>Add a personal training session at 20% off?'+pro()+'<br><span class="sub">'+PT.n+' with a coach: '+rub(PT.p)+' instead of '+rub(PT.old)+'.</span>',
+    [['Yes, add +'+rub(PT.p),function(){me('Yes, add it');checkout(s,true,c)}],['No, just the membership',function(){me('Just the membership');checkout(s,false,c)}]],1);
+}
+function checkout(s,pt,c){
+  if(!S.phone){S.pending={buy:1,sub:s,pt:pt,c:c};bot('Share your contact so we can attach the membership to you 👇');queue.then(function(){$('#replyKb').classList.add('on')});return}
+  pay(s,pt,c);
+}
+function pay(s,pt,c){
+  var d=S.promo||0,p=Math.round(s.p*(1-d)),tot=p+(pt?PT.p:0);
+  bot('<div class="receipt"><div><span>'+s.n+'</span><span>'+rub(p)+'</span></div>'+(d?'<div><span class="sub">15% post-trial discount</span><span class="sub">−'+rub(s.p-p)+'</span></div>':'')+(pt?'<div><span>Personal training</span><span>'+rub(PT.p)+'</span></div>':'')+'<hr><div><b>Total</b><b>'+rub(tot)+'</b></div></div><span class="sub">Pay by card or Apple Pay right inside Telegram.</span>',
+    [['💳 Pay '+rub(tot),function(){me('💳 Pay '+rub(tot));bot('Processing payment…',null,null,null,400);setTimeout(function(){paid(s,pt,tot,c)},900)}],['Cancel',function(){me('Cancel');menu()}]],1);
+}
+function paid(s,pt,tot,c){
+  var exp=new Date(NOW.getFullYear(),NOW.getMonth(),NOW.getDate()+s.days);
+  S.sub={n:s.n,visits:s.visits,left:s.visits,exp:exp,days:s.days,pt:pt?1:0};S.promo=0;S.stats.sale+=tot;
+  bot('✅ Payment successful. Your <b>'+s.n+'</b> membership is active until '+MN[exp.getMonth()]+' '+exp.getDate()+'.<br><span class="sub">Receipt sent to your email. Pick up your wristband at the front desk.</span>'+(pt?'<br>The front desk will message you to schedule your personal training session.':''),
+    c?[['✅ Book '+c.time+' '+TYPES[c.type].n,function(){me('✅ Book');book2(c)}],['Menu',function(){me('Menu');menu()}]]:[['📅 Book a class',function(){me('📅 Schedule');pickDay(0)}],['Menu',function(){me('Menu');menu()}]],1);
+  admin('SALE','sale',esc(S.name)+' · '+S.phone,s.n+(pt?' + personal training':'')+' · <b>'+rub(tot)+'</b> paid online.',pt?[['Message member','message sent'],['Assign coach','coach: '+TR.str]]:null);
+}
+
+/* my sub */
+function mySub(){
+  me('👤 My membership');
+  if(!S.sub){bot('You don\'t have an active membership yet.'+(S.trialUsed?'':' Your first group class is free.'),[['🎟 Memberships',function(){me('🎟 Memberships');subsList()}]].concat(S.trialUsed?[]:[['🆓 Free trial',trial]]).concat([['Menu',function(){me('Menu');menu()}]]),2);return}
+  var s=S.sub,e=s.exp,left=s.left===Infinity?'unlimited':s.left+' of '+s.visits,pct=s.left===Infinity?100:s.left/s.visits*100;
+  var bk=S.bookings.filter(function(c){return c.mine});
+  bot('<b>'+s.n+'</b>'+(S.frozen?' · <span style="color:#C98A2E">frozen until '+S.frozenTo+'</span>':'')+'<br>Classes: <b>'+left+'</b><div class="meter"><i style="width:'+pct+'%"></i></div><span class="sub">Valid until '+MN[e.getMonth()]+' '+e.getDate()+'</span>'+
+    (bk.length?'<br><br><b>Your bookings:</b><br>'+bk.map(function(c){return '• '+dShort(c.day)+' '+c.time+': '+TYPES[c.type].n}).join('<br>'):''),
+    (bk.length?bk.map(function(c){return ['❌ Cancel '+dShort(c.day)+' '+c.time,function(){me('Cancel '+c.time);cancel(c)}]}):[]).concat([
+     S.frozen?['▶️ Unfreeze',function(){me('Unfreeze');S.frozen=0;bot('Your membership is active again.');admin('FREEZE','',esc(S.name),'Unfroze membership early.');menu()}]:['❄️ Freeze'+pro(),freeze],
+     ['🔁 Renew',function(){me('Renew');subsList()}],['Menu',function(){me('Menu');menu()}]]),1);
+}
+function freeze(){
+  me('❄️ Freeze');
+  bot('How many days should we freeze it? Your expiration date moves back by the same amount.'+pro(),[['7 days',function(){doFreeze(7)}],['14 days',function(){doFreeze(14)}],['Cancel',function(){me('Cancel');menu()}]],3);
+}
+function doFreeze(n){
+  me(n+' days');var s=S.sub,cn=S.bookings.filter(function(c){return c.mine&&c.day<n});cn.forEach(function(c){c.mine=false;c.taken--;if(s.left!==Infinity)s.left++});S.bookings=S.bookings.filter(function(c){return c.mine});s.exp=new Date(s.exp.getFullYear(),s.exp.getMonth(),s.exp.getDate()+n);var to=dayDate(n);S.frozen=n;S.frozenTo=MN[to.getMonth()]+' '+to.getDate();
+  bot('❄️ Membership frozen until <b>'+S.frozenTo+'</b>. New expiration date: '+MN[s.exp.getMonth()]+' '+s.exp.getDate()+'.'+(cn.length?'<br>Bookings canceled for those days: '+cn.length+'.':'')+'<br><span class="sub">You can unfreeze early under “My membership.”</span>');renderStats();
+  admin('FREEZE','',esc(S.name||'Member'),'Frozen for '+n+' days, until '+S.frozenTo+'. Membership extended automatically.');
+  menu('Anything else?');
+}
+function ask(){me('💬 Ask the front desk');S.asking=true;bot('Type your question below. I\'ll pass it to the front desk and the answer will come right here.')}
+
+$('#composer').onsubmit=function(e){e.preventDefault();var v=$('#input').value.trim();if(!v)return;$('#input').value='';me(v);
+  var low=v.toLowerCase();
+  if(/schedule|class|workout/.test(low)&&!S.asking){pickDay(0);return}
+  if(/membership|price|cost|how much/.test(low)&&!S.asking){subsList();return}
+  S.asking=false;
+  bot('Sent to the front desk. They usually reply within 10 minutes 👌');
+  admin('QUESTION','',esc(S.name||'Member via bot'),'“'+esc(v)+'”',[['Reply','reply sent to member',function(){bot('<b>PULSE front desk:</b> Hi! Absolutely, we\'d love to see you. If you have more questions, just message us here.')}]]);
+};
+
+/* tabs & restart */
+$$('#tabs button').forEach(function(b){b.onclick=function(){$$('#tabs button').forEach(function(x){x.classList.toggle('active',x===b)});$('#stage').dataset.view=b.dataset.view;if(b.dataset.view==='admin'){S.unread=0;$('#badge').classList.remove('on')}}});
+function restart(){
+  reset();queue=Promise.resolve();chat.innerHTML='';$('#replyKb').classList.remove('on');
+  $('#adminChat').innerHTML='<div class="empty-log" id="emptyLog">Requests, bookings and sales from the bot will show up here. Start a conversation in the member chat.</div>';
+  $('#badge').classList.remove('on');renderStats();start();
+}
+$('#restart').onclick=restart;
+setInterval(function(){$('#clock').textContent=time()},10000);
+restart();
+})();
+</script>
+</body>
+</html>

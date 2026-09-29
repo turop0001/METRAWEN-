@@ -180,6 +180,10 @@ button{font:inherit;color:inherit}
 .mw-ps>span{display:block}
 @media(max-width:600px){.mw-ps{gap:14px}.company-card span,.value-card span{line-height:1.65}}
 </style>
+<link rel="alternate" hreflang="en" href="https://metrawen.com/about.html">
+<link rel="alternate" hreflang="ru" href="https://metrawen.com/ru/about.html">
+<link rel="alternate" hreflang="x-default" href="https://metrawen.com/about.html">
+<style>.lang-sw{display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--text-dim,#aaa);border:1px solid var(--hair-2,rgba(255,255,255,.18));border-radius:8px;padding:6px 9px;margin-left:10px;text-decoration:none;line-height:1;flex:none}.lang-sw:hover{color:var(--text,#fff);border-color:currentColor}.mnav-panel .lang-sw{margin:14px 0 0;padding:10px 14px;font-size:.8125rem;align-self:flex-start}@media(max-width:1079.98px){.topbar .lang-sw{display:none}}</style>
 </head>
 <body>
 
@@ -193,29 +197,30 @@ button{font:inherit;color:inherit}
       <div class="navitem">
         <a href="index.html#s-formats">AI-системы <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <div class="dropdown">
-          <a href="ai-audit-ru.html">AI Opportunity Audit</a>
-          <a href="ai-starter-ru.html">AI Employee — Starter</a>
-          <a href="ai-pro-ru.html">AI Employee — Pro</a>
-          <a href="ai-custom-ru.html">AI System</a>
+          <a href="ai-audit.html">AI Opportunity Audit</a>
+          <a href="ai-starter.html">AI Employee — Starter</a>
+          <a href="ai-pro.html">AI Employee — Pro</a>
+          <a href="ai-custom.html">AI System</a>
           <a href="index.html#s-formats" class="more">все форматы на главной</a>
         </div>
       </div>
       <a href="index.html#s-industries">Отрасли</a>
       <div class="navitem">
-        <a href="digital-ru.html">Digital-услуги <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="digital.html">Digital-услуги <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <div class="dropdown">
-          <a href="digital-ru.html#svc-sites">Сайты и лендинги</a>
-          <a href="digital-ru.html#svc-bots">Telegram / LINE / WhatsApp боты</a>
-          <a href="digital-ru.html#svc-data">Дашборды и аналитика</a>
-          <a href="digital-ru.html#cases">Примеры применений</a>
-          <a href="digital-ru.html#calculator">Калькулятор стоимости</a>
-          <a href="digital-ru.html#services" class="more">все digital-услуги</a>
+          <a href="digital.html#svc-sites">Сайты и лендинги</a>
+          <a href="digital.html#svc-bots">Telegram / LINE / WhatsApp боты</a>
+          <a href="digital.html#svc-data">Дашборды и аналитика</a>
+          <a href="digital.html#cases">Примеры применений</a>
+          <a href="digital.html#calculator">Калькулятор стоимости</a>
+          <a href="digital.html#services" class="more">все digital-услуги</a>
         </div>
       </div>
       <a href="index.html#s-sys">Как мы работаем</a>
-      <a href="about-ru.html" class="current">О компании</a>
+      <a href="about.html" class="current">О компании</a>
     </nav>
     <a class="btn btn--sm" href="index.html#open-booking">Обсудить проект</a>
+    <a class="lang-sw" href="/about.html" hreflang="en" lang="en" title="English version">EN</a>
     <button class="mnav-toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mnav-panel">
       <span></span><span></span><span></span>
     </button>
@@ -225,15 +230,16 @@ button{font:inherit;color:inherit}
 <div class="mnav-panel" id="mnav-panel" hidden>
   <nav aria-label="Мобильная навигация">
     <a href="index.html">Главная</a>
-    <a href="ai-audit-ru.html">— AI Opportunity Audit</a>
-    <a href="ai-starter-ru.html">— AI Employee · Starter</a>
-    <a href="ai-pro-ru.html">— AI Employee · Pro</a>
-    <a href="ai-custom-ru.html">— AI System (Custom)</a>
+    <a href="ai-audit.html">— AI Opportunity Audit</a>
+    <a href="ai-starter.html">— AI Employee · Starter</a>
+    <a href="ai-pro.html">— AI Employee · Pro</a>
+    <a href="ai-custom.html">— AI System (Custom)</a>
     <a href="index.html#s-industries">Отрасли</a>
-    <a href="digital-ru.html">Digital-услуги</a>
+    <a href="digital.html">Digital-услуги</a>
     <a href="index.html#s-sys">Как мы работаем</a>
-    <a href="about-ru.html">О компании</a>
+    <a href="about.html">О компании</a>
   </nav>
+  <a class="lang-sw" href="/about.html" hreflang="en" lang="en" title="English version">EN</a>
   <a class="btn btn--lg" href="index.html#open-booking" style="width:100%;justify-content:center">Обсудить проект</a>
 </div>
 
@@ -481,29 +487,29 @@ button{font:inherit;color:inherit}
 (function(){
   var path = location.pathname.split('/').pop() || 'index.html';
   var isIndex = path === 'index.html' || path === '';
-  var isDigital = path === 'digital-ru.html';
+  var isDigital = path === 'digital.html';
   function href(h){ return (isIndex && h.indexOf('index.html#') === 0) ? h.slice(10) : h; }
 
   /* ---- mobile menu with sub-sections ---- */
   var MENU = [
     {t:'Главная', h:'index.html', page:'index.html'},
     {t:'AI-системы', h:'index.html#s-formats', sub:[
-      ['AI Opportunity Audit','ai-audit-ru.html'],
-      ['AI Employee · Starter','ai-starter-ru.html'],
-      ['AI Employee · Pro','ai-pro-ru.html'],
-      ['AI System (Custom)','ai-custom-ru.html'],
+      ['AI Opportunity Audit','ai-audit.html'],
+      ['AI Employee · Starter','ai-starter.html'],
+      ['AI Employee · Pro','ai-pro.html'],
+      ['AI System (Custom)','ai-custom.html'],
       ['Все форматы','index.html#s-formats']]},
     {t:'Отрасли', h:'index.html#s-industries'},
-    {t:'Digital-услуги', h:'digital-ru.html', page:'digital-ru.html', sub:[
-      ['Все digital-услуги','digital-ru.html#services'],
-      ['Сайты и лендинги','digital-ru.html#svc-sites'],
-      ['Чат-боты','digital-ru.html#svc-bots'],
-      ['Автоматизация процессов','digital-ru.html#svc-automation'],
-      ['Аналитика и дашборды','digital-ru.html#svc-data'],
-      ['Примеры применений','digital-ru.html#cases'],
-      ['Калькулятор стоимости','digital-ru.html#calculator']]},
+    {t:'Digital-услуги', h:'digital.html', page:'digital.html', sub:[
+      ['Все digital-услуги','digital.html#services'],
+      ['Сайты и лендинги','digital.html#svc-sites'],
+      ['Чат-боты','digital.html#svc-bots'],
+      ['Автоматизация процессов','digital.html#svc-automation'],
+      ['Аналитика и дашборды','digital.html#svc-data'],
+      ['Примеры применений','digital.html#cases'],
+      ['Калькулятор стоимости','digital.html#calculator']]},
     {t:'Как мы работаем', h:'index.html#s-sys'},
-    {t:'О компании', h:'about-ru.html', page:'about-ru.html'}
+    {t:'О компании', h:'about.html', page:'about.html'}
   ];
   var panel = document.getElementById('mnav-panel');
   var nav = panel && panel.querySelector('nav');

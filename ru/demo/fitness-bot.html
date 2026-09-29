@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PULSE · Telegram-бот фитнес-клуба</title>
+<meta name="description" content="Кликабельный прототип Telegram-бота фитнес-клуба: расписание, запись, пробное занятие, покупка и заморозка абонемента. METRAWEN Digital.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23121412'/%3E%3Cpath d='M5 17h6l3-7 4 13 3-6h6' fill='none' stroke='%23C8F03C' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0F110F;--panel:#171A17;--panel2:#1F231F;--line:#2A2F2A;--text:#EEF2EC;--mut:#9BA39A;--dim:#6C746B;
+  --lime:#C8F03C;--lime-d:#A9CF22;--ink:#121412;
+  --tg-bg:#DCE6D6;--tg-in:#FFFFFF;--tg-out:#E5F8C8;--tg-btn:#F2F5EF;--tg-acc:#3A8BD6;--tg-txt:#1B1F1B;--tg-mut:#7C857B;
+  --ok:#5CC98B;--bad:#EF7A5C
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,sans-serif;min-height:100vh;
+  background-image:radial-gradient(800px 420px at 90% -10%,rgba(200,240,60,.08),transparent 60%)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.page{max-width:1180px;margin:0 auto;padding:28px 24px 40px}
+.intro{display:flex;gap:24px;align-items:flex-start;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap}
+.brandline{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:13px;letter-spacing:.02em}
+.brandline i{width:26px;height:26px;border-radius:7px;background:var(--lime);display:grid;place-items:center}
+.brandline i svg{width:16px;height:16px}
+h1{font:700 clamp(26px,3.4vw,40px)/1.08 Unbounded,sans-serif;letter-spacing:-.02em;margin:12px 0 10px}
+.intro p{color:var(--mut);max-width:620px}
+.tiers{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;max-width:760px}
+.tier{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.tier.hl{border-color:rgba(200,240,60,.45)}
+.tier-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:10px}
+.tier-h b{font-weight:700}
+.tier-h>span{font:500 15px Unbounded,sans-serif;color:var(--lime);white-space:nowrap}
+.features{display:flex;flex-wrap:wrap;gap:6px}
+.features span{font-size:12.5px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:4px 10px;color:#CDD4CB}
+.tier-note{font-size:13px;margin-top:10px}
+.pro-tag{display:inline-block;font:700 10px/1 Inter,sans-serif;letter-spacing:.06em;background:var(--lime);color:var(--ink);padding:3px 5px;border-radius:4px;vertical-align:1px}
+.restart{border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px;font-weight:600;color:var(--text);background:var(--panel);white-space:nowrap}
+.restart:hover{border-color:var(--lime)}
+.tabs{display:none;gap:6px;margin-bottom:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px}
+.tabs button{flex:1;padding:10px;border-radius:9px;font-weight:600;font-size:14px;color:var(--mut);position:relative}
+.tabs button.active{background:var(--lime);color:var(--ink)}
+.badge{display:none;margin-left:6px;background:var(--bad);color:#fff;border-radius:99px;font-size:11px;padding:1px 6px;vertical-align:1px}
+.badge.on{display:inline-block}
+.stage{display:grid;grid-template-columns:400px 1fr;gap:24px;align-items:start}
+/* phone */
+.phone{background:#050605;border-radius:44px;padding:10px;box-shadow:0 40px 80px -30px rgba(0,0,0,.8),0 0 0 1px #2B2F2B}
+.screen{background:var(--tg-bg);border-radius:35px;overflow:hidden;height:760px;display:flex;flex-direction:column;position:relative;color:var(--tg-txt);font-size:14.5px}
+.screen::before{content:"";position:absolute;inset:0;opacity:.35;pointer-events:none;background-image:radial-gradient(circle at 20% 20%,rgba(255,255,255,.5) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,rgba(255,255,255,.45) 0 2px,transparent 3px);background-size:46px 46px,58px 58px}
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:10px 26px 4px;font-size:13px;font-weight:600;background:#fff;position:relative;z-index:1}
+.notch{width:96px;height:24px;background:#050605;border-radius:14px}
+.tg-head{display:flex;align-items:center;gap:10px;padding:8px 12px 10px;background:#fff;border-bottom:1px solid #E3E8E0;position:relative;z-index:1}
+.tg-back{font-size:26px;color:var(--tg-acc);line-height:1;width:16px}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--ink);display:grid;place-items:center;flex:none}
+.avatar svg{width:22px;height:22px}
+.tg-title{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.tg-title strong{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tg-title span{font-size:12.5px;color:var(--tg-mut)}
+.chat{flex:1;overflow-y:auto;padding:12px 10px 8px;display:flex;flex-direction:column;gap:6px;position:relative;z-index:1;scroll-behavior:smooth}
+.msg{max-width:86%;padding:7px 10px 6px;border-radius:14px;line-height:1.42;position:relative;box-shadow:0 1px 1px rgba(0,0,0,.08);animation:in .22s ease-out;word-wrap:break-word}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.msg.in{background:var(--tg-in);align-self:flex-start;border-bottom-left-radius:5px}
+.msg.out{background:var(--tg-out);align-self:flex-end;border-bottom-right-radius:5px}
+.msg .t{display:block;text-align:right;font-size:11px;color:var(--tg-mut);margin-top:2px}
+.msg b{font-weight:600}
+.msg .sub{color:var(--tg-mut);font-size:13px}
+.msg .pro-tag{margin-left:4px}
+.kb{display:grid;gap:4px;align-self:flex-start;width:86%;animation:in .22s ease-out}
+.kb.c2{grid-template-columns:1fr 1fr}
+.kb.c3{grid-template-columns:repeat(3,1fr)}
+.kb button{background:rgba(255,255,255,.78);backdrop-filter:blur(4px);border-radius:10px;padding:9px 8px;font-size:13.5px;font-weight:500;color:var(--tg-txt);line-height:1.25;transition:background .15s;text-align:center}
+.kb button:hover{background:#fff}
+.kb button small{display:block;font-size:11.5px;color:var(--tg-mut);font-weight:400}
+.kb button[disabled]{opacity:.45;cursor:not-allowed}
+.kb.used button{opacity:.55;pointer-events:none}
+.typing{align-self:flex-start;background:#fff;border-radius:14px;padding:10px 14px;display:flex;gap:4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#A6AFA5;animation:bl 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,60%,100%{opacity:.3}30%{opacity:1}}
+.card-m{padding:0;overflow:hidden;min-width:250px}
+.card-m .ban{height:74px;display:flex;align-items:flex-end;padding:9px 11px;color:#fff;font:700 15px Unbounded,sans-serif;letter-spacing:-.01em}
+.card-m .bd{padding:8px 11px 6px}
+.meter{height:6px;background:#E8ECE5;border-radius:3px;overflow:hidden;margin:6px 0 2px}
+.meter i{display:block;height:100%;background:#1B1F1B;border-radius:3px}
+.receipt{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.55}
+.receipt div{display:flex;justify-content:space-between;gap:12px}
+.receipt hr{border:0;border-top:1px dashed #C5CCC2;margin:5px 0}
+.reply-kb{display:none;padding:6px 8px 0;background:#F4F6F2;position:relative;z-index:1}
+.reply-kb.on{display:block}
+.reply-kb button{width:100%;background:#fff;border-radius:9px;padding:10px;font-weight:600;font-size:14px;color:var(--tg-acc);box-shadow:0 1px 1px rgba(0,0,0,.08)}
+.composer{display:flex;gap:8px;align-items:center;padding:8px 10px 14px;background:#F4F6F2;position:relative;z-index:1}
+.composer input{flex:1;border:0;background:#fff;border-radius:20px;padding:10px 14px;font-size:14.5px;color:var(--tg-txt)}
+.composer input:focus{outline:none;box-shadow:0 0 0 2px rgba(58,139,214,.3)}
+.composer button{width:38px;height:38px;border-radius:50%;background:var(--tg-acc);color:#fff;display:grid;place-items:center;flex:none}
+.composer button svg{width:18px;height:18px}
+/* admin */
+.admin{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;height:780px}
+.admin .tg-head{background:var(--panel2);border-bottom:1px solid var(--line)}
+.admin .tg-title span{color:var(--mut)}
+.av-admin{background:var(--lime);color:var(--ink);font-weight:700;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+.stats div{padding:12px 14px;border-left:1px solid var(--line)}
+.stats div:first-child{border-left:0}
+.stats strong{display:block;font:600 19px Unbounded,sans-serif;letter-spacing:-.02em;white-space:nowrap}
+.stats span{font-size:12px;color:var(--mut)}
+.sched{padding:12px 14px;border-bottom:1px solid var(--line)}
+.sched h3{font-size:12.5px;font-weight:600;color:var(--mut);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+.slot{display:grid;grid-template-columns:48px 1fr 90px 40px;gap:10px;align-items:center;font-size:13px;padding:5px 0}
+.slot b{font-weight:600}
+.slot .bar{height:6px;background:#2A2F2A;border-radius:3px;overflow:hidden}
+.slot .bar i{display:block;height:100%;background:var(--lime);transition:width .4s}
+.slot .bar i.full{background:var(--bad)}
+.slot em{font-style:normal;color:var(--mut);text-align:right;font-variant-numeric:tabular-nums}
+.admin .chat{background:transparent;padding:14px}
+.log{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;max-width:94%;align-self:flex-start;font-size:13.5px;animation:in .25s ease-out;color:var(--text)}
+.log .h{display:flex;gap:8px;align-items:center;margin-bottom:4px;font-weight:600}
+.log .h i{font-style:normal;font-size:11px;padding:2px 6px;border-radius:5px;background:#2A2F2A;color:var(--mut);font-weight:600}
+.log .h i.sale{background:var(--lime);color:var(--ink)}
+.log .h i.trial{background:#3A8BD6;color:#fff}
+.log .h i.cancel{background:var(--bad);color:#fff}
+.log .h small{margin-left:auto;color:var(--dim);font-weight:400;font-size:11.5px}
+.log p{color:#CFD6CD}
+.log .acts{display:flex;gap:6px;margin-top:8px}
+.log .acts button{font-size:12.5px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel)}
+.log .acts button:hover{border-color:var(--lime)}
+.empty-log{color:var(--dim);font-size:13.5px;text-align:center;margin:auto;max-width:280px}
+.footnote{color:var(--dim);font-size:12.5px;margin-top:22px;line-height:1.6}
+@media (max-width:980px){
+  .stage{grid-template-columns:1fr;justify-items:center}
+  .tabs{display:flex}
+  .stage[data-view=client] .admin{display:none}
+  .stage[data-view=admin] .phone{display:none}
+  .admin{width:100%;max-width:560px;height:720px}
+  .phone{width:100%;max-width:400px}
+}
+@media (max-width:520px){
+  .page{padding:18px 12px 30px}
+  .tiers{grid-template-columns:1fr}
+  .phone{padding:0;border-radius:0;box-shadow:none;background:transparent}
+  .screen{border-radius:18px;height:calc(100svh - 150px);min-height:560px}
+  .statusbar{display:none}
+  .stats{grid-template-columns:1fr 1fr}.stats div:nth-child(3){border-left:0}.stats div:nth-child(n+3){border-top:1px solid var(--line)}
+  .slot{grid-template-columns:44px 1fr 60px 36px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="intro">
+    <div>
+      <div class="brandline"><i><svg viewBox="0 0 24 24" fill="none" stroke="#121412" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h4l2-5 3 10 2-5h7"/></svg></i>Фитнес-клуб PULSE · групповые тренировки и тренажёрный зал</div>
+      <h1>Telegram-бот с&nbsp;абонементами</h1>
+      <p>Кликабельный прототип: запишитесь на тренировку, купите и заморозьте абонемент как клиент, а справа посмотрите, что видит администратор клуба.</p>
+      <div class="tiers">
+        <div class="tier"><div class="tier-h"><b>Запись на тренировки</b><span>19 900 ₽</span></div><div class="features"><span>Расписание с местами</span><span>Пробное занятие</span><span>Запись и отмена</span><span>Уведомление администратору</span></div></div>
+        <div class="tier hl"><div class="tier-h"><b>С абонементами <span class="pro-tag">PRO</span></b><span>44 900 ₽</span></div><div class="features"><span>Продажа и оплата абонементов</span><span>Списание визитов</span><span>Лист ожидания</span><span>Заморозка</span><span>Напоминание за 2 часа</span><span>Продление и допродажа</span><span>Выручка в чате админа</span></div></div>
+      </div>
+      <p class="tier-note" style="color:var(--mut)">Функции версии с абонементами отмечены в чате меткой <span class="pro-tag">PRO</span></p>
+    </div>
+    <button class="restart" id="restart">Начать заново</button>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="active" data-view="client">Чат клиента</button>
+    <button data-view="admin">Администратор<span class="badge" id="badge"></span></button>
+  </div>
+
+  <div class="stage" id="stage" data-view="client">
+    <div class="phone">
+      <div class="screen">
+        <div class="statusbar"><span id="clock">9:41</span><div class="notch"></div><span>5G</span></div>
+        <div class="tg-head">
+          <div class="tg-back">‹</div>
+          <div class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#C8F03C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h4l2-5 3 10 2-5h7"/></svg></div>
+          <div class="tg-title"><strong>PULSE · фитнес-клуб</strong><span id="botStatus">бот</span></div>
+        </div>
+        <div class="chat" id="chat" aria-live="polite"></div>
+        <div class="reply-kb" id="replyKb"><button id="shareContact">📱 Поделиться контактом</button></div>
+        <form class="composer" id="composer">
+          <input id="input" type="text" autocomplete="off" placeholder="Сообщение" aria-label="Сообщение боту">
+          <button type="submit" aria-label="Отправить"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10.1 15.5 12 3.4 13.9z"/></svg></button>
+        </form>
+      </div>
+    </div>
+
+    <div class="admin">
+      <div class="tg-head">
+        <div class="avatar av-admin">АД</div>
+        <div class="tg-title"><strong>PULSE · Ресепшн</strong><span>чат администраторов, 3 участника</span></div>
+      </div>
+      <div class="stats">
+        <div><strong id="stSale">0 ₽</strong><span>продажи сегодня</span></div>
+        <div><strong id="stBook">0</strong><span>записей</span></div>
+        <div><strong id="stTrial">0</strong><span>пробных</span></div>
+        <div><strong id="stWait">0</strong><span>в листе ожидания</span></div>
+      </div>
+      <div class="sched"><h3>Загрузка на сегодня</h3><div id="slots"></div></div>
+      <div class="chat" id="adminChat"><div class="empty-log" id="emptyLog">Здесь появятся заявки, записи и продажи из бота. Начните диалог в чате клиента.</div></div>
+    </div>
+  </div>
+
+  <p class="footnote">Демо / данные примерные. Клуб, тренеры, расписание и цены вымышлены, оплата и сообщения не настоящие. Прототип для портфолио METRAWEN Digital.<br>Telegram-бот в METRAWEN: запись на тренировки 19 900 ₽, версия с абонементами и оплатой 44 900 ₽.</p>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)},$$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var nf=new Intl.NumberFormat('ru-RU');function rub(n){return nf.format(n).replace(/ /g,' ')+' ₽'}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var DN=['вс','пн','вт','ср','чт','пт','сб'],MN=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+var NOW=new Date();NOW.setHours(9,41,0,0);
+function dayDate(i){return new Date(NOW.getFullYear(),NOW.getMonth(),NOW.getDate()+i)}
+function dLabel(i){var d=dayDate(i);return (i===0?'Сегодня':i===1?'Завтра':DN[d.getDay()][0].toUpperCase()+DN[d.getDay()].slice(1))+', '+d.getDate()+' '+MN[d.getMonth()]}
+function dShort(i){var d=dayDate(i);return i===0?'Сегодня':i===1?'Завтра':DN[d.getDay()]+' '+d.getDate()}
+
+/* ---------- data ---------- */
+var TYPES={
+ hiit:{n:'HIIT',c:'#E2583A',d:'Интервальная тренировка на выносливость, 45 минут'},
+ yoga:{n:'Йога',c:'#5E8C6A',d:'Хатха-йога для гибкости и спины, 60 минут'},
+ cyc:{n:'Сайкл',c:'#3A6FD6',d:'Велотренировка под музыку, 45 минут'},
+ str:{n:'Функционал',c:'#8A5CC4',d:'Силовая тренировка с весом тела и гирями, 50 минут'},
+ pil:{n:'Пилатес',c:'#C98A2E',d:'Мышцы кора и осанка, 55 минут'},
+ box:{n:'Бокс',c:'#2E2E2E',d:'Техника и кардио на мешках, 60 минут'}
+};
+var TR={hiit:'Алексей К.',yoga:'Марина С.',cyc:'Денис П.',str:'Ольга Р.',pil:'Анна В.',box:'Игорь Л.'};
+var TEMPLATE=[[['07:30','cyc',16],['10:00','pil',12],['12:00','str',14],['19:00','hiit',18],['20:15','yoga',16]],
+ [['07:30','hiit',18],['11:00','yoga',16],['18:30','box',12],['19:30','cyc',16],['20:30','str',14]],
+ [['08:00','str',14],['10:30','pil',12],['19:00','cyc',16],['20:00','yoga',16]]];
+var CL=[],cid=1;
+for(var di=0;di<7;di++){var tpl=TEMPLATE[di%3];tpl.forEach(function(x,j){var seed=(di*7+j*13)%11;var cap=x[2],taken=Math.min(cap,Math.round(cap*(.45+seed/20)));
+  if(di===0&&x[1]==='hiit')taken=cap; if(di===0&&x[0]==='12:00')taken=cap-2;
+  CL.push({id:cid++,day:di,time:x[0],type:x[1],cap:cap,taken:taken,trial:(x[1]==='yoga'||x[1]==='str'||x[1]==='pil'),wait:[]})})}
+var SUBS=[
+ {id:'s8',n:'8 занятий',p:5900,days:30,visits:8,note:'на 30 дней · 738 ₽ за визит'},
+ {id:'s30',n:'Безлимит на месяц',p:7900,days:30,visits:Infinity,note:'все группы и зал · 30 дней'},
+ {id:'s90',n:'Безлимит на 3 месяца',p:19900,days:90,visits:Infinity,note:'выгода 3 800 ₽ · 90 дней'}
+];
+var PT={n:'Персональная тренировка',p:2400,old:3000};
+
+/* ---------- state ---------- */
+var S;
+function reset(){
+  S={name:'',phone:'',sub:null,bookings:[],trialUsed:false,frozen:0,stats:{sale:0,book:0,trial:0,wait:0},unread:0,pending:null};
+  CL.forEach(function(c){c.wait=[];c.mine=false});
+}
+
+/* ---------- chat primitives ---------- */
+var chat=$('#chat'),queue=Promise.resolve();
+function time(){var d=new Date(NOW.getTime()+ (Date.now()-T0));return d.getHours()+':'+String(d.getMinutes()).padStart(2,'0')}
+var T0=Date.now();
+function scroll(){chat.scrollTop=chat.scrollHeight}
+function addMsg(html,who,cls){var m=document.createElement('div');m.className='msg '+(who||'in')+(cls?' '+cls:'');m.innerHTML=html+(cls&&cls.indexOf('card-m')>=0?'':'<span class="t">'+time()+(who==='out'?' ✓✓':'')+'</span>');chat.appendChild(m);scroll();return m}
+function kb(btns,cols){var k=document.createElement('div');k.className='kb'+(cols===2?' c2':cols===3?' c3':'');
+  btns.forEach(function(b){var e=document.createElement('button');e.type='button';e.innerHTML=b[0];if(b[2])e.disabled=true;e.onclick=function(){k.classList.add('used');b[1]()};k.appendChild(e)});
+  chat.appendChild(k);scroll();return k}
+function bot(html,btns,cols,cls,delay){
+  queue=queue.then(function(){return new Promise(function(res){
+    $('#botStatus').textContent='печатает…';var t=document.createElement('div');t.className='typing';t.innerHTML='<i></i><i></i><i></i>';chat.appendChild(t);scroll();
+    setTimeout(function(){t.remove();$('#botStatus').textContent='бот';addMsg(html,'in',cls);if(btns)kb(btns,cols);res()},delay==null?Math.min(900,260+html.length*2.2):delay)})});
+  return queue;
+}
+function me(text){addMsg(esc(text),'out')}
+function pro(){return ' <span class="pro-tag">PRO</span>'}
+
+/* ---------- admin ---------- */
+function admin(tag,cls,title,text,acts){
+  $('#emptyLog')&&$('#emptyLog').remove();
+  var l=document.createElement('div');l.className='log';
+  l.innerHTML='<div class="h"><i class="'+(cls||'')+'">'+tag+'</i>'+title+'<small>'+time()+'</small></div><p>'+text+'</p>'+(acts?'<div class="acts">'+acts.map(function(a,i){return '<button data-i="'+i+'">'+a[0]+'</button>'}).join('')+'</div>':'');
+  if(acts)$$('button',l);
+  if(acts)Array.prototype.forEach.call(l.querySelectorAll('.acts button'),function(b){b.onclick=function(){var a=acts[+b.dataset.i];b.parentNode.innerHTML='<span style="font-size:12.5px;color:var(--ok)">✓ '+a[1]+'</span>';if(a[2])a[2]()}});
+  var ac=$('#adminChat');ac.appendChild(l);ac.scrollTop=ac.scrollHeight;
+  if($('#stage').dataset.view==='client'&&window.innerWidth<=980){S.unread++;var b=$('#badge');b.textContent=S.unread;b.classList.add('on')}
+  renderStats();
+}
+function renderStats(){
+  $('#stSale').textContent=rub(S.stats.sale);$('#stBook').textContent=S.stats.book;$('#stTrial').textContent=S.stats.trial;$('#stWait').textContent=S.stats.wait;
+  $('#slots').innerHTML=CL.filter(function(c){return c.day===0}).map(function(c){var p=c.taken/c.cap*100;return '<div class="slot"><b>'+c.time+'</b><span>'+TYPES[c.type].n+' · '+TR[c.type]+'</span><span class="bar"><i class="'+(c.taken>=c.cap?'full':'')+'" style="width:'+p+'%"></i></span><em>'+c.taken+'/'+c.cap+'</em></div>'}).join('');
+}
+
+/* ---------- flows ---------- */
+function start(){
+  bot('Привет! Я бот фитнес-клуба <b>PULSE</b> 👋<br>Помогу записаться на тренировку, купить абонемент и следить за визитами.<br><span class="sub">Первое групповое занятие — бесплатно.</span>',null,null,null,500);
+  menu();
+}
+function menu(txt){
+  bot(txt||'Что сделаем?',[
+    ['📅 Расписание',schedule],['🎟 Абонементы',subs],
+    ['👤 Мой абонемент',mySub],['🆓 Пробное занятие',trial],
+    ['💬 Вопрос администратору',ask]],2);
+}
+function schedule(){me('📅 Расписание');pickDay(0)}
+function pickDay(d0){
+  var btns=[];for(var i=0;i<6;i++)(function(i){btns.push([dShort(i)+(i===d0?' ·':''),function(){showDay(i)}])})(i);
+  bot('На какой день смотрим?',btns,3);
+}
+function showDay(d){
+  me(dShort(d));
+  var list=CL.filter(function(c){return c.day===d});
+  bot('<b>'+dLabel(d)+'</b><br><span class="sub">Число справа — свободные места. Нажмите на тренировку, чтобы записаться.</span>',
+    list.map(function(c){var free=c.cap-c.taken,ps=past(c);return [c.time+' · '+TYPES[c.type].n+(c.mine?' ✓':'')+'<small>'+(ps?'уже началась':free>0?'мест: '+free:'мест нет, лист ожидания')+'</small>',function(){classCard(c)},ps]}).concat([['← Другой день',function(){me('← Другой день');pickDay(d)}],['Меню',function(){me('Меню');menu()}]]),2);
+}
+function classCard(c){
+  me(c.time+' · '+TYPES[c.type].n);
+  var free=c.cap-c.taken,t=TYPES[c.type];
+  var html='<div class="ban" style="background:linear-gradient(135deg,'+t.c+','+t.c+'cc)">'+t.n+'</div><div class="bd"><b>'+dLabel(c.day)+', '+c.time+'</b><br>'+t.d+'<br><span class="sub">Тренер: '+TR[c.type]+' · Зал '+(c.type==='cyc'?'сайкл':c.type==='yoga'||c.type==='pil'?'2':'1')+'</span><div class="meter"><i style="width:'+(c.taken/c.cap*100)+'%"></i></div><span class="sub">Занято '+c.taken+' из '+c.cap+'</span><span class="t">'+time()+'</span></div>';
+  var btns=[];
+  if(c.mine)btns.push(['Вы уже записаны ✓',function(){},true]);
+  else if(free>0)btns.push(['✅ Записаться',function(){book(c)}]);
+  else btns.push(['⏳ В лист ожидания'+pro().replace('pro-tag','pro-tag'),function(){waitlist(c)}]);
+  btns.push(['← К расписанию',function(){me('← К расписанию');showDay(c.day)}]);
+  bot(html,btns,1,'card-m');
+}
+function past(c){if(c.day!==0)return false;var h=+c.time.slice(0,2),m=+c.time.slice(3);return h*60+m<=NOW.getHours()*60+NOW.getMinutes()+30}
+function hasAccess(){return S.sub&&S.sub.left>0&&!S.frozen}
+function book(c){
+  me('✅ Записаться');
+  if(!hasAccess()){
+    if(S.frozen){bot('Абонемент сейчас заморожен до '+S.frozenTo+'. Разморозить и записаться?',[['Разморозить',function(){me('Разморозить');S.frozen=0;admin('ЗАМОРОЗКА','', S.name||'Клиент','Досрочно разморозил абонемент.');bot('Готово, абонемент активен.');book2(c)}],['Отмена',function(){me('Отмена');menu()}]],2);return}
+    var tr=!S.trialUsed&&c.trial;
+    bot(S.sub&&S.sub.left<=0?'Визиты по абонементу закончились. Продлим?':'Для записи нужен абонемент.'+(tr?' Но эта тренировка подходит для <b>бесплатного пробного занятия</b>.':''),
+      (tr?[['🆓 Записаться бесплатно',function(){me('🆓 Записаться бесплатно');trialBook(c)}]]:[]).concat([['🎟 Выбрать абонемент',function(){me('🎟 Выбрать абонемент');subsList(c)}],['Меню',function(){me('Меню');menu()}]]),1);
+    return;
+  }
+  book2(c);
+}
+function book2(c){
+  c.taken++;c.mine=true;S.bookings.push(c);if(S.sub.left!==Infinity)S.sub.left--;S.stats.book++;
+  bot('Записал вас ✅<br><b>'+TYPES[c.type].n+'</b>, '+dLabel(c.day).toLowerCase()+' в '+c.time+'.<br><span class="sub">'+(S.sub.left===Infinity?'Безлимит: визит не списывается отдельно.':'Осталось визитов: '+S.sub.left+' из '+S.sub.visits)+' Отменить без списания можно за 3 часа до начала.</span>',
+    [['📅 Добавить в календарь',function(){me('📅 Добавить в календарь');bot('Файл события: <b>PULSE_'+TYPES[c.type].n+'.ics</b> 📎<br><span class="sub">Откройте, и тренировка появится в календаре телефона.</span>');menu('Что-нибудь ещё?')}],['Меню',function(){me('Меню');menu()}]],2);
+  admin('ЗАПИСЬ','',esc(S.name||'Клиент')+' '+(S.phone?'· '+S.phone:''),TYPES[c.type].n+', '+dShort(c.day).toLowerCase()+' '+c.time+' · занято '+c.taken+'/'+c.cap+(S.sub.left===Infinity?' · безлимит':' · осталось визитов '+S.sub.left));
+  renderStats();
+  if(c.day===0||c.day===1)reminder(c);
+}
+function reminder(c){
+  setTimeout(function(){
+    if(!c.mine)return;
+    bot('⏰ Напоминание'+pro()+'<br><span class="sub">Так выглядит сообщение, которое придёт за 2 часа до начала:</span><br>'+(c.day===0?'Сегодня':'Завтра')+' в '+c.time+' — <b>'+TYPES[c.type].n+'</b>. Возьмите воду и полотенце, шкафчики — по браслету на ресепшн.',
+     [['👍 Приду',function(){me('👍 Приду');bot('Отлично, ждём вас!')}],['Не смогу',function(){me('Не смогу');cancel(c,true)}]],2,null,700);
+  },5200);
+}
+function cancel(c,late){
+  c.taken--;c.mine=false;S.bookings=S.bookings.filter(function(x){return x!==c});
+  var back=!late&&S.sub&&S.sub.left!==Infinity;if(back)S.sub.left++;
+  bot('Запись отменена.'+(back?' Визит вернулся на абонемент.':late&&S.sub&&S.sub.left!==Infinity?' <span class="sub">Меньше 3 часов до начала: визит списан по правилам клуба.</span>':''));
+  admin('ОТМЕНА','cancel',esc(S.name||'Клиент'),TYPES[c.type].n+', '+dShort(c.day).toLowerCase()+' '+c.time+' — освободилось место.'+(c.wait.length?' Место предложено первому из листа ожидания.':''));
+  if(c.wait.length){c.wait.shift();S.stats.wait=Math.max(0,S.stats.wait-1);c.taken++}
+  renderStats();menu('Что-нибудь ещё?');
+}
+function waitlist(c){
+  me('⏳ В лист ожидания');
+  if(!hasAccess()&&!(S.sub)){bot('Лист ожидания доступен владельцам абонемента.',[['🎟 Абонементы',function(){me('🎟 Абонементы');subsList(c)}],['Меню',function(){me('Меню');menu()}]],2);return}
+  c.wait.push(1);S.stats.wait++;
+  bot('Вы в листе ожидания'+pro()+', номер <b>'+c.wait.length+'</b>.<br><span class="sub">Если кто-то отменит запись, место автоматически перейдёт к вам, и я пришлю сообщение.</span>');
+  admin('ОЖИДАНИЕ','',esc(S.name||'Клиент'),TYPES[c.type].n+' '+c.time+' заполнена, клиент в листе ожидания №'+c.wait.length+'.');
+  setTimeout(function(){
+    if(!c.wait.length)return;c.wait.shift();S.stats.wait--;c.mine=true;S.bookings.push(c);if(S.sub&&S.sub.left!==Infinity)S.sub.left--;S.stats.book++;
+    bot('🎉 Освободилось место!'+pro()+'<br>Записал вас на <b>'+TYPES[c.type].n+'</b> в '+c.time+'.',[['Отлично',function(){me('Отлично');menu('Что-нибудь ещё?')}],['Отменить',function(){me('Отменить');cancel(c)}]],2);
+    admin('ЗАПИСЬ','',esc(S.name||'Клиент'),'Другой клиент отменил запись, место автоматически передано из листа ожидания: '+TYPES[c.type].n+' '+c.time+' · '+c.taken+'/'+c.cap);
+  },6500);
+  menu('Пока ждём, что-нибудь ещё?');
+}
+
+/* trial */
+function trial(){
+  me('🆓 Пробное занятие');
+  if(S.trialUsed||S.sub){bot(S.sub?'У вас уже есть абонемент, пробное занятие не нужно 🙂':'Пробное занятие уже использовано. Посмотрите абонементы?',[['🎟 Абонементы',function(){me('🎟 Абонементы');subsList()}],['Меню',function(){me('Меню');menu()}]],2);return}
+  var list=CL.filter(function(c){return c.trial&&c.day<=2&&c.taken<c.cap&&!past(c)}).slice(0,6);
+  bot('Первое групповое занятие бесплатно. Подходят <b>йога, пилатес и функционал</b>, выберите время:',list.map(function(c){return [dShort(c.day)+' '+c.time+'<small>'+TYPES[c.type].n+'</small>',function(){me(dShort(c.day)+' '+c.time+' · '+TYPES[c.type].n);trialBook(c)}]}),2);
+}
+function trialBook(c){
+  S.pending=c;
+  if(S.phone){trialDone();return}
+  bot('Чтобы администратор подготовил гостевой браслет, поделитесь контактом — кнопка внизу 👇');
+  queue.then(function(){$('#replyKb').classList.add('on')});
+}
+function trialDone(){
+  var c=S.pending;S.pending=null;c.taken++;c.mine=true;S.trialUsed=true;S.bookings.push(c);S.stats.trial++;
+  bot('Готово, '+esc(S.name)+'! Ждём вас на пробном занятии 🙌<br><b>'+TYPES[c.type].n+'</b>, '+dLabel(c.day).toLowerCase()+' в '+c.time+'.<br><span class="sub">Приходите за 15 минут, возьмите удобную форму и воду. Паспорт не нужен.</span>');
+  admin('ПРОБНОЕ','trial',esc(S.name)+' · '+S.phone,TYPES[c.type].n+', '+dShort(c.day).toLowerCase()+' '+c.time+'. Новый клиент, позвонить после занятия.',[['Позвоню','отметили: позвонить после тренировки'],['Подготовить браслет','браслет готов']]);
+  setTimeout(function(){bot('После пробного занятия действует скидка <b>15%</b> на первый абонемент'+pro()+' — только 48 часов.',[['🎟 Посмотреть абонементы',function(){me('🎟 Посмотреть абонементы');S.promo=.15;subsList()}],['Позже',function(){me('Позже');menu('Хорошо! Что-нибудь ещё?')}]],1)},900);
+}
+$('#shareContact').onclick=function(){
+  $('#replyKb').classList.remove('on');S.name='Екатерина';S.phone='+7 916 204-18-37';
+  addMsg('<b>📱 Контакт</b><br>Екатерина<br>+7 916 204-18-37','out');
+  if(S.pending&&S.pending.buy){var b=S.pending;S.pending=null;pay(b.sub,b.pt,b.c);return}
+  trialDone();
+};
+
+/* subscriptions */
+function subs(){me('🎟 Абонементы');subsList()}
+function subsList(c){
+  var d=S.promo||0;
+  bot('<b>Абонементы PULSE</b>'+pro()+(d?'<br><span class="sub">Скидка 15% после пробного уже учтена.</span>':'')+'<br><span class="sub">Все абонементы включают групповые тренировки, тренажёрный зал и сауну.</span>',
+    SUBS.map(function(s){var p=Math.round(s.p*(1-d)/10)*10;return [s.n+' — '+rub(p)+'<small>'+s.note+'</small>',function(){me(s.n);subCard(s,c)}]}).concat([['Меню',function(){me('Меню');menu()}]]),1);
+}
+function subCard(s,c){
+  var d=S.promo||0,p=Math.round(s.p*(1-d)/10)*10;
+  bot('<b>'+s.n+'</b> · '+rub(p)+(d?' <s class="sub">'+rub(s.p)+'</s>':'')+'<br>'+(s.visits===Infinity?'Без ограничения визитов':s.visits+' визитов')+', действует '+s.days+' дней с первого посещения.<br><span class="sub">Можно заморозить до 14 дней.</span><br><br>Добавить персональную тренировку со скидкой 20%?'+pro()+'<br><span class="sub">'+PT.n+' с тренером — '+rub(PT.p)+' вместо '+rub(PT.old)+'.</span>',
+    [['Да, добавить +'+rub(PT.p),function(){me('Да, добавить');checkout(s,true,c)}],['Нет, только абонемент',function(){me('Только абонемент');checkout(s,false,c)}]],1);
+}
+function checkout(s,pt,c){
+  if(!S.phone){S.pending={buy:1,sub:s,pt:pt,c:c};bot('Поделитесь контактом, чтобы закрепить абонемент за вами 👇');queue.then(function(){$('#replyKb').classList.add('on')});return}
+  pay(s,pt,c);
+}
+function pay(s,pt,c){
+  var d=S.promo||0,p=Math.round(s.p*(1-d)/10)*10,tot=p+(pt?PT.p:0);
+  bot('<div class="receipt"><div><span>'+s.n+'</span><span>'+rub(p)+'</span></div>'+(d?'<div><span class="sub">скидка после пробного 15%</span><span class="sub">−'+rub(s.p-p)+'</span></div>':'')+(pt?'<div><span>Персональная</span><span>'+rub(PT.p)+'</span></div>':'')+'<hr><div><b>Итого</b><b>'+rub(tot)+'</b></div></div><span class="sub">Оплата картой или СБП внутри Telegram.</span>',
+    [['💳 Оплатить '+rub(tot),function(){me('💳 Оплатить '+rub(tot));bot('Проводим оплату…',null,null,null,400);setTimeout(function(){paid(s,pt,tot,c)},900)}],['Отмена',function(){me('Отмена');menu()}]],1);
+}
+function paid(s,pt,tot,c){
+  var exp=new Date(NOW.getFullYear(),NOW.getMonth(),NOW.getDate()+s.days);
+  S.sub={n:s.n,visits:s.visits,left:s.visits,exp:exp,days:s.days,pt:pt?1:0};S.promo=0;S.stats.sale+=tot;
+  bot('✅ Оплата прошла, абонемент <b>«'+s.n+'»</b> активен до '+exp.getDate()+' '+MN[exp.getMonth()]+'.<br><span class="sub">Чек отправлен на почту. Браслет выдадут на ресепшн.</span>'+(pt?'<br>Администратор напишет, чтобы подобрать время персональной тренировки.':''),
+    c?[['✅ Записаться на '+c.time+' '+TYPES[c.type].n,function(){me('✅ Записаться');book2(c)}],['Меню',function(){me('Меню');menu()}]]:[['📅 Записаться на тренировку',function(){me('📅 Расписание');pickDay(0)}],['Меню',function(){me('Меню');menu()}]],1);
+  admin('ПРОДАЖА','sale',esc(S.name)+' · '+S.phone,'«'+s.n+'»'+(pt?' + персональная тренировка':'')+' · <b>'+rub(tot)+'</b> оплачено онлайн.',pt?[['Написать клиенту','сообщение отправлено'],['Назначить тренера','тренер: '+TR.str]]:null);
+}
+
+/* my sub */
+function mySub(){
+  me('👤 Мой абонемент');
+  if(!S.sub){bot('Активного абонемента пока нет.'+(S.trialUsed?'':' Первое групповое занятие — бесплатно.'),[['🎟 Абонементы',function(){me('🎟 Абонементы');subsList()}]].concat(S.trialUsed?[]:[['🆓 Пробное',trial]]).concat([['Меню',function(){me('Меню');menu()}]]),2);return}
+  var s=S.sub,e=s.exp,left=s.left===Infinity?'безлимит':s.left+' из '+s.visits,pct=s.left===Infinity?100:s.left/s.visits*100;
+  var bk=S.bookings.filter(function(c){return c.mine});
+  bot('<b>'+s.n+'</b>'+(S.frozen?' · <span style="color:#C98A2E">заморожен до '+S.frozenTo+'</span>':'')+'<br>Визиты: <b>'+left+'</b><div class="meter"><i style="width:'+pct+'%"></i></div><span class="sub">Действует до '+e.getDate()+' '+MN[e.getMonth()]+'</span>'+
+    (bk.length?'<br><br><b>Ваши записи:</b><br>'+bk.map(function(c){return '• '+dShort(c.day)+' '+c.time+' — '+TYPES[c.type].n}).join('<br>'):''),
+    (bk.length?bk.map(function(c){return ['❌ Отменить '+dShort(c.day).toLowerCase()+' '+c.time,function(){me('Отменить '+c.time);cancel(c)}]}):[]).concat([
+     S.frozen?['▶️ Разморозить',function(){me('Разморозить');S.frozen=0;bot('Абонемент снова активен.');admin('ЗАМОРОЗКА','',esc(S.name),'Досрочно разморозил абонемент.');menu()}]:['❄️ Заморозить'+pro(),freeze],
+     ['🔁 Продлить',function(){me('Продлить');subsList()}],['Меню',function(){me('Меню');menu()}]]),1);
+}
+function freeze(){
+  me('❄️ Заморозить');
+  bot('На сколько дней заморозить? Срок абонемента сдвинется на это же время.'+pro(),[['7 дней',function(){doFreeze(7)}],['14 дней',function(){doFreeze(14)}],['Отмена',function(){me('Отмена');menu()}]],3);
+}
+function doFreeze(n){
+  me(n+' дней');var s=S.sub,cn=S.bookings.filter(function(c){return c.mine&&c.day<n});cn.forEach(function(c){c.mine=false;c.taken--;if(s.left!==Infinity)s.left++});S.bookings=S.bookings.filter(function(c){return c.mine});s.exp=new Date(s.exp.getFullYear(),s.exp.getMonth(),s.exp.getDate()+n);var to=dayDate(n);S.frozen=n;S.frozenTo=to.getDate()+' '+MN[to.getMonth()];
+  bot('❄️ Абонемент заморожен до <b>'+S.frozenTo+'</b>. Новый срок действия — до '+s.exp.getDate()+' '+MN[s.exp.getMonth()]+'.'+(cn.length?'<br>Записи на эти дни отменены: '+cn.length+'.':'')+'<br><span class="sub">Разморозить досрочно можно в «Мой абонемент».</span>');renderStats();
+  admin('ЗАМОРОЗКА','',esc(S.name||'Клиент'),'Заморозка на '+n+' дней, до '+S.frozenTo+'. Абонемент продлён автоматически.');
+  menu('Что-нибудь ещё?');
+}
+function ask(){me('💬 Вопрос администратору');S.asking=true;bot('Напишите вопрос в поле ниже — передам администратору, ответ придёт сюда же.')}
+
+$('#composer').onsubmit=function(e){e.preventDefault();var v=$('#input').value.trim();if(!v)return;$('#input').value='';me(v);
+  var low=v.toLowerCase();
+  if(/распис|трениров|занят/.test(low)&&!S.asking){pickDay(0);return}
+  if(/абонем|цен|стоим|сколько/.test(low)&&!S.asking){subsList();return}
+  S.asking=false;
+  bot('Передал администратору, обычно отвечают за 10 минут 👌');
+  admin('ВОПРОС','',esc(S.name||'Клиент из бота'),'«'+esc(v)+'»',[['Ответить','ответ отправлен клиенту',function(){bot('<b>Администратор PULSE:</b> Здравствуйте! Да, конечно, ждём вас. Если будут ещё вопросы — пишите сюда.')}]]);
+};
+
+/* tabs & restart */
+$$('#tabs button').forEach(function(b){b.onclick=function(){$$('#tabs button').forEach(function(x){x.classList.toggle('active',x===b)});$('#stage').dataset.view=b.dataset.view;if(b.dataset.view==='admin'){S.unread=0;$('#badge').classList.remove('on')}}});
+function restart(){
+  reset();queue=Promise.resolve();chat.innerHTML='';$('#replyKb').classList.remove('on');
+  $('#adminChat').innerHTML='<div class="empty-log" id="emptyLog">Здесь появятся заявки, записи и продажи из бота. Начните диалог в чате клиента.</div>';
+  $('#badge').classList.remove('on');renderStats();start();
+}
+$('#restart').onclick=restart;
+setInterval(function(){$('#clock').textContent=time()},10000);
+restart();
+})();
+</script>
+</body>
+</html>

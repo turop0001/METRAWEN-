@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>URBAN STORE · Instagram Analytics</title>
-<meta name="description" content="Demo content analytics dashboard for an apparel brand's Instagram account. METRAWEN Digital.">
+<title>URBAN STORE · Аналитика Telegram-канала</title>
+<meta name="description" content="Демо-дашборд аналитики контента Telegram-канала бренда одежды. METRAWEN Digital.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101F19'/%3E%3Crect x='7' y='16' width='4' height='8' rx='1' fill='%23D4A853'/%3E%3Crect x='14' y='11' width='4' height='13' rx='1' fill='%23D4A853'/%3E%3Crect x='21' y='7' width='4' height='17' rx='1' fill='%23D4A853'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -123,81 +123,80 @@ td.rk{color:var(--dim);font-family:"JetBrains Mono",monospace;width:26px}
   <header class="top">
     <div class="brand">
       <div class="logo"><svg width="20" height="20" viewBox="0 0 32 32"><rect x="6" y="17" width="5" height="9" rx="1.5" fill="#D4A853"/><rect x="13.5" y="11" width="5" height="15" rx="1.5" fill="#D4A853"/><rect x="21" y="6" width="5" height="20" rx="1.5" fill="#D4A853"/></svg></div>
-      <div><b>URBAN STORE</b><small>Instagram · content analytics</small></div>
+      <div><b>URBAN STORE</b><small>Telegram-канал · аналитика контента</small></div>
     </div>
-    <span class="badge" title="All numbers are generated for demo purposes">● Demo data</span>
+    <span class="badge" title="Все цифры сгенерированы для примера">● Демо-данные / sample data</span>
     <div class="sp"></div>
-    <div class="seg" id="per" role="tablist" aria-label="Period"><button data-d="7">7 days</button><button data-d="14">14 days</button><button data-d="30" class="on">30 days</button></div>
+    <div class="seg" id="per" role="tablist" aria-label="Период"><button data-d="7">7 дней</button><button data-d="14">14 дней</button><button data-d="30" class="on">30 дней</button></div>
   </header>
 
   <section class="grid">
-    <div class="card kpi"><div class="lbl">Followers</div><div class="val num" id="k1">…</div><div class="sub" id="k1s"></div><svg class="spark" id="sp1" width="90" height="30"></svg></div>
-    <div class="card kpi"><div class="lbl">Avg. reach per post</div><div class="val num" id="k2">…</div><div class="sub" id="k2s"></div></div>
-    <div class="card kpi"><div class="lbl">Engagement rate (ER)</div><div class="val num" id="k3">…</div><div class="sub">likes, comments and shares vs. reach</div></div>
-    <div class="card kpi"><div class="lbl" id="k4l">Top post this month</div><div class="val num" id="k4">…</div><div class="sub" id="k4s"></div></div>
+    <div class="card kpi"><div class="lbl">Подписчики</div><div class="val num" id="k1">…</div><div class="sub" id="k1s"></div><svg class="spark" id="sp1" width="90" height="30"></svg></div>
+    <div class="card kpi"><div class="lbl">Средний охват поста</div><div class="val num" id="k2">…</div><div class="sub" id="k2s"></div></div>
+    <div class="card kpi"><div class="lbl">Вовлечённость (ER)</div><div class="val num" id="k3">…</div><div class="sub">реакции, комментарии и репосты к охвату</div></div>
+    <div class="card kpi"><div class="lbl" id="k4l">Лучший пост месяца</div><div class="val num" id="k4">…</div><div class="sub" id="k4s"></div></div>
 
     <div class="card c-line">
-      <h2>Follower growth <span class="hint">daily, growth peaks highlighted</span></h2>
+      <h2>Рост подписчиков <span class="hint">по дням, отмечены пики прироста</span></h2>
       <div class="chartbox"><svg id="ln" width="100%" height="400"></svg><div class="tip" id="tip"></div></div>
     </div>
 
     <div class="card c-rec">
-      <h2>Recommendations <span class="hint" id="recN"></span></h2>
+      <h2>Рекомендации <span class="hint" id="recN"></span></h2>
       <div class="recs" id="recs"></div>
-      <div class="rule">Recommendations are based on the selected period: average reach by content type, by day of week and posting time, plus engagement by type.</div>
+      <div class="rule">Рекомендации считаются по данным выбранного периода: средний охват по типам контента, по дням недели и часам публикации, а также вовлечённость по типам.</div>
     </div>
 
     <div class="card c-table">
-      <h2>Top 10 posts <span class="hint">click a column header to sort</span></h2>
+      <h2>Топ-10 публикаций <span class="hint">нажмите на заголовок столбца, чтобы отсортировать</span></h2>
       <div class="tw"><table>
-        <thead><tr><th>#</th><th class="s" data-k="ts">Date</th><th>Post</th><th class="s" data-k="reach">Reach</th><th class="s" data-k="react">Likes</th><th class="s" data-k="com">Comments</th><th class="s" data-k="rep">Shares</th><th class="s" data-k="er">ER</th></tr></thead>
+        <thead><tr><th>#</th><th class="s" data-k="ts">Дата</th><th>Публикация</th><th class="s" data-k="reach">Охват</th><th class="s" data-k="react">Реакции</th><th class="s" data-k="com">Комм.</th><th class="s" data-k="rep">Репосты</th><th class="s" data-k="er">ER</th></tr></thead>
         <tbody id="tb"></tbody>
       </table></div>
     </div>
 
     <div class="card c-pie">
-      <h2>Reach share by type <span class="hint" id="pieH"></span></h2>
+      <h2>Доля охвата по типам <span class="hint" id="pieH"></span></h2>
       <div class="pie-wrap"><div class="chartbox"><svg id="pie" width="170" height="170" viewBox="0 0 170 170"></svg><div class="tip" id="tip2"></div></div><div class="pie-leg" id="pl"></div></div>
     </div>
 
     <div class="card c-heat">
-      <h2>When to post <span class="hint">avg. reach by day and time, adjusted for format, ET</span></h2>
+      <h2>Когда публиковать <span class="hint">средний охват по дню недели и времени с поправкой на формат, МСК</span></h2>
       <div class="heat-wrap">
         <div class="chartbox">
           <div class="heat" id="heat"></div>
-          <div class="scale">lower <span class="g"></span> higher <span style="width:10px"></span><span style="border:1px dashed var(--line2);border-radius:4px;padding:0 6px">—</span> no posts</div>
+          <div class="scale">ниже <span class="g"></span> выше <span style="width:10px"></span><span style="border:1px dashed var(--line2);border-radius:4px;padding:0 6px">—</span> не публиковали</div>
           <div class="tip" id="tip3"></div>
         </div>
-        <div><div style="font-size:12.5px;color:var(--muted);margin-bottom:8px">Best posting windows</div><div class="slots" id="slots"></div></div>
+        <div><div style="font-size:12.5px;color:var(--muted);margin-bottom:8px">Лучшие окна для публикации</div><div class="slots" id="slots"></div></div>
       </div>
     </div>
   </section>
 
   <div class="foot">
-    <span>Demo data: posts, reach and followers are fictional and for illustration only.</span>
-    <span>Dashboard built with <a href="../digital.html" target="_blank" rel="noopener">METRAWEN Digital</a></span>
+    <span>Демо-данные: публикации, охваты и подписчики вымышлены и служат примером.</span>
+    <span>Дашборд собран в <a href="../digital.html" target="_blank" rel="noopener">METRAWEN Digital</a></span>
   </div>
 </div>
 
 <script>
 (function(){
-const TYPES={photo:{nm:'Photo post',c:'#7FA7D9',base:3150},video:{nm:'Reel',c:'#D4A853',base:3950},story:{nm:'Story',c:'#B597D6',base:2250},give:{nm:'Giveaway',c:'#5CC495',base:5600}};
-const DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const DOWF=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const TYPES={photo:{nm:'Пост с фото',c:'#7FA7D9',base:3150},video:{nm:'Видео',c:'#D4A853',base:3950},story:{nm:'Сторис',c:'#B597D6',base:2250},give:{nm:'Розыгрыш',c:'#5CC495',base:5600}};
+const DOW=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const DOWF=['понедельник','вторник','среда','четверг','пятница','суббота','воскресенье'];
 const DF=[.9,1.2,.94,1.19,1,.84,.86];
 const SLOTS=[[9,12],[12,15],[15,18],[18,21],[21,24]];
 const SF=[.8,.95,.9,1.26,1.04];
-const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const H12=h=>{h=h%24;return ((h%12)||12)+(h<12?'am':'pm');};
+const MON=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
 const TITLES={
- photo:['Fall \'26 collection: first look','How to wear an oversized coat','Look of the week: head-to-toe denim','A 7-piece capsule wardrobe','New hoodie colors in stock','Behind the scenes of our lookbook shoot','Cardigans are back: our picks','How to find your jeans size','Three looks, one trench coat','Sneaker restock is here'],
- video:['Puffer try-on: 5 styles','Unboxing the new collection','How our hoodies are made','Wide-leg jeans review','Styling a full look in 60 seconds','Rain-testing our jackets','What\'s inside our packaging'],
- story:['Poll: which hoodie color?','Restock announcement','Customer review','Warehouse sneak peek','Accessories sale, today only'],
- give:['Puffer jacket giveaway for followers','$100 gift card giveaway']
+ photo:['Новая коллекция осень-26: первые фото','Как носить оверсайз-пальто','Лук недели: деним total look','Базовый гардероб на 7 вещей','Новые оттенки худи в наличии','Закулисье съёмки лукбука','Кардиганы вернулись: подборка','Как выбрать размер джинсов','Три образа с одним тренчем','Поступление кроссовок'],
+ video:['Примерка пуховиков: 5 моделей','Распаковка новой коллекции','Как мы шьём худи: производство','Обзор джинсов wide leg','Собираем образ за 60 секунд','Тест курток под дождём','Что внутри нашей упаковки'],
+ story:['Опрос: какой цвет худи?','Анонс поставки','Отзыв покупателя','Сторис со склада','Скидка на аксессуары до вечера'],
+ give:['Розыгрыш пуховика среди подписчиков','Розыгрыш сертификата 5 000 ₽']
 };
 let s=20260925; const rnd=()=>{s=(s*16807)%2147483647;return (s-1)/2147483646;};
 const today=new Date(); today.setHours(0,0,0,0);
-// posts over 30 days
+// публикации за 30 дней
 const POSTS=[]; const tc={photo:0,video:0,story:0,give:0};
 for(let d=29;d>=0;d--){
   const n=rnd()<.35?1:rnd()<.75?2:3;
@@ -211,14 +210,14 @@ for(let d=29;d>=0;d--){
     const si=SLOTS.findIndex(x=>h>=x[0]&&h<x[1]);
     let reach=TYPES[type].base*DF[dw]*SF[si]*(0.9+rnd()*.2);
     date.setHours(h,[0,15,30,45][Math.floor(rnd()*4)]);
-    const L=TITLES[type],ti=tc[type]++,t=L[ti%L.length]+(ti>=L.length?', part '+(Math.floor(ti/L.length)+1):'');
+    const L=TITLES[type],ti=tc[type]++,t=L[ti%L.length]+(ti>=L.length?', часть '+(Math.floor(ti/L.length)+1):'');
     POSTS.push({ts:+date,date,dw,h,si,type,title:t,reach:Math.round(reach/10)*10});
   }
 }
-// viral reel 12 days ago
+// вирусное видео 12 дней назад
 const vd=new Date(today); vd.setDate(today.getDate()-12); vd.setHours(19,0);
-POSTS.push({ts:+vd,date:vd,dw:(vd.getDay()+6)%7,h:19,si:3,type:'video',title:'Picking a puffer for your height: 5 styles',reach:9100,viral:true});
-// normalize: 30-day avg reach 3,800
+POSTS.push({ts:+vd,date:vd,dw:(vd.getDay()+6)%7,h:19,si:3,type:'video',title:'Как выбрать пуховик под свой рост: 5 моделей',reach:9100,viral:true});
+// нормируем: средний охват за 30 дней 3 800
 (function(){const o=POSTS.filter(p=>!p.viral),k=(3800*POSTS.length-9100)/o.reduce((a,p)=>a+p.reach,0);o.forEach(p=>{p.reach=Math.round(p.reach*k/10)*10;});})();
 POSTS.forEach(p=>{
   const er={photo:.035,video:.043,story:.02,give:.11}[p.type]*(0.8+rnd()*.4)*(p.viral?1.3:1);
@@ -228,7 +227,7 @@ POSTS.forEach(p=>{
 });
 POSTS.sort((a,b)=>a.ts-b.ts);
 
-// followers: base growth + reach-driven, +340 over 30 days, ending at 12,400
+// подписчики: базовый прирост + от охвата, всего +340 за 30 дней, итог 12 400
 const gain=[]; for(let d=29;d>=0;d--){const day=new Date(today);day.setDate(today.getDate()-d);
   const ps=POSTS.filter(p=>p.date.toDateString()===day.toDateString());
   let g=3+rnd()*4+ps.reduce((a,p)=>a+(p.type==='give'?p.reach*.012:p.viral?p.reach*.009:p.reach*.0012),0);
@@ -238,9 +237,9 @@ gain.forEach(x=>{x.g=Math.round(x.g*340/tot);});
 const fix=340-gain.reduce((a,x)=>a+x.g,0); gain[29].g+=fix;
 gain.forEach(x=>{acc+=x.g;x.subs=acc;});
 
-const fmt=v=>Math.round(v).toLocaleString('en-US');
-const pc=(v,d=1)=>(v*100).toFixed(d)+'%';
-const dstr=d=>MON[d.getMonth()]+' '+d.getDate();
+const fmt=v=>Math.round(v).toLocaleString('ru-RU').replace(/,/g,' ');
+const pc=(v,d=1)=>(v*100).toFixed(d).replace('.',',')+'%';
+const dstr=d=>d.getDate()+' '+MON[d.getMonth()];
 let per=30, sortK='reach', asc=false;
 
 function inPer(){const from=new Date(today);from.setDate(today.getDate()-per+1);return POSTS.filter(p=>p.date>=from);}
@@ -250,16 +249,16 @@ function kpi(){
   const P=inPer(), G=gain.slice(30-per);
   const add=G.reduce((a,x)=>a+x.g,0);
   document.getElementById('k1').textContent=fmt(gain[29].subs);
-  document.getElementById('k1s').innerHTML='<span class="up">+'+add+'</span> '+(per===30?'this month':'in '+per+' days');
+  document.getElementById('k1s').innerHTML='<span class="up">+'+add+'</span> за '+(per===30?'месяц':per+' дней');
   const ar=avg(P,p=>p.reach);
   document.getElementById('k2').textContent=fmt(Math.round(ar/10)*10);
-  document.getElementById('k2s').textContent=P.length+' posts in period';
+  document.getElementById('k2s').textContent=P.length+' публикаций за период';
   const er=P.reduce((a,p)=>a+p.react+p.com+p.rep,0)/P.reduce((a,p)=>a+p.reach,0);
   document.getElementById('k3').textContent=pc(er);
   const best=P.slice().sort((a,b)=>b.reach-a.reach)[0];
-  document.getElementById('k4l').textContent='Top post '+(per===30?'this month':'in '+per+' days');
-  document.getElementById('k4').textContent=fmt(best.reach)+' reach';
-  document.getElementById('k4s').textContent=TYPES[best.type].nm+', '+dstr(best.date);
+  document.getElementById('k4l').textContent='Лучший пост '+(per===30?'месяца':'за '+per+' дней');
+  document.getElementById('k4').textContent='охват '+fmt(best.reach);
+  document.getElementById('k4s').textContent=TYPES[best.type].nm.toLowerCase()+', '+dstr(best.date);
   const v=gain.map(x=>x.subs),mn=Math.min(...v),mx=Math.max(...v);
   document.getElementById('sp1').innerHTML='<polyline points="'+v.map((y,i)=>(i*90/29).toFixed(1)+','+(27-(y-mn)/(mx-mn)*24).toFixed(1)).join(' ')+'" fill="none" stroke="#5CC495" stroke-width="1.6"/>';
 }
@@ -275,14 +274,14 @@ function line(){
   for(let v=mn;v<=mx+1e-6;v+=st) h+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="#26433A" stroke-dasharray="'+(v===mn?'0':'3 4')+'"/><text x="'+(L-8)+'" y="'+(Y(v)+4)+'" text-anchor="end" fill="#6B8277" font-size="11" font-family="JetBrains Mono">'+fmt(v)+'</text>';
   const ticks=n>14?[0,7,14,21,n-1]:n>7?[0,4,9,n-1]:[...Array(n).keys()];
   ticks.forEach(i=>h+='<text x="'+X(i)+'" y="'+(H-B+18)+'" text-anchor="'+(i===0?'start':i===n-1?'end':'middle')+'" fill="#6B8277" font-size="11">'+dstr(G[i].day)+'</text>');
-  h+='<text x="14" y="'+(T+(H-T-B)/2)+'" transform="rotate(-90 14 '+(T+(H-T-B)/2)+')" text-anchor="middle" fill="#6B8277" font-size="11">Followers</text>';
+  h+='<text x="14" y="'+(T+(H-T-B)/2)+'" transform="rotate(-90 14 '+(T+(H-T-B)/2)+')" text-anchor="middle" fill="#6B8277" font-size="11">Подписчики</text>';
   const pts=G.map((x,i)=>X(i).toFixed(1)+','+Y(x.subs).toFixed(1));
   h+='<polygon points="'+X(0)+','+(H-B)+' '+pts.join(' ')+' '+X(n-1)+','+(H-B)+'" fill="url(#ga)"/>';
   h+='<polyline points="'+pts.join(' ')+'" fill="none" stroke="#5CC495" stroke-width="2.4" stroke-linejoin="round"/>';
-  // peaks: 2 days with the highest growth
+  // пики: 2 дня с макс. приростом
   const peaks=G.map((x,i)=>({i,g:x.g})).sort((a,b)=>b.g-a.g).slice(0,2).filter(p=>p.g>=25);
   peaks.forEach(p=>{const x=G[p.i], top=x.ps.slice().sort((a,b)=>b.reach-a.reach)[0];
-    const lbl='+'+x.g+(top?' · '+(top.type==='give'?'giveaway':top.viral?'viral reel':TYPES[top.type].nm.toLowerCase()):'');
+    const lbl='+'+x.g+(top?' · '+(top.type==='give'?'розыгрыш':top.viral?'вирусное видео':TYPES[top.type].nm.toLowerCase()):'');
     const cx=X(p.i),cy=Y(x.subs); const anc=cx>W-120?'end':cx<L+60?'start':'middle';
     h+='<circle cx="'+cx+'" cy="'+cy+'" r="5" fill="#D4A853" stroke="#15291F" stroke-width="2"/><text x="'+cx+'" y="'+(cy-11)+'" text-anchor="'+anc+'" fill="#D4A853" font-size="11.5" font-weight="600">'+lbl+'</text>';});
   h+='<line id="xh" y1="'+T+'" y2="'+(H-B)+'" stroke="#93A89D" opacity="0"/><circle id="dt" r="4.5" fill="#5CC495" stroke="#15291F" stroke-width="2" opacity="0"/><rect id="hit" x="'+L+'" y="'+T+'" width="'+(W-L-R)+'" height="'+(H-T-B)+'" fill="transparent"/>';
@@ -290,7 +289,7 @@ function line(){
   const tip=document.getElementById('tip'),hit=svg.querySelector('#hit'),xh=svg.querySelector('#xh'),dt=svg.querySelector('#dt');
   const mv=cx=>{const b=svg.getBoundingClientRect();const i=Math.max(0,Math.min(n-1,Math.round((cx-b.left-L)/(W-L-R)*(n-1))));const x=G[i];
     xh.setAttribute('x1',X(i));xh.setAttribute('x2',X(i));xh.setAttribute('opacity',.5);dt.setAttribute('cx',X(i));dt.setAttribute('cy',Y(x.subs));dt.setAttribute('opacity',1);
-    tip.innerHTML='<div class="h">'+dstr(x.day)+', '+DOW[(x.day.getDay()+6)%7]+'</div><div class="r"><span>Followers</span><b class="num">'+fmt(x.subs)+'</b></div><div class="r"><span>New today</span><b class="num" style="color:var(--green-l)">+'+x.g+'</b></div><div class="r"><span>Posts</span><b class="num">'+x.ps.length+'</b></div>';
+    tip.innerHTML='<div class="h">'+dstr(x.day)+', '+DOW[(x.day.getDay()+6)%7]+'</div><div class="r"><span>Подписчики</span><b class="num">'+fmt(x.subs)+'</b></div><div class="r"><span>Прирост за день</span><b class="num" style="color:var(--green-l)">+'+x.g+'</b></div><div class="r"><span>Публикаций</span><b class="num">'+x.ps.length+'</b></div>';
     let l=X(i)+14; if(l+180>W) l=X(i)-190; tip.style.left=l+'px'; tip.style.top='10px'; tip.style.opacity=1;};
   hit.onmousemove=e=>mv(e.clientX);
   hit.addEventListener('touchstart',e=>mv(e.touches[0].clientX),{passive:true});
@@ -302,7 +301,7 @@ function table(){
   const P=inPer().slice().sort((a,b)=>b.reach-a.reach).slice(0,10);
   P.sort((a,b)=>(asc?1:-1)*(a[sortK]-b[sortK]));
   const mx=Math.max(...P.map(p=>p.reach));
-  document.getElementById('tb').innerHTML=P.map((p,i)=>'<tr><td class="rk">'+(i+1)+'</td><td>'+dstr(p.date)+', '+((p.h%12)||12)+':'+String(p.date.getMinutes()).padStart(2,'0')+' '+(p.h<12?'AM':'PM')+'</td><td class="ttl" title="'+p.title+'"><span class="ty"><i style="background:'+TYPES[p.type].c+'"></i>'+TYPES[p.type].nm+'</span><br>'+p.title+'</td><td class="num"><span class="bar" style="width:'+Math.round(p.reach/mx*54)+'px"></span>'+fmt(p.reach)+'</td><td class="num">'+fmt(p.react)+'</td><td class="num">'+fmt(p.com)+'</td><td class="num">'+fmt(p.rep)+'</td><td class="num">'+pc(p.er)+'</td></tr>').join('');
+  document.getElementById('tb').innerHTML=P.map((p,i)=>'<tr><td class="rk">'+(i+1)+'</td><td>'+dstr(p.date)+', '+String(p.h).padStart(2,'0')+':'+String(p.date.getMinutes()).padStart(2,'0')+'</td><td class="ttl" title="'+p.title+'"><span class="ty"><i style="background:'+TYPES[p.type].c+'"></i>'+TYPES[p.type].nm+'</span><br>'+p.title+'</td><td class="num"><span class="bar" style="width:'+Math.round(p.reach/mx*54)+'px"></span>'+fmt(p.reach)+'</td><td class="num">'+fmt(p.react)+'</td><td class="num">'+fmt(p.com)+'</td><td class="num">'+fmt(p.rep)+'</td><td class="num">'+pc(p.er)+'</td></tr>').join('');
   document.querySelectorAll('th.s').forEach(th=>{th.classList.toggle('act',th.dataset.k===sortK);th.classList.toggle('asc',th.dataset.k===sortK&&asc);});
 }
 
@@ -310,7 +309,7 @@ function pie(){
   const P=inPer(); const keys=Object.keys(TYPES);
   const sum=P.reduce((a,p)=>a+p.reach,0);
   const parts=keys.map(k=>({k,nm:TYPES[k].nm,c:TYPES[k].c,v:P.filter(p=>p.type===k).reduce((a,p)=>a+p.reach,0),n:P.filter(p=>p.type===k).length})).filter(x=>x.v>0);
-  // shares rounded to sum to exactly 100
+  // доли с округлением, дающим ровно 100
   const raw=parts.map(p=>p.v/sum*100), fl=raw.map(Math.floor); let rest=100-fl.reduce((a,b)=>a+b,0);
   raw.map((r,i)=>({i,f:r-fl[i]})).sort((a,b)=>b.f-a.f).forEach(o=>{if(rest>0){fl[o.i]++;rest--;}});
   parts.forEach((p,i)=>p.pct=fl[i]);
@@ -323,11 +322,11 @@ function pie(){
   const top=parts.slice().sort((x,y)=>y.v-x.v)[0];
   h+='<text x="85" y="82" text-anchor="middle" fill="#EAF0EC" font-size="24" font-weight="600" font-family="JetBrains Mono">'+top.pct+'%</text><text x="85" y="101" text-anchor="middle" fill="#93A89D" font-size="11">'+top.nm.toLowerCase()+'</text>';
   svg.innerHTML=h;
-  document.getElementById('pieH').textContent=fmt(sum)+' views';
-  document.getElementById('pl').innerHTML=parts.map(p=>'<div><i style="background:'+p.c+'"></i><span>'+p.nm+'<small>'+p.n+' posts · avg. reach '+fmt(Math.round(p.v/p.n/10)*10)+'</small></span><b>'+p.pct+'%</b></div>').join('');
+  document.getElementById('pieH').textContent=fmt(sum)+' просмотров';
+  document.getElementById('pl').innerHTML=parts.map(p=>'<div><i style="background:'+p.c+'"></i><span>'+p.nm+'<small>'+p.n+' публ. · ср. охват '+fmt(Math.round(p.v/p.n/10)*10)+'</small></span><b>'+p.pct+'%</b></div>').join('');
   const tip=document.getElementById('tip2');
   svg.querySelectorAll('path').forEach(el=>{el.onmousemove=e=>{const p=parts[+el.dataset.i];
-    tip.innerHTML='<div class="h">'+p.nm+'</div><div class="r"><span>Reach share</span><b class="num">'+p.pct+'%</b></div><div class="r"><span>Reach</span><b class="num">'+fmt(p.v)+'</b></div><div class="r"><span>Posts</span><b class="num">'+p.n+'</b></div>';
+    tip.innerHTML='<div class="h">'+p.nm+'</div><div class="r"><span>Доля охвата</span><b class="num">'+p.pct+'%</b></div><div class="r"><span>Охват</span><b class="num">'+fmt(p.v)+'</b></div><div class="r"><span>Публикаций</span><b class="num">'+p.n+'</b></div>';
     const b=svg.getBoundingClientRect();tip.style.left=Math.min(e.clientX-b.left+12,80)+'px';tip.style.top=(e.clientY-b.top+12)+'px';tip.style.opacity=1;
     svg.querySelectorAll('path').forEach(x=>x.style.opacity=x===el?1:.35);};
     el.onmouseleave=()=>{tip.style.opacity=0;svg.querySelectorAll('path').forEach(x=>x.style.opacity=1);};});
@@ -338,22 +337,22 @@ function lerp(a,b,t){const pa=parseInt(a.slice(1),16),pb=parseInt(b.slice(1),16)
 function col(t){const x=Math.max(0,Math.min(1,t))*(CS.length-1),i=Math.min(CS.length-2,Math.floor(x));return lerp(CS[i],CS[i+1],x-i);}
 function norm(P){const ta={};Object.keys(TYPES).forEach(k=>{const a=P.filter(p=>p.type===k);ta[k]=a.length?avg(a,p=>p.reach):1;});const all=avg(P,p=>p.reach);P.forEach(p=>p.nr=p.reach/ta[p.type]*all);return P;}
 function heatData(){
-  const P=norm(inPer().filter(p=>p.type!=='give'&&!p.viral)); // giveaways and the viral post skew the picture
+  const P=norm(inPer().filter(p=>p.type!=='give'&&!p.viral)); // розыгрыши и вирусный пост искажают картину
   const M=DOW.map((_,d)=>SLOTS.map((_,s)=>{const a=P.filter(p=>p.dw===d&&p.si===s);return {n:a.length,v:a.length?avg(a,p=>p.nr):null,d,s};}));
   return M;
 }
 function heat(){
   const M=heatData(), all=M.flat().filter(c=>c.n), mn=Math.min(...all.map(c=>c.v)), mx=Math.max(...all.map(c=>c.v));
   const best=all.slice().sort((a,b)=>b.v-a.v).slice(0,3);
-  let h='<div></div>'+SLOTS.map(s=>'<div class="hd">'+H12(s[0])+'–'+H12(s[1])+'</div>').join('');
-  M.forEach((row,d)=>{h+='<div class="dl">'+DOW[d]+'</div>'+row.map(c=>c.n?'<div class="cell'+(best.includes(c)?' best':'')+'" data-d="'+d+'" data-s="'+c.s+'" style="background:'+col((c.v-mn)/(mx-mn||1))+';color:'+((c.v-mn)/(mx-mn||1)>.35?'#0F1B15':'#CFE0D6')+'">'+(c.v/1000).toFixed(1)+'k</div>':'<div class="cell e" data-d="'+d+'" data-s="'+c.s+'">—</div>').join('');});
+  let h='<div></div>'+SLOTS.map(s=>'<div class="hd">'+s[0]+'–'+s[1]+'</div>').join('');
+  M.forEach((row,d)=>{h+='<div class="dl">'+DOW[d]+'</div>'+row.map(c=>c.n?'<div class="cell'+(best.includes(c)?' best':'')+'" data-d="'+d+'" data-s="'+c.s+'" style="background:'+col((c.v-mn)/(mx-mn||1))+';color:'+((c.v-mn)/(mx-mn||1)>.35?'#0F1B15':'#CFE0D6')+'">'+(c.v/1000).toFixed(1).replace('.',',')+'к</div>':'<div class="cell e" data-d="'+d+'" data-s="'+c.s+'">—</div>').join('');});
   const el=document.getElementById('heat'); el.innerHTML=h;
   const tip=document.getElementById('tip3'),box=el.parentElement;
   el.querySelectorAll('.cell').forEach(c=>{c.onmousemove=e=>{const x=M[+c.dataset.d][+c.dataset.s];
-    tip.innerHTML='<div class="h">'+DOW[x.d]+', '+H12(SLOTS[x.s][0])+'–'+H12(SLOTS[x.s][1])+'</div>'+(x.n?'<div class="r"><span>Format-adjusted reach</span><b class="num">'+fmt(Math.round(x.v/10)*10)+'</b></div><div class="r"><span>Posts</span><b class="num">'+x.n+'</b></div>':'<div style="color:var(--muted)">No posts in this slot</div>');
+    tip.innerHTML='<div class="h">'+DOW[x.d]+', '+SLOTS[x.s][0]+':00–'+SLOTS[x.s][1]+':00</div>'+(x.n?'<div class="r"><span>Охват с поправкой на формат</span><b class="num">'+fmt(Math.round(x.v/10)*10)+'</b></div><div class="r"><span>Публикаций</span><b class="num">'+x.n+'</b></div>':'<div style="color:var(--muted)">В это время не публиковали</div>');
     const b=box.getBoundingClientRect();let l=e.clientX-b.left+14;if(l+180>b.width)l=e.clientX-b.left-194;tip.style.left=l+'px';tip.style.top=(e.clientY-b.top+14)+'px';tip.style.opacity=1;};
     c.onmouseleave=()=>tip.style.opacity=0;});
-  document.getElementById('slots').innerHTML=best.map((c,i)=>'<div class="slot"><em>'+(i+1)+'</em><span>'+DOW[c.d]+', '+H12(SLOTS[c.s][0])+'–'+H12(SLOTS[c.s][1])+'</span><b>'+fmt(Math.round(c.v/10)*10)+'</b></div>').join('');
+  document.getElementById('slots').innerHTML=best.map((c,i)=>'<div class="slot"><em>'+(i+1)+'</em><span>'+DOW[c.d]+', '+SLOTS[c.s][0]+':00–'+SLOTS[c.s][1]+':00</span><b>'+fmt(Math.round(c.v/10)*10)+'</b></div>').join('');
   return {M,best};
 }
 
@@ -362,21 +361,21 @@ function recs(H){
   const by=k=>P.filter(p=>p.type===k);
   const v=by('video'),ph=by('photo'),st=by('story');
   if(v.length>=2&&ph.length>=2){const d=avg(v,p=>p.reach)/avg(ph,p=>p.reach)-1;
-    if(Math.abs(d)>=.1) out.push({c:'var(--gold)',t:'Format',h:(d>0?'Reels get <b>'+Math.round(d*100)+'% more reach</b> than photo posts':'Photo posts get <b>'+Math.round(-d*100)+'% more reach</b> than Reels')+'.',a:'Avg. reach: Reels '+fmt(Math.round(avg(v,p=>p.reach)/10)*10)+', photos '+fmt(Math.round(avg(ph,p=>p.reach)/10)*10)+' ('+v.length+' and '+ph.length+' posts).'});}
-  // best time: by day of week and by slot separately
+    if(Math.abs(d)>=.1) out.push({c:'var(--gold)',t:'Формат',h:(d>0?'Видео получают на <b>'+Math.round(d*100)+'% больше охвата</b>, чем посты с фото':'Посты с фото получают на <b>'+Math.round(-d*100)+'% больше охвата</b>, чем видео')+'.',a:'Средний охват: видео '+fmt(Math.round(avg(v,p=>p.reach)/10)*10)+', фото '+fmt(Math.round(avg(ph,p=>p.reach)/10)*10)+' ('+v.length+' и '+ph.length+' публикаций).'});}
+  // лучшее время: по дню недели и слоту отдельно
   const flat=norm(P.filter(p=>p.type!=='give'&&!p.viral)), base=avg(flat,p=>p.nr);
   const dws=DOW.map((_,d)=>{const a=flat.filter(p=>p.dw===d);return {d,n:a.length,v:a.length?avg(a,p=>p.nr):0};}).filter(x=>x.n>=2).sort((a,b)=>b.v-a.v);
   const sls=SLOTS.map((_,s)=>{const a=flat.filter(p=>p.si===s);return {s,n:a.length,v:a.length?avg(a,p=>p.nr):0};}).filter(x=>x.n>=2).sort((a,b)=>b.v-a.v);
   if(dws.length>=2&&sls.length){const d1=dws[0],d2=dws[1],sl=sls[0];const up=((d1.v+d2.v)/2)/base-1;
-    out.push({c:'var(--green-l)',t:'Schedule',h:'Best time to post: <b>'+DOWF[Math.min(d1.d,d2.d)]+' and '+DOWF[Math.max(d1.d,d2.d)]+', '+H12(SLOTS[sl.s][0])+'–'+H12(SLOTS[sl.s][1])+'</b>.',a:'Reach on those days is '+Math.round(up*100)+'% above average, and '+Math.round((sl.v/base-1)*100)+'% higher in that slot. Weakest day: '+DOWF[dws[dws.length-1].d]+'.'});}
+    out.push({c:'var(--green-l)',t:'Расписание',h:'Лучшее время публикации: <b>'+DOWF[Math.min(d1.d,d2.d)]+' и '+DOWF[Math.max(d1.d,d2.d)]+', '+SLOTS[sl.s][0]+':00–'+SLOTS[sl.s][1]+':00</b>.',a:'В эти дни охват на '+Math.round(up*100)+'% выше среднего, в этот слот на '+Math.round((sl.v/base-1)*100)+'% выше. Самый слабый день: '+DOWF[dws[dws.length-1].d]+'.'});}
   if(st.length>=2){const es=st.reduce((a,p)=>a+p.react+p.com+p.rep,0)/st.reduce((a,p)=>a+p.reach,0);
     const eall=P.reduce((a,p)=>a+p.react+p.com+p.rep,0)/P.reduce((a,p)=>a+p.reach,0);
-    if(es<eall*.8) out.push({c:'var(--red-l)',t:'Engagement',h:'Stories have an engagement rate of <b>'+pc(es)+'</b> vs. '+pc(eall)+' account-wide.',a:'Add polls and question stickers to Stories, or swap some of them for short Reels.'});}
+    if(es<eall*.8) out.push({c:'var(--red-l)',t:'Вовлечённость',h:'У сторис вовлечённость <b>'+pc(es)+'</b> против '+pc(eall)+' в среднем по каналу.',a:'Добавьте в сторис опросы и реакции-кнопки или замените часть сторис короткими видео.'});}
   const gv=by('give'); if(gv.length){const g=gain.filter(x=>x.ps.some(p=>p.type==='give')&&P.includes(x.ps.find(p=>p.type==='give')));
     const avgG=avg(gain.slice(30-per),x=>x.g), gg=avg(g,x=>x.g);
-    if(g.length&&gg>avgG*1.5) out.push({c:'var(--blue)',t:'Growth',h:'On giveaway days, follower growth is <b>'+(gg/avgG).toFixed(1)+'x higher</b> than a normal day.',a:'A giveaway every two weeks brings a steady flow of new followers with no ad spend.'});}
-  document.getElementById('recs').innerHTML=out.slice(0,4).map(x=>'<div class="in" style="--c:'+x.c+'"><div class="t">'+x.t+'</div><p>'+x.h+'</p><div class="act">'+x.a+'</div></div>').join('')||'<div class="in" style="--c:var(--muted)"><div class="t">Not enough data</div><p>Too few posts in the selected period to draw conclusions.</p></div>';
-  document.getElementById('recN').textContent='last '+per+' days';
+    if(g.length&&gg>avgG*1.5) out.push({c:'var(--blue)',t:'Рост',h:'В день розыгрыша прирост подписчиков в <b>'+(gg/avgG).toFixed(1).replace('.',',')+' раза выше</b> обычного дня.',a:'Розыгрыш раз в две недели даёт стабильный приток подписчиков без рекламного бюджета.'});}
+  document.getElementById('recs').innerHTML=out.slice(0,4).map(x=>'<div class="in" style="--c:'+x.c+'"><div class="t">'+x.t+'</div><p>'+x.h+'</p><div class="act">'+x.a+'</div></div>').join('')||'<div class="in" style="--c:var(--muted)"><div class="t">Мало данных</div><p>За выбранный период слишком мало публикаций для выводов.</p></div>';
+  document.getElementById('recN').textContent='за '+per+' дней';
 }
 
 function all(){kpi();line();table();pie();const H=heat();recs(H);}

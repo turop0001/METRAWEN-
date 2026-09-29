@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>URBAN STORE · Competitor Price Monitor</title>
-<meta name="description" content="Demo dashboard for competitor price monitoring for an online apparel store. METRAWEN Digital.">
+<title>URBAN STORE · Мониторинг цен конкурентов</title>
+<meta name="description" content="Демо-дашборд мониторинга цен конкурентов для интернет-магазина одежды. METRAWEN Digital.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101F19'/%3E%3Cpath d='M8 22l6-7 4 4 6-9' stroke='%23D4A853' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -140,91 +140,91 @@ svg text{font-family:Onest,sans-serif}
   <header class="top">
     <div class="brand">
       <div class="logo"><svg width="20" height="20" viewBox="0 0 32 32"><path d="M6 23l7-8 5 5 8-11" stroke="#D4A853" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div><b>URBAN STORE</b><small>Price monitoring · 5 competitors</small></div>
+      <div><b>URBAN STORE</b><small>Мониторинг цен · 5 конкурентов</small></div>
     </div>
-    <span class="badge" title="All numbers are generated for demo purposes">● Demo data / sample data</span>
+    <span class="badge" title="Все цифры сгенерированы для примера">● Демо-данные / sample data</span>
     <div class="sp"></div>
-    <button class="btn" id="reset" title="Restore original prices"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg><span>Reset</span></button>
-    <button class="btn" id="refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg><span>Refresh</span></button>
+    <button class="btn" id="reset" title="Вернуть исходные цены"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg><span>Сбросить</span></button>
+    <button class="btn" id="refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg><span>Обновить</span></button>
   </header>
 
   <section class="grid">
-    <div class="card kpi"><div class="lbl">Average market price</div><div class="val num" id="k1">…</div><div class="sub">across 10 categories, 5 competitors</div><svg class="spark" id="sp1" width="90" height="30"></svg></div>
-    <div class="card kpi" id="k2c"><div class="lbl">Your position</div><div class="val num" id="k2">…</div><div class="sub" id="k2s">relative to market average</div></div>
-    <div class="card kpi"><div class="lbl">Products tracked</div><div class="val num" id="k3">…</div><div class="sub" id="k3s">SKUs across competitors</div></div>
-    <div class="card kpi"><div class="lbl">Last updated</div><div class="val num" id="k4">today, 6:00 AM</div><div class="sub">prices collected daily at 6:00 AM</div></div>
+    <div class="card kpi"><div class="lbl">Средняя цена по рынку</div><div class="val num" id="k1">…</div><div class="sub">по 10 категориям, 5 конкурентов</div><svg class="spark" id="sp1" width="90" height="30"></svg></div>
+    <div class="card kpi" id="k2c"><div class="lbl">Ваша позиция</div><div class="val num" id="k2">…</div><div class="sub" id="k2s">относительно среднего по рынку</div></div>
+    <div class="card kpi"><div class="lbl">Отслеживается товаров</div><div class="val num" id="k3">…</div><div class="sub" id="k3s">артикулов у конкурентов</div></div>
+    <div class="card kpi"><div class="lbl">Обновлено</div><div class="val num" id="k4">сегодня, 06:00</div><div class="sub">сбор цен ежедневно в 06:00</div></div>
 
     <div class="card c-table">
-      <h2>Price comparison by category <span class="hint">The price in the "You" column can be edited</span></h2>
+      <h2>Сравнение цен по категориям <span class="hint">Цену в колонке «Вы» можно изменить</span></h2>
       <div class="tw"><table>
-        <thead><tr><th>Category</th><th>You, $</th><th id="hA"></th><th id="hB"></th><th id="hC"></th><th>Market, $</th><th>Difference</th></tr></thead>
+        <thead><tr><th>Категория</th><th>Вы, ₽</th><th id="hA"></th><th id="hB"></th><th id="hC"></th><th>Рынок, ₽</th><th>Разница</th></tr></thead>
         <tbody id="tb"></tbody>
       </table></div>
-      <div class="legend-row"><span><i style="background:var(--green)"></i>more than 3% below market</span><span><i style="background:#6B8277"></i>at market level (±3%)</span><span><i style="background:var(--red)"></i>more than 3% above market</span><span>Market = average price of 5 competitors</span></div>
+      <div class="legend-row"><span><i style="background:var(--green)"></i>дешевле рынка больше чем на 3%</span><span><i style="background:#6B8277"></i>на уровне рынка (±3%)</span><span><i style="background:var(--red)"></i>дороже рынка больше чем на 3%</span><span>Рынок = средняя цена 5 конкурентов</span></div>
     </div>
 
     <div class="card c-ins">
-      <h2>Insights <span class="hint" id="insN"></span></h2>
+      <h2>Выводы <span class="hint" id="insN"></span></h2>
       <div class="ins" id="ins"></div>
-      <div class="rule">Insights are generated automatically from rules: a risk when you're 10%+ above market; room to raise price when you're 10%+ below market; a signal when a competitor cuts price by 5%+ within 7 days.</div>
+      <div class="rule">Выводы считаются автоматически по правилам: риск, если вы дороже рынка на 10% и больше; запас для повышения цены, если дешевле на 10% и больше; сигнал, если конкурент снизил цену на 5% и больше за 7 дней.</div>
     </div>
 
     <div class="card c-chart">
       <div class="chart-top">
-        <h2 style="margin:0">30-day price trend</h2>
-        <select id="catSel" aria-label="Category"></select>
+        <h2 style="margin:0">Динамика цен за 30 дней</h2>
+        <select id="catSel" aria-label="Категория"></select>
         <div class="lg" id="lg"></div>
       </div>
       <div class="chartbox" id="cb"><svg id="ch" width="100%" height="270"></svg><div class="tip" id="tip"></div></div>
     </div>
 
     <div class="card c-pie">
-      <h2>Your price position <span class="hint">categories out of 10</span></h2>
+      <h2>Ваша ценовая позиция <span class="hint">категорий из 10</span></h2>
       <div class="pie-wrap"><div class="chartbox"><svg id="pie" width="170" height="170" viewBox="0 0 170 170"></svg><div class="tip" id="tip2"></div></div><div class="pie-leg" id="pl"></div></div>
     </div>
 
     <div class="card c-new">
-      <h2>New competitor products in the last 7 days <span class="hint">not yet in your catalog</span></h2>
+      <h2>Новые товары у конкурентов за 7 дней <span class="hint">которых нет в вашем каталоге</span></h2>
       <div class="news" id="news"></div>
     </div>
   </section>
 
   <div class="foot">
-    <span>Demo data: competitor names, prices and products are fictional and for illustration only.</span>
-    <span>Dashboard built with <a href="../digital.html" target="_blank" rel="noopener">METRAWEN Digital</a></span>
+    <span>Демо-данные: названия конкурентов, цены и товары вымышлены и служат примером.</span>
+    <span>Дашборд собран в <a href="../digital.html" target="_blank" rel="noopener">METRAWEN Digital</a></span>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
 (function(){
-const COMP=['Streetline','Nord Shop','Moda Hub','Twist Co','Basic Lab'];
-const SHOW=[0,1,2]; // competitors shown in the table
+const COMP=['Streetline','Норд Шоп','Moda Hub','Твист','Basic Lab'];
+const SHOW=[0,1,2]; // конкуренты в таблице
 const SER=[{k:'you',nm:'URBAN STORE',c:'#D4A853'},{k:0,nm:COMP[0],c:'#7FA7D9'},{k:1,nm:COMP[1],c:'#B597D6'},{k:2,nm:COMP[2],c:'#5CC495'}];
-// category, market baseline, your price, competitor SKU count, competitor offsets
+// категория, рынок-ориентир, ваша цена, число артикулов у конкурентов, смещения конкурентов
 const BASE=[
- ['Outerwear',120,138,46,[-.05,.03,.08,-.02,-.04]],
- ['Footwear',85,75,52,[.04,-.06,.07,-.03,-.02]],
- ['Jeans',58,53,38,[-.03,.06,-.04,.05,-.04]],
- ['T-Shirts',22,19,41,[.02,-.05,.09,-.04,-.02]],
- ['Hoodies & Sweatshirts',48,43,34,[-.06,.02,.05,.03,-.04]],
- ['Shirts',38,34,24,[.05,-.03,-.04,.06,-.04]],
- ['Dresses',58,50,29,[-.02,.07,-.05,.03,-.03]],
- ['Accessories',20,17,31,[.06,-.04,.03,-.07,.02]],
- ['Bags & Backpacks',50,49,26,[-.04,.05,-.02,.04,-.03]],
- ['Activewear',46,43,19,[.03,-.02,.06,-.05,-.02]]
+ ['Верхняя одежда',9800,11270,46,[-.05,.03,.08,-.02,-.04]],
+ ['Обувь',6900,6070,52,[.04,-.06,.07,-.03,-.02]],
+ ['Джинсы',4300,3910,38,[-.03,.06,-.04,.05,-.04]],
+ ['Футболки',1500,1290,41,[.02,-.05,.09,-.04,-.02]],
+ ['Худи и свитшоты',3600,3200,34,[-.06,.02,.05,.03,-.04]],
+ ['Рубашки',2900,2610,24,[.05,-.03,-.04,.06,-.04]],
+ ['Платья',4200,3650,29,[-.02,.07,-.05,.03,-.03]],
+ ['Аксессуары',1400,1180,31,[.06,-.04,.03,-.07,.02]],
+ ['Сумки и рюкзаки',3900,3820,26,[-.04,.05,-.02,.04,-.03]],
+ ['Спортивная одежда',3500,3290,19,[.03,-.02,.06,-.05,-.02]]
 ];
 let rnd; function seed(s){rnd=function(){s=(s*16807)%2147483647;return (s-1)/2147483646;};}
-const r10=v=>Math.round(v);
-const fmt=v=>'$'+Math.round(v).toLocaleString('en-US');
-const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(v*100).toFixed(1).replace(/\.0$/,'')+'%';
+const r10=v=>Math.round(v/10)*10;
+const fmt=v=>Math.round(v).toLocaleString('ru-RU').replace(/,/g,' ');
+const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(v*100).toFixed(1).replace('.',',').replace(',0','')+'%';
 let DATA, sel=0, hidden=new Set(), you0;
 
 function build(){
   seed(20260924);
   DATA=BASE.map((b,i)=>{
     const comp=b[4].map(o=>r10(b[1]*(1+o)));
-    // 30-day history: random walk back from the current price
+    // история 30 дней: случайное блуждание назад от текущей цены
     const hist={};
     const series=[['you',b[2]]].concat(comp.map((p,j)=>[j,p]));
     series.forEach(([k,p])=>{
@@ -234,10 +234,10 @@ function build(){
     });
     return {nm:b[0],you:b[2],comp,sku:b[3],hist};
   });
-  // scenario: Streetline cut its footwear price 5 days ago by 8%
+  // сценарий: Streetline снизил цену на обувь 5 дней назад на 8%
   const sh=DATA[1].hist[0]; for(let d=0;d<25;d++) sh[d]=r10(sh[d]*1.085);
   DATA[1].comp[0]=sh[29];
-  // Nord Shop cut hoodie prices 3 days ago
+  // Норд Шоп снизил цены на худи 3 дня назад
   const h2=DATA[4].hist[1]; for(let d=0;d<27;d++) h2[d]=r10(h2[d]*1.07);
   DATA[4].comp[1]=h2[29];
   you0=DATA.map(d=>d.you);
@@ -249,13 +249,13 @@ function cls(v){return v<-.03?'g':v>.03?'r':'n';}
 function renderKPI(){
   const m=DATA.reduce((a,d)=>a+mkt(d),0)/DATA.length;
   const yp=DATA.reduce((a,d)=>a+dif(d),0)/DATA.length;
-  document.getElementById('k1').textContent=fmt(r10(m));
+  document.getElementById('k1').textContent=fmt(r10(m))+' ₽';
   const k2=document.getElementById('k2'), c2=document.getElementById('k2c');
-  k2.textContent=Math.abs(yp*100).toFixed(0)+'% '+(yp<0?'below':'above');
+  k2.textContent=Math.abs(yp*100).toFixed(0)+'% '+(yp<0?'ниже':'выше');
   c2.classList.toggle('good',yp<-.005); c2.classList.toggle('bad',yp>.005);
-  document.getElementById('k2s').textContent=(yp<0?'below':'above')+' market average';
-  document.getElementById('k3').textContent=DATA.reduce((a,d)=>a+d.sku,0).toLocaleString('en-US');
-  // sparkline of the market's average price
+  document.getElementById('k2s').textContent=(yp<0?'дешевле':'дороже')+' среднего по рынку';
+  document.getElementById('k3').textContent=fmt(DATA.reduce((a,d)=>a+d.sku,0));
+  // спарклайн средней цены рынка
   const s=[]; for(let t=0;t<30;t++){let a=0;DATA.forEach(d=>{let x=0;for(let j=0;j<5;j++)x+=d.hist[j][t];a+=x/5;});s.push(a/DATA.length);}
   const mn=Math.min(...s),mx=Math.max(...s);
   const pts=s.map((v,i)=>(i*90/29).toFixed(1)+','+(27-(v-mn)/(mx-mn||1)*24).toFixed(1)).join(' ');
@@ -263,13 +263,13 @@ function renderKPI(){
 }
 
 function renderTable(){
-  ['hA','hB','hC'].forEach((id,i)=>document.getElementById(id).textContent=COMP[SHOW[i]]+', $');
+  ['hA','hB','hC'].forEach((id,i)=>document.getElementById(id).textContent=COMP[SHOW[i]]+', ₽');
   const tb=document.getElementById('tb');
   tb.innerHTML=DATA.map((d,i)=>{
     const m=mkt(d),v=dif(d),lo=Math.min(...d.comp);
-    return '<tr data-i="'+i+'" class="'+(i===sel?'sel':'')+'"><td class="cat">'+d.nm+'<small>'+d.sku+' SKUs</small></td>'+
-      '<td><input class="pin" inputmode="numeric" aria-label="Your price: '+d.nm+'" data-i="'+i+'" value="'+fmt(d.you)+'"></td>'+
-      SHOW.map(j=>'<td class="num cp'+(d.comp[j]===lo?' lo':'')+'" title="'+(d.comp[j]===lo?'Lowest price among competitors':'')+'">'+fmt(d.comp[j])+'</td>').join('')+
+    return '<tr data-i="'+i+'" class="'+(i===sel?'sel':'')+'"><td class="cat">'+d.nm+'<small>'+d.sku+' артикулов</small></td>'+
+      '<td><input class="pin" inputmode="numeric" aria-label="Ваша цена: '+d.nm+'" data-i="'+i+'" value="'+fmt(d.you)+'"></td>'+
+      SHOW.map(j=>'<td class="num cp'+(d.comp[j]===lo?' lo':'')+'" title="'+(d.comp[j]===lo?'Минимальная цена среди конкурентов':'')+'">'+fmt(d.comp[j])+'</td>').join('')+
       '<td class="num">'+fmt(r10(m))+'</td><td><span class="diff '+cls(v)+'">'+pct(v)+'</span></td></tr>';
   }).join('');
 }
@@ -282,24 +282,24 @@ function insights(){
   const out=[];
   DATA.forEach(d=>{
     const v=dif(d), m=mkt(d);
-    if(v>=.10) out.push({cat:d.nm,w:3+v*10+d.sku/50,c:'var(--red-l)',t:'Risk',h:'In the <b>'+d.nm.toLowerCase()+'</b> category, you’re <b>'+Math.round(v*100)+'% more expensive</b> than the market average — a risk to conversion.',a:'Market-level price: '+fmt(r10(m))+' instead of '+fmt(d.you)+'.'});
+    if(v>=.10) out.push({cat:d.nm,w:3+v*10+d.sku/50,c:'var(--red-l)',t:'Риск',h:'В категории «'+d.nm.toLowerCase()+'» вы на <b>'+Math.round(v*100)+'% дороже</b> среднего по рынку, это риск потерять конверсию.',a:'Цена на уровне рынка: '+fmt(r10(m))+' ₽ вместо '+fmt(d.you)+' ₽.'});
     else if(v<=-.10){const up=d.you*1.06, after=up/m-1;
-      out.push({cat:d.nm,w:2+Math.abs(v)*6+d.sku/50,c:'var(--green-l)',t:'Room to grow',h:'In the <b>'+d.nm.toLowerCase()+'</b> category you have a strong position (<b>'+pct(v)+'</b> vs. market), you could raise the price by 5–7% without losing demand.',a:'For example, up to '+fmt(r10(up))+': still '+pct(after)+' vs. market, customers still see a lower price than competitors.'});}
+      out.push({cat:d.nm,w:2+Math.abs(v)*6+d.sku/50,c:'var(--green-l)',t:'Запас для роста',h:'В категории «'+d.nm.toLowerCase()+'» сильная позиция (<b>'+pct(v)+'</b> к рынку), можно поднять цену на 5–7% без потери спроса.',a:'Например, до '+fmt(r10(up))+' ₽: всё ещё '+pct(after)+' к рынку, клиенты по-прежнему видят цену ниже конкурентов.'});}
     d.comp.forEach((p,j)=>{const w=d.hist[j][22]; const ch=p/w-1;
-      if(ch<=-.05) out.push({cat:d.nm,w:2.6+Math.abs(ch)*8,c:'var(--gold)',t:'Signal',h:'<b>'+COMP[j]+'</b> cut its price in the <b>'+d.nm.toLowerCase()+'</b> category by <b>'+Math.round(Math.abs(ch)*100)+'%</b> over the past week.',a:'Your position vs. market is currently '+pct(dif(d))+'. Check whether they’ve started a sale.'});});
+      if(ch<=-.05) out.push({cat:d.nm,w:2.6+Math.abs(ch)*8,c:'var(--gold)',t:'Сигнал',h:COMP[j]+' снизил цену в категории «'+d.nm.toLowerCase()+'» на <b>'+Math.round(Math.abs(ch)*100)+'%</b> за неделю.',a:'Ваша позиция к рынку сейчас '+pct(dif(d))+'. Проверьте, не начал ли он распродажу.'});});
   });
   out.sort((a,b)=>b.w-a.w);
   const pick=t=>out.filter(x=>x.t===t);
-  const top=pick('Risk').slice(0,2).concat(pick('Signal').slice(0,1));
+  const top=pick('Риск').slice(0,2).concat(pick('Сигнал').slice(0,1));
   out.forEach(x=>{if(top.length<4&&!top.includes(x)&&!top.some(y=>y.cat===x.cat))top.push(x);});
   const box=document.getElementById('ins');
-  box.innerHTML=top.length?top.map(x=>'<div class="in" style="--c:'+x.c+'"><div class="t">'+x.t+'</div><p>'+x.h+'</p><div class="act">'+x.a+'</div></div>').join(''):'<div class="in" style="--c:var(--muted)"><div class="t">All steady</div><p>Prices in every category are within ±10% of the market, and there are no sharp moves from competitors.</p></div>';
-  document.getElementById('insN').textContent=out.length>top.length?(out.length-top.length)+' more in the report':'';
+  box.innerHTML=top.length?top.map(x=>'<div class="in" style="--c:'+x.c+'"><div class="t">'+x.t+'</div><p>'+x.h+'</p><div class="act">'+x.a+'</div></div>').join(''):'<div class="in" style="--c:var(--muted)"><div class="t">Всё ровно</div><p>Цены во всех категориях в пределах ±10% от рынка, резких изменений у конкурентов нет.</p></div>';
+  document.getElementById('insN').textContent=out.length>top.length?'ещё '+(out.length-top.length)+' в отчёте':'';
 }
 
 function pie(){
   const g=DATA.filter(d=>dif(d)<-.03).length, r=DATA.filter(d=>dif(d)>.03).length, n=DATA.length-g-r;
-  const parts=[{nm:'Below market',v:g,c:'#3E9B72',s:'more than 3% lower'},{nm:'At market',v:n,c:'#6B8277',s:'within ±3%'},{nm:'Above market',v:r,c:'#D9694A',s:'more than 3% higher'}];
+  const parts=[{nm:'Дешевле рынка',v:g,c:'#3E9B72',s:'больше 3% ниже'},{nm:'На уровне',v:n,c:'#6B8277',s:'в пределах ±3%'},{nm:'Дороже рынка',v:r,c:'#D9694A',s:'больше 3% выше'}];
   const svg=document.getElementById('pie'); let a=-Math.PI/2, html='';
   const R=78,ri=52,cx=85,cy=85;
   parts.forEach((p,i)=>{ if(!p.v) return;
@@ -312,14 +312,14 @@ function pie(){
     html+='<path d="'+d+'" fill="'+p.c+'" data-p="'+i+'" style="cursor:pointer;transition:opacity .2s" fill-rule="evenodd"/>';
     a+=ang;
   });
-  html+='<text x="85" y="82" text-anchor="middle" fill="#EAF0EC" font-size="26" font-weight="600" font-family="JetBrains Mono">'+g+'/'+DATA.length+'</text><text x="85" y="102" text-anchor="middle" fill="#93A89D" font-size="11.5">below market</text>';
+  html+='<text x="85" y="82" text-anchor="middle" fill="#EAF0EC" font-size="26" font-weight="600" font-family="JetBrains Mono">'+g+'/'+DATA.length+'</text><text x="85" y="102" text-anchor="middle" fill="#93A89D" font-size="11.5">дешевле рынка</text>';
   svg.innerHTML=html;
   document.getElementById('pl').innerHTML=parts.map(p=>'<div><i style="background:'+p.c+'"></i><span>'+p.nm+'<small>'+p.s+'</small></span><b>'+p.v+'</b></div>').join('');
   const tip=document.getElementById('tip2');
   svg.querySelectorAll('path').forEach(el=>{
     el.addEventListener('mousemove',e=>{const p=parts[+el.dataset.p];
-      const list=DATA.filter(d=>{const v=dif(d);return p.nm==='Below market'?v<-.03:p.nm==='Above market'?v>.03:Math.abs(v)<=.03;}).map(d=>d.nm).join(', ');
-      tip.innerHTML='<div class="h">'+p.nm+'</div><div class="r"><span>Categories</span><b class="num">'+p.v+' of '+DATA.length+'</b></div><div style="color:var(--muted);margin-top:5px;max-width:200px;white-space:normal">'+list+'</div>';
+      const list=DATA.filter(d=>{const v=dif(d);return p.nm==='Дешевле рынка'?v<-.03:p.nm==='Дороже рынка'?v>.03:Math.abs(v)<=.03;}).map(d=>d.nm).join(', ');
+      tip.innerHTML='<div class="h">'+p.nm+'</div><div class="r"><span>Категорий</span><b class="num">'+p.v+' из '+DATA.length+'</b></div><div style="color:var(--muted);margin-top:5px;max-width:200px;white-space:normal">'+list+'</div>';
       const b=svg.getBoundingClientRect(); tip.style.left=Math.min(e.clientX-b.left+12,90)+'px'; tip.style.top=(e.clientY-b.top+12)+'px'; tip.style.opacity=1;
       svg.querySelectorAll('path').forEach(x=>x.style.opacity=x===el?1:.35);});
     el.addEventListener('mouseleave',()=>{tip.style.opacity=0;svg.querySelectorAll('path').forEach(x=>x.style.opacity=1);});
@@ -327,7 +327,7 @@ function pie(){
 }
 
 function dates(){const out=[];const t=new Date();for(let i=29;i>=0;i--){const d=new Date(t);d.setDate(t.getDate()-i);out.push(d);}return out;}
-const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MON=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
 function chart(){
   const svg=document.getElementById('ch'), W=svg.clientWidth||700, H=270, L=58,Rr=14,T=12,B=40;
   const d=DATA[sel], D=dates(), vis=SER.filter(s=>!hidden.has(String(s.k)));
@@ -337,10 +337,10 @@ function chart(){
   const X=i=>L+i*(W-L-Rr)/29, Y=v=>T+(mx-v)/(mx-mn)*(H-T-B);
   let h='';
   for(let v=mn;v<=mx+1e-6;v+=step){h+='<line x1="'+L+'" x2="'+(W-Rr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="#26433A" stroke-dasharray="'+(v===mn?'0':'3 4')+'"/><text x="'+(L-8)+'" y="'+(Y(v)+4)+'" text-anchor="end" fill="#6B8277" font-size="11" font-family="JetBrains Mono">'+fmt(v)+'</text>';}
-  [0,7,14,21,29].forEach(i=>{h+='<text x="'+X(i)+'" y="'+(H-B+18)+'" text-anchor="'+(i===0?'start':i===29?'end':'middle')+'" fill="#6B8277" font-size="11">'+MON[D[i].getMonth()]+' '+D[i].getDate()+'</text>';});
-  h+='<text x="14" y="'+(T+(H-T-B)/2)+'" transform="rotate(-90 14 '+(T+(H-T-B)/2)+')" text-anchor="middle" fill="#6B8277" font-size="11">Average price, $</text>';
-  h+='<text x="'+(W-Rr)+'" y="'+(H-4)+'" text-anchor="end" fill="#6B8277" font-size="11">Date</text>';
-  // market average, dashed
+  [0,7,14,21,29].forEach(i=>{h+='<text x="'+X(i)+'" y="'+(H-B+18)+'" text-anchor="'+(i===0?'start':i===29?'end':'middle')+'" fill="#6B8277" font-size="11">'+D[i].getDate()+' '+MON[D[i].getMonth()]+'</text>';});
+  h+='<text x="14" y="'+(T+(H-T-B)/2)+'" transform="rotate(-90 14 '+(T+(H-T-B)/2)+')" text-anchor="middle" fill="#6B8277" font-size="11">Средняя цена, ₽</text>';
+  h+='<text x="'+(W-Rr)+'" y="'+(H-4)+'" text-anchor="end" fill="#6B8277" font-size="11">Дата</text>';
+  // рыночная средняя, пунктир
   const mk=[];for(let t=0;t<30;t++){let a=0;for(let j=0;j<5;j++)a+=d.hist[j][t];mk.push(a/5);}
   h+='<polyline points="'+mk.map((v,i)=>X(i)+','+Y(v)).join(' ')+'" fill="none" stroke="#93A89D" stroke-width="1.2" stroke-dasharray="4 4" opacity=".7"/>';
   vis.slice().reverse().forEach(s=>{
@@ -357,7 +357,7 @@ function chart(){
     xh.setAttribute('x1',X(i));xh.setAttribute('x2',X(i));xh.setAttribute('opacity',.5);
     dots.innerHTML=vis.map(s=>'<circle cx="'+X(i)+'" cy="'+Y(d.hist[s.k][i])+'" r="4" fill="'+s.c+'" stroke="#15291F" stroke-width="2"/>').join('');
     const rows=vis.map(s=>({s,v:d.hist[s.k][i]})).sort((a,b)=>b.v-a.v);
-    tip.innerHTML='<div class="h">'+MON[D[i].getMonth()]+' '+D[i].getDate()+' · '+d.nm+'</div>'+rows.map(o=>'<div class="r"><span><i style="background:'+o.s.c+'"></i>'+o.s.nm+'</span><b class="num">'+fmt(o.v)+'</b></div>').join('')+'<div class="r" style="color:var(--muted);margin-top:4px"><span>Market (5 competitors)</span><span class="num">'+fmt(r10(mk[i]))+'</span></div>';
+    tip.innerHTML='<div class="h">'+D[i].getDate()+' '+MON[D[i].getMonth()]+' · '+d.nm+'</div>'+rows.map(o=>'<div class="r"><span><i style="background:'+o.s.c+'"></i>'+o.s.nm+'</span><b class="num">'+fmt(o.v)+' ₽</b></div>').join('')+'<div class="r" style="color:var(--muted);margin-top:4px"><span>Рынок (5 конкурентов)</span><span class="num">'+fmt(r10(mk[i]))+' ₽</span></div>';
     let x=X(i)+14; if(x+190>W) x=X(i)-204; tip.style.left=x+'px'; tip.style.top='14px'; tip.style.opacity=1;
   }
   hit.addEventListener('mousemove',e=>move(e.clientX));
@@ -367,14 +367,14 @@ function chart(){
 }
 function niceStep(x){const p=Math.pow(10,Math.floor(Math.log10(x)));const n=x/p;return (n<1.5?1:n<3?2:n<7?5:10)*p;}
 function legend(){
-  document.getElementById('lg').innerHTML=SER.map(s=>'<button data-k="'+s.k+'" class="'+(hidden.has(String(s.k))?'off':'')+'" aria-pressed="'+!hidden.has(String(s.k))+'"><i style="background:'+s.c+'"></i>'+s.nm+'</button>').join('')+'<button disabled style="cursor:default"><i style="background:repeating-linear-gradient(90deg,#93A89D 0 4px,transparent 4px 7px)"></i>Market</button>';
+  document.getElementById('lg').innerHTML=SER.map(s=>'<button data-k="'+s.k+'" class="'+(hidden.has(String(s.k))?'off':'')+'" aria-pressed="'+!hidden.has(String(s.k))+'"><i style="background:'+s.c+'"></i>'+s.nm+'</button>').join('')+'<button disabled style="cursor:default"><i style="background:repeating-linear-gradient(90deg,#93A89D 0 4px,transparent 4px 7px)"></i>Рынок</button>';
   document.querySelectorAll('#lg button[data-k]').forEach(b=>b.onclick=()=>{const k=b.dataset.k; hidden.has(k)?hidden.delete(k):hidden.add(k); legend(); chart();});
 }
 function news(){
-  const N=[[COMP[2],'Oversize hooded puffer jacket','Outerwear',145,1],[COMP[0],'Platform sneakers, leather','Footwear',92,2],[COMP[3],'Wide-leg jeans, light wash','Jeans',62,3],[COMP[1],'Embroidered hoodie, heavyweight fleece','Hoodies & Sweatshirts',52,4],[COMP[4],'Water-resistant roll-top backpack','Bags & Backpacks',58,5],[COMP[2],'Linen shirt dress','Dresses',68,6]];
+  const N=[[COMP[2],'Пуховик oversize с капюшоном','Верхняя одежда',12490,1],[COMP[0],'Кеды на платформе, кожа','Обувь',7290,2],[COMP[3],'Джинсы wide leg, светлая стирка','Джинсы',4590,3],[COMP[1],'Худи с вышивкой, плотный футер','Худи и свитшоты',3990,4],[COMP[4],'Рюкзак roll-top водоотталкивающий','Сумки и рюкзаки',4290,5],[COMP[2],'Платье-рубашка из льна','Платья',5190,6]];
   const t=new Date();
   document.getElementById('news').innerHTML=N.map(n=>{const d=new Date(t);d.setDate(t.getDate()-n[4]);
-    return '<div class="nw"><div class="who"><span>'+n[0]+'</span><span>'+MON[d.getMonth()]+' '+d.getDate()+'</span></div><div class="nm">'+n[1]+'</div><div class="pr"><b>'+fmt(n[3])+'</b><span class="tag">'+n[2]+'</span></div></div>';}).join('');
+    return '<div class="nw"><div class="who"><span>'+n[0]+'</span><span>'+d.getDate()+' '+MON[d.getMonth()]+'</span></div><div class="nm">'+n[1]+'</div><div class="pr"><b>'+fmt(n[3])+' ₽</b><span class="tag">'+n[2]+'</span></div></div>';}).join('');
 }
 function catSel(){const s=document.getElementById('catSel');s.innerHTML=DATA.map((d,i)=>'<option value="'+i+'">'+d.nm+'</option>').join('');s.value=sel;s.onchange=()=>{select(+s.value);};}
 function select(i){sel=i;document.querySelectorAll('#tb tr').forEach(tr=>tr.classList.toggle('sel',+tr.dataset.i===i));document.getElementById('catSel').value=i;chart();}
@@ -386,14 +386,14 @@ function bind(){
   tb.addEventListener('click',e=>{const tr=e.target.closest('tr');if(tr&&!e.target.classList.contains('pin'))select(+tr.dataset.i);});
   tb.addEventListener('focusin',e=>{if(e.target.classList.contains('pin')){const i=+e.target.dataset.i;if(i!==sel)select(i);e.target.value=String(DATA[i].you);e.target.select();}});
   tb.addEventListener('input',e=>{if(!e.target.classList.contains('pin'))return;e.target.value=e.target.value.replace(/\D/g,'').slice(0,7);
-    const i=+e.target.dataset.i,v=parseInt(e.target.value,10); if(v>=5){DATA[i].you=v;DATA[i].hist.you[29]=v;updateRow(i);recalc();}});
+    const i=+e.target.dataset.i,v=parseInt(e.target.value,10); if(v>=100){DATA[i].you=v;DATA[i].hist.you[29]=v;updateRow(i);recalc();}});
   tb.addEventListener('focusout',e=>{if(!e.target.classList.contains('pin'))return;const i=+e.target.dataset.i;const v=parseInt(e.target.value,10);
-    if(!(v>=5)){toast('Price must be at least $5');}
+    if(!(v>=100)){toast('Цена должна быть не меньше 100 ₽');}
     e.target.value=fmt(DATA[i].you);});
   tb.addEventListener('keydown',e=>{if(e.target.classList.contains('pin')&&e.key==='Enter'){e.preventDefault();e.target.blur();}});
-  document.getElementById('reset').onclick=()=>{DATA.forEach((d,i)=>{d.you=you0[i];d.hist.you[29]=you0[i];});renderTable();recalc();toast('Prices reset to original');};
+  document.getElementById('reset').onclick=()=>{DATA.forEach((d,i)=>{d.you=you0[i];d.hist.you[29]=you0[i];});renderTable();recalc();toast('Цены возвращены к исходным');};
   document.getElementById('refresh').onclick=function(){const b=this;b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');
-    const n=new Date();document.getElementById('k4').textContent='today, '+((n.getHours()%12)||12)+':'+String(n.getMinutes()).padStart(2,'0')+(n.getHours()<12?' AM':' PM');toast('Competitor prices refreshed (demo data doesn’t actually change)');};
+    const n=new Date();document.getElementById('k4').textContent='сегодня, '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');toast('Цены конкурентов обновлены (в демо данные не меняются)');};
   let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(chart,120);});
 }
 build();renderTable();catSel();legend();news();renderKPI();insights();pie();chart();bind();

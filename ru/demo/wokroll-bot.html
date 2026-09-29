@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WOK &amp; ROLL: Telegram Delivery Bot (Demo)</title>
-<meta name="description" content="Clickable prototype of a food delivery Telegram bot: menu with photos, cart with live totals, checkout, payment, delivery status and a kitchen notification.">
+<title>WOK &amp; ROLL: Telegram-бот доставки (демо)</title>
+<meta name="description" content="Кликабельный прототип Telegram-бота доставки еды: меню с фото, корзина с пересчётом, оформление, оплата, статус доставки и уведомление на кухню.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23E4572E'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='900' font-size='22' text-anchor='middle' fill='%23fff'%3EW%26amp;R%3C/text%3E%3C/svg%3E">
 <style>
   :root{
@@ -34,7 +34,6 @@
   .features span{font-size:12.5px;background:#fff;border:1px solid rgba(28,26,23,0.1);padding:6px 11px;border-radius:999px;}
   .restart{background:var(--chili);color:#fff;border:none;border-radius:999px;padding:13px 22px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
   .restart:hover{background:var(--chili-deep);}
-  .wa-note{margin:0 0 20px;font-size:13px;color:var(--ink-soft);}
 
   .stage{display:grid;grid-template-columns:400px 1fr;gap:36px;align-items:start;}
   .tabs{display:none;}
@@ -153,26 +152,24 @@
   <div class="intro">
     <div>
       <div class="brandline">WOK &amp; ROLL</div>
-      <h1>Telegram Delivery Bot for Asian Cuisine</h1>
-      <p>Interactive prototype: build an order as a customer, and watch it land in the kitchen on the right at the very same moment.</p>
+      <h1>Telegram-бот доставки азиатской кухни</h1>
+      <p>Кликабельный прототип: соберите заказ как клиент, а справа посмотрите, как он в ту же секунду приходит на кухню.</p>
       <div class="features">
-        <span>Menu with photos and ingredients</span>
-        <span>Cart that recalculates in real time</span>
-        <span>Progress bar to free delivery</span>
-        <span>Drink upsell</span>
-        <span>Location sharing and online payment</span>
-        <span>Live delivery tracking</span>
-        <span>Order lands in the kitchen instantly</span>
+        <span>Меню с фото и составом</span>
+        <span>Корзина с пересчётом в реальном времени</span>
+        <span>Счётчик до бесплатной доставки</span>
+        <span>Допродажа напитка</span>
+        <span>Геолокация и оплата онлайн</span>
+        <span>Живой статус доставки</span>
+        <span>Заказ сразу на кухне</span>
       </div>
     </div>
-    <button class="restart" id="restart">Start over</button>
+    <button class="restart" id="restart">Начать заново</button>
   </div>
 
-  <p class="wa-note">Shown as Telegram — the same bot logic works on WhatsApp.</p>
-
   <div class="tabs" id="tabs">
-    <button class="active" data-view="client">Customer chat</button>
-    <button data-view="admin">Kitchen<span class="badge" id="badge"></span></button>
+    <button class="active" data-view="client">Чат клиента</button>
+    <button data-view="admin">Кухня<span class="badge" id="badge"></span></button>
   </div>
 
   <div class="stage" id="stage" data-view="client">
@@ -182,14 +179,14 @@
         <div class="tg-head">
           <div class="tg-back">‹</div>
           <div class="avatar">W&amp;R</div>
-          <div class="tg-title"><strong>WOK &amp; ROLL | Delivery</strong><span id="botStatus">bot</span></div>
+          <div class="tg-title"><strong>WOK &amp; ROLL | Доставка</strong><span id="botStatus">бот</span></div>
         </div>
         <div class="toast" id="toast"></div>
         <div class="chat" id="chat"></div>
-        <div class="reply-kb" id="replyKb"><button id="shareGeo">📍 Share location</button></div>
+        <div class="reply-kb" id="replyKb"><button id="shareGeo">📍 Отправить геолокацию</button></div>
         <form class="composer" id="composer">
-          <input id="input" type="text" autocomplete="off" placeholder="Message">
-          <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10.1 15.5 12 3.4 13.9z"/></svg></button>
+          <input id="input" type="text" autocomplete="off" placeholder="Сообщение">
+          <button type="submit" aria-label="Отправить"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10.1 15.5 12 3.4 13.9z"/></svg></button>
         </form>
       </div>
     </div>
@@ -197,71 +194,71 @@
     <div class="admin">
       <div class="tg-head">
         <div class="avatar av-k">👨‍🍳</div>
-        <div class="tg-title"><strong>WOK &amp; ROLL · Kitchen</strong><span>cooks, manager and couriers, 6 members</span></div>
+        <div class="tg-title"><strong>WOK &amp; ROLL · Кухня</strong><span>повара, менеджер и курьеры, 6 участников</span></div>
       </div>
       <div class="stats">
-        <div><strong id="stOrders">0</strong><span>orders</span></div>
-        <div><strong id="stRevenue">$0</strong><span>revenue</span></div>
-        <div><strong id="stAvg">$0</strong><span>avg order</span></div>
-        <div><strong id="stUp">0</strong><span>upsells</span></div>
+        <div><strong id="stOrders">0</strong><span>заказов</span></div>
+        <div><strong id="stRevenue">0 ₽</strong><span>выручка</span></div>
+        <div><strong id="stAvg">0 ₽</strong><span>средний чек</span></div>
+        <div><strong id="stUp">0</strong><span>допродаж</span></div>
       </div>
       <div class="chat" id="adminChat"></div>
     </div>
   </div>
 
-  <p class="footnote">Demo prototype for the METRAWEN Digital portfolio. The restaurant, menu and prices are fictional; no real orders are created.<br>Turnkey Telegram ordering bot with cart from METRAWEN: $490.</p>
+  <p class="footnote">Демонстрационный прототип для портфолио METRAWEN Digital. Ресторан, меню и цены вымышлены, реальные заказы не создаются.<br>Telegram-бот с корзиной под ключ в METRAWEN: 39 900 ₽.</p>
 </div>
 
 <script>
 (function(){
-  /* ================= DATA ================= */
+  /* ================= ДАННЫЕ ================= */
   var U = 'https://images.unsplash.com/photo-', Q = '?auto=format&fit=crop&w=640&h=400&q=70';
   var CATS = [
-    {id:'rolls', btn:'Rolls 🍣', title:'Rolls 🍣', items:[
-      {id:'phila', n:'Philadelphia Roll', s:'Philadelphia', d:'salmon, cream cheese, cucumber, 8 pcs', p:13, img:'1579871494447-9811cf80d66c'},
-      {id:'cali', n:'California Roll', s:'California', d:'crab, avocado, cucumber, tobiko, 8 pcs', p:12, img:'1583623025817-d180a2221d0a'},
-      {id:'set', n:'Wok & Roll Combo', s:'Wok&Roll Combo', d:'Philadelphia, California, baked eel roll, 24 pcs', p:38, img:'1553621042-f6e147245754'}]},
-    {id:'wok', btn:'Wok Noodles 🍜', title:'Wok Noodles 🍜', items:[
-      {id:'udon', n:'Teriyaki Chicken Udon', s:'Chicken Udon', d:'chicken, vegetables, teriyaki sauce, sesame', p:14, img:'1585032226651-759b368d7246'},
-      {id:'beef', n:'Spicy Beef Noodles', s:'Spicy Beef Noodles', d:'egg noodles, beef, chili, bell pepper', p:16, img:'1612929633738-8fe44f7ec841'},
-      {id:'padthai', n:'Shrimp Pad Thai', s:'Pad Thai', d:'rice noodles, shrimp, peanuts, lime', p:17, img:'1559314809-0d155014e29e'}]},
-    {id:'soups', btn:'Soups 🥣', title:'Soups 🥣', items:[
-      {id:'tomyum', n:'Shrimp Tom Yum', s:'Tom Yum', d:'coconut milk, shrimp, mushrooms, lemongrass', p:14, img:'1548943487-a2e4e43b4853'},
-      {id:'ramen', n:'Ramen with Egg', s:'Ramen', d:'rich broth, chashu, egg, nori', p:14, img:'1557872943-16a5ac26437e'},
-      {id:'laksa', n:'Chicken Laksa', s:'Laksa', d:'coconut curry broth, chicken, lime', p:14, img:'1617093727343-374698b1b08d'}]},
-    {id:'drinks', btn:'Drinks 🥤', title:'Drinks 🥤', items:[
-      {id:'tea', n:'Iced Lemon Tea', s:'Iced Tea', d:'16 oz, house-made', p:4, img:'1556679343-c7306c1976bc'},
-      {id:'lemon', n:'Mint-Lime Lemonade', s:'Mint-Lime Lemonade', d:'16 oz, fresh mint and lime', p:5, img:'1621263764928-df1444c5e859'},
-      {id:'mojito', n:'Virgin Mojito', s:'Virgin Mojito', d:'16 oz, lime, mint, soda', p:6, img:'1513558161293-cdaf765ed2fd'}]},
-    {id:'desserts', btn:'Desserts 🍰', title:'Desserts 🍰', items:[
-      {id:'tiramisu', n:'Tiramisu', s:'Tiramisu', d:'mascarpone, ladyfingers, cocoa', p:8, img:'1631206753348-db44968fd440'},
-      {id:'cheese', n:'Blueberry Cheesecake', s:'Cheesecake', d:'New York style, blueberry sauce', p:9, img:'1533134242443-d4fd215305ad'},
-      {id:'oreo', n:'Chocolate Oreo Dessert', s:'Oreo Dessert', d:'chocolate mousse, Oreo cookies, cream', p:8, img:'1563805042-7684c019e1cb'}]}
+    {id:'rolls', btn:'Роллы 🍣', title:'Роллы 🍣', items:[
+      {id:'phila', n:'Ролл Филадельфия', s:'Филадельфия', d:'лосось, сливочный сыр, огурец, 8 шт', p:420, img:'1579871494447-9811cf80d66c'},
+      {id:'cali', n:'Ролл Калифорния', s:'Калифорния', d:'краб, авокадо, огурец, икра тобико, 8 шт', p:390, img:'1583623025817-d180a2221d0a'},
+      {id:'set', n:'Сет «Wok & Roll»', s:'Сет Wok&Roll', d:'Филадельфия, Калифорния, запечённый с угрём, 24 шт', p:1490, img:'1553621042-f6e147245754'}]},
+    {id:'wok', btn:'Wok-лапша 🍜', title:'Wok-лапша 🍜', items:[
+      {id:'udon', n:'Удон с курицей терияки', s:'Удон терияки', d:'курица, овощи, соус терияки, кунжут', p:450, img:'1585032226651-759b368d7246'},
+      {id:'beef', n:'Острая лапша с говядиной', s:'Лапша с говядиной', d:'яичная лапша, говядина, чили, болгарский перец', p:520, img:'1612929633738-8fe44f7ec841'},
+      {id:'padthai', n:'Пад тай с креветками', s:'Пад тай', d:'рисовая лапша, креветки, арахис, лайм', p:560, img:'1559314809-0d155014e29e'}]},
+    {id:'soups', btn:'Супы 🥣', title:'Супы 🥣', items:[
+      {id:'tomyum', n:'Том ям с креветками', s:'Том ям', d:'кокосовое молоко, креветки, грибы, лемонграсс', p:490, img:'1548943487-a2e4e43b4853'},
+      {id:'ramen', n:'Рамен с яйцом', s:'Рамен', d:'насыщенный бульон, чашу, яйцо, нори', p:460, img:'1557872943-16a5ac26437e'},
+      {id:'laksa', n:'Лакса с курицей', s:'Лакса', d:'кокосовый карри-бульон, курица, лайм', p:470, img:'1617093727343-374698b1b08d'}]},
+    {id:'drinks', btn:'Напитки 🥤', title:'Напитки 🥤', items:[
+      {id:'tea', n:'Холодный чай с лимоном', s:'Холодный чай', d:'0,4 л, домашний', p:190, img:'1556679343-c7306c1976bc'},
+      {id:'lemon', n:'Лимонад мята-лайм', s:'Лимонад мята-лайм', d:'0,4 л, свежая мята и лайм', p:210, img:'1621263764928-df1444c5e859'},
+      {id:'mojito', n:'Мохито безалкогольный', s:'Мохито', d:'0,4 л, лайм, мята, содовая', p:230, img:'1513558161293-cdaf765ed2fd'}]},
+    {id:'desserts', btn:'Десерты 🍰', title:'Десерты 🍰', items:[
+      {id:'tiramisu', n:'Тирамису', s:'Тирамису', d:'маскарпоне, савоярди, какао', p:290, img:'1631206753348-db44968fd440'},
+      {id:'cheese', n:'Черничный чизкейк', s:'Чизкейк', d:'нью-йорк, черничный соус', p:310, img:'1533134242443-d4fd215305ad'},
+      {id:'oreo', n:'Шоколадный десерт с орео', s:'Десерт с орео', d:'шоколадный мусс, печенье орео, сливки', p:280, img:'1563805042-7684c019e1cb'}]}
   ];
   var ITEMS = {}; CATS.forEach(function(c){ c.items.forEach(function(it){ it.cat = c.id; ITEMS[it.id] = it; }); });
-  var FREE = 35, FEE = 5, UPSELL = 'lemon';
-  var STAGES = ['Order received','Cooking 👨‍🍳','Courier on the way 🛵','Delivered ✅'];
+  var FREE = 1500, FEE = 199, UPSELL = 'lemon';
+  var STAGES = ['Заказ принят','Готовим 👨‍🍳','Курьер в пути 🛵','Доставлено ✅'];
 
-  /* ================= STATE ================= */
+  /* ================= СОСТОЯНИЕ ================= */
   var cart, order, hist, busy, screen, unread, stats, timers, orderSeq, cartMsg, upsellAsked, upsold, trackEls, catId, draft;
   var chat = document.getElementById('chat'), adminChat = document.getElementById('adminChat');
   var input = document.getElementById('input'), replyKb = document.getElementById('replyKb'), statusEl = document.getElementById('botStatus');
 
-  /* ================= UTILS ================= */
+  /* ================= УТИЛИТЫ ================= */
   function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-  function usd(n){ return '$' + n.toLocaleString('en-US'); }
-  function now(){ var d = new Date(); return ((d.getHours()%12)||12) + ':' + String(d.getMinutes()).padStart(2,'0') + (d.getHours()<12?' AM':' PM'); }
+  function rub(n){ return n.toLocaleString('ru-RU').replace(/\s/g,' ') + ' ₽'; }
+  function now(){ var d = new Date(); return d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0'); }
   function wait(ms){ return new Promise(function(r){ var t = setTimeout(r, ms); timers.push(t); }); }
   function scrollDown(el){ el.scrollTop = el.scrollHeight; }
   function count(){ return Object.keys(cart).reduce(function(a,k){ return a + cart[k]; }, 0); }
   function subtotal(){ return Object.keys(cart).reduce(function(a,k){ return a + cart[k] * ITEMS[k].p; }, 0); }
   function fee(sub){ return sub >= FREE || sub === 0 ? 0 : FEE; }
-  function lines(c){ return Object.keys(c).map(function(k){ return ITEMS[k].n + ' × ' + c[k] + ' = ' + usd(c[k]*ITEMS[k].p); }); }
-  function cartLabel(){ return '🛒 My order (' + count() + ')'; }
+  function lines(c){ return Object.keys(c).map(function(k){ return ITEMS[k].n + ' × ' + c[k] + ' = ' + rub(c[k]*ITEMS[k].p); }); }
+  function cartLabel(){ return '🛒 Мой заказ (' + count() + ')'; }
   function toast(t){ var el = document.getElementById('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(function(){ el.classList.remove('show'); }, 1400); }
   function updateCartButtons(){ chat.querySelectorAll('[data-cart]').forEach(function(b){ b.textContent = cartLabel(); }); }
 
-  /* ================= RENDERING ================= */
+  /* ================= ВЫВОД ================= */
   function killKeyboards(){ chat.querySelectorAll('.kb').forEach(function(k){ if(+k.dataset.screen !== screen) k.classList.add('dead'); }); }
   function addUser(text){ var m = document.createElement('div'); m.className = 'msg out'; m.innerHTML = esc(text) + '<span class="time">' + now() + ' ✓✓</span>'; chat.appendChild(m); scrollDown(chat); }
   function addService(text, target){ var el = document.createElement('div'); el.className = 'service'; el.textContent = text; (target||chat).appendChild(el); scrollDown(target||chat); }
@@ -293,8 +290,8 @@
   function typing(){
     busy = true;
     var t = document.createElement('div'); t.className = 'typing-bubble'; t.innerHTML = '<i></i><i></i><i></i>';
-    chat.appendChild(t); scrollDown(chat); statusEl.textContent = 'typing…'; statusEl.className = 'typing';
-    return function(){ t.remove(); statusEl.textContent = 'bot'; statusEl.className = ''; };
+    chat.appendChild(t); scrollDown(chat); statusEl.textContent = 'печатает…'; statusEl.className = 'typing';
+    return function(){ t.remove(); statusEl.textContent = 'бот'; statusEl.className = ''; };
   }
   function botSay(html, rows, cls){
     killKeyboards();
@@ -322,39 +319,39 @@
   }
   function renderStats(){
     document.getElementById('stOrders').textContent = stats.orders;
-    document.getElementById('stRevenue').textContent = usd(stats.rev);
-    document.getElementById('stAvg').textContent = usd(stats.orders ? Math.round(stats.rev / stats.orders) : 0);
+    document.getElementById('stRevenue').textContent = rub(stats.rev);
+    document.getElementById('stAvg').textContent = rub(stats.orders ? Math.round(stats.rev / stats.orders) : 0);
     document.getElementById('stUp').textContent = stats.up;
   }
 
-  /* ================= NAVIGATION ================= */
+  /* ================= НАВИГАЦИЯ ================= */
   function current(){ return hist[hist.length-1]; }
   function go(step, label){ if(label) addUser(label); hist.push(step); return render(step); }
-  function back(){ addUser('← Back'); hist.pop(); return render(current()); }
+  function back(){ addUser('← Назад'); hist.pop(); return render(current()); }
   function toMenu(label){ if(label) addUser(label); hist = ['home']; return render('home'); }
-  function backRow(label, fn){ return [{t:label || '← Back', fn:fn || back, back:true}]; }
-  function navRow(){ return [{t:cartLabel(), cart:true, fn:function(){ go('cart', 'My order'); }}]; }
+  function backRow(label, fn){ return [{t:label || '← Назад', fn:fn || back, back:true}]; }
+  function navRow(){ return [{t:cartLabel(), cart:true, fn:function(){ go('cart', 'Мой заказ'); }}]; }
 
   function add(id, el){
     cart[id] = (cart[id] || 0) + 1;
-    toast('Added to cart ✅');
-    if(el) el.textContent = '+ Add another · ' + cart[id] + ' in cart';
+    toast('Добавлено в корзину ✅');
+    if(el) el.textContent = '+ Ещё · в корзине ' + cart[id];
     updateCartButtons();
   }
 
-  /* ================= SCREENS ================= */
+  /* ================= ЭКРАНЫ ================= */
   function render(step){
-    screen++; replyKb.classList.remove('show'); input.placeholder = 'Message'; input.value = '';
+    screen++; replyKb.classList.remove('show'); input.placeholder = 'Сообщение'; input.value = '';
     return SCREENS[step]();
   }
   var SCREENS = {
     home: function(){
-      return botSay('Welcome to <b>WOK &amp; ROLL</b> 🍜\nHungry? Let’s build your order in a minute.', [
-        [{t:'🍜 Menu', fn:function(){ go('cats','Menu'); }}, {t:cartLabel(), cart:true, fn:function(){ go('cart','My order'); }}],
-        [{t:'🛵 Delivery status', fn:function(){ go('track','Delivery status'); }}, {t:'🔥 Deals', fn:function(){ go('promo','Deals'); }}]]);
+      return botSay('Добро пожаловать в <b>WOK &amp; ROLL</b> 🍜\nГолодны? Соберём заказ за минуту.', [
+        [{t:'🍜 Меню', fn:function(){ go('cats','Меню'); }}, {t:cartLabel(), cart:true, fn:function(){ go('cart','Мой заказ'); }}],
+        [{t:'🛵 Статус доставки', fn:function(){ go('track','Статус доставки'); }}, {t:'🔥 Акции', fn:function(){ go('promo','Акции'); }}]]);
     },
     cats: function(){
-      return botSay('What are you in the mood for? 😋', CATS.map(function(c){ return [{t:c.btn, fn:function(){ catId = c.id; go('cat', c.btn); }}]; }).concat([navRow(), backRow()]));
+      return botSay('Что будем есть? 😋', CATS.map(function(c){ return [{t:c.btn, fn:function(){ catId = c.id; go('cat', c.btn); }}]; }).concat([navRow(), backRow()]));
     },
     cat: function(){
       var c = CATS.find(function(x){ return x.id === catId; });
@@ -363,71 +360,71 @@
       return wait(500).then(function(){
         done();
         c.items.forEach(function(it){
-          var m = msgEl('<img src="' + U + it.img + Q + '" alt="' + esc(it.n) + '" loading="lazy"><div class="cap"><b>' + esc(it.n) + '</b> <span class="price">' + usd(it.p) + '</span>\n<span class="muted">' + esc(it.d) + '</span></div>', 'photo');
+          var m = msgEl('<img src="' + U + it.img + Q + '" alt="' + esc(it.n) + '" loading="lazy"><div class="cap"><b>' + esc(it.n) + '</b> <span class="price">' + rub(it.p) + '</span>\n<span class="muted">' + esc(it.d) + '</span></div>', 'photo');
           m.querySelector('.time').remove();
           chat.appendChild(m);
-          chat.appendChild(buildKb([[{t:cart[it.id] ? '+ Add another · ' + cart[it.id] + ' in cart' : '+ Add', stay:true, fn:function(el){ add(it.id, el); }}]]));
+          chat.appendChild(buildKb([[{t:cart[it.id] ? '+ Ещё · в корзине ' + cart[it.id] : '+ Добавить', stay:true, fn:function(el){ add(it.id, el); }}]]));
         });
-        chat.appendChild(msgEl('Add as much as you like, the cart updates itself 👇'));
-        chat.appendChild(buildKb([navRow(), [{t:'Another category', fn:function(){ go('cats','Another category'); }}], backRow()]));
+        chat.appendChild(msgEl('Добавляйте сколько угодно, корзина пересчитается сама 👇'));
+        chat.appendChild(buildKb([navRow(), [{t:'Другая категория', fn:function(){ go('cats','Другая категория'); }}], backRow()]));
         scrollDown(chat); busy = false;
       });
     },
     cart: function(){
-      if(!count()) return botSay('Your cart is empty 🥲\nCheck out the menu, there’s a lot to love.', [[{t:'🍜 Menu', fn:function(){ go('cats','Menu'); }}], backRow()]);
+      if(!count()) return botSay('Корзина пока пустая 🥲\nЗагляните в меню, там много вкусного.', [[{t:'🍜 Меню', fn:function(){ go('cats','Меню'); }}], backRow()]);
       return botSay(cartHtml(), cartKb()).then(function(m){ cartMsg = m; cartMsg._kb = m.nextSibling; });
     },
     upsell: function(){
       var it = ITEMS[UPSELL];
-      return botSay('Add <b>' + it.n + '</b> to your order for ' + usd(it.p) + '? 🥤\nGreat with anything spicy.', [
-        [{t:(upsold ? '✓ ' : '') + 'Yes, add it', fn:function(){ if(!upsold){ cart[UPSELL] = (cart[UPSELL]||0) + 1; upsold = true; updateCartButtons(); } upsellAsked = true; go('address','Yes, add it'); }},
-         {t:(upsellAsked && !upsold ? '✓ ' : '') + 'No, thanks', fn:function(){ if(upsold){ cart[UPSELL]--; if(cart[UPSELL] <= 0) delete cart[UPSELL]; upsold = false; updateCartButtons(); } upsellAsked = true; go('address','No, thanks'); }}], backRow()]);
+      return botSay('Добавить к заказу <b>' + it.n + '</b> за ' + rub(it.p) + '? 🥤\nС острым отлично освежает.', [
+        [{t:(upsold ? '✓ ' : '') + 'Да, добавить', fn:function(){ if(!upsold){ cart[UPSELL] = (cart[UPSELL]||0) + 1; upsold = true; updateCartButtons(); } upsellAsked = true; go('address','Да, добавить'); }},
+         {t:(upsellAsked && !upsold ? '✓ ' : '') + 'Нет, спасибо', fn:function(){ if(upsold){ cart[UPSELL]--; if(cart[UPSELL] <= 0) delete cart[UPSELL]; upsold = false; updateCartButtons(); } upsellAsked = true; go('address','Нет, спасибо'); }}], backRow()]);
     },
     address: function(){
-      return botSay('Where should we deliver? 📍\nType your address: street, number, apartment. Or share your location with the button below.', [backRow()]).then(function(){
-        replyKb.classList.add('show'); input.placeholder = 'Street, number, apartment'; input.value = draft.address || '';
+      return botSay('Куда доставить? 📍\nНапишите адрес: улица, дом, квартира. Или отправьте геолокацию кнопкой внизу.', [backRow()]).then(function(){
+        replyKb.classList.add('show'); input.placeholder = 'Улица, дом, квартира'; input.value = draft.address || '';
       });
     },
     pay: function(){
-      return botSay('How would you like to pay?', [
-        [{t:(draft.pay === 'card' ? '✓ ' : '') + '💳 Pay online by card', fn:function(){ draft.pay = 'card'; go('comment','Pay online by card'); }}],
-        [{t:(draft.pay === 'cash' ? '✓ ' : '') + '💵 Cash to courier', fn:function(){ draft.pay = 'cash'; go('comment','Cash to courier'); }}], backRow()]);
+      return botSay('Как будете оплачивать?', [
+        [{t:(draft.pay === 'card' ? '✓ ' : '') + '💳 Картой онлайн', fn:function(){ draft.pay = 'card'; go('comment','Картой онлайн'); }}],
+        [{t:(draft.pay === 'cash' ? '✓ ' : '') + '💵 Наличными курьеру', fn:function(){ draft.pay = 'cash'; go('comment','Наличными курьеру'); }}], backRow()]);
     },
     comment: function(){
-      return botSay('Any notes for your order? ✍️\nFor example, a buzzer code or "no onions." If not, just tap the button.', [
-        [{t:'No notes', fn:function(){ draft.comment = ''; addUser('No notes'); placeOrder(); }}], backRow()]).then(function(){
-        input.placeholder = 'Note for the courier or kitchen'; input.value = draft.comment || '';
+      return botSay('Комментарий к заказу? ✍️\nНапример, код домофона или «без лука». Если не нужен, нажмите кнопку.', [
+        [{t:'Без комментария', fn:function(){ draft.comment = ''; addUser('Без комментария'); placeOrder(); }}], backRow()]).then(function(){
+        input.placeholder = 'Комментарий курьеру или кухне'; input.value = draft.comment || '';
       });
     },
     done: function(){
       var o = order;
-      var rows = [[{t:'🛵 Track order', fn:function(){ go('track','Track order'); }}]];
-      if(o.pay === 'card' && !o.paid) rows.unshift([{t:'💳 Pay ' + usd(o.total), cls:'go', stay:true, fn:function(el){ pay(el); }}]);
-      rows.push([{t:'← Main menu', back:true, fn:function(){ toMenu('← Main menu'); }}]);
+      var rows = [[{t:'🛵 Отследить заказ', fn:function(){ go('track','Отследить заказ'); }}]];
+      if(o.pay === 'card' && !o.paid) rows.unshift([{t:'💳 Оплатить ' + rub(o.total), cls:'go', stay:true, fn:function(el){ pay(el); }}]);
+      rows.push([{t:'← В главное меню', back:true, fn:function(){ toMenu('← В главное меню'); }}]);
       return botSay(receipt(o), rows);
     },
     track: function(){
-      if(!order) return botSay('You don’t have an active order yet. Let’s build your first one? 🍜', [[{t:'🍜 Menu', fn:function(){ go('cats','Menu'); }}], backRow()]);
-      return botSay('<b>Order #' + order.no + '</b>\n' + trackHtml(), [backRow()]).then(function(m){ trackEls.push(m); });
+      if(!order) return botSay('Активных заказов пока нет. Соберём первый? 🍜', [[{t:'🍜 Меню', fn:function(){ go('cats','Меню'); }}], backRow()]);
+      return botSay('<b>Заказ №' + order.no + '</b>\n' + trackHtml(), [backRow()]).then(function(m){ trackEls.push(m); });
     },
     promo: function(){
-      return botSay('🔥 <b>This week’s deals</b>\n\n🛵 Free delivery over ' + usd(FREE) + '\n🍣 Wok & Roll Combo, 24 pcs for ' + usd(38) + ' instead of ' + usd(45) + '\n🎂 Free dessert on your birthday, just mention it in your order notes', [[{t:'🍜 Browse menu', fn:function(){ go('cats','Browse menu'); }}], backRow()]);
+      return botSay('🔥 <b>Акции этой недели</b>\n\n🛵 Бесплатная доставка от ' + rub(FREE) + '\n🍣 Сет «Wok & Roll» 24 шт за ' + rub(1490) + ' вместо ' + rub(1790) + '\n🎂 В день рождения десерт в подарок, просто напишите в комментарии к заказу', [[{t:'🍜 В меню', fn:function(){ go('cats','В меню'); }}], backRow()]);
     }
   };
 
-  /* ================= CART ================= */
+  /* ================= КОРЗИНА ================= */
   function cartHtml(){
     var sub = subtotal(), f = fee(sub), left = FREE - sub;
-    var t = '<b>🛒 Your order, ' + count() + ' items</b>\n\n' + lines(cart).join('\n') + '\n\nSubtotal: ' + usd(sub) + '\nDelivery: ' + (f ? usd(f) : 'free') + '\n<b>Total: ' + usd(sub + f) + '</b>';
-    t += left > 0 ? '\n\n🛵 ' + usd(left) + ' more to free delivery' : '\n\n🎉 Free delivery unlocked';
+    var t = '<b>🛒 Ваш заказ, ' + count() + ' шт.</b>\n\n' + lines(cart).join('\n') + '\n\nСумма блюд: ' + rub(sub) + '\nДоставка: ' + (f ? rub(f) : 'бесплатно') + '\n<b>Итого: ' + rub(sub + f) + '</b>';
+    t += left > 0 ? '\n\n🛵 До бесплатной доставки осталось ' + rub(left) : '\n\n🎉 Доставка бесплатная';
     return t;
   }
   function cartKb(){
     var rows = Object.keys(cart).map(function(k){
       return [{t:'−', cls:'qty', stay:true, fn:function(){ change(k,-1); }}, {t:ITEMS[k].s + ' × ' + cart[k], cls:'lbl', stay:true}, {t:'+', cls:'qty', stay:true, fn:function(){ change(k,1); }}];
     });
-    rows.push([{t:'✅ Checkout', cls:'go', fn:function(){ addUser('Checkout'); var ownDrinks = Object.keys(cart).reduce(function(a,k){ return a + (ITEMS[k].cat === 'drinks' ? cart[k] : 0); }, 0) - (upsold ? 1 : 0); hist.push(ownDrinks > 0 ? 'address' : 'upsell'); render(current()); }}]);
-    rows.push([{t:'🗑 Clear cart', stay:true, fn:function(){ cart = {}; refreshCart(); updateCartButtons(); toast('Cart cleared'); }}, {t:'➕ Add more', fn:function(){ go('cats','Add more'); }}]);
+    rows.push([{t:'✅ Оформить заказ', cls:'go', fn:function(){ addUser('Оформить заказ'); var ownDrinks = Object.keys(cart).reduce(function(a,k){ return a + (ITEMS[k].cat === 'drinks' ? cart[k] : 0); }, 0) - (upsold ? 1 : 0); hist.push(ownDrinks > 0 ? 'address' : 'upsell'); render(current()); }}]);
+    rows.push([{t:'🗑 Очистить', stay:true, fn:function(){ cart = {}; refreshCart(); updateCartButtons(); toast('Корзина очищена'); }}, {t:'➕ Добавить ещё', fn:function(){ go('cats','Добавить ещё'); }}]);
     rows.push(backRow());
     return rows;
   }
@@ -439,67 +436,67 @@
   function refreshCart(){
     if(!cartMsg) return;
     if(!count()){
-      cartMsg.innerHTML = 'Your cart is empty 🥲\nCheck out the menu, there’s a lot to love.<span class="time">' + now() + '</span>';
-      var kb = buildKb([[{t:'🍜 Menu', fn:function(){ go('cats','Menu'); }}], backRow()]);
+      cartMsg.innerHTML = 'Корзина пустая 🥲\nЗагляните в меню, там много вкусного.<span class="time">' + now() + '</span>';
+      var kb = buildKb([[{t:'🍜 Меню', fn:function(){ go('cats','Меню'); }}], backRow()]);
       cartMsg._kb.replaceWith(kb); cartMsg._kb = kb; return;
     }
-    cartMsg.innerHTML = cartHtml() + '<span class="time">' + now() + ' edited</span>';
+    cartMsg.innerHTML = cartHtml() + '<span class="time">' + now() + ' изм.</span>';
     var nk = buildKb(cartKb());
     cartMsg._kb.replaceWith(nk); cartMsg._kb = nk;
   }
 
-  /* ================= ORDER ================= */
+  /* ================= ЗАКАЗ ================= */
   function receipt(o){
-    return '<b>Your order #' + o.no + '</b> 🎉\n\n' + lines(o.items).join('\n') + '\n\nDelivery: ' + (o.fee ? usd(o.fee) : 'free') + '\n<b>Total: ' + usd(o.total) + '</b>\nPayment: ' + (o.pay === 'card' ? 'card online' + (o.paid ? ', paid ✅' : '') : 'cash to courier') + '\nDelivering to: ' + esc(o.address) + (o.comment ? '\nNote: ' + esc(o.comment) : '') + '\n\nEstimated time: 40-50 minutes.';
+    return '<b>Ваш заказ №' + o.no + '</b> 🎉\n\n' + lines(o.items).join('\n') + '\n\nДоставка: ' + (o.fee ? rub(o.fee) : 'бесплатно') + '\n<b>Сумма: ' + rub(o.total) + '</b>\nОплата: ' + (o.pay === 'card' ? 'картой онлайн' + (o.paid ? ', оплачено ✅' : '') : 'наличными курьеру') + '\nДоставка на: ' + esc(o.address) + (o.comment ? '\nКомментарий: ' + esc(o.comment) : '') + '\n\nОриентировочное время 40-50 минут.';
   }
   function placeOrder(){
     orderSeq++;
     var sub = subtotal(), f = fee(sub);
     order = {no:orderSeq, items:JSON.parse(JSON.stringify(cart)), sub:sub, fee:f, total:sub + f, pay:draft.pay, paid:false, address:draft.address, comment:draft.comment, stage:0, upsold:upsold};
     stats.orders++; stats.rev += order.total; if(upsold) stats.up++; renderStats();
-    kitchen('🆕 <b>New order #' + order.no + '</b>\n' + Object.keys(order.items).map(function(k){ return '• ' + ITEMS[k].n + ' × ' + order.items[k]; }).join('\n') +
-      (upsold ? '\n↗️ Bot upsell: ' + ITEMS[UPSELL].n : '') +
-      '\n\nTotal: <b>' + usd(order.total) + '</b> (' + (order.fee ? 'with ' + usd(order.fee) + ' delivery' : 'free delivery') + ')\nPayment: ' + (order.pay === 'card' ? 'card online, awaiting payment' : 'cash, courier should bring change') +
-      '\nAddress: ' + esc(order.address) + '\nNote: ' + (order.comment ? esc(order.comment) : 'none') + '\nCustomer: Alex, @alex_k (Telegram)',
-      [[{t:'👨‍🍳 Start cooking', fn:(function(no){ return function(el){ el.textContent = '✓ Marco is cooking'; el.disabled = true; advance(1, no); }; })(orderSeq)}]]);
+    kitchen('🆕 <b>Новый заказ №' + order.no + '</b>\n' + Object.keys(order.items).map(function(k){ return '• ' + ITEMS[k].n + ' × ' + order.items[k]; }).join('\n') +
+      (upsold ? '\n↗️ Допродажа от бота: ' + ITEMS[UPSELL].n : '') +
+      '\n\nСумма: <b>' + rub(order.total) + '</b> (' + (order.fee ? 'с доставкой ' + rub(order.fee) : 'доставка бесплатно') + ')\nОплата: ' + (order.pay === 'card' ? 'картой онлайн, ожидает оплаты' : 'наличными, курьеру взять сдачу') +
+      '\nАдрес: ' + esc(order.address) + '\nКомментарий: ' + (order.comment ? esc(order.comment) : 'нет') + '\nКлиент: Алексей, @alex_k (Telegram)',
+      [[{t:'👨‍🍳 Взять в работу', fn:(function(no){ return function(el){ el.textContent = '✓ Готовит Тимур'; el.disabled = true; advance(1, no); }; })(orderSeq)}]]);
     cart = {}; upsellAsked = false; upsold = false; var keep = draft; draft = {address:keep.address, pay:keep.pay, comment:''};
     hist = ['home','done']; render('done');
     schedule();
   }
   function pay(el){
-    el.textContent = '⏳ Processing payment…'; el.disabled = true;
+    el.textContent = '⏳ Проводим оплату…'; el.disabled = true;
     setTimeout(function(){
-      order.paid = true; el.textContent = '✓ Paid ' + usd(order.total);
-      toast('Payment successful ✅');
-      kitchen('💳 Payment received for order #' + order.no + ': ' + usd(order.total));
+      order.paid = true; el.textContent = '✓ Оплачено ' + rub(order.total);
+      toast('Оплата прошла ✅');
+      kitchen('💳 Оплата по заказу №' + order.no + ' получена: ' + rub(order.total));
     }, 1100);
   }
   function trackHtml(){
     return '<div class="track">' + STAGES.map(function(s, i){ return '<div class="' + (i < order.stage ? 'done' : i === order.stage ? 'now' : '') + '"><i></i>' + s + '</div>'; }).join('') + '</div>' +
-      (order.stage === 2 ? 'Courier Diego, arriving in about 15 minutes.' : order.stage === 3 ? 'Enjoy your meal! 🍜' : 'Estimated time: 40-50 minutes.');
+      (order.stage === 2 ? 'Курьер Азамат, будет примерно через 15 минут.' : order.stage === 3 ? 'Приятного аппетита! 🍜' : 'Ориентировочное время 40-50 минут.');
   }
   function advance(to, no){
     if(!order || (no && no !== order.no) || to <= order.stage) return;
     order.stage = to;
-    trackEls.forEach(function(m){ if(m.isConnected) m.innerHTML = '<b>Order #' + order.no + '</b>\n' + trackHtml() + '<span class="time">' + now() + ' updated</span>'; });
-    var texts = ['', 'Order #' + order.no + ' is being cooked 👨‍🍳 Everything is made fresh to order.', 'Courier Diego picked up order #' + order.no + ' and is on the way 🛵 About 15 minutes out.', 'Order #' + order.no + ' delivered ✅ Enjoy your meal! 🍜'];
-    addService('Order #' + order.no + ' status: ' + STAGES[to], adminChat);
+    trackEls.forEach(function(m){ if(m.isConnected) m.innerHTML = '<b>Заказ №' + order.no + '</b>\n' + trackHtml() + '<span class="time">' + now() + ' изм.</span>'; });
+    var texts = ['', 'Заказ №' + order.no + ' уже готовим 👨‍🍳 Всё свежее, без полуфабрикатов.', 'Курьер Азамат забрал заказ №' + order.no + ' и едет к вам 🛵 Будет примерно через 15 минут.', 'Заказ №' + order.no + ' доставлен ✅ Приятного аппетита! 🍜'];
+    addService('Статус заказа №' + order.no + ': ' + STAGES[to], adminChat);
     var rows = to === 3 ? [[{t:'😍', stay:true, fn:rateFn(5)}, {t:'🙂', stay:true, fn:rateFn(4)}, {t:'😕', stay:true, fn:rateFn(2)}]] : null;
-    notify(to === 3 ? texts[3] + '\nHow was your order?' : texts[to], rows);
+    notify(to === 3 ? texts[3] + '\nКак вам заказ?' : texts[to], rows);
   }
   function rateFn(n){ return function(el){
     el.parentNode.parentNode.classList.add('dead');
     addUser(el.textContent);
-    if(n >= 4){ kitchen('⭐ Order #' + order.no + ': customer rated ' + n + '/5'); notify('Thank you! We’ll pass it on to the kitchen 🙌 Use code <b>WOKAGAIN</b> next time for 10% off.'); }
-    else { kitchen('⚠️ Order #' + order.no + ': low rating ' + n + '/5. Manager should contact @alex_k', [[{t:'On it', fn:function(b){ b.textContent = '✓ Manager Jasmine is messaging the customer'; b.disabled = true; }}]]); notify('We’re sorry 😔 Our manager is already messaging you to make it right.'); }
+    if(n >= 4){ kitchen('⭐ Заказ №' + order.no + ': клиент поставил ' + n + '/5'); notify('Спасибо! Передадим поварам 🙌 В следующий раз по промокоду <b>WOKAGAIN</b> скидка 10%.'); }
+    else { kitchen('⚠️ Заказ №' + order.no + ': низкая оценка ' + n + '/5. Менеджеру связаться с клиентом @alex_k', [[{t:'Беру', fn:function(b){ b.textContent = '✓ Менеджер Ирина пишет клиенту'; b.disabled = true; }}]]); notify('Нам жаль 😔 Менеджер уже пишет вам, чтобы всё исправить.'); }
   }; }
   function schedule(){ var no = order.no; [[6000,1],[14000,2],[22000,3]].forEach(function(p){ timers.push(setTimeout(function(){ advance(p[1], no); }, p[0])); }); }
 
-  /* ================= INPUT ================= */
+  /* ================= ВВОД ================= */
   document.getElementById('shareGeo').addEventListener('click', function(){
     if(busy || current() !== 'address') return;
-    addUser('📍 Location');
-    draft.address = '118 Grand St, Brooklyn (shared via location)'; replyKb.classList.remove('show');
+    addUser('📍 Геолокация');
+    draft.address = 'ул. Пятницкая, 18, по геолокации'; replyKb.classList.remove('show');
     hist.push('pay'); render('pay');
   });
   document.getElementById('composer').addEventListener('submit', function(e){
@@ -509,22 +506,22 @@
     var step = current();
     if(text === '/start'){ toMenu(); return; }
     if(step === 'address'){
-      if(text.length < 6 || !/\d/.test(text)){ botSay('Looks like the street number’s missing 🙏 Try something like “118 Grand St, Apt 4B”.', [backRow()]).then(function(){ replyKb.classList.add('show'); }); return; }
+      if(text.length < 6 || !/\d/.test(text)){ botSay('Не хватает номера дома 🙏 Напишите, например: «Пятницкая, 18, кв. 42».', [backRow()]).then(function(){ replyKb.classList.add('show'); }); return; }
       draft.address = text; hist.push('pay'); render('pay'); return;
     }
     if(step === 'comment'){ draft.comment = text.slice(0,200); placeOrder(); return; }
-    botSay('I understand the buttons under each message 🍜 Tap an option, or send /start.', [[{t:'Main menu', fn:function(){ toMenu('Main menu'); }}]]);
+    botSay('Я понимаю кнопки под сообщениями 🍜 Нажмите нужный вариант или отправьте /start.', [[{t:'В главное меню', fn:function(){ toMenu('В главное меню'); }}]]);
   });
 
-  /* ================= START ================= */
+  /* ================= ЗАПУСК ================= */
   function start(){
     (timers || []).forEach(clearTimeout);
     timers = []; chat.innerHTML = '';
-    adminChat.innerHTML = '<div class="admin-empty" id="adminEmpty">The kitchen is waiting for orders. Build one in the bot on the left, and it will show up here with every item.</div>';
+    adminChat.innerHTML = '<div class="admin-empty" id="adminEmpty">Кухня ждёт заказов. Соберите заказ в боте слева, и он появится здесь со всеми позициями.</div>';
     cart = {}; order = null; hist = ['home']; busy = false; screen = 0; unread = 0; orderSeq = 2047; cartMsg = null; upsellAsked = false; upsold = false; trackEls = []; draft = {address:'', pay:null, comment:''};
     stats = {orders:0, rev:0, up:0}; renderStats(); document.getElementById('badge').textContent = '';
     replyKb.classList.remove('show');
-    addService('Today'); addUser('/start'); render('home');
+    addService('Сегодня'); addUser('/start'); render('home');
   }
   document.getElementById('restart').addEventListener('click', start);
   document.querySelectorAll('#tabs button').forEach(function(btn){
@@ -539,7 +536,7 @@
 })();
 </script>
 <script>
-/* Reliable form submit: works in sandboxes/previews where the default submit is blocked */
+/* Надёжная отправка форм: работает и в песочницах/превью, где стандартный submit заблокирован */
 (function(){
   document.querySelectorAll('form').forEach(function(f){
     function fire(){ f.dispatchEvent(new Event('submit', {cancelable:true, bubbles:true})); }

@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Step Forward — Online Career School</title>
-<meta name="description" content="Demo landing page for an online career school: course catalog with filters, a course-match quiz and a free trial lesson signup. METRAWEN Digital.">
+<title>Шаг вперёд — онлайн-школа</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -248,44 +247,44 @@ footer .cols a{display:block;margin-top:8px}
 
 <header>
   <div class="wrap in">
-    <div class="logo"><span class="sq">→</span> Step Forward</div>
+    <div class="logo"><span class="sq">→</span> Шаг вперёд</div>
     <nav>
-      <a href="#courses">Courses</a>
-      <a href="#quiz">Course match</a>
-      <a href="#process">How it works</a>
-      <a href="#faq">FAQ</a>
+      <a href="#courses">Курсы</a>
+      <a href="#quiz">Подбор курса</a>
+      <a href="#process">Как учимся</a>
+      <a href="#faq">Вопросы</a>
     </nav>
     <div class="hd-cta">
-      <a href="#lead" class="btn btn-o">Free lesson</a>
-      <a href="#lead" class="btn btn-p">Enroll</a>
-      <button class="burger" id="burgerBtn" aria-label="Open menu"><span></span></button>
+      <a href="#lead" class="btn btn-o">Пробный урок</a>
+      <a href="#lead" class="btn btn-p">Записаться</a>
+      <button class="burger" id="burgerBtn"><span></span></button>
     </div>
   </div>
 </header>
 
 <div class="mob-nav" id="mobNav">
-  <button class="close" id="mobClose" aria-label="Close menu">✕</button>
-  <a href="#courses">Courses</a>
-  <a href="#quiz">Course match</a>
-  <a href="#process">How it works</a>
-  <a href="#faq">FAQ</a>
-  <a href="#lead">Free lesson</a>
+  <button class="close" id="mobClose">✕</button>
+  <a href="#courses">Курсы</a>
+  <a href="#quiz">Подбор курса</a>
+  <a href="#process">Как учимся</a>
+  <a href="#faq">Вопросы</a>
+  <a href="#lead">Пробный урок</a>
 </div>
 
 <section class="hero">
   <div class="wrap in">
     <div>
-      <span class="pill">🎓 Online career school</span>
-      <h1>A new career<br>in <em>3–6 months</em>,<br>without quitting your job</h1>
-      <p class="lead">12 tracks, from data analytics and design to marketing and software. Live evening classes, feedback from working professionals and a certificate of completion.</p>
+      <span class="pill">🎓 Онлайн-школа профессий</span>
+      <h1>Новая профессия<br>за <em>3–6 месяцев</em>,<br>без отрыва от работы</h1>
+      <p class="lead">12 направлений: от аналитики и дизайна до маркетинга и IT. Живые вебинары, обратная связь от практикующих специалистов и диплом о переподготовке.</p>
       <div class="cta-row">
-        <a href="#lead" class="btn btn-p">Book a free lesson</a>
-        <a href="#courses" class="btn btn-o">Browse courses</a>
+        <a href="#lead" class="btn btn-p">Записаться на бесплатный урок</a>
+        <a href="#courses" class="btn btn-o">Смотреть курсы</a>
       </div>
       <div class="trust">
-        <div><b id="statStudents">3,400+</b>graduates</div>
-        <div><b>87%</b>land a job within 4 months</div>
-        <div><b>4.8</b>average course rating</div>
+        <div><b id="statStudents">3 400+</b>выпускников</div>
+        <div><b>87%</b>находят работу за 4 мес.</div>
+        <div><b>4.8</b>средняя оценка курсов</div>
       </div>
     </div>
     <div class="hero-art"><svg id="heroSvg" width="100%" height="100%" viewBox="0 0 560 420" preserveAspectRatio="xMidYMid slice"></svg></div>
@@ -294,17 +293,17 @@ footer .cols a{display:block;margin-top:8px}
 
 <section class="logos">
   <div class="wrap in">
-    <span>Our graduates work in:</span>
-    <span>Tech startups</span><span>E-commerce</span><span>Fintech</span><span>Agencies</span><span>Healthcare</span><span>SaaS</span>
+    <span>Наши выпускники работают в:</span>
+    <span>Яндекс</span><span>Т-Банк</span><span>Ozon</span><span>Авито</span><span>Skillbox Media</span><span>МТС</span>
   </div>
 </section>
 
 <section class="sec" id="courses">
   <div class="wrap">
     <div class="sec-head">
-      <span class="pill">Catalog</span>
-      <h2>12 learning tracks</h2>
-      <p>Pick a track or use the filter. You can switch programs until your cohort starts.</p>
+      <span class="pill">Каталог</span>
+      <h2>12 направлений обучения</h2>
+      <p>Выберите направление или воспользуйтесь фильтром — программу можно менять до старта потока</p>
     </div>
     <div class="dirs" id="dirsGrid"></div>
   </div>
@@ -315,10 +314,10 @@ footer .cols a{display:block;margin-top:8px}
     <div class="cat-toolbar">
       <div class="filters" id="filterChips"></div>
       <select class="sortsel" id="sortSel">
-        <option value="pop">Most popular</option>
-        <option value="price_asc">Price: low to high</option>
-        <option value="price_desc">Price: high to low</option>
-        <option value="soon">Starting soonest</option>
+        <option value="pop">По популярности</option>
+        <option value="price_asc">Сначала дешевле</option>
+        <option value="price_desc">Сначала дороже</option>
+        <option value="soon">Скоро старт</option>
       </select>
     </div>
     <div class="courses" id="coursesGrid"></div>
@@ -333,25 +332,25 @@ footer .cols a{display:block;margin-top:8px}
   <div class="wrap">
     <div class="quiz-wrap">
       <div class="quiz-head">
-        <span class="pill">Not sure where to start?</span>
-        <h2>Find your course in 5 questions</h2>
-        <p>Answer a few questions about yourself and we'll show the 2 tracks that fit you best</p>
+        <span class="pill">Не знаете, с чего начать?</span>
+        <h2>Подберём курс за 5 вопросов</h2>
+        <p>Ответьте на несколько вопросов о себе — покажем 2 направления, которые подходят лучше остальных</p>
       </div>
       <div class="quiz-box">
         <div class="qprog" id="qProg"></div>
         <div id="qSteps"></div>
         <div class="q-result" id="qResult">
-          <h4>Your results</h4>
+          <h4>Ваш результат</h4>
           <div id="matchList"></div>
           <div class="lead-mini" id="qLeadRow">
-            <input type="tel" id="qPhone" placeholder="Your phone number">
-            <button class="btn btn-g" id="qSendBtn">Get the syllabus</button>
+            <input type="tel" id="qPhone" placeholder="Телефон для связи">
+            <button class="btn btn-g" id="qSendBtn">Получить программу курса</button>
           </div>
         </div>
         <div class="q-thanks" id="qThanks">
           <div class="ic">✅</div>
-          <h4 style="margin-top:10px;color:#fff">Request sent</h4>
-          <p style="color:#b3aed1;margin-top:8px;font-size:14px">An advisor will reach out within 30 minutes and send you the full syllabus</p>
+          <h4 style="margin-top:10px;color:#fff">Заявка отправлена</h4>
+          <p style="color:#b3aed1;margin-top:8px;font-size:14px">Куратор свяжется с вами в течение 30 минут и пришлёт подробную программу</p>
         </div>
       </div>
     </div>
@@ -361,14 +360,14 @@ footer .cols a{display:block;margin-top:8px}
 <section class="sec" id="process">
   <div class="wrap">
     <div class="sec-head">
-      <span class="pill">Format</span>
-      <h2>How learning works</h2>
+      <span class="pill">Формат</span>
+      <h2>Как устроено обучение</h2>
     </div>
     <div class="steps">
-      <div class="step"><div class="num">1</div><h4>Apply</h4><p>An advisor calls within a day, asks about your goals and suggests a cohort</p></div>
-      <div class="step"><div class="num">2</div><h4>Free lesson</h4><p>Meet your instructor and try the format before paying, with no commitment</p></div>
-      <div class="step"><div class="num">3</div><h4>Study 2–3 times a week</h4><p>Live evening sessions, lifetime access to recordings, and hands-on work reviewed by a mentor</p></div>
-      <div class="step"><div class="num">4</div><h4>Certificate and career support</h4><p>A certificate of completion, a project portfolio, and help with your résumé and interviews</p></div>
+      <div class="step"><div class="num">1</div><h4>Подаёте заявку</h4><p>Куратор перезванивает в течение дня, уточняет цели и предлагает поток</p></div>
+      <div class="step"><div class="num">2</div><h4>Бесплатный урок</h4><p>Знакомитесь с преподавателем и форматом до оплаты — без обязательств</p></div>
+      <div class="step"><div class="num">3</div><h4>Учитесь 2–3 раза в неделю</h4><p>Вебинары по вечерам, запись остаётся навсегда, практика с проверкой наставника</p></div>
+      <div class="step"><div class="num">4</div><h4>Диплом и поддержка в поиске работы</h4><p>Диплом о переподготовке, портфолио проектов, помощь с резюме и собеседованиями</p></div>
     </div>
   </div>
 </section>
@@ -376,13 +375,13 @@ footer .cols a{display:block;margin-top:8px}
 <section class="sec">
   <div class="wrap">
     <div class="sec-head">
-      <span class="pill">Guarantees</span>
-      <h2>If it's not the right fit</h2>
+      <span class="pill">Гарантии</span>
+      <h2>Если что-то не подошло</h2>
     </div>
     <div class="guar">
-      <div class="g-card"><div class="ic">↩</div><h4>14-day money-back guarantee</h4><p>If the course isn't right for you in the first two weeks, we'll refund you in full, no questions asked</p></div>
-      <div class="g-card"><div class="ic">🔄</div><h4>Switch tracks</h4><p>Realized you picked the wrong one? Move to another course and keep what you've paid as credit</p></div>
-      <div class="g-card"><div class="ic">👤</div><h4>Personal advisor</h4><p>With you from application to certificate, answering study questions within a day</p></div>
+      <div class="g-card"><div class="ic">↩</div><h4>Возврат в первые 14 дней</h4><p>Если курс не подошёл в первые две недели — вернём деньги полностью, без объяснений</p></div>
+      <div class="g-card"><div class="ic">🔄</div><h4>Смена направления</h4><p>Поняли, что выбрали не то — можно перейти на другой курс с зачётом оплаченного</p></div>
+      <div class="g-card"><div class="ic">👤</div><h4>Личный куратор</h4><p>Сопровождает от заявки до диплома, отвечает на вопросы по учёбе в течение дня</p></div>
     </div>
   </div>
 </section>
@@ -390,8 +389,8 @@ footer .cols a{display:block;margin-top:8px}
 <section class="sec">
   <div class="wrap">
     <div class="sec-head">
-      <span class="pill">Instructors</span>
-      <h2>Taught by practitioners, not theorists</h2>
+      <span class="pill">Преподаватели</span>
+      <h2>Учат практики, а не теоретики</h2>
     </div>
     <div class="teach" id="teachGrid"></div>
   </div>
@@ -401,23 +400,23 @@ footer .cols a{display:block;margin-top:8px}
   <div class="wrap">
     <div class="bot-cta">
       <div class="txt">
-        <h2>Every study update in one chat bot</h2>
-        <p>Class schedules, assignments, deadlines and instructor feedback arrive right in Telegram or WhatsApp, with no email or student portal to check</p>
+        <h2>Все уведомления об учёбе — в Telegram-боте</h2>
+        <p>Расписание вебинаров, домашние задания, дедлайны и обратная связь от преподавателя приходят прямо в чат, без почты и личного кабинета</p>
         <ul>
-          <li>Class reminder 30 minutes before start</li>
-          <li>Assignment grading status</li>
-          <li>Pay for the course in installments right in the chat</li>
-          <li>Module progress and deadlines</li>
+          <li>Напоминание о вебинаре за 30 минут</li>
+          <li>Статус проверки домашнего задания</li>
+          <li>Оплата курса частями прямо в чате</li>
+          <li>Прогресс по модулям и дедлайны</li>
         </ul>
-        <div style="margin-top:22px"><a href="#" class="btn btn-g" id="tryBotBtn">See the bot demo →</a></div>
+        <div style="margin-top:22px"><a href="#" class="btn btn-g" id="tryBotBtn">Посмотреть демо бота →</a></div>
       </div>
       <div class="art">
         <div class="phone-mini">
           <div class="scr">
-            <div class="bub bot">Hi! Reminder: tonight at 7 PM is the “SQL Basics” live class. Want the link?</div>
-            <div class="bub usr">Yes please 👍</div>
-            <div class="bub bot">Here's the meeting link. Also, your Module 2 assignment is graded: 9 out of 10, with notes from your mentor inside.</div>
-            <div class="bub usr">Awesome, thanks!</div>
+            <div class="bub bot">Привет! Напоминаю: сегодня в 19:00 — вебинар «Основы SQL». Прислать ссылку?</div>
+            <div class="bub usr">Да, пришли 👍</div>
+            <div class="bub bot">Вот ссылка на встречу. Также ваше ДЗ по модулю 2 проверено — 9 из 10, комментарий от куратора внутри.</div>
+            <div class="bub usr">Отлично, спасибо!</div>
           </div>
         </div>
       </div>
@@ -428,8 +427,8 @@ footer .cols a{display:block;margin-top:8px}
 <section class="sec" id="faq">
   <div class="wrap">
     <div class="sec-head">
-      <span class="pill">FAQ</span>
-      <h2>Frequently asked questions</h2>
+      <span class="pill">Вопросы</span>
+      <h2>Часто спрашивают</h2>
     </div>
     <div class="faq" id="faqList"></div>
   </div>
@@ -440,37 +439,37 @@ footer .cols a{display:block;margin-top:8px}
     <div class="lead-sec">
       <div class="lead-grid">
         <div>
-          <h2>Book a free intro lesson</h2>
-          <p>We'll walk you through the program, show you how classes work and answer your questions, with no payment or commitment</p>
+          <h2>Запишитесь на бесплатный вводный урок</h2>
+          <p>Расскажем о программе, покажем формат занятий и ответим на вопросы — без оплаты и обязательств</p>
           <div class="lead-badges">
-            <span>🎓 Certificate of completion</span>
-            <span>💳 0% installment plans</span>
-            <span>↩ 14-day refund</span>
+            <span>🎓 Диплом о переподготовке</span>
+            <span>💳 Оплата частями</span>
+            <span>↩ Возврат за 14 дней</span>
           </div>
         </div>
         <div class="lead-form">
           <form id="leadForm">
             <div class="frow">
-              <label>Track</label>
+              <label>Направление</label>
               <select id="fCourse"></select>
             </div>
             <div class="frow">
-              <label>Name</label>
-              <input type="text" id="fName" placeholder="Your first name">
-              <div class="err-msg" id="errName">Please enter your name</div>
+              <label>Имя</label>
+              <input type="text" id="fName" placeholder="Как к вам обращаться">
+              <div class="err-msg" id="errName">Введите имя</div>
             </div>
             <div class="frow">
-              <label>Phone</label>
-              <input type="tel" id="fPhone" placeholder="(___) ___-____">
-              <div class="err-msg" id="errPhone">Please enter a 10-digit US phone number</div>
+              <label>Телефон</label>
+              <input type="tel" id="fPhone" placeholder="+7 (___) ___-__-__">
+              <div class="err-msg" id="errPhone">Введите телефон в формате +7XXXXXXXXXX</div>
             </div>
-            <button type="submit" class="btn btn-p" style="width:100%;margin-top:8px">Book my free lesson</button>
-            <p style="font-size:11.5px;color:var(--sub);margin-top:12px;text-align:center">By submitting, you agree to our Privacy Policy and to be contacted by phone or text.</p>
+            <button type="submit" class="btn btn-p" style="width:100%;margin-top:8px">Записаться на бесплатный урок</button>
+            <p style="font-size:11.5px;color:var(--sub);margin-top:12px;text-align:center">Нажимая кнопку, вы соглашаетесь с политикой обработки данных</p>
           </form>
           <div class="form-ok" id="formOk">
             <div class="ic">✅</div>
-            <h4>You're signed up</h4>
-            <p>An advisor will call within 30 minutes during business hours to find a cohort that works for you</p>
+            <h4>Заявка принята</h4>
+            <p>Куратор позвонит в течение 30 минут в рабочее время, чтобы подобрать удобный поток</p>
           </div>
         </div>
       </div>
@@ -480,92 +479,92 @@ footer .cols a{display:block;margin-top:8px}
 
 <footer>
   <div class="wrap in">
-    <div class="logo"><span class="sq">→</span> Step Forward</div>
+    <div class="logo"><span class="sq">→</span> Шаг вперёд</div>
     <div class="cols">
-      <div>Courses<a href="#courses">Catalog</a><a href="#quiz">Course match</a></div>
-      <div>School<a href="#process">Format</a><a href="#faq">FAQ</a></div>
-      <div>Contact<a href="tel:+18005550199">(800) 555-0199</a><a href="#">hello@stepforward.example</a></div>
+      <div>Курсы<a href="#courses">Каталог</a><a href="#quiz">Подбор курса</a></div>
+      <div>Школа<a href="#process">Формат</a><a href="#faq">Вопросы</a></div>
+      <div>Контакты<a href="tel:+70000000000">+7 000 000-00-00</a><a href="#">hello@shagvpered.ru</a></div>
     </div>
   </div>
 </footer>
 
-<div class="sticky-cta"><a href="#lead" class="btn btn-p">Book a free lesson</a></div>
+<div class="sticky-cta"><a href="#lead" class="btn btn-p">Записаться на бесплатный урок</a></div>
 
 <script>
 // ---------- data ----------
 var DIRS=[
- {id:'analytics',name:'Data Analytics',ic:'📊',desc:'SQL, Python, dashboards',col:'#eeeafc',fg:'#5b46f0'},
- {id:'design',name:'UX/UI Design',ic:'🎨',desc:'Figma, interfaces, prototyping',col:'#fdeef2',fg:'#e0487f'},
- {id:'marketing',name:'Digital Marketing',ic:'📈',desc:'Paid social, SEO, traffic analytics',col:'#fff3e6',fg:'#ff8a3d'},
- {id:'it',name:'Software Development',ic:'💻',desc:'Python, JavaScript, coding fundamentals',col:'#eafaf1',fg:'#1a9c68'},
- {id:'management',name:'Management',ic:'🧭',desc:'Projects, product, teams',col:'#eef4ff',fg:'#2d6ce0'},
- {id:'hr',name:'HR & Recruiting',ic:'🧑‍💼',desc:'Hiring, onboarding, KPIs',col:'#f6f0ff',fg:'#8f46e0'},
- {id:'finance',name:'Finance & Accounting',ic:'💰',desc:'Financial models, budgets, reporting',col:'#eafaf1',fg:'#1a9c68'},
- {id:'copy',name:'Copywriting',ic:'✍️',desc:'Copy, content strategy',col:'#fdeef2',fg:'#e0487f'},
- {id:'3d',name:'3D & Motion',ic:'🧩',desc:'Blender, animation, rendering',col:'#eef4ff',fg:'#2d6ce0'},
- {id:'photo',name:'Photo & Video',ic:'📷',desc:'Shooting, editing, color grading',col:'#fff3e6',fg:'#ff8a3d'},
- {id:'sound',name:'Audio Engineering',ic:'🎧',desc:'Recording, mixing, mastering',col:'#f6f0ff',fg:'#8f46e0'},
- {id:'law',name:'Business Law',ic:'⚖️',desc:'Contracts, disputes, compliance',col:'#eeeafc',fg:'#5b46f0'}
+ {id:'analytics',name:'Аналитика данных',ic:'📊',desc:'SQL, Python, дашборды',col:'#eeeafc',fg:'#5b46f0'},
+ {id:'design',name:'UX/UI дизайн',ic:'🎨',desc:'Figma, интерфейсы, прототипы',col:'#fdeef2',fg:'#e0487f'},
+ {id:'marketing',name:'Digital-маркетинг',ic:'📈',desc:'Таргет, SEO, аналитика трафика',col:'#fff3e6',fg:'#ff8a3d'},
+ {id:'it',name:'Программирование',ic:'💻',desc:'Python, JS, основы разработки',col:'#eafaf1',fg:'#1a9c68'},
+ {id:'management',name:'Менеджмент',ic:'🧭',desc:'Проекты, продукт, команды',col:'#eef4ff',fg:'#2d6ce0'},
+ {id:'hr',name:'HR и рекрутинг',ic:'🧑‍💼',desc:'Подбор, адаптация, KPI',col:'#f6f0ff',fg:'#8f46e0'},
+ {id:'finance',name:'Финансы и учёт',ic:'💰',desc:'Финмодели, бюджеты, отчётность',col:'#eafaf1',fg:'#1a9c68'},
+ {id:'copy',name:'Копирайтинг',ic:'✍️',desc:'Тексты, контент-стратегия',col:'#fdeef2',fg:'#e0487f'},
+ {id:'3d',name:'3D и моушн',ic:'🧩',desc:'Blender, анимация, рендер',col:'#eef4ff',fg:'#2d6ce0'},
+ {id:'photo',name:'Фото и видео',ic:'📷',desc:'Съёмка, монтаж, цветокор',col:'#fff3e6',fg:'#ff8a3d'},
+ {id:'sound',name:'Звукорежиссура',ic:'🎧',desc:'Запись, сведение, мастеринг',col:'#f6f0ff',fg:'#8f46e0'},
+ {id:'law',name:'Юриспруденция для бизнеса',ic:'⚖️',desc:'Договоры, споры, комплаенс',col:'#eeeafc',fg:'#5b46f0'}
 ];
 var CATS=['analytics','design','marketing','it','management','hr','finance','copy','3d','photo','sound','law'];
 var COURSES=[
- {id:1,cat:'analytics',lvl:'Beginner',title:'Data Analyst from Scratch',dur:'5 months',lessons:'96 sessions',price:3990,old:4790,start:'Oct 7',pop:98,
-  desc:'Learn to collect, clean and visualize data, from Excel and SQL to Python and BI dashboards.',
-  plist:['SQL and working with databases','Python for data analysis (pandas, numpy)','Visualization in Power BI and Tableau','Certificate of completion and 3 portfolio projects']},
- {id:2,cat:'analytics',lvl:'Intermediate',title:'Product Analyst',dur:'4 months',lessons:'72 sessions',price:4490,old:0,start:'Oct 14',pop:74,
-  desc:'Product analytics for people who already know SQL: metrics, funnels, A/B tests and product dashboards.',
-  plist:['Product metrics and the North Star','A/B testing and statistics','Amplitude, Mixpanel, Google Analytics 4','Capstone project on a real-world case']},
- {id:3,cat:'design',lvl:'Beginner',title:'UX/UI Designer',dur:'6 months',lessons:'110 sessions',price:3790,old:4490,start:'Oct 7',pop:95,
-  desc:'From composition and typography basics to design systems and developer handoff in Figma.',
-  plist:['Figma, from basics to design systems','UX research and prototyping','3 portfolio projects reviewed by a mentor','Help building your portfolio']},
- {id:4,cat:'design',lvl:'Intermediate',title:'Mobile App Design',dur:'4 months',lessons:'64 sessions',price:3490,old:0,start:'Oct 21',pop:58,
-  desc:'An advanced mobile UX course for designers with the basics down: iOS/Android patterns and micro-interactions.',
-  plist:['iOS Human Interface Guidelines and Material Design','Micro-interactions and prototypes in Figma','Design review with a product designer','A portfolio case study with metrics']},
- {id:5,cat:'marketing',lvl:'Beginner',title:'Digital Marketing Specialist',dur:'4 months',lessons:'80 sessions',price:3290,old:3990,start:'Oct 7',pop:89,
-  desc:'A foundational course in growing a business online: search ads, paid social, SEO, analytics and your first marketing plan.',
-  plist:['Google Ads and paid social','SEO and content marketing basics','Web analytics: metrics, reports, ROI','Hands-on work with a real campaign budget']},
- {id:6,cat:'marketing',lvl:'Intermediate',title:'Paid Social Specialist',dur:'3 months',lessons:'54 sessions',price:2490,old:0,start:'Oct 14',pop:66,
-  desc:'A focused course on paid traffic: launching, optimizing and scaling ad campaigns.',
-  plist:['Campaign setup on Meta, TikTok and Google','Optimizing for CPA and ROAS','Creative testing and hypothesis work','3 case studies with real budgets']},
- {id:7,cat:'it',lvl:'Beginner',title:'Python Developer',dur:'6 months',lessons:'120 sessions',price:4290,old:4990,start:'Oct 7',pop:92,
-  desc:'From zero to job-ready junior: syntax, algorithms, databases and your first web service.',
-  plist:['Python syntax and algorithms','Django/Flask and databases','Git, testing, deployment','Capstone project and interview prep']},
- {id:8,cat:'it',lvl:'Intermediate',title:'JavaScript Frontend Developer',dur:'5 months',lessons:'96 sessions',price:3990,old:0,start:'Oct 28',pop:61,
-  desc:'JS, React and modern frontend for people who know web basics and want to specialize.',
-  plist:['JavaScript ES6+ and async code','React and state management','Layout and responsive design','A portfolio project on a real API']},
- {id:9,cat:'management',lvl:'Intermediate',title:'Product Manager',dur:'4 months',lessons:'68 sessions',price:4490,old:0,start:'Oct 14',pop:70,
-  desc:'For anyone who wants to own a product: from research and hypotheses to metrics and working with engineering.',
-  plist:['Product discovery and hypothesis testing','Roadmaps, prioritization, metrics','Agile and working with engineering teams','Capstone: a product strategy']},
- {id:10,cat:'hr',lvl:'Beginner',title:'HR Generalist',dur:'3 months',lessons:'56 sessions',price:2790,old:3290,start:'Oct 7',pop:52,
-  desc:'A starter course for getting into HR: recruiting, onboarding, HR operations and US employment law basics.',
-  plist:['Sourcing and interviewing','Onboarding and retention','US employment law basics (FLSA, EEO)','Case studies on real job openings']},
- {id:11,cat:'finance',lvl:'Intermediate',title:'Financial Analyst',dur:'5 months',lessons:'88 sessions',price:3990,old:0,start:'Oct 21',pop:64,
-  desc:'Financial modeling, management accounting and financial statement analysis for mid-size and large companies.',
-  plist:['Financial modeling in Excel','Management accounting and budgeting','Financial statement analysis (US GAAP, IFRS)','Capstone: a model for a real company']},
- {id:12,cat:'copy',lvl:'Beginner',title:'Copywriter & Content Manager',dur:'3 months',lessons:'48 sessions',price:2290,old:2790,start:'Oct 7',pop:71,
-  desc:'From social posts to a brand content strategy: structure, voice, SEO copywriting and working with clients.',
-  plist:['Copy structure and types of sales copy','SEO copywriting and keywords','Content strategy for social media and blogs','A portfolio of 6 real pieces']}
+ {id:1,cat:'analytics',lvl:'Новичок',title:'Аналитик данных с нуля',dur:'5 месяцев',lessons:'96 занятий',price:79900,old:96900,start:'7 октября',pop:98,
+  desc:'Научитесь собирать, обрабатывать и визуализировать данные — от Excel и SQL до Python и дашбордов в BI-системах.',
+  plist:['SQL и работа с базами данных','Python для анализа данных (pandas, numpy)','Визуализация в Power BI и Tableau','Диплом о переподготовке и 3 проекта в портфолио']},
+ {id:2,cat:'analytics',lvl:'Продолжающий',title:'Product-аналитик',dur:'4 месяца',lessons:'72 занятия',price:89900,old:0,start:'14 октября',pop:74,
+  desc:'Продуктовая аналитика для тех, кто уже знает SQL: метрики, воронки, A/B-тесты и построение продуктовых дашбордов.',
+  plist:['Продуктовые метрики и North Star','A/B-тестирование и статистика','Amplitude, Mixpanel, Yandex Metrika','Итоговый проект по реальному кейсу']},
+ {id:3,cat:'design',lvl:'Новичок',title:'UX/UI дизайнер',dur:'6 месяцев',lessons:'110 занятий',price:74900,old:89900,start:'7 октября',pop:95,
+  desc:'От основ композиции и типографики до дизайн-систем и передачи макетов в разработку через Figma.',
+  plist:['Figma: от базы до дизайн-систем','UX-исследования и прототипирование','3 проекта для портфолио с ревью наставника','Помощь с составлением портфолио']},
+ {id:4,cat:'design',lvl:'Продолжающий',title:'Дизайн мобильных приложений',dur:'4 месяца',lessons:'64 занятия',price:69900,old:0,start:'21 октября',pop:58,
+  desc:'Углублённый курс по мобильному UX для дизайнеров с базовыми навыками: паттерны iOS/Android, микроанимации.',
+  plist:['Гайдлайны iOS и Material Design','Микроанимации и прототипы в Figma','Дизайн-ревью с продакт-дизайнером','Кейс в портфолио с метриками']},
+ {id:5,cat:'marketing',lvl:'Новичок',title:'Специалист по digital-маркетингу',dur:'4 месяца',lessons:'80 занятий',price:64900,old:79900,start:'7 октября',pop:89,
+  desc:'Базовый курс по продвижению бизнеса онлайн: контекст, таргет, SEO, аналитика и первый маркетинговый план.',
+  plist:['Яндекс Директ и таргетированная реклама','Основы SEO и контент-маркетинга','Веб-аналитика: метрики, отчёты, ROI','Практика на реальном бюджете кампании']},
+ {id:6,cat:'marketing',lvl:'Продолжающий',title:'Таргетолог',dur:'3 месяца',lessons:'54 занятия',price:49900,old:0,start:'14 октября',pop:66,
+  desc:'Узкоспециализированный курс по платному трафику: настройка, оптимизация и масштабирование рекламных кампаний.',
+  plist:['Настройка кампаний в соцсетях и Директе','Оптимизация по CPA и ROMI','Работа с креативами и тестирование гипотез','3 кейса с реальными бюджетами']},
+ {id:7,cat:'it',lvl:'Новичок',title:'Python-разработчик',dur:'6 месяцев',lessons:'120 занятий',price:84900,old:99900,start:'7 октября',pop:92,
+  desc:'С нуля до уверенного джуниора: синтаксис, алгоритмы, работа с базами данных и первый веб-сервис.',
+  plist:['Синтаксис Python и алгоритмы','Django/Flask и работа с БД','Git, тестирование, деплой','Диплом-проект и подготовка к собеседованиям']},
+ {id:8,cat:'it',lvl:'Продолжающий',title:'Frontend на JavaScript',dur:'5 месяцев',lessons:'96 занятий',price:79900,old:0,start:'28 октября',pop:61,
+  desc:'JS, React и современный фронтенд для тех, кто знает основы веб-разработки и хочет расти в специализации.',
+  plist:['JavaScript ES6+ и асинхронность','React и управление состоянием','Вёрстка и адаптивный дизайн','Проект на реальном API в портфолио']},
+ {id:9,cat:'management',lvl:'Продолжающий',title:'Product-менеджер',dur:'4 месяца',lessons:'68 занятий',price:89900,old:0,start:'14 октября',pop:70,
+  desc:'Для тех, кто хочет управлять продуктом: от исследований и гипотез до метрик и работы с командой разработки.',
+  plist:['Product discovery и работа с гипотезами','Roadmap, приоритизация, метрики','Agile и работа с командой разработки','Финальный проект — продуктовая стратегия']},
+ {id:10,cat:'hr',lvl:'Новичок',title:'HR-менеджер',dur:'3 месяца',lessons:'56 занятий',price:54900,old:64900,start:'7 октября',pop:52,
+  desc:'Базовый курс для входа в HR: подбор персонала, адаптация, кадровое администрирование и основы КЗоТ.',
+  plist:['Технологии подбора и интервью','Адаптация и удержание сотрудников','Основы трудового законодательства','Кейсы по реальным вакансиям']},
+ {id:11,cat:'finance',lvl:'Продолжающий',title:'Финансовый аналитик',dur:'5 месяцев',lessons:'88 занятий',price:79900,old:0,start:'21 октября',pop:64,
+  desc:'Построение финансовых моделей, управленческий учёт и анализ отчётности для среднего и крупного бизнеса.',
+  plist:['Финансовое моделирование в Excel','Управленческий учёт и бюджетирование','Анализ отчётности (МСФО, РСБУ)','Диплом-проект — модель для реальной компании']},
+ {id:12,cat:'copy',lvl:'Новичок',title:'Копирайтер и контент-менеджер',dur:'3 месяца',lessons:'48 занятий',price:44900,old:54900,start:'7 октября',pop:71,
+  desc:'От текстов для соцсетей до контент-стратегии бренда: структура, стиль, SEO-копирайтинг и работа с заказчиками.',
+  plist:['Структура текста и виды продающих текстов','SEO-копирайтинг и работа с ключами','Контент-стратегия для соцсетей и блогов','Портфолио из 6 реальных текстов']}
 ];
 var TEACH=[
- {name:'Rachel Kim',role:'Teaches “Data Analyst”',bio:'Data lead in e-commerce, 9 years in analytics',col:'#eeeafc'},
- {name:'Daniel Brooks',role:'Teaches “UX/UI Designer”',bio:'Senior product designer, built a company-wide design system',col:'#fdeef2'},
- {name:'Megan Torres',role:'Teaches “Digital Marketing”',bio:'Performance marketing director at an agency, ROI specialist',col:'#fff3e6'},
- {name:'Kevin Walsh',role:'Teaches “Python Developer”',bio:'Backend engineer, 7 years of commercial experience',col:'#eafaf1'}
+ {name:'Ирина Соколова',role:'Ведёт «Аналитик данных»',bio:'Data Lead в e-commerce, 9 лет в аналитике',col:'#eeeafc'},
+ {name:'Максим Дорохов',role:'Ведёт «UX/UI дизайнер»',bio:'Senior продукт-дизайнер, автор дизайн-системы',col:'#fdeef2'},
+ {name:'Анна Гриценко',role:'Ведёт «Digital-маркетинг»',bio:'Performance-директор агентства, ROI-специалист',col:'#fff3e6'},
+ {name:'Пётр Никитин',role:'Ведёт «Python-разработчик»',bio:'Backend-разработчик, 7 лет коммерческого опыта',col:'#eafaf1'}
 ];
 var QUESTIONS=[
- {q:'What are you doing right now?',opts:[{t:'Studying / in school',w:{it:2,analytics:2,design:1}},{t:'Working outside my field',w:{marketing:2,copy:2,hr:1}},{t:'Working in a related field',w:{analytics:2,management:2,finance:1}},{t:'On parental leave / a career break',w:{design:2,copy:2,marketing:1}}]},
- {q:'What feels most like you?',opts:[{t:'Numbers and logic',w:{analytics:2,finance:2}},{t:'Visuals and creativity',w:{design:2,copy:1,'3d':1}},{t:'Working with people',w:{hr:2,marketing:2,management:1}},{t:'Tech and code',w:{it:2,analytics:1}}]},
- {q:'How much time can you study each week?',opts:[{t:'Up to 5 hours',w:{copy:1,hr:1}},{t:'5–10 hours',w:{marketing:1,design:1,analytics:1}},{t:'10–15 hours',w:{it:1,analytics:1,finance:1}},{t:'More than 15 hours',w:{it:2,design:1}}]},
- {q:'Which goal matters most?',opts:[{t:'A complete career change',w:{it:2,design:1,analytics:1}},{t:'Earning more in my current job',w:{marketing:1,management:2,finance:1}},{t:'Finding a remote job',w:{copy:2,design:1,it:1}},{t:'Understanding it for my own business',w:{marketing:2,finance:1}}]},
- {q:'How do you like to work?',opts:[{t:'On my own, deep in the problem',w:{it:2,analytics:1,design:1}},{t:'In a team, with lots of discussion',w:{management:2,hr:1}},{t:'With creative freedom',w:{design:2,copy:2,'3d':1}},{t:'With clear, defined processes',w:{finance:2,analytics:1}}]}
+ {q:'Чем вы занимаетесь сейчас?',opts:[{t:'Учусь / студент',w:{it:2,analytics:2,design:1}},{t:'Работаю не по специальности',w:{marketing:2,copy:2,hr:1}},{t:'Работаю в смежной сфере',w:{analytics:2,management:2,finance:1}},{t:'В декрете / на паузе',w:{design:2,copy:2,marketing:1}}]},
+ {q:'Что вам ближе по духу?',opts:[{t:'Цифры и логика',w:{analytics:2,finance:2}},{t:'Визуал и творчество',w:{design:2,copy:1,'3d':1}},{t:'Общение с людьми',w:{hr:2,marketing:2,management:1}},{t:'Технологии и код',w:{it:2,analytics:1}}]},
+ {q:'Сколько времени готовы уделять учёбе в неделю?',opts:[{t:'До 5 часов',w:{copy:1,hr:1}},{t:'5–10 часов',w:{marketing:1,design:1,analytics:1}},{t:'10–15 часов',w:{it:1,analytics:1,finance:1}},{t:'Больше 15 часов',w:{it:2,design:1}}]},
+ {q:'Какая цель для вас важнее?',opts:[{t:'Сменить профессию полностью',w:{it:2,design:1,analytics:1}},{t:'Повысить доход на текущей работе',w:{marketing:1,management:2,finance:1}},{t:'Найти удалённую работу',w:{copy:2,design:1,it:1}},{t:'Разобраться для своего бизнеса',w:{marketing:2,finance:1}}]},
+ {q:'Как вам комфортнее работать?',opts:[{t:'Самостоятельно, глубоко в задаче',w:{it:2,analytics:1,design:1}},{t:'В команде, много обсуждений',w:{management:2,hr:1}},{t:'С творческой свободой',w:{design:2,copy:2,'3d':1}},{t:'По понятным чётким процессам',w:{finance:2,analytics:1}}]}
 ];
 var FAQS=[
- {q:'Do I need experience to start?',a:'No. Most courses are built for beginners. Each course is marked “Beginner” or “Intermediate,” so choose based on that.'},
- {q:'How do classes work if I have a day job?',a:'Live sessions run in the evening 2–3 times a week, and you keep the recordings forever, so you can watch when it suits you and rewatch before your final project.'},
- {q:'What if I fall behind my cohort?',a:'You keep access to the materials after your cohort ends, and your advisor will help you catch up or move to the next cohort at no extra cost.'},
- {q:'Do I get a certificate?',a:'Yes. After you present your capstone project, you receive a certificate of completion.'},
- {q:'Can I pay in installments?',a:'Yes. Pay over 3, 6 or 12 months at 0% APR through our financing partners.'},
- {q:'Do you help with job hunting after the course?',a:'Yes. Our career center helps with your résumé, portfolio and interview prep, and 87% of graduates land a job within 4 months.'}
+ {q:'Нужен ли опыт для старта?',a:'Нет, большинство курсов рассчитаны на новичков — в описании каждого курса указан уровень «Новичок» или «Продолжающий», выбирайте по нему.'},
+ {q:'Как проходят занятия, если я работаю днём?',a:'Вебинары проходят по вечерам 2–3 раза в неделю, запись остаётся навсегда — можно смотреть в удобное время и пересматривать перед экзаменом.'},
+ {q:'Что если я не успею за поток?',a:'Доступ к материалам сохраняется дольше основного потока, а куратор поможет догнать программу или перейти на следующий набор без доплаты.'},
+ {q:'Выдаёте ли диплом?',a:'Да, после защиты итогового проекта выдаётся диплом о профессиональной переподготовке установленного образца.'},
+ {q:'Можно ли оплатить частями?',a:'Да, доступна оплата в рассрочку на 3, 6 или 12 месяцев без переплаты через партнёрские банки.'},
+ {q:'Помогаете с поиском работы после курса?',a:'Да, карьерный центр помогает с резюме, портфолио и подготовкой к собеседованиям; 87% выпускников находят работу за 4 месяца.'}
 ];
 
 // ---------- render dirs ----------
@@ -583,7 +582,7 @@ var filterChips=document.getElementById('filterChips');
 var activeCat='all';
 function renderChips(){
   filterChips.innerHTML='';
-  var all=document.createElement('button');all.className='fchip'+(activeCat==='all'?' on':'');all.textContent='All tracks';
+  var all=document.createElement('button');all.className='fchip'+(activeCat==='all'?' on':'');all.textContent='Все направления';
   all.addEventListener('click',function(){activeCat='all';renderChips();renderCourses();syncDirCards();});
   filterChips.appendChild(all);
   CATS.forEach(function(c){
@@ -616,10 +615,10 @@ function renderCourses(){
   var sv=sortSel.value;
   if(sv==='price_asc')list=list.slice().sort(function(a,b){return a.price-b.price});
   else if(sv==='price_desc')list=list.slice().sort(function(a,b){return b.price-a.price});
-  else if(sv==='soon')list=list.slice().sort(function(a,b){return parseInt(a.start.split(' ')[1])-parseInt(b.start.split(' ')[1])});
+  else if(sv==='soon')list=list.slice().sort(function(a,b){return a.start.localeCompare(b.start)});
   else list=list.slice().sort(function(a,b){return b.pop-a.pop});
   coursesGrid.innerHTML='';
-  if(!list.length){coursesGrid.innerHTML='<div class="empty">No courses in this track yet. Try another track.</div>';return;}
+  if(!list.length){coursesGrid.innerHTML='<div class="empty">Курсов по этому направлению пока нет — посмотрите другое направление</div>';return;}
   list.forEach(function(c){
     var d=DIRS.find(function(x){return x.id===c.cat});
     var el=document.createElement('div');el.className='c-card';
@@ -629,7 +628,7 @@ function renderCourses(){
         '<div class="c-cat">'+d.name+'</div>'+
         '<h3>'+c.title+'</h3>'+
         '<div class="c-meta"><span>⏱ '+c.dur+'</span><span>📚 '+c.lessons+'</span></div>'+
-        '<div class="c-foot"><div class="c-price">$'+c.price.toLocaleString('en-US')+(c.old?'<span>$'+c.old.toLocaleString('en-US')+'</span>':'')+'</div><span class="c-open">Details →</span></div>'+
+        '<div class="c-foot"><div class="c-price">'+c.price.toLocaleString('ru-RU')+' ₽'+(c.old?'<span>'+c.old.toLocaleString('ru-RU')+' ₽</span>':'')+'</div><span class="c-open">Подробнее →</span></div>'+
       '</div>';
     el.addEventListener('click',function(){openCourseModal(c.id);});
     coursesGrid.appendChild(el);
@@ -645,7 +644,7 @@ function openCourseModal(id){
   var c=COURSES.find(function(x){return x.id===id});
   var d=DIRS.find(function(x){return x.id===c.cat});
   modalEl.innerHTML=
-    '<button class="mclose" id="mCloseBtn" aria-label="Close">✕</button>'+
+    '<button class="mclose" id="mCloseBtn">✕</button>'+
     '<div class="modal-cover" style="background:'+d.col+'">'+svgCover(c.id+'m',d.fg)+'</div>'+
     '<div class="modal-body">'+
       '<div class="c-cat">'+d.name+' · '+c.lvl+'</div>'+
@@ -653,8 +652,8 @@ function openCourseModal(id){
       '<p class="desc">'+c.desc+'</p>'+
       '<ul class="plist">'+c.plist.map(function(p){return '<li>'+p+'</li>'}).join('')+'</ul>'+
       '<div class="modal-foot">'+
-        '<div><div class="c-price">$'+c.price.toLocaleString('en-US')+(c.old?'<span>$'+c.old.toLocaleString('en-US')+'</span>':'')+'</div><div style="font-size:12px;color:var(--sub);margin-top:4px">Cohort starts: '+c.start+' · '+c.dur+'</div></div>'+
-        '<a href="#lead" class="btn btn-p" id="mLeadBtn">Enroll</a>'+
+        '<div><div class="c-price">'+c.price.toLocaleString('ru-RU')+' ₽'+(c.old?'<span>'+c.old.toLocaleString('ru-RU')+' ₽</span>':'')+'</div><div style="font-size:12px;color:var(--sub);margin-top:4px">Старт потока: '+c.start+' · '+c.dur+'</div></div>'+
+        '<a href="#lead" class="btn btn-p" id="mLeadBtn">Записаться</a>'+
       '</div>'+
     '</div>';
   modalBg.classList.add('open');
@@ -703,7 +702,7 @@ function renderQSteps(){
     var st=document.createElement('div');st.className='q-step'+(idx===curQ?' show':'');
     var opts=qq.opts.map(function(o,oi){return '<button class="q-opt" data-idx="'+oi+'">'+o.t+'</button>'}).join('');
     st.innerHTML='<h4>'+(idx+1)+'. '+qq.q+'</h4><div class="q-opts">'+opts+'</div>'+
-      '<div class="q-nav">'+(idx>0?'<button class="q-back" data-back="1">← Back</button>':'<span></span>')+'</div>';
+      '<div class="q-nav">'+(idx>0?'<button class="q-back" data-back="1">← Назад</button>':'<span></span>')+'</div>';
     st.querySelectorAll('.q-opt').forEach(function(b,oi){
       b.addEventListener('click',function(){
         st.querySelectorAll('.q-opt').forEach(function(x){x.classList.remove('sel')});
@@ -732,14 +731,14 @@ function showQResult(){
     var d=DIRS.find(function(x){return x.id===catId});
     var crs=COURSES.filter(function(c){return c.cat===catId}).sort(function(a,b){return b.pop-a.pop})[0];
     var pct=Math.min(98,Math.round(60+(scores[catId]/maxScore)*38));
-    html+='<div class="match-card"><div class="mpct">'+pct+'%</div><div><div class="mname">'+d.name+'</div><div class="mdesc">'+(crs?crs.title:'')+'</div><div class="mprice">'+(crs?'$'+crs.price.toLocaleString('en-US'):'')+'</div></div></div>';
+    html+='<div class="match-card"><div class="mpct">'+pct+'%</div><div><div class="mname">'+d.name+'</div><div class="mdesc">'+(crs?crs.title:'')+'</div><div class="mprice">'+(crs?crs.price.toLocaleString('ru-RU')+' ₽':'')+'</div></div></div>';
   });
   document.getElementById('matchList').innerHTML=html;
   document.getElementById('qResult').classList.add('show');
 }
 document.getElementById('qSendBtn').addEventListener('click',function(){
   var phone=document.getElementById('qPhone').value.trim();
-  if(phone.replace(/\D/g,'').length<10){document.getElementById('qPhone').style.borderColor='#e0483f';return;}
+  if(phone.length<5){document.getElementById('qPhone').style.borderColor='#e0483f';return;}
   document.getElementById('qResult').classList.remove('show');
   document.getElementById('qThanks').classList.add('show');
 });
@@ -751,7 +750,7 @@ leadForm.addEventListener('submit',function(e){
   var name=document.getElementById('fName');
   var phone=document.getElementById('fPhone');
   var okName=name.value.trim().length>1;
-  var pd=phone.value.replace(/\D/g,'');var okPhone=/^[\d+()\-\s.]+$/.test(phone.value.trim())&&(pd.length===10||(pd.length===11&&pd[0]==='1'));
+  var okPhone=/^[\d+()\-\s]{10,}$/.test(phone.value.trim());
   name.classList.toggle('err',!okName);
   phone.classList.toggle('err',!okPhone);
   document.getElementById('errName').classList.toggle('show',!okName);
@@ -770,7 +769,7 @@ document.querySelectorAll('.mob-nav a').forEach(function(a){a.addEventListener('
 // ---------- try bot btn ----------
 document.getElementById('tryBotBtn').addEventListener('click',function(e){
   e.preventDefault();
-  window.open('school-bot.html','_blank');
+  alert('Демо бота открывается отдельным файлом: 11-shag-vpered-bot.html');
 });
 
 // ---------- hero svg ----------
@@ -785,7 +784,7 @@ document.getElementById('tryBotBtn').addEventListener('click',function(e){
     parts+='<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#8f7dff" opacity="'+(0.05+rnd()*0.12)+'"/>';
   }
   var cardsY=[70,170,270,330];
-  var labels=['SQL in 3 weeks','87% land a job','Certificate of completion','4.8 average rating'];
+  var labels=['SQL за 3 недели','+87% находят работу','Диплом о переподготовке','4.8 средняя оценка'];
   labels.forEach(function(l,i){
     var y=60+i*88;
     parts+='<rect x="40" y="'+y+'" width="300" height="60" rx="14" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.15)"/>';

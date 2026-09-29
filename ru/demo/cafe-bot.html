@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OLIVA Café: Telegram Table Booking Bot (Demo)</title>
-<meta name="description" content="Clickable prototype of a Telegram bot for restaurant table reservations: date, time, party size, seating, occasion, confirmation and a host notification.">
+<title>Кафе ОЛИВА: Telegram-бот брони столика (демо)</title>
+<meta name="description" content="Кликабельный прототип Telegram-бота для брони столика в кафе: дата, время, гости, зона, повод, подтверждение и уведомление администратору.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%236B7B3A'/%3E%3Cellipse cx='32' cy='34' rx='12' ry='16' fill='%23F4EEDF'/%3E%3Cpath d='M32 18c4-8 12-10 16-8' stroke='%23F4EEDF' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 
@@ -197,23 +197,21 @@
 <div class="page">
   <div class="intro">
     <div>
-      <div class="brandline"><i></i>OLIVA Café &amp; Bistro · Mediterranean kitchen</div>
-      <h1>Telegram Table Booking Bot</h1>
-      <p>Interactive prototype: book a table as a guest, and watch on the right what the host stand receives at the very same moment.</p>
+      <div class="brandline"><i></i>Кафе-бистро ОЛИВА · средиземноморская кухня</div>
+      <h1>Telegram-бот брони столика</h1>
+      <p>Кликабельный прототип: забронируйте столик как гость, а справа посмотрите, что в этот же момент получает администратор кафе.</p>
       <div class="tiers">
-        <div class="tier"><div class="tier-h"><b>Basic</b><span>$240</span></div><div class="features"><span>Book in under a minute</span><span>Date, time, party size and seating</span><span>Booked times can't be picked</span><span>Host notification</span><span>Menu with photos</span></div></div>
-        <div class="tier"><div class="tier-h"><b>PRO</b><span>$430</span></div><div class="features"><span>Celebration dessert upsell</span><span>Reschedule and cancel without a call</span><span>3-hour reminder</span><span>Private event inquiries</span><span>Stats for the host team</span></div></div>
+        <div class="tier"><div class="tier-h"><b>Базовый</b><span>19 900 ₽</span></div><div class="features"><span>Бронь за минуту</span><span>Дата, время, гости и зона</span><span>Занятое время не выбрать</span><span>Уведомление администратору</span><span>Меню с фото</span></div></div>
+        <div class="tier"><div class="tier-h"><b>PRO</b><span>34 900 ₽</span></div><div class="features"><span>Допродажа десерта к празднику</span><span>Перенос и отмена без звонка</span><span>Напоминание за 3 часа</span><span>Заявки на банкеты</span><span>Статистика для администратора</span></div></div>
       </div>
-      <p class="tier-note">PRO features are marked in the chat with a <span class="pro-tag">PRO</span> tag</p>
+      <p class="tier-note">Функции PRO отмечены в чате меткой <span class="pro-tag">PRO</span></p>
     </div>
-    <button class="restart" id="restart">Start over</button>
+    <button class="restart" id="restart">Начать заново</button>
   </div>
 
-  <p class="wa-note" style="margin:0 0 20px;font-size:13px;opacity:.75;">Shown as Telegram — the same bot logic works on WhatsApp.</p>
-
   <div class="tabs" id="tabs">
-    <button class="active" data-view="client">Guest chat</button>
-    <button data-view="admin">Host stand<span class="badge" id="badge"></span></button>
+    <button class="active" data-view="client">Чат гостя</button>
+    <button data-view="admin">Администратор<span class="badge" id="badge"></span></button>
   </div>
 
   <div class="stage" id="stage" data-view="client">
@@ -223,90 +221,88 @@
         <div class="tg-head">
           <div class="tg-back">‹</div>
           <div class="avatar">🫒</div>
-          <div class="tg-title"><strong>OLIVA · Reservations</strong><span id="botStatus">bot</span></div>
+          <div class="tg-title"><strong>ОЛИВА · бронь столиков</strong><span id="botStatus">бот</span></div>
         </div>
         <div class="chat" id="chat"></div>
-        <div class="reply-kb" id="replyKb"><button id="shareContact">📱 Share contact</button></div>
+        <div class="reply-kb" id="replyKb"><button id="shareContact">📱 Поделиться контактом</button></div>
         <form class="composer" id="composer">
-          <input id="input" type="text" autocomplete="off" placeholder="Message">
-          <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10.1 15.5 12 3.4 13.9z"/></svg></button>
+          <input id="input" type="text" autocomplete="off" placeholder="Сообщение">
+          <button type="submit" aria-label="Отправить"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10.1 15.5 12 3.4 13.9z"/></svg></button>
         </form>
       </div>
     </div>
 
     <div class="admin">
       <div class="tg-head">
-        <div class="avatar av-admin">HS</div>
-        <div class="tg-title"><strong>OLIVA · Reservations <span class="pro-tag">PRO</span> stats</strong><span>managers &amp; hosts chat, 4 members</span></div>
+        <div class="avatar av-admin">АД</div>
+        <div class="tg-title"><strong>ОЛИВА · Брони <span class="pro-tag">PRO</span> статистика</strong><span>чат администраторов и хостес, 4 участника</span></div>
       </div>
-      <div class="stats" title="Stats available in the PRO version">
-        <div><strong id="stBook">0</strong><span>bookings</span></div>
-        <div><strong id="stGuests">0</strong><span>guests</span></div>
-        <div><strong id="stUp">$0</strong><span>upsells</span></div>
-        <div><strong id="stCancel">0</strong><span>cancellations</span></div>
+      <div class="stats" title="Статистика доступна в версии PRO">
+        <div><strong id="stBook">0</strong><span>броней</span></div>
+        <div><strong id="stGuests">0</strong><span>гостей</span></div>
+        <div><strong id="stUp">0 ₽</strong><span>допродажи</span></div>
+        <div><strong id="stCancel">0</strong><span>отмен</span></div>
       </div>
       <div class="chat" id="adminChat"></div>
     </div>
   </div>
 
-  <p class="footnote">Demo with sample data. The café, menu and schedule are fictional; no real messages are sent. Prototype for the METRAWEN Digital portfolio.<br>Telegram bot from METRAWEN: Basic $240, PRO with every feature shown here $430.</p>
+  <p class="footnote">Демо / данные примерные. Кафе, меню и расписание вымышлены, реальные сообщения не отправляются. Прототип для портфолио METRAWEN Digital.<br>Telegram-бот в METRAWEN: Базовый 19 900 ₽, PRO со всеми функциями демо 34 900 ₽.</p>
 </div>
 
 <script>
 (function(){
-  /* ================= DATA ================= */
-  var ADDRESS = '345 Smith St, Brooklyn, NY 11231';
-  var MAP = 'https://www.google.com/maps/search/?api=1&query=345+Smith+St+Brooklyn+NY+11231';
+  /* ================= ДАННЫЕ ================= */
+  var ADDRESS = 'Москва, Большая Никитская, 24 (вход с угла, 1 этаж)';
+  var MAP = 'https://yandex.ru/maps/?text=%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%2C%20%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%D1%8F%20%D0%9D%D0%B8%D0%BA%D0%B8%D1%82%D1%81%D0%BA%D0%B0%D1%8F%2C%2024';
   var U = 'https://images.unsplash.com/photo-';
   function img(id){ return U + id + '?auto=format&fit=crop&w=160&h=130&q=70'; }
   var MENU = [
-    {nm:'Starters & Salads', items:[
-      ['Tomato & basil bruschetta','three bruschetta on ciabatta',14,'1572695157366-5e585ab2b69f'],
-      ['Feta & berry salad','spinach, strawberries, blueberries, feta',16,'1505253716362-afaea1d3d1af'],
-      ['Seasonal vegetable salad','radish, tomatoes, carrots, tahini dressing',15,'1540420773420-3366772f4999']]},
-    {nm:'Mains', items:[
-      ['Shrimp pasta','spaghetti, cherry tomatoes, garlic, chili',24,'1563379926898-05f4575a45d8'],
-      ['Salmon with asparagus','pomegranate glaze, red onion',32,'1560717845-968823efbee1'],
-      ['Porcini risotto','parmesan, butter, thyme',22,'1476124369491-e7addf5db371'],
-      ['Grilled chicken','herbed vegetables, lemon sauce',23,'1598515214211-89d3c73ae83b']]},
-    {nm:'Desserts', items:[
-      ['Tiramisu','classic recipe',11,'1571877227200-a0d98ea607e9'],
-      ['Strawberry panna cotta','vanilla cream, fresh berries',10,'1488477181946-6428a0291777'],
-      ['Orange crêpes','orange cream, honey',11,'1519676867240-f03562e64548']]}
+    {nm:'Закуски и салаты', items:[
+      ['Брускетты с томатами и базиликом','три брускетты на чиабатте',490,'1572695157366-5e585ab2b69f'],
+      ['Салат с фетой и ягодами','шпинат, клубника, голубика, фета',620,'1505253716362-afaea1d3d1af'],
+      ['Салат из сезонных овощей','редис, томаты, морковь, соус тахини',540,'1540420773420-3366772f4999']]},
+    {nm:'Горячее', items:[
+      ['Паста с креветками','спагетти, томаты черри, чеснок, чили',890,'1563379926898-05f4575a45d8'],
+      ['Лосось со спаржей','соус из граната, красный лук',1290,'1560717845-968823efbee1'],
+      ['Ризотто с белыми грибами','пармезан, сливочное масло, тимьян',790,'1476124369491-e7addf5db371'],
+      ['Цыплёнок на гриле','овощи с травами, лимонный соус',820,'1598515214211-89d3c73ae83b']]},
+    {nm:'Десерты', items:[
+      ['Тирамису','по классическому рецепту',450,'1571877227200-a0d98ea607e9'],
+      ['Панна-котта с клубникой','ванильные сливки, свежие ягоды',390,'1488477181946-6428a0291777'],
+      ['Крепы с апельсином','апельсиновый крем, мёд',420,'1519676867240-f03562e64548']]}
   ];
-  var DESSERT = 12;
+  var DESSERT = 450;
   var TIMES = []; for(var h=12; h<=22; h++){ TIMES.push(h+':00'); if(h<22) TIMES.push(h+':30'); }
-  var ZONES = [['hall','Dining room','in the dining room'],['veranda','Patio','on the patio'],['window','By the window','by the window'],['any','No preference','seating at the host\'s discretion']];
-  var OCC = [['bday','Birthday 🎂'],['date','Date night'],['biz','Business meal'],['none','Just because']];
-  var WD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  var WDL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  var MON = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var MS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  function t12(t){ var p = t.split(':'), h = +p[0]; return ((h % 12) || 12) + ':' + p[1] + ' ' + (h < 12 ? 'AM' : 'PM'); }
+  var ZONES = [['hall','Зал','в зале'],['veranda','Веранда','на веранде'],['window','У окна','у окна'],['any','Не важно','зона на усмотрение хостес']];
+  var OCC = [['bday','День рождения 🎂'],['date','Свидание'],['biz','Деловая встреча'],['none','Без повода']];
+  var WD = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  var WDL = ['вс','пн','вт','ср','чт','пт','сб'];
+  var MON = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 
-  /* ================= STATE ================= */
+  /* ================= СОСТОЯНИЕ ================= */
   var S, hist, busy, seq, unread, stats, keep;
   function fresh(){ return {date:null, time:null, guests:null, zone:null, occ:null, dessert:null, name:'', phone:'', booked:false, id:null, resched:false, mode:'book'}; }
 
   var chat = document.getElementById('chat'), adminChat = document.getElementById('adminChat');
   var input = document.getElementById('input'), replyKb = document.getElementById('replyKb'), statusEl = document.getElementById('botStatus');
 
-  /* ================= UTILS ================= */
+  /* ================= УТИЛИТЫ ================= */
   function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-  function usd(n){ return '$' + n.toLocaleString('en-US'); }
-  function now(){ var d = new Date(); return ((d.getHours()%12)||12) + ':' + String(d.getMinutes()).padStart(2,'0') + (d.getHours()<12?' AM':' PM'); }
+  function rub(n){ return n.toLocaleString('ru-RU').replace(/\s/g,' ') + ' ₽'; }
+  function now(){ var d = new Date(); return d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0'); }
   function hash(s){ var h = 0; for(var i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) >>> 0; } return h; }
   function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
   function scrollDown(el){ el.scrollTop = el.scrollHeight; }
   function pad(n){ return String(n).padStart(2,'0'); }
   function day0(off){ var d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+off); return d; }
-  function guestsWord(n){ return n + ' ' + (n===1 ? 'guest' : 'guests'); }
-  function dateShort(d){ var off = Math.round((d - day0(0))/864e5); return off===0 ? 'Today' : off===1 ? 'Tomorrow' : WD[d.getDay()] + ' ' + MS[d.getMonth()] + ' ' + d.getDate(); }
-  function dateFull(d){ var off = Math.round((d - day0(0))/864e5); return (off===0 ? 'today, ' : off===1 ? 'tomorrow, ' : '') + WDL[d.getDay()] + ', ' + MON[d.getMonth()] + ' ' + d.getDate(); }
+  function guestsWord(n){ return n + ' ' + (n===1 ? 'гость' : n<5 ? 'гостя' : 'гостей'); }
+  function dateShort(d){ var off = Math.round((d - day0(0))/864e5); return off===0 ? 'Сегодня' : off===1 ? 'Завтра' : WD[d.getDay()] + ' ' + pad(d.getDate()) + '.' + pad(d.getMonth()+1); }
+  function dateFull(d){ var off = Math.round((d - day0(0))/864e5); return (off===0 ? 'сегодня, ' : off===1 ? 'завтра, ' : '') + WDL[d.getDay()] + ', ' + d.getDate() + ' ' + MON[d.getMonth()]; }
   function zone(){ return ZONES.find(function(z){ return z[0]===S.zone; }); }
   function occ(){ return OCC.find(function(o){ return o[0]===S.occ; }); }
   function mins(t){ var p = t.split(':'); return +p[0]*60 + +p[1]; }
-  // 2-3 booked slots per date, deterministic
+  // 2-3 занятых слота на каждую дату, заданы детерминированно
   function busyFor(d){
     var k = d.getFullYear()*10000 + d.getMonth()*100 + d.getDate(), n = 2 + hash('n'+k) % 2, out = [], i = 0;
     var prime = TIMES.filter(function(t){ return mins(t) >= 18*60 && mins(t) <= 20*60+30; });
@@ -321,10 +317,10 @@
   function dates(){ var out = []; for(var i=0; out.length<7; i++){ var d = day0(i); if(timesFor(d).length) out.push(d); } return out; }
   function isMine(d,t){ return S.booked && S.bookedDate && S.bookedDate.getTime()===d.getTime() && S.bookedTime===t; }
   function summary(){
-    return dateFull(S.date) + ', ' + t12(S.time) + ', ' + guestsWord(S.guests) + ', ' + zone()[2];
+    return dateFull(S.date) + ', ' + S.time + ', ' + guestsWord(S.guests) + ', ' + zone()[2];
   }
 
-  /* ================= RENDERING ================= */
+  /* ================= ВЫВОД ================= */
   function killKb(){ chat.querySelectorAll('.kb').forEach(function(k){ k.classList.add('dead'); }); }
   function addUser(text){ var m = document.createElement('div'); m.className = 'msg out'; m.innerHTML = esc(text) + '<span class="time">' + now() + ' ✓✓</span>'; chat.appendChild(m); scrollDown(chat); }
   function addService(text, target){ var el = document.createElement('div'); el.className = 'service'; el.textContent = text; (target||chat).appendChild(el); scrollDown(target||chat); }
@@ -350,9 +346,9 @@
   function botSay(html, rows){
     busy = true; killKb();
     var t = document.createElement('div'); t.className = 'typing-bubble'; t.innerHTML = '<i></i><i></i><i></i>';
-    chat.appendChild(t); scrollDown(chat); statusEl.textContent = 'typing…'; statusEl.className = 'typing';
+    chat.appendChild(t); scrollDown(chat); statusEl.textContent = 'печатает…'; statusEl.className = 'typing';
     return wait(400 + Math.min(html.replace(/<[^>]+>/g,'').length * 3, 450)).then(function(){
-      t.remove(); statusEl.textContent = 'bot'; statusEl.className = '';
+      t.remove(); statusEl.textContent = 'бот'; statusEl.className = '';
       var m = document.createElement('div'); m.className = 'msg in'; m.innerHTML = html + '<span class="time">' + now() + '</span>';
       chat.appendChild(m); if(rows && rows.length) renderKb(rows); scrollDown(chat);
       m.querySelectorAll('img').forEach(function(i){ i.addEventListener('load', function(){ scrollDown(chat); }); });
@@ -361,22 +357,22 @@
   }
   function adminPost(html, rows){
     var e = document.getElementById('adminEmpty'); if(e) e.remove();
-    var m = document.createElement('div'); m.className = 'msg in'; m.innerHTML = '<span class="from">OLIVA Bot</span>' + html + '<span class="time">' + now() + '</span>';
+    var m = document.createElement('div'); m.className = 'msg in'; m.innerHTML = '<span class="from">ОЛИВА Bot</span>' + html + '<span class="time">' + now() + '</span>';
     adminChat.appendChild(m); if(rows) renderKb(rows, adminChat); scrollDown(adminChat);
     if(document.getElementById('stage').dataset.view === 'client' && window.innerWidth <= 900){ unread++; document.getElementById('badge').textContent = unread; }
   }
   function renderStats(){
     document.getElementById('stBook').textContent = stats.book;
     document.getElementById('stGuests').textContent = stats.guests;
-    document.getElementById('stUp').textContent = usd(stats.up);
+    document.getElementById('stUp').textContent = rub(stats.up);
     document.getElementById('stCancel').textContent = stats.cancel;
   }
 
-  /* ================= NAVIGATION ================= */
+  /* ================= НАВИГАЦИЯ ================= */
   function b(t, fn, sel){ return {t:(sel ? '✓ ' : '') + t, fn:fn}; }
   function cur(){ return hist[hist.length-1]; }
   function go(step, label){ if(label) addUser(label); hist.push(step); return render(step); }
-  function back(){ addUser('← Back'); hist.pop(); return render(cur()); }
+  function back(){ addUser('← Назад'); hist.pop(); return render(cur()); }
   function toMenu(label){ if(label) addUser(label); S.resched = false; S.mode = 'book'; hist = ['menu']; return render('menu'); }
   function startBooking(label){
     if(S.booked){ addUser(label); hist.push('mine'); return render('mine'); }
@@ -385,93 +381,93 @@
 
   var STEPS = {
     menu: function(){ return { noBack:true,
-      text:'<div class="hero-card"><img src="' + U + '1414235077428-338989a2e8c0?auto=format&fit=crop&w=640&h=240&q=70" alt="OLIVA dining room"></div>Hi there! This is the <b>OLIVA</b> reservations bot 🫒\nI\'ll book you a table in a minute.',
-      kb:[[b('Book a table', function(){ startBooking('Book a table'); })],
-          [b('Menu', function(){ go('menuCats','Menu'); }), b('Address & hours', function(){ go('address','Address & hours'); })],
-          [b('Private events · PRO', function(){ go('banquet','Private events'); })]].concat(S.booked ? [[b('My reservation', function(){ go('mine','My reservation'); })]] : [])
+      text:'<div class="hero-card"><img src="' + U + '1414235077428-338989a2e8c0?auto=format&fit=crop&w=640&h=240&q=70" alt="Зал кафе ОЛИВА"></div>Добрый день! Это бот кафе <b>ОЛИВА</b> 🫒\nЗабронирую столик за минуту.',
+      kb:[[b('Забронировать столик', function(){ startBooking('Забронировать столик'); })],
+          [b('Меню', function(){ go('menuCats','Меню'); }), b('Адрес и часы', function(){ go('address','Адрес и часы'); })],
+          [b('Банкеты и мероприятия · PRO', function(){ go('banquet','Банкеты и мероприятия'); })]].concat(S.booked ? [[b('Моя бронь', function(){ go('mine','Моя бронь'); })]] : [])
     };},
     date: function(){
       var ds = dates(), rows = [], row = [];
       ds.forEach(function(d){ row.push(b(dateShort(d), function(){ if(!S.date || S.date.getTime()!==d.getTime()) S.time = null; S.date = d; go('time', dateShort(d)); }, S.date && S.date.getTime()===d.getTime())); if(row.length===3){ rows.push(row); row=[]; } });
       if(row.length) rows.push(row);
-      return {text:(S.resched ? 'Choose a new date.' : 'What day would you like to book?'), kb:rows};
+      return {text:(S.resched ? 'Выберите новую дату.' : 'На какой день бронируем?'), kb:rows};
     },
     time: function(){
       var bz = busyFor(S.date), rows = [], row = [], list = timesFor(S.date);
       list.forEach(function(t){
         var bt;
-        if(isMine(S.date,t)) bt = {t:'★ ' + t12(t), disabled:true, cls:'mine', title:'Your current reservation'};
-        else if(bz.indexOf(t) >= 0) bt = {t:t12(t), disabled:true, cls:'busy', title:'Already booked'};
-        else bt = b(t12(t), function(){ pickTime(t); }, S.time===t);
+        if(isMine(S.date,t)) bt = {t:'★ ' + t, disabled:true, cls:'mine', title:'Ваша текущая бронь'};
+        else if(bz.indexOf(t) >= 0) bt = {t:t, disabled:true, cls:'busy', title:'Время занято'};
+        else bt = b(t, function(){ pickTime(t); }, S.time===t);
         row.push(bt); if(row.length===4){ rows.push(row); row=[]; }
       });
       if(row.length) rows.push(row);
-      return {text:'<b>' + dateFull(S.date) + '</b>\nPick a time. Crossed-out times are already booked.' + (S.resched ? '\n★ your current reservation.' : ''), kb:rows};
+      return {text:'<b>' + dateFull(S.date) + '</b>\nВыберите время. Зачёркнутое уже занято.' + (S.resched ? '\n★ ваша текущая бронь.' : ''), kb:rows};
     },
     guests: function(){ return {
-      text:'How many guests?',
+      text:'Сколько будет гостей?',
       kb:[[1,2,3].map(function(n){ return b(String(n), function(){ S.mode = 'book'; S.guests = n; go('zone', guestsWord(n)); }, S.guests===n); }),
           [4,5,6].map(function(n){ return b(String(n), function(){ S.mode = 'book'; S.guests = n; go('zone', guestsWord(n)); }, S.guests===n); }),
-          [b('More than 6', function(){ S.mode = 'big'; S.guests = null; go('big','More than 6'); })]]
+          [b('Больше 6', function(){ S.mode = 'big'; S.guests = null; go('big','Больше 6'); })]]
     };},
-    big: function(){ return {text:'For parties larger than 6, our manager will call you personally to arrange tables, seating and the menu. Please leave your name and phone number.', kb:[[b('Leave my details', function(){ go('name','Leave my details'); })]]}; },
+    big: function(){ return {text:'Для компании больше 6 человек позвоню вам лично: подберём столы, зону и меню. Оставьте, пожалуйста, имя и телефон.', kb:[[b('Оставить контакты', function(){ go('name','Оставить контакты'); })]]}; },
     zone: function(){ return {
-      text:'Where would you like to sit?',
+      text:'Где вам удобнее сидеть?',
       kb:[[ZONES[0],ZONES[1]].map(function(z){ return b(z[1], function(){ S.zone = z[0]; go('occ', z[1]); }, S.zone===z[0]); }),
           [ZONES[2],ZONES[3]].map(function(z){ return b(z[1], function(){ S.zone = z[0]; go('occ', z[1]); }, S.zone===z[0]); })]
     };},
     occ: function(){ return {
-      text:'Any special occasion? It\'s optional, but it helps us prepare 🙂',
+      text:'Есть повод? Это необязательно, но так мы лучше подготовимся 🙂',
       kb:[[OCC[0],OCC[1]].map(function(o){ return b(o[1], function(){ pickOcc(o); }, S.occ===o[0]); }),
           [OCC[2],OCC[3]].map(function(o){ return b(o[1], function(){ pickOcc(o); }, S.occ===o[0]); })]
     };},
-    dessert: function(){ return { pre:'PRO · celebration upsell',
-      text:'Happy birthday! 🎂\nWe can have a dessert ready with a candle: tiramisu or panna cotta, your choice, <b>' + usd(DESSERT) + '</b>. Add it?',
-      kb:[[b('Yes, add it', function(){ S.dessert = true; go('name','Yes, add it'); }, S.dessert===true), b('No, thanks', function(){ S.dessert = false; go('name','No, thanks'); }, S.dessert===false)]]
+    dessert: function(){ return { pre:'PRO · допродажа к празднику',
+      text:'Поздравляем! 🎂\nМожем подготовить десерт со свечой: тирамису или панна-котту по выбору, <b>' + rub(DESSERT) + '</b>. Добавить?',
+      kb:[[b('Да, добавить', function(){ S.dessert = true; go('name','Да, добавить'); }, S.dessert===true), b('Нет, спасибо', function(){ S.dessert = false; go('name','Нет, спасибо'); }, S.dessert===false)]]
     };},
-    name: function(){ return {text: S.name ? 'What name should the reservation be under? If that looks right, just send \u201C' + esc(S.name) + '\u201D.' : 'What name should the reservation be under?', input:'Your name', prefill:S.name}; },
-    phone: function(){ return {text:'Your phone number, so the host can reach you if anything changes.\nTap \u201CShare contact\u201D below or type your number.', input:'(555) 000-0000', prefill:S.phone, contact:true}; },
+    name: function(){ return {text: S.name ? 'Как к вам обращаться? Если всё верно, просто отправьте «' + esc(S.name) + '».' : 'Как к вам обращаться?', input:'Ваше имя', prefill:S.name}; },
+    phone: function(){ return {text:'Ваш телефон, чтобы хостес могла связаться, если что-то изменится.\nНажмите «Поделиться контактом» внизу или введите номер.', input:'+7 (900) 000-00-00', prefill:S.phone, contact:true}; },
     confirm: function(){ return {
-      text:'✅ <b>Your table is booked:</b> ' + summary() + '.' + (S.dessert ? '\nWe\'ll have a candle dessert ready 🎂' : '') + '\n\nWe hold tables for 15 minutes. You can change or cancel using the buttons below.',
-      kb:[[b('Reschedule · PRO', function(){ S.resched = true; go('date','Reschedule'); }), b('Cancel · PRO', cancel)],
-          [b('🔔 Sample reminder · PRO', function(){ go('reminder','Show sample reminder'); })],
-          [{t:'📍 Directions', url:MAP}, b('Menu', function(){ go('menuCats','Menu'); })],
-          [b('Main menu', function(){ toMenu('Main menu'); })]],
-      backLabel:'← Edit details'
+      text:'✅ <b>Столик забронирован:</b> ' + summary() + '.' + (S.dessert ? '\nДесерт со свечой подготовим 🎂' : '') + '\n\nДержим бронь 15 минут. Изменить или отменить можно кнопками ниже.',
+      kb:[[b('Перенести · PRO', function(){ S.resched = true; go('date','Перенести'); }), b('Отменить бронь · PRO', cancel)],
+          [b('🔔 Пример напоминания · PRO', function(){ go('reminder','Показать пример напоминания'); })],
+          [{t:'📍 Как добраться', url:MAP}, b('Меню', function(){ go('menuCats','Меню'); })],
+          [b('В главное меню', function(){ toMenu('В главное меню'); })]],
+      backLabel:'← Изменить данные'
     };},
     mine: function(){
-      if(!S.booked) return {text:'You have no active reservations.', kb:[[b('Book a table', function(){ startBooking('Book a table'); })]]};
-      return {text:'You already have reservation #' + S.id + ':\n<b>' + summary() + '</b>' + (S.dessert ? '\nCandle dessert 🎂' : ''),
-        kb:[[b('Reschedule · PRO', function(){ S.resched = true; go('date','Reschedule'); }), b('Cancel · PRO', cancel)]]};
+      if(!S.booked) return {text:'Активных броней нет.', kb:[[b('Забронировать столик', function(){ startBooking('Забронировать столик'); })]]};
+      return {text:'У вас уже есть бронь #' + S.id + ':\n<b>' + summary() + '</b>' + (S.dessert ? '\nДесерт со свечой 🎂' : ''),
+        kb:[[b('Перенести · PRO', function(){ S.resched = true; go('date','Перенести'); }), b('Отменить бронь · PRO', cancel)]]};
     },
-    reminder: function(){ return { pre:'PRO · the bot sends this automatically 3 hours before the visit',
-      text:'See you tonight at <b>' + t12(S.time) + '</b> 🫒\n' + guestsWord(S.guests) + ', ' + zone()[2] + '.\nIf your plans changed, tap \u201CCancel\u201D and we\'ll give the table to other guests.',
-      kb:[[b('I\'ll be there ✅', function(){ addUser('I\'ll be there ✅'); adminPost('✅ <b>Visit confirmed</b>, reservation #' + S.id + '\n' + esc(S.name) + ', ' + summary()); botSay('Great, see you soon! 🫒', [[{t:'← Back', fn:back, back:true}]]); }),
-           b('Cancel', cancel)]]
+    reminder: function(){ return { pre:'PRO · это сообщение бот сам пришлёт за 3 часа до визита',
+      text:'Ждём вас сегодня в <b>' + S.time + '</b> 🫒\n' + guestsWord(S.guests) + ', ' + zone()[2] + '.\nЕсли планы изменились, нажмите «Отменить», столик отдадим другим гостям.',
+      kb:[[b('Приду ✅', function(){ addUser('Приду ✅'); adminPost('✅ <b>Визит подтверждён</b>, бронь #' + S.id + '\n' + esc(S.name) + ', ' + summary()); botSay('Отлично, ждём вас! 🫒', [[{t:'← Назад', fn:back, back:true}]]); }),
+           b('Отменить', cancel)]]
     };},
-    cancelled: function(){ return { noBack:true, text:'Your reservation is canceled, and the table will go to other guests. We\'d love to see you another time 🫒',
-      kb:[[b('Book again', function(){ addUser('Book again'); S = fresh(); S.name = keep.name; S.phone = keep.phone; hist = ['menu','date']; render('date'); })],
-          [{t:'← Main menu', back:true, fn:function(){ toMenu('← Main menu'); }}]] }; },
+    cancelled: function(){ return { noBack:true, text:'Бронь отменили, столик отдадим другим гостям. Будем рады видеть вас в другой раз 🫒',
+      kb:[[b('Забронировать снова', function(){ addUser('Забронировать снова'); S = fresh(); S.name = keep.name; S.phone = keep.phone; hist = ['menu','date']; render('date'); })],
+          [{t:'← В главное меню', back:true, fn:function(){ toMenu('← В главное меню'); }}]] }; },
     leadDone: function(){ return { noBack:true,
-      text: S.mode==='big' ? 'Thanks, ' + esc(S.name) + '! Our manager will call you within 30 minutes to go over your party, date and menu 🫒' : 'Thanks, ' + esc(S.name) + '! Our events manager will call within the hour and send menu options 🫒',
-      kb:[[b('Main menu', function(){ toMenu('Main menu'); })]] }; },
-    menuCats: function(){ return {text:'The OLIVA menu, about $35–50 per person. What would you like to see?', kb:MENU.map(function(c,i){ return [b(c.nm, function(){ S.menuCat = i; go('menuList', c.nm); })]; })}; },
+      text: S.mode==='big' ? 'Спасибо, ' + esc(S.name) + '! Менеджер позвонит вам в течение 30 минут, чтобы обсудить компанию, дату и меню 🫒' : 'Спасибо, ' + esc(S.name) + '! Менеджер по мероприятиям позвонит в течение часа и пришлёт варианты меню 🫒',
+      kb:[[b('В главное меню', function(){ toMenu('В главное меню'); })]] }; },
+    menuCats: function(){ return {text:'Меню ОЛИВЫ, средний чек 1&nbsp;500–2&nbsp;000&nbsp;₽. Что посмотрим?', kb:MENU.map(function(c,i){ return [b(c.nm, function(){ S.menuCat = i; go('menuList', c.nm); })]; })}; },
     menuList: function(){ var c = MENU[S.menuCat]; return {
-      text:'<b>' + c.nm + '</b>' + c.items.map(function(d){ return '<div class="dish"><img src="' + img(d[3]) + '" alt="' + esc(d[0]) + '" loading="lazy"><div><b>' + d[0] + '</b><small>' + d[1] + '</small></div><em>' + usd(d[2]) + '</em></div>'; }).join(''),
+      text:'<b>' + c.nm + '</b>' + c.items.map(function(d){ return '<div class="dish"><img src="' + img(d[3]) + '" alt="' + esc(d[0]) + '" loading="lazy"><div><b>' + d[0] + '</b><small>' + d[1] + '</small></div><em>' + rub(d[2]) + '</em></div>'; }).join(''),
       kb:[MENU.map(function(m,i){ return i===S.menuCat ? null : b(m.nm, function(){ S.menuCat = i; hist.pop(); go('menuList', m.nm); }); }).filter(Boolean),
-          [b('Book a table', function(){ startBooking('Book a table'); })]]
+          [b('Забронировать столик', function(){ startBooking('Забронировать столик'); })]]
     };},
-    address: function(){ return {text:'📍 ' + ADDRESS + '\n4 min walk from Carroll St station (F, G).\n\n🕛 Mon–Thu: 12 PM–11 PM\nFri–Sat: 12 PM–12 AM\nSun: 12 PM–10 PM\n\nLast reservation one hour before the kitchen closes.', kb:[[{t:'Open in Maps', url:MAP}],[b('Book a table', function(){ startBooking('Book a table'); })]]}; },
-    banquet: function(){ return { pre:'PRO · private event inquiries',
-      text:'We host birthdays, company dinners and family celebrations 🥂\nDining room for up to 40 guests or the patio for up to 25, event menus from $75 per guest, and you\'re welcome to bring your own cake.\n\nLeave your details and our manager will send options.',
-      kb:[[b('Send an inquiry', function(){ S.mode = 'banquet'; go('name','Send an inquiry'); })]]
+    address: function(){ return {text:'📍 ' + ADDRESS + '\n4 минуты пешком от м. Арбатская.\n\n🕛 Пн–Чт: 12:00–23:00\nПт–Сб: 12:00–00:00\nВс: 12:00–22:00\n\nПоследняя бронь за час до закрытия кухни.', kb:[[{t:'Открыть на карте', url:MAP}],[b('Забронировать столик', function(){ startBooking('Забронировать столик'); })]]}; },
+    banquet: function(){ return { pre:'PRO · заявки на мероприятия',
+      text:'Проводим дни рождения, корпоративы и семейные праздники 🥂\nЗал до 40 гостей или веранда до 25, банкетное меню от 3 500 ₽ на гостя, свой торт можно принести.\n\nОставьте контакты, и менеджер предложит варианты.',
+      kb:[[b('Оставить заявку', function(){ S.mode = 'banquet'; go('name','Оставить заявку'); })]]
     };}
   };
 
   function pickTime(t){
     S.time = t;
-    if(S.resched){ addUser(t12(t)); S.resched = false; book(); hist.push('confirm'); render('confirm'); return; }
-    go('guests', t12(t));
+    if(S.resched){ addUser(t); S.resched = false; book(); hist.push('confirm'); render('confirm'); return; }
+    go('guests', t);
   }
   function pickOcc(o){
     if(S.occ !== o[0] && o[0] !== 'bday') S.dessert = null;
@@ -481,8 +477,8 @@
 
   function render(step){
     var r = STEPS[step](), rows = (r.kb||[]).slice();
-    if(!r.noBack) rows.push([{t:r.backLabel || '← Back', fn:back, back:true}]);
-    replyKb.classList.remove('show'); input.placeholder = r.input || 'Message';
+    if(!r.noBack) rows.push([{t:r.backLabel || '← Назад', fn:back, back:true}]);
+    replyKb.classList.remove('show'); input.placeholder = r.input || 'Сообщение';
     var p = r.pre ? wait(200).then(function(){ addService(r.pre); }) : Promise.resolve();
     return p.then(function(){ return botSay(r.text, rows); }).then(function(){
       if(r.contact) replyKb.classList.add('show');
@@ -490,7 +486,7 @@
     });
   }
 
-  /* ================= ACTIONS ================= */
+  /* ================= ДЕЙСТВИЯ ================= */
   function book(){
     var upd = S.booked;
     if(!upd){ seq++; S.id = seq; stats.book++; stats.guests += S.guests; if(S.dessert){ stats.up += DESSERT; } }
@@ -498,37 +494,37 @@
     S.booked = true; S.bookedDate = S.date; S.bookedTime = S.time; S.bookedGuests = S.guests; S.bookedDessert = !!S.dessert;
     renderStats();
     var lines = [
-      (upd ? '✏️ <b>Reservation updated #' : '🆕 <b>New reservation #') + S.id + '</b>',
-      '<span class="sum">📅 ' + dateFull(S.date) + ', <b>' + t12(S.time) + '</b><br>👥 ' + guestsWord(S.guests) + '<br>🪑 ' + zone()[1] + '</span>',
-      'Guest: ' + esc(S.name) + ', ' + esc(S.phone),
-      'Occasion: ' + (S.occ ? occ()[1].replace(' 🎂','') : 'not specified'),
-      S.dessert ? '🎂 Upsell: candle dessert, +' + usd(DESSERT) : null,
-      S.occ==='date' ? 'Request: quiet table, away from the entrance' : null,
-      S.occ==='biz' ? 'Request: calm area, away from the speakers' : null,
-      'Table held 15 minutes past ' + t12(S.time)
+      (upd ? '✏️ <b>Бронь изменена #' : '🆕 <b>Новая бронь #') + S.id + '</b>',
+      '<span class="sum">📅 ' + dateFull(S.date) + ', <b>' + S.time + '</b><br>👥 ' + guestsWord(S.guests) + '<br>🪑 ' + zone()[1] + '</span>',
+      'Гость: ' + esc(S.name) + ', ' + esc(S.phone),
+      'Повод: ' + (S.occ ? occ()[1].replace(' 🎂','') : 'не указан'),
+      S.dessert ? '🎂 Допродажа: десерт со свечой, +' + rub(DESSERT) : null,
+      S.occ==='date' ? 'Пожелание: тихий столик, подальше от входа' : null,
+      S.occ==='biz' ? 'Пожелание: спокойная зона, без музыки рядом' : null,
+      'Держим бронь 15 минут после ' + S.time
     ].filter(Boolean);
     var id = S.id;
     adminPost(lines.join('\n'), [[
-      {t:'Confirm', fn:function(el){ el.textContent = '✓ Confirmed'; el.disabled = true; addService('Host Emily confirmed reservation #' + id, adminChat); }},
-      {t:'Call guest', fn:function(el){ el.textContent = '✓ Call logged'; el.disabled = true; }}
+      {t:'Подтвердить', fn:function(el){ el.textContent = '✓ Подтверждено'; el.disabled = true; addService('Хостес Алина подтвердила бронь #' + id, adminChat); }},
+      {t:'Позвонить гостю', fn:function(el){ el.textContent = '✓ Звонок отмечен'; el.disabled = true; }}
     ]]);
   }
   function cancel(){
-    addUser('Cancel reservation');
+    addUser('Отменить бронь');
     stats.cancel++; stats.book = Math.max(0, stats.book-1); stats.guests -= S.bookedGuests || 0; if(S.bookedDessert) stats.up -= DESSERT; renderStats();
-    adminPost('❌ <b>Reservation canceled #' + S.id + '</b>\n' + esc(S.name) + ', ' + esc(S.phone) + '\n' + summary() + '\nThe table is free and can go to walk-ins.');
+    adminPost('❌ <b>Отмена брони #' + S.id + '</b>\n' + esc(S.name) + ', ' + esc(S.phone) + '\n' + summary() + '\nСтолик свободен, его можно отдать гостям без брони.');
     keep = {name:S.name, phone:S.phone};
     S.booked = false; S.resched = false; hist.push('cancelled'); render('cancelled');
   }
   function lead(){
     if(S.mode==='big'){
-      adminPost('👥 <b>Request: party of more than 6</b>\nGuest: ' + esc(S.name) + ', ' + esc(S.phone) + '\nPreferred date: ' + dateFull(S.date) + ', ' + t12(S.time) + '\nCall back within 30 minutes.', [[{t:'Take it', fn:function(el){ el.textContent = '✓ Manager Olivia'; el.disabled = true; }}]]);
+      adminPost('👥 <b>Запрос: компания больше 6 человек</b>\nГость: ' + esc(S.name) + ', ' + esc(S.phone) + '\nЖелаемая дата: ' + dateFull(S.date) + ', ' + S.time + '\nПерезвонить в течение 30 минут.', [[{t:'Взять в работу', fn:function(el){ el.textContent = '✓ Менеджер Ирина'; el.disabled = true; }}]]);
     } else {
-      adminPost('🥂 <b>Private event inquiry</b>\nGuest: ' + esc(S.name) + ', ' + esc(S.phone) + '\nSource: bot, \u201CPrivate events\u201D section\nCall back within the hour.', [[{t:'Take it', fn:function(el){ el.textContent = '✓ Manager Olivia'; el.disabled = true; }}]]);
+      adminPost('🥂 <b>Заявка на мероприятие</b>\nГость: ' + esc(S.name) + ', ' + esc(S.phone) + '\nИсточник: бот, раздел «Банкеты и мероприятия»\nПерезвонить в течение часа.', [[{t:'Взять в работу', fn:function(el){ el.textContent = '✓ Менеджер Ирина'; el.disabled = true; }}]]);
     }
     hist.push('leadDone'); render('leadDone');
   }
-  function formatPhone(raw){ var d = raw.replace(/\D/g,''); if(d.length===11 && d[0]==='1') d = d.slice(1); if(d.length!==10) return null; return '(' + d.slice(0,3) + ') ' + d.slice(3,6) + '-' + d.slice(6,10); }
+  function formatPhone(raw){ var d = raw.replace(/\D/g,''); if(d.length===11 && (d[0]==='7'||d[0]==='8')) d = d.slice(1); if(d.length!==10) return null; return '+7 (' + d.slice(0,3) + ') ' + d.slice(3,6) + '-' + d.slice(6,8) + '-' + d.slice(8,10); }
   function acceptPhone(p){
     S.phone = p; replyKb.classList.remove('show');
     if(S.mode==='book'){ book(); hist.push('confirm'); render('confirm'); } else lead();
@@ -536,7 +532,7 @@
 
   document.getElementById('shareContact').addEventListener('click', function(){
     if(busy || cur()!=='phone') return;
-    var p = '(718) 555-0137'; addUser('📱 Contact: ' + (S.name||'Guest') + ', ' + p); acceptPhone(p);
+    var p = '+7 (916) 555-31-07'; addUser('📱 Контакт: ' + (S.name||'Гость') + ', ' + p); acceptPhone(p);
   });
   document.getElementById('composer').addEventListener('submit', function(e){
     e.preventDefault();
@@ -545,26 +541,26 @@
     var step = cur();
     if(text === '/start'){ S = fresh(); hist = ['menu']; render('menu'); return; }
     if(step === 'name'){
-      if(!/^[A-Za-z][A-Za-z\s'-]{1,39}$/.test(text)){ botSay('Please enter your name using letters only, for example \u201CAnna\u201D.', [[{t:'← Back', fn:back, back:true}]]); return; }
+      if(!/^[A-Za-zА-Яа-яЁё][A-Za-zА-Яа-яЁё\s-]{1,39}$/.test(text)){ botSay('Напишите, пожалуйста, имя буквами, например «Анна».', [[{t:'← Назад', fn:back, back:true}]]); return; }
       S.name = text.replace(/\s+/g,' '); hist.push('phone'); render('phone'); return;
     }
     if(step === 'phone'){
       var p = formatPhone(text);
-      if(!p){ botSay('We couldn\'t read that number. Enter your 10-digit phone number, e.g. 555 000 1234, or tap \u201CShare contact\u201D.', [[{t:'← Back', fn:back, back:true}]]).then(function(){ replyKb.classList.add('show'); }); return; }
+      if(!p){ botSay('Не получилось распознать номер. Введите 10 цифр после +7, например 916 555 31 07, или нажмите «Поделиться контактом».', [[{t:'← Назад', fn:back, back:true}]]).then(function(){ replyKb.classList.add('show'); }); return; }
       acceptPhone(p); return;
     }
-    botSay('I understand the buttons under each message 🫒 Tap an option, or send /start to begin again.', [[b('Main menu', function(){ toMenu('Main menu'); })]]);
+    botSay('Я понимаю кнопки под сообщениями 🫒 Нажмите нужный вариант или отправьте /start, чтобы начать сначала.', [[b('В главное меню', function(){ toMenu('В главное меню'); })]]);
   });
 
-  /* ================= START ================= */
+  /* ================= ЗАПУСК ================= */
   function start(){
     chat.innerHTML = '';
-    adminChat.innerHTML = '<div class="admin-empty" id="adminEmpty">Nothing here yet. Book a table through the bot on the left and the reservation card, upsells and cancellations will show up here.</div>';
+    adminChat.innerHTML = '<div class="admin-empty" id="adminEmpty">Пока пусто. Забронируйте столик через бота слева: карточка брони, допродажа и отмены появятся здесь.</div>';
     unread = 0; document.getElementById('badge').textContent = '';
     S = fresh(); hist = ['menu']; busy = false; keep = {name:'',phone:''}; seq = 318;
     stats = {book:0, guests:0, up:0, cancel:0}; renderStats();
     replyKb.classList.remove('show'); input.value = '';
-    addService('Today'); addUser('/start'); render('menu');
+    addService('Сегодня'); addUser('/start'); render('menu');
   }
   document.getElementById('restart').addEventListener('click', function(){ if(!busy) start(); });
   document.querySelectorAll('#tabs button').forEach(function(btn){

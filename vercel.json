@@ -1,0 +1,34 @@
+{
+  "redirects": [
+    {
+      "source": "/digital-ru.html",
+      "destination": "/ru/digital.html",
+      "permanent": true
+    },
+    {
+      "source": "/about-ru.html",
+      "destination": "/ru/about.html",
+      "permanent": true
+    },
+    {
+      "source": "/ai-audit-ru.html",
+      "destination": "/ru/ai-audit.html",
+      "permanent": true
+    },
+    {
+      "source": "/ai-starter-ru.html",
+      "destination": "/ru/ai-starter.html",
+      "permanent": true
+    },
+    {
+      "source": "/ai-pro-ru.html",
+      "destination": "/ru/ai-pro.html",
+      "permanent": true
+    },
+    {
+      "source": "/ai-custom-ru.html",
+      "destination": "/ru/ai-custom.html",
+      "permanent": true
+    }
+  ]
+}
