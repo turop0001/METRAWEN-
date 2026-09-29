@@ -98,4 +98,32 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://metrawen.com/ai-custom.html"/>
     <lastmod>2026-09-30</lastmod>
   </url>
+  <url>
+    <loc>https://metrawen.com/privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://metrawen.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://metrawen.com/ru/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://metrawen.com/privacy.html"/>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://metrawen.com/ru/privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://metrawen.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://metrawen.com/ru/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://metrawen.com/privacy.html"/>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://metrawen.com/terms.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://metrawen.com/terms.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://metrawen.com/ru/terms.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://metrawen.com/terms.html"/>
+    <lastmod>2026-09-29</lastmod>
+  </url>
+  <url>
+    <loc>https://metrawen.com/ru/terms.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://metrawen.com/terms.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://metrawen.com/ru/terms.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://metrawen.com/terms.html"/>
+    <lastmod>2026-09-29</lastmod>
+  </url>
 </urlset>
