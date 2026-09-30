@@ -89,5 +89,25 @@ module.exports = async function handler(req, res) {
     return res.status(502).json({ ok: false, error: 'telegram_unreachable' });
   }
 
+  // Sell Manager: готовим черновик ответа и присылаем его в Telegram отдельным сообщением.
+  // Клиенту ничего не отправляется. Без ключа ИИ работают готовые шаблоны.
+  const lead = {
+    label: label, name: name, contact: contact,
+    company: body.company, industry: body.industry, slot: body.slot,
+    message: body.message, page: body.page
+  };
+  try {
+    const job = require('./_lib/sellmanager').handleNewLead(lead).catch(function (e) {
+      console.error('lead: sellmanager', e);
+    });
+    let bg = null;
+    if (process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY) {
+      try { bg = require('@vercel/functions').waitUntil; } catch (e) { bg = null; }
+    }
+    if (bg) { bg(job); } else { await job; }
+  } catch (e) {
+    console.error('lead: sellmanager не запустился', e);
+  }
+
   return res.status(200).json({ ok: true });
 };

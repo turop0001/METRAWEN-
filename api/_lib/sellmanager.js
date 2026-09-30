@@ -1,0 +1,146 @@
+// Sell Manager v1: генерирует ЧЕРНОВИК ответа на заявку. Ничего клиенту не отправляет.
+const { SYSTEM } = require('./kb');
+const { saveJson, loadJson, enabled: storeEnabled } = require('./store');
+const { tg } = require('./tg');
+const { draftFromRules } = require('./rules');
+const llm = require('./llm');
+
+
+function detectLang(lead) {
+  return /\/ru(\/|$)/.test(String(lead.page || '')) ? 'ru' : 'en';
+}
+
+function leadToText(lead) {
+  const rows = [
+    ['Form', lead.label],
+    ['Name', lead.name],
+    ['Contact', lead.contact],
+    ['Company', lead.company],
+    ['Industry', lead.industry],
+    ['Chosen slot', lead.slot],
+    ['Message', lead.message],
+    ['Page', lead.page],
+    ['Page language', detectLang(lead)]
+  ];
+  return rows.filter(r => r[1]).map(r => r[0] + ': ' + String(r[1]).slice(0, 1500)).join('\n');
+}
+
+function extractJson(text) {
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start < 0 || end <= start) throw new Error('no json in model output');
+  return JSON.parse(text.slice(start, end + 1));
+}
+
+async function callModel(lead, mode, previous) {
+  let instruction = 'Here is a new inbound lead from the website form. Write the draft reply.\n\n<lead>\n' + leadToText(lead) + '\n</lead>';
+  if (previous && mode === 'regen') {
+    instruction += '\n\nHere is the previous draft. Write a clearly different version (different angle and wording, same rules):\n<previous>\n' + previous.body + '\n</previous>';
+  }
+  if (previous && mode === 'shorter') {
+    instruction += '\n\nHere is the previous draft. Rewrite it noticeably shorter (2-4 sentences), same rules:\n<previous>\n' + previous.body + '\n</previous>';
+  }
+  const text = await llm.complete(SYSTEM, instruction, 900);
+  const j = extractJson(text);
+  return {
+    intent: String(j.intent || ''),
+    escalate: !!j.escalate,
+    reason: String(j.reason || ''),
+    subject: String(j.subject || ''),
+    body: String(j.body || '')
+  };
+}
+
+// Если задан ключ модели (Claude, OpenAI или совместимый), пишет модель. Иначе работают готовые шаблоны (бесплатно).
+async function generateDraft(lead, mode, previous) {
+  if (llm.enabled()) {
+    try {
+      const d = await callModel(lead, mode, previous);
+      d.mode = 'ai';
+      return d;
+    } catch (err) {
+      console.error('sellmanager: модель недоступна, беру шаблон', err);
+    }
+  }
+  return draftFromRules(lead, mode);
+}
+
+function keyboard(id, mode) {
+  const row = mode === 'ai'
+    ? [{ text: 'Переписать', callback_data: 'rg:' + id }, { text: 'Короче', callback_data: 'sh:' + id }]
+    : [{ text: 'Короче', callback_data: 'sh:' + id }];
+  return { inline_keyboard: [row, [{ text: 'Пропустить', callback_data: 'sk:' + id }]] };
+}
+
+function formatDraft(lead, d) {
+  const head = [
+    'Черновик ответа' + (d.mode === 'rules' ? ' (по шаблону)' : '') + (d.escalate ? ' (ЭСКАЛАЦИЯ: нужен Дмитрий)' : ''),
+    lead.contact ? 'Кому: ' + lead.contact : null,
+    d.intent ? 'Тип: ' + d.intent : null,
+    d.reason ? 'Пояснение: ' + d.reason : null
+  ].filter(Boolean).join('\n');
+  const mail = (d.subject ? 'Тема: ' + d.subject + '\n\n' : '') + d.body;
+  return (head + '\n\n' + mail).slice(0, 3900);
+}
+
+function newId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+// Вызывается из api/lead.js после того, как заявка отправлена в Telegram.
+async function handleNewLead(lead) {
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  try {
+    const d = await generateDraft(lead, 'new', null);
+    const id = newId();
+    let withButtons = false;
+    if (storeEnabled()) {
+      await saveJson('lead:' + id, { lead, draft: d });
+      withButtons = true;
+    }
+    await tg('sendMessage', {
+      chat_id: chatId,
+      text: formatDraft(lead, d),
+      disable_web_page_preview: true,
+      reply_markup: withButtons ? keyboard(id, d.mode) : undefined
+    });
+  } catch (err) {
+    console.error('sellmanager: не удалось подготовить черновик', err);
+    try {
+      await tg('sendMessage', {
+        chat_id: chatId,
+        text: 'Sell Manager: черновик ответа не получился (' + String(err.message || err).slice(0, 200) + '). Ответьте на заявку вручную.'
+      });
+    } catch (e) { /* ничего */ }
+  }
+}
+
+// Вызывается из api/telegram.js при нажатии кнопок.
+async function handleAction(action, id, message) {
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const rec = await loadJson('lead:' + id);
+  if (!rec) {
+    await tg('sendMessage', { chat_id: chatId, text: 'Заявка не найдена (срок хранения истёк или база не подключена).' });
+    return;
+  }
+  // убрать кнопки со старого сообщения
+  try {
+    await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: message.message_id, reply_markup: { inline_keyboard: [] } });
+  } catch (e) { /* ничего */ }
+
+  if (action === 'sk') {
+    await tg('sendMessage', { chat_id: chatId, text: 'Пропущено.', reply_to_message_id: message.message_id });
+    return;
+  }
+  const mode = action === 'sh' ? 'shorter' : 'regen';
+  const d = await generateDraft(rec.lead, mode, rec.draft);
+  await saveJson('lead:' + id, { lead: rec.lead, draft: d });
+  await tg('sendMessage', {
+    chat_id: chatId,
+    text: formatDraft(rec.lead, d),
+    disable_web_page_preview: true,
+    reply_markup: keyboard(id, d.mode)
+  });
+}
+
+module.exports = { handleNewLead, handleAction };

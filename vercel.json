@@ -30,5 +30,13 @@
       "destination": "/ru/ai-custom.html",
       "permanent": true
     }
-  ]
+  ],
+  "functions": {
+    "api/lead.js": {
+      "maxDuration": 60
+    },
+    "api/telegram.js": {
+      "maxDuration": 60
+    }
+  }
 }
