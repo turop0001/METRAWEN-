@@ -1,16 +1,19 @@
 // Тонкая обёртка над LINE Messaging API. Секреты берутся из переменных окружения Vercel.
 const crypto = require('crypto');
 
+// Из панели Vercel в значение иногда попадают невидимые символы (перенос строки, U+2028, пробелы). Оставляем только печатный ASCII.
+function clean(v) { return String(v || '').replace(/[^\x21-\x7E]/g, ''); }
+
 function verify(secret, rawBody, signature) {
   if (!secret || !signature) return false;
-  const expected = crypto.createHmac('sha256', secret).update(rawBody).digest();
+  const expected = crypto.createHmac('sha256', clean(secret)).update(rawBody).digest();
   let given;
   try { given = Buffer.from(String(signature), 'base64'); } catch (e) { return false; }
   return given.length === expected.length && crypto.timingSafeEqual(given, expected);
 }
 
 async function call(path, method, payload) {
-  const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+  const token = clean(process.env.LINE_CHANNEL_ACCESS_TOKEN);
   if (!token) throw new Error('LINE_CHANNEL_ACCESS_TOKEN не задан');
   const r = await fetch('https://api.line.me' + path, {
     method: method,
