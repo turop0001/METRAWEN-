@@ -2,7 +2,46 @@
 // Принимает только запросы от Telegram (секрет считается из токена бота) и только от вашего чата.
 const crypto = require('crypto');
 const { tg } = require('./_lib/tg');
-const { handleAction } = require('./_lib/sellmanager');
+const { handleAction, handleNewLead } = require('./_lib/sellmanager');
+const { saveJson, loadJson, enabled: storeEnabled } = require('./_lib/store');
+
+// Обычное сообщение клиента боту. Клиенту ничего не уходит без «Подтвердить», кроме приветствия на /start.
+async function handleClientMessage(msg, ownerChatId) {
+  try {
+    if (!msg.chat || msg.chat.type !== 'private') return;
+    if (String(msg.chat.id) === String(ownerChatId)) return; // ваши сообщения боту игнорируем
+    const from = msg.from || {};
+    const ru = /^ru|^uk|^be|^kk/i.test(String(from.language_code || ''));
+    const text = String(msg.text || '').trim();
+    if (!text) return;
+    if (/^\/start/i.test(text)) {
+      await tg('sendMessage', {
+        chat_id: msg.chat.id,
+        text: ru
+          ? 'Здравствуйте! Это METRAWEN. Напишите, чем можем помочь, Дмитрий ответит лично.'
+          : 'Hello! This is METRAWEN. Tell us what you need, Dmitry will reply personally.'
+      });
+      return;
+    }
+    if (storeEnabled()) {
+      const key = 'tg:rl:' + msg.chat.id;
+      if (await loadJson(key)) return;
+      await saveJson(key, 1, 8);
+    }
+    const name = [from.first_name, from.last_name].filter(Boolean).join(' ');
+    await handleNewLead({
+      label: 'Telegram',
+      channel: 'telegram',
+      tgChatId: msg.chat.id,
+      name: name,
+      contact: 'Telegram: ' + (from.username ? '@' + from.username : (name || String(msg.chat.id))),
+      message: text.slice(0, 2000),
+      page: ru ? '/ru/' : '/'
+    });
+  } catch (e) {
+    console.error('telegram: сообщение клиента не обработано', e);
+  }
+}
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(200).send('ok');
@@ -18,6 +57,11 @@ module.exports = async function handler(req, res) {
 
   let update = req.body;
   if (typeof update === 'string') { try { update = JSON.parse(update); } catch (e) { update = {}; } }
+  const msg = update && update.message;
+  if (msg && !update.callback_query) {
+    await handleClientMessage(msg, chatId);
+    return res.status(200).json({ ok: true });
+  }
   const cq = update && update.callback_query;
   if (!cq || !cq.message) return res.status(200).json({ ok: true });
 

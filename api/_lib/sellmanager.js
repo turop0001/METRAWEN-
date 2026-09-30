@@ -16,8 +16,8 @@ function detectLang(lead) {
 function leadToText(lead) {
   const rows = [
     ['Form', lead.label],
-    ['Channel', lead.channel === 'line' ? 'LINE chat: a short chat message, no subject line, no email greeting or formatting. Return subject as an empty string. Reply in the language of the lead message.' : ''],
-    ['Name', lead.name],
+    ['Channel', (lead.channel === 'line' || lead.channel === 'telegram') ? (lead.channel === 'line' ? 'LINE' : 'Telegram') + ' chat: a short chat message, no subject line, no email greeting or formatting. Return subject as an empty string. Reply in the language of the lead message.' : ''],
+    ['Client name (this is the client, NOT Dmitry)', lead.name],
     ['Contact', lead.contact],
     ['Company', lead.company],
     ['Industry', lead.industry],
@@ -95,12 +95,15 @@ function esc(t) {
 function routeInfo(lead) {
   const ch = lead.channel || 'site';
   if (ch === 'line') return { from: 'LINE', to: 'в LINE клиенту, автоматически после «Подтвердить»' };
+  if (ch === 'telegram') return { from: 'Telegram (бот)', to: 'в Telegram клиенту, автоматически после «Подтвердить»' };
   if (ch === 'whatsapp') return { from: 'WhatsApp', to: 'в WhatsApp клиенту (отправка пока вручную)' };
   if (ch === 'email') return { from: 'Email', to: 'на email клиента (отправка пока вручную)' };
   return { from: 'Сайт, форма заявки', to: 'на email клиента (отправка пока вручную, скопируйте текст после «Подтвердить»)' };
 }
 
 function formatDraft(lead, d) {
+  const chat = lead.channel === 'line' || lead.channel === 'telegram';
+  const chatName = lead.channel === 'telegram' ? 'Telegram' : 'LINE';
   const src = d.mode === 'rules' ? 'по шаблону' : 'ИИ';
   const todo = d.escalate
     ? 'Ответьте сами. Здесь нужен ваш разбор, черновик нейтральный.'
@@ -111,14 +114,14 @@ function formatDraft(lead, d) {
     '<b>Откуда:</b> ' + routeInfo(lead).from,
     lead.contact ? '<b>Кому:</b> ' + esc(lead.contact) : null,
     '<b>Куда уйдёт ответ:</b> ' + routeInfo(lead).to,
-    lead.channel === 'line' && lead.message ? '<b>Клиент написал:</b> ' + esc(String(lead.message).slice(0, 500)) : null,
+    chat && lead.message ? '<b>Клиент написал:</b> ' + esc(String(lead.message).slice(0, 500)) : null,
     '<b>Тип обращения:</b> ' + esc(INTENT_RU[d.intent] || d.intent || 'не определён'),
     '<b>Что делать:</b> ' + esc(todo),
     d.reason ? '<b>Почему такой ответ:</b> ' + esc(String(d.reason).slice(0, 500)) : null,
     '',
-    d.subject && lead.channel !== 'line' ? '<b>Тема письма</b>\n' + esc(d.subject) : null,
-    d.subject && lead.channel !== 'line' ? '' : null,
-    lead.channel === 'line' ? '<b>Текст сообщения в LINE</b>' : '<b>Текст письма</b>',
+    d.subject && !chat ? '<b>Тема письма</b>\n' + esc(d.subject) : null,
+    d.subject && !chat ? '' : null,
+    chat ? '<b>Текст сообщения в ' + chatName + '</b>' : '<b>Текст письма</b>',
     '<blockquote>' + esc(String(d.body || '').slice(0, 2600)) + '</blockquote>'
   ].filter(function (x) { return x !== null; });
   return lines.join('\n');
@@ -172,12 +175,15 @@ async function handleAction(action, id, message) {
 
   if (action === 'ok') {
     const dd = rec.draft || {};
-    const isLine = rec.lead.channel === 'line' && rec.lead.lineUserId;
+    const isTg = rec.lead.channel === 'telegram' && rec.lead.tgChatId;
+    const isLine = (rec.lead.channel === 'line' && rec.lead.lineUserId) || isTg;
+    const chName = isTg ? 'TELEGRAM' : 'LINE';
     let sentLine = false;
     let lineErr = '';
     if (isLine) {
       try {
-        await line.push(rec.lead.lineUserId, dd.body || '');
+        if (isTg) { await tg('sendMessage', { chat_id: rec.lead.tgChatId, text: String(dd.body || '').slice(0, 3500) }); }
+        else { await line.push(rec.lead.lineUserId, dd.body || ''); }
         sentLine = true;
       } catch (e) {
         lineErr = String(e.message || e).slice(0, 200);
@@ -186,10 +192,10 @@ async function handleAction(action, id, message) {
     }
     await saveJson('lead:' + id, { lead: rec.lead, draft: dd, approved: true, sent: sentLine });
     const head = isLine
-      ? (sentLine ? '<b>ПОДТВЕРЖДЕНО И ОТПРАВЛЕНО В LINE</b>' : '<b>ПОДТВЕРЖДЕНО, НО В LINE НЕ ОТПРАВИЛОСЬ</b>')
+      ? (sentLine ? '<b>ПОДТВЕРЖДЕНО И ОТПРАВЛЕНО В ' + chName + '</b>' : '<b>ПОДТВЕРЖДЕНО, НО В ' + chName + ' НЕ ОТПРАВИЛОСЬ</b>')
       : '<b>ПОДТВЕРЖДЕНО</b>';
     const tail = isLine
-      ? (sentLine ? null : 'Ошибка LINE: ' + esc(lineErr) + '\nСкопируйте текст и ответьте клиенту вручную.')
+      ? (sentLine ? null : 'Ошибка ' + chName + ': ' + esc(lineErr) + '\nСкопируйте текст и ответьте клиенту вручную.')
       : 'Отправка из бота заработает после подключения почты. Пока скопируйте текст (нажатие на блок копирует его) и отправьте вручную.';
     const txt = [
       head,
