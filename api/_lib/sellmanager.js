@@ -4,15 +4,19 @@ const { saveJson, loadJson, enabled: storeEnabled } = require('./store');
 const { tg } = require('./tg');
 const { draftFromRules } = require('./rules');
 const llm = require('./llm');
+const line = require('./line');
 
 
 function detectLang(lead) {
-  return /\/ru(\/|$)/.test(String(lead.page || '')) ? 'ru' : 'en';
+  if (/\/ru(\/|$)/.test(String(lead.page || ''))) return 'ru';
+  if (/[а-яё]/i.test(String(lead.message || ''))) return 'ru';
+  return 'en';
 }
 
 function leadToText(lead) {
   const rows = [
     ['Form', lead.label],
+    ['Channel', lead.channel === 'line' ? 'LINE chat: a short chat message, no subject line, no email greeting or formatting. Return subject as an empty string. Reply in the language of the lead message.' : ''],
     ['Name', lead.name],
     ['Contact', lead.contact],
     ['Company', lead.company],
@@ -97,13 +101,14 @@ function formatDraft(lead, d) {
     '<b>ЧЕРНОВИК ОТВЕТА</b> (' + src + ')',
     '────────────────',
     lead.contact ? '<b>Кому:</b> ' + esc(lead.contact) : null,
+    lead.channel === 'line' && lead.message ? '<b>Клиент написал:</b> ' + esc(String(lead.message).slice(0, 500)) : null,
     '<b>Тип обращения:</b> ' + esc(INTENT_RU[d.intent] || d.intent || 'не определён'),
     '<b>Что делать:</b> ' + esc(todo),
     d.reason ? '<b>Почему такой ответ:</b> ' + esc(String(d.reason).slice(0, 500)) : null,
     '',
-    d.subject ? '<b>Тема письма</b>\n' + esc(d.subject) : null,
-    d.subject ? '' : null,
-    '<b>Текст письма</b>',
+    d.subject && lead.channel !== 'line' ? '<b>Тема письма</b>\n' + esc(d.subject) : null,
+    d.subject && lead.channel !== 'line' ? '' : null,
+    lead.channel === 'line' ? '<b>Текст сообщения в LINE</b>' : '<b>Текст письма</b>',
     '<blockquote>' + esc(String(d.body || '').slice(0, 2600)) + '</blockquote>'
   ].filter(function (x) { return x !== null; });
   return lines.join('\n');
@@ -157,16 +162,34 @@ async function handleAction(action, id, message) {
 
   if (action === 'ok') {
     const dd = rec.draft || {};
-    await saveJson('lead:' + id, { lead: rec.lead, draft: dd, approved: true });
+    const isLine = rec.lead.channel === 'line' && rec.lead.lineUserId;
+    let sentLine = false;
+    let lineErr = '';
+    if (isLine) {
+      try {
+        await line.push(rec.lead.lineUserId, dd.body || '');
+        sentLine = true;
+      } catch (e) {
+        lineErr = String(e.message || e).slice(0, 200);
+        console.error('sellmanager: LINE не отправил', e);
+      }
+    }
+    await saveJson('lead:' + id, { lead: rec.lead, draft: dd, approved: true, sent: sentLine });
+    const head = isLine
+      ? (sentLine ? '<b>ПОДТВЕРЖДЕНО И ОТПРАВЛЕНО В LINE</b>' : '<b>ПОДТВЕРЖДЕНО, НО В LINE НЕ ОТПРАВИЛОСЬ</b>')
+      : '<b>ПОДТВЕРЖДЕНО</b>';
+    const tail = isLine
+      ? (sentLine ? null : 'Ошибка LINE: ' + esc(lineErr) + '\nСкопируйте текст и ответьте клиенту вручную.')
+      : 'Отправка из бота заработает после подключения почты. Пока скопируйте текст (нажатие на блок копирует его) и отправьте вручную.';
     const txt = [
-      '<b>ПОДТВЕРЖДЕНО</b>',
+      head,
       '────────────────',
       rec.lead.contact ? '<b>Кому:</b> ' + esc(rec.lead.contact) : null,
-      dd.subject ? '<b>Тема:</b> ' + esc(dd.subject) : null,
+      !isLine && dd.subject ? '<b>Тема:</b> ' + esc(dd.subject) : null,
       '',
       '<pre>' + esc(String(dd.body || '').slice(0, 3000)) + '</pre>',
-      '',
-      'Отправка из бота заработает после подключения почты. Пока скопируйте текст (нажатие на блок копирует его) и отправьте вручную.'
+      tail ? '' : null,
+      tail
     ].filter(function (x) { return x !== null; }).join('\n');
     await tg('sendMessage', { chat_id: chatId, text: txt, parse_mode: 'HTML', reply_to_message_id: message.message_id });
     return;

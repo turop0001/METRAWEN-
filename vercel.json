@@ -37,6 +37,9 @@
     },
     "api/telegram.js": {
       "maxDuration": 60
+    },
+    "api/line.js": {
+      "maxDuration": 60
     }
   }
 }
