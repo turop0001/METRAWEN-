@@ -92,6 +92,14 @@ function esc(t) {
   return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+function routeInfo(lead) {
+  const ch = lead.channel || 'site';
+  if (ch === 'line') return { from: 'LINE', to: 'в LINE клиенту, автоматически после «Подтвердить»' };
+  if (ch === 'whatsapp') return { from: 'WhatsApp', to: 'в WhatsApp клиенту (отправка пока вручную)' };
+  if (ch === 'email') return { from: 'Email', to: 'на email клиента (отправка пока вручную)' };
+  return { from: 'Сайт, форма заявки', to: 'на email клиента (отправка пока вручную, скопируйте текст после «Подтвердить»)' };
+}
+
 function formatDraft(lead, d) {
   const src = d.mode === 'rules' ? 'по шаблону' : 'ИИ';
   const todo = d.escalate
@@ -100,7 +108,9 @@ function formatDraft(lead, d) {
   const lines = [
     '<b>ЧЕРНОВИК ОТВЕТА</b> (' + src + ')',
     '────────────────',
+    '<b>Откуда:</b> ' + routeInfo(lead).from,
     lead.contact ? '<b>Кому:</b> ' + esc(lead.contact) : null,
+    '<b>Куда уйдёт ответ:</b> ' + routeInfo(lead).to,
     lead.channel === 'line' && lead.message ? '<b>Клиент написал:</b> ' + esc(String(lead.message).slice(0, 500)) : null,
     '<b>Тип обращения:</b> ' + esc(INTENT_RU[d.intent] || d.intent || 'не определён'),
     '<b>Что делать:</b> ' + esc(todo),
@@ -184,6 +194,7 @@ async function handleAction(action, id, message) {
     const txt = [
       head,
       '────────────────',
+      '<b>Откуда:</b> ' + routeInfo(rec.lead).from,
       rec.lead.contact ? '<b>Кому:</b> ' + esc(rec.lead.contact) : null,
       !isLine && dd.subject ? '<b>Тема:</b> ' + esc(dd.subject) : null,
       '',
