@@ -4,8 +4,6 @@ const line = require('./_lib/line');
 const { handleNewLead } = require('./_lib/sellmanager');
 const { saveJson, loadJson, enabled: storeEnabled } = require('./_lib/store');
 
-module.exports.config = { api: { bodyParser: false } };
-
 function readRaw(req) {
   return new Promise(function (resolve, reject) {
     const chunks = [];
@@ -37,7 +35,7 @@ async function processEvent(ev) {
   });
 }
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'POST') return res.status(200).send('ok');
   const secret = process.env.LINE_CHANNEL_SECRET;
   if (!secret) return res.status(500).json({ ok: false });
@@ -64,4 +62,7 @@ module.exports = async function handler(req, res) {
   }
   if (bg) { bg(job); } else { await job; }
   return res.status(200).json({ ok: true });
-};
+}
+
+module.exports = handler;
+module.exports.config = { api: { bodyParser: false } };
