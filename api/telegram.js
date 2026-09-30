@@ -27,13 +27,13 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
-  const m = /^(rg|sh|sk):([a-z0-9]+)$/.exec(String(cq.data || ''));
+  const m = /^(rg|sh|sk|ok):([a-z0-9]+)$/.exec(String(cq.data || ''));
   if (!m) {
     try { await tg('answerCallbackQuery', { callback_query_id: cq.id }); } catch (e) {}
     return res.status(200).json({ ok: true });
   }
 
-  try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: m[1] === 'sk' ? 'Ок' : 'Пишу новый вариант...' }); } catch (e) {}
+  try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: m[1] === 'ok' ? 'Подтверждено' : m[1] === 'sk' ? 'Ок' : 'Пишу новый вариант...' }); } catch (e) {}
 
   try {
     await handleAction(m[1], m[2], cq.message);

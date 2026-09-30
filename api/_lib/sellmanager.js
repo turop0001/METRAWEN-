@@ -69,18 +69,44 @@ function keyboard(id, mode) {
   const row = mode === 'ai'
     ? [{ text: 'Переписать', callback_data: 'rg:' + id }, { text: 'Короче', callback_data: 'sh:' + id }]
     : [{ text: 'Короче', callback_data: 'sh:' + id }];
-  return { inline_keyboard: [row, [{ text: 'Пропустить', callback_data: 'sk:' + id }]] };
+  return { inline_keyboard: [row, [{ text: 'Подтвердить', callback_data: 'ok:' + id }]] };
+}
+
+const INTENT_RU = {
+  booking: 'Запись на сессию',
+  interested: 'Интерес к услугам',
+  price_question: 'Вопрос о цене',
+  has_solution_already: 'Уже есть решение',
+  not_now: 'Пока не готов',
+  wants_proposal: 'Просит предложение',
+  decline: 'Отказ',
+  question: 'Вопрос',
+  spam_or_unclear: 'Неясное сообщение'
+};
+
+function esc(t) {
+  return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function formatDraft(lead, d) {
-  const head = [
-    'Черновик ответа' + (d.mode === 'rules' ? ' (по шаблону)' : '') + (d.escalate ? ' (ЭСКАЛАЦИЯ: нужен Дмитрий)' : ''),
-    lead.contact ? 'Кому: ' + lead.contact : null,
-    d.intent ? 'Тип: ' + d.intent : null,
-    d.reason ? 'Пояснение: ' + d.reason : null
-  ].filter(Boolean).join('\n');
-  const mail = (d.subject ? 'Тема: ' + d.subject + '\n\n' : '') + d.body;
-  return (head + '\n\n' + mail).slice(0, 3900);
+  const src = d.mode === 'rules' ? 'по шаблону' : 'ИИ';
+  const todo = d.escalate
+    ? 'Ответьте сами. Здесь нужен ваш разбор, черновик нейтральный.'
+    : 'Прочитайте текст ниже. Если всё верно, нажмите «Подтвердить».';
+  const lines = [
+    '<b>ЧЕРНОВИК ОТВЕТА</b> (' + src + ')',
+    '────────────────',
+    lead.contact ? '<b>Кому:</b> ' + esc(lead.contact) : null,
+    '<b>Тип обращения:</b> ' + esc(INTENT_RU[d.intent] || d.intent || 'не определён'),
+    '<b>Что делать:</b> ' + esc(todo),
+    d.reason ? '<b>Почему такой ответ:</b> ' + esc(String(d.reason).slice(0, 500)) : null,
+    '',
+    d.subject ? '<b>Тема письма</b>\n' + esc(d.subject) : null,
+    d.subject ? '' : null,
+    '<b>Текст письма</b>',
+    '<blockquote>' + esc(String(d.body || '').slice(0, 2600)) + '</blockquote>'
+  ].filter(function (x) { return x !== null; });
+  return lines.join('\n');
 }
 
 function newId() {
@@ -101,6 +127,7 @@ async function handleNewLead(lead) {
     await tg('sendMessage', {
       chat_id: chatId,
       text: formatDraft(lead, d),
+      parse_mode: 'HTML',
       disable_web_page_preview: true,
       reply_markup: withButtons ? keyboard(id, d.mode) : undefined
     });
@@ -128,6 +155,22 @@ async function handleAction(action, id, message) {
     await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: message.message_id, reply_markup: { inline_keyboard: [] } });
   } catch (e) { /* ничего */ }
 
+  if (action === 'ok') {
+    const dd = rec.draft || {};
+    await saveJson('lead:' + id, { lead: rec.lead, draft: dd, approved: true });
+    const txt = [
+      '<b>ПОДТВЕРЖДЕНО</b>',
+      '────────────────',
+      rec.lead.contact ? '<b>Кому:</b> ' + esc(rec.lead.contact) : null,
+      dd.subject ? '<b>Тема:</b> ' + esc(dd.subject) : null,
+      '',
+      '<pre>' + esc(String(dd.body || '').slice(0, 3000)) + '</pre>',
+      '',
+      'Отправка из бота заработает после подключения почты. Пока скопируйте текст (нажатие на блок копирует его) и отправьте вручную.'
+    ].filter(function (x) { return x !== null; }).join('\n');
+    await tg('sendMessage', { chat_id: chatId, text: txt, parse_mode: 'HTML', reply_to_message_id: message.message_id });
+    return;
+  }
   if (action === 'sk') {
     await tg('sendMessage', { chat_id: chatId, text: 'Пропущено.', reply_to_message_id: message.message_id });
     return;
@@ -138,6 +181,7 @@ async function handleAction(action, id, message) {
   await tg('sendMessage', {
     chat_id: chatId,
     text: formatDraft(rec.lead, d),
+    parse_mode: 'HTML',
     disable_web_page_preview: true,
     reply_markup: keyboard(id, d.mode)
   });
