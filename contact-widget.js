@@ -43,16 +43,16 @@
     t.type = 'button'; t.className = 'mw-toggle';
     t.setAttribute('aria-label', ru ? 'Написать нам' : 'Contact us'); t.setAttribute('aria-expanded', 'false');
     t.innerHTML = icon;
+    var tOpen = 0, y0 = window.pageYOffset;
     function close() { box.classList.remove('open'); t.setAttribute('aria-expanded', 'false'); }
     t.addEventListener('click', function (e) {
       e.stopPropagation();
-      var o = box.classList.toggle('open');
+      var o = box.classList.toggle('open'); tOpen = Date.now(); y0 = window.pageYOffset;
       t.setAttribute('aria-expanded', o ? 'true' : 'false');
     });
     document.addEventListener('click', close);
-    var y0 = window.pageYOffset;
     window.addEventListener('scroll', function () {
-      if (box.classList.contains('open') && Math.abs(window.pageYOffset - y0) > 8) close();
+      if (box.classList.contains('open') && Date.now() - tOpen > 500 && Math.abs(window.pageYOffset - y0) > 8) close();
       y0 = window.pageYOffset;
     }, { passive: true });
     box.appendChild(t);
