@@ -14,12 +14,11 @@
       '.mw-contact a:hover,.mw-contact a:focus-visible{background:#D9BC86;border-color:#D9BC86;transform:translateY(-1px)}' +
       '.mw-toggle{display:none}' +
       '@media (max-width:768px){' +
-        '.mw-contact{right:12px;bottom:12px;gap:6px}' +
+        '.mw-contact{right:12px;bottom:calc(74px + env(safe-area-inset-bottom,0px));gap:6px}' +
         '.mw-contact a,.mw-toggle{opacity:.5;transition:opacity .25s,background .25s}' +
         '.mw-contact a:active,.mw-contact.open a,.mw-contact.open .mw-toggle{opacity:1}' +
         '.mw-contact a{padding:10px 13px;font-size:13px;box-shadow:0 6px 18px -10px rgba(0,0,0,.6)}' +
-        '.mw-contact.single a{width:40px;height:40px;padding:0;justify-content:center}.mw-contact.single a span{display:none}' +
-        '.mw-contact.multi a{display:none}.mw-contact.multi.open a{display:inline-flex}' +
+                '.mw-contact.multi a{display:none}.mw-contact.multi.open a{display:inline-flex}' +
         '.mw-toggle{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border-radius:50%;background:#C4A165;color:#151411;border:1px solid #C4A165;cursor:pointer;box-shadow:0 6px 18px -10px rgba(0,0,0,.6)}' +
       '}' +
       'html,body{overflow-x:clip;overscroll-behavior-x:none}' +
@@ -39,23 +38,24 @@
       a.lastChild.textContent = it.label;
       box.appendChild(a);
     });
-    if (items.length > 1) {
-      box.className += ' multi';
-      var t = document.createElement('button');
-      t.type = 'button'; t.className = 'mw-toggle';
-      t.setAttribute('aria-label', 'Contact us'); t.setAttribute('aria-expanded', 'false');
-      t.innerHTML = icon;
-      t.addEventListener('click', function (e) {
-        e.stopPropagation();
-        var o = box.classList.toggle('open');
-        t.setAttribute('aria-expanded', o ? 'true' : 'false');
-      });
-      document.addEventListener('click', function () { box.classList.remove('open'); t.setAttribute('aria-expanded', 'false'); });
-      box.appendChild(t);
-    } else {
-      box.className += ' single';
-      box.firstChild.setAttribute('aria-label', items[0].label);
-    }
+    box.className += ' multi';
+    var t = document.createElement('button');
+    t.type = 'button'; t.className = 'mw-toggle';
+    t.setAttribute('aria-label', ru ? 'Написать нам' : 'Contact us'); t.setAttribute('aria-expanded', 'false');
+    t.innerHTML = icon;
+    function close() { box.classList.remove('open'); t.setAttribute('aria-expanded', 'false'); }
+    t.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var o = box.classList.toggle('open');
+      t.setAttribute('aria-expanded', o ? 'true' : 'false');
+    });
+    document.addEventListener('click', close);
+    var y0 = window.pageYOffset;
+    window.addEventListener('scroll', function () {
+      if (box.classList.contains('open') && Math.abs(window.pageYOffset - y0) > 8) close();
+      y0 = window.pageYOffset;
+    }, { passive: true });
+    box.appendChild(t);
     document.body.appendChild(box);
   } catch (e) { /* ничего */ }
 })();
