@@ -16,7 +16,7 @@ function detectLang(lead) {
 function leadToText(lead) {
   const rows = [
     ['Form', lead.label],
-    ['Channel', (lead.channel === 'line' || lead.channel === 'telegram') ? (lead.channel === 'line' ? 'LINE' : 'Telegram') + ' chat: a short chat message, no subject line, no email greeting or formatting. Return subject as an empty string. Reply in the language of the lead message.' : ''],
+    ['Channel', (lead.channel === 'line' || lead.channel === 'telegram' || lead.channel === 'whatsapp') ? (lead.channel === 'line' ? 'LINE' : lead.channel === 'whatsapp' ? 'WhatsApp' : 'Telegram') + ' chat: a short chat message, no subject line, no email greeting or formatting. Return subject as an empty string. Reply in the language of the lead message.' : ''],
     ['Client name (this is the client, NOT Dmitry)', lead.name],
     ['Contact', lead.contact],
     ['Company', lead.company],
@@ -96,14 +96,14 @@ function routeInfo(lead) {
   const ch = lead.channel || 'site';
   if (ch === 'line') return { from: 'LINE', to: 'в LINE клиенту, автоматически после «Подтвердить»' };
   if (ch === 'telegram') return { from: 'Telegram (бот)', to: 'в Telegram клиенту, автоматически после «Подтвердить»' };
-  if (ch === 'whatsapp') return { from: 'WhatsApp', to: 'в WhatsApp клиенту (отправка пока вручную)' };
+  if (ch === 'whatsapp') return { from: 'WhatsApp', to: 'в WhatsApp клиенту, автоматически после «Подтвердить»' };
   if (ch === 'email') return { from: 'Email', to: 'на email клиента (отправка пока вручную)' };
   return { from: 'Сайт, форма заявки', to: 'на email клиента (отправка пока вручную, скопируйте текст после «Подтвердить»)' };
 }
 
 function formatDraft(lead, d) {
-  const chat = lead.channel === 'line' || lead.channel === 'telegram';
-  const chatName = lead.channel === 'telegram' ? 'Telegram' : 'LINE';
+  const chat = lead.channel === 'line' || lead.channel === 'telegram' || lead.channel === 'whatsapp';
+  const chatName = lead.channel === 'telegram' ? 'Telegram' : lead.channel === 'whatsapp' ? 'WhatsApp' : 'LINE';
   const src = d.mode === 'rules' ? 'по шаблону' : 'ИИ';
   const todo = d.escalate
     ? 'Ответьте сами. Здесь нужен ваш разбор, черновик нейтральный.'
@@ -176,13 +176,15 @@ async function handleAction(action, id, message) {
   if (action === 'ok') {
     const dd = rec.draft || {};
     const isTg = rec.lead.channel === 'telegram' && rec.lead.tgChatId;
-    const isLine = (rec.lead.channel === 'line' && rec.lead.lineUserId) || isTg;
-    const chName = isTg ? 'TELEGRAM' : 'LINE';
+    const isWa = rec.lead.channel === 'whatsapp' && rec.lead.waId;
+    const isLine = (rec.lead.channel === 'line' && rec.lead.lineUserId) || isTg || isWa;
+    const chName = isTg ? 'TELEGRAM' : isWa ? 'WHATSAPP' : 'LINE';
     let sentLine = false;
     let lineErr = '';
     if (isLine) {
       try {
         if (isTg) { await tg('sendMessage', { chat_id: rec.lead.tgChatId, text: String(dd.body || '').slice(0, 3500) }); }
+        else if (isWa) { await require('./whatsapp').send(rec.lead.waId, dd.body || ''); }
         else { await line.push(rec.lead.lineUserId, dd.body || ''); }
         sentLine = true;
       } catch (e) {
