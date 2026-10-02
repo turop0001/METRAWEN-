@@ -2,6 +2,7 @@
 // Sell Manager присылает Дмитрию черновик в Telegram. Клиенту ничего не уходит без нажатия «Подтвердить».
 const wa = require('./_lib/whatsapp');
 const { handleNewLead } = require('./_lib/sellmanager');
+const { tg } = require('./_lib/tg');
 const { saveJson, loadJson, enabled: storeEnabled } = require('./_lib/store');
 
 function readRaw(req) {
@@ -61,6 +62,12 @@ async function handler(req, res) {
       const v = ch.value || {};
       const names = {};
       (v.contacts || []).forEach(function (c) { if (c.wa_id) names[c.wa_id] = (c.profile && c.profile.name) || ''; });
+      (v.statuses || []).forEach(function (st) {
+        if (st.status !== 'failed') return;
+        const er = (st.errors && st.errors[0]) || {};
+        const msg = 'WhatsApp НЕ ДОСТАВИЛ сообщение клиенту +' + (st.recipient_id || '?') + '\nКод ' + (er.code || '?') + ': ' + String(er.title || '') + ' ' + String((er.error_data && er.error_data.details) || er.message || '').slice(0, 300);
+        jobs.push(tg('sendMessage', { chat_id: process.env.TELEGRAM_CHAT_ID, text: msg }).catch(function (e) { console.error('whatsapp: статус не отправлен', e); }));
+      });
       (v.messages || []).forEach(function (m) {
         jobs.push(processMessage(m, names).catch(function (e) { console.error('whatsapp: сообщение не обработано', e); }));
       });
