@@ -35,6 +35,25 @@ async function processMessage(m, names) {
   });
 }
 
+
+// Недоставка: сообщаем в Telegram причину и даём кнопку «ответить вручную» (wa.me с готовым текстом).
+async function notifyFailed(st) {
+  const er = (st.errors && st.errors[0]) || {};
+  const to = String(st.recipient_id || '');
+  let keep = null;
+  if (storeEnabled()) {
+    keep = (st.id && await loadJson('wa:out:' + st.id)) || (to && await loadJson('wa:last:' + to)) || null;
+  }
+  let msg = 'WhatsApp НЕ ДОСТАВИЛ сообщение клиенту +' + (to || '?') + '\nКод ' + (er.code || '?') + ': ' + String(er.title || '') + ' ' + String((er.error_data && er.error_data.details) || er.message || '').slice(0, 300);
+  const payload = { chat_id: process.env.TELEGRAM_CHAT_ID, text: msg };
+  if (keep && keep.body) {
+    payload.text = msg + '\n\nТекст ответа (можно скопировать):\n' + keep.body.slice(0, 3000);
+    const link = 'https://wa.me/' + to + '?text=' + encodeURIComponent(keep.body.slice(0, 1200));
+    payload.reply_markup = { inline_keyboard: [[{ text: 'Ответить вручную в WhatsApp', url: link }]] };
+  }
+  await tg('sendMessage', payload);
+}
+
 async function handler(req, res) {
   // Проверка адреса при подключении webhook в Meta
   if (req.method === 'GET') {
@@ -64,9 +83,7 @@ async function handler(req, res) {
       (v.contacts || []).forEach(function (c) { if (c.wa_id) names[c.wa_id] = (c.profile && c.profile.name) || ''; });
       (v.statuses || []).forEach(function (st) {
         if (st.status !== 'failed') return;
-        const er = (st.errors && st.errors[0]) || {};
-        const msg = 'WhatsApp НЕ ДОСТАВИЛ сообщение клиенту +' + (st.recipient_id || '?') + '\nКод ' + (er.code || '?') + ': ' + String(er.title || '') + ' ' + String((er.error_data && er.error_data.details) || er.message || '').slice(0, 300);
-        jobs.push(tg('sendMessage', { chat_id: process.env.TELEGRAM_CHAT_ID, text: msg }).catch(function (e) { console.error('whatsapp: статус не отправлен', e); }));
+        jobs.push(notifyFailed(st).catch(function (e) { console.error('whatsapp: статус не отправлен', e); }));
       });
       (v.messages || []).forEach(function (m) {
         jobs.push(processMessage(m, names).catch(function (e) { console.error('whatsapp: сообщение не обработано', e); }));

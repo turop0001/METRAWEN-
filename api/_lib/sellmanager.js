@@ -189,7 +189,16 @@ async function handleAction(action, id, message) {
     if (isLine) {
       try {
         if (isTg) { await tg('sendMessage', { chat_id: rec.lead.tgChatId, text: String(dd.body || '').slice(0, 3500) }); }
-        else if (isWa) { await require('./whatsapp').send(rec.lead.waId, dd.body || ''); }
+        else if (isWa) {
+          const wr = await require('./whatsapp').send(rec.lead.waId, dd.body || '');
+          // запоминаем текст, чтобы при недоставке дать ссылку на ручную отправку
+          try {
+            const wid = wr && wr.messages && wr.messages[0] && wr.messages[0].id;
+            const keep = { to: rec.lead.waId, body: String(dd.body || '') };
+            if (wid) await saveJson('wa:out:' + wid, keep, 60 * 60 * 24 * 7);
+            await saveJson('wa:last:' + rec.lead.waId, keep, 60 * 60 * 24 * 7);
+          } catch (e2) { console.error('sellmanager: не сохранил ответ WA', e2); }
+        }
         else { await line.push(rec.lead.lineUserId, dd.body || ''); }
         sentLine = true;
       } catch (e) {
