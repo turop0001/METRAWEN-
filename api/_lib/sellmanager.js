@@ -5,6 +5,7 @@ const { tg } = require('./tg');
 const { draftFromRules } = require('./rules');
 const llm = require('./llm');
 const line = require('./line');
+const crm = require('./crm');
 
 
 function detectLang(lead) {
@@ -134,8 +135,10 @@ function newId() {
 // Вызывается из api/lead.js после того, как заявка отправлена в Telegram.
 async function handleNewLead(lead) {
   const chatId = process.env.TELEGRAM_CHAT_ID;
+  let crmIntent = '';
   try {
     const d = await generateDraft(lead, 'new', null);
+    crmIntent = INTENT_RU[d.intent] || d.intent || '';
     const id = newId();
     let withButtons = false;
     if (storeEnabled()) {
@@ -158,6 +161,8 @@ async function handleNewLead(lead) {
       });
     } catch (e) { /* ничего */ }
   }
+  // CRM: сохраняем сообщение клиента в Notion (если задан NOTION_TOKEN)
+  await crm.logIncoming(lead, crmIntent);
 }
 
 // Вызывается из api/telegram.js при нажатии кнопок.
@@ -193,6 +198,7 @@ async function handleAction(action, id, message) {
       }
     }
     await saveJson('lead:' + id, { lead: rec.lead, draft: dd, approved: true, sent: sentLine });
+    await crm.logReply(rec.lead, dd.body || '', isLine ? sentLine : false);
     const head = isLine
       ? (sentLine ? '<b>ПОДТВЕРЖДЕНО И ОТПРАВЛЕНО В ' + chName + '</b>' : '<b>ПОДТВЕРЖДЕНО, НО В ' + chName + ' НЕ ОТПРАВИЛОСЬ</b>')
       : '<b>ПОДТВЕРЖДЕНО</b>';
