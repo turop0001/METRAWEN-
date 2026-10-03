@@ -7,7 +7,7 @@
       { href: 'https://t.me/Metrawen_bot?start=site', label: 'Написать в Telegram', id: 'tg' }
     ] : [
       { href: 'https://line.me/R/ti/p/%40179hddny', label: 'Message us on LINE', id: 'line' },
-      { href: 'https://wa.me/66985955242', label: 'Message us on WhatsApp', id: 'wa' }
+      { href: 'https://wa.me/66810961901', label: 'Message us on WhatsApp', id: 'wa' }
     ];
     var css = '.mw-contact{position:fixed;right:16px;bottom:16px;z-index:900;display:flex;flex-direction:column;gap:8px;align-items:flex-end}' +
       '.mw-contact a{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:999px;background:#C4A165;color:#151411;font:600 14px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;text-decoration:none;border:1px solid #C4A165;box-shadow:0 10px 30px -12px rgba(0,0,0,.6);transition:background .25s,transform .25s}' +
