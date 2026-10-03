@@ -49,18 +49,8 @@ module.exports = async function handler(req, res) {
   const name = clean(body.name, 80) || chat.name || '';
   const contact = clean(body.contact, 120) || chat.contact || '';
   const history = chat.msgs.slice(-8).map(function (m) { return (m.r === 'c' ? 'Client: ' : 'METRAWEN: ') + m.t; }).join('\n');
-  const first = chat.msgs.length === 0;
 
   chat.msgs.push({ r: 'c', t: message, ts: Date.now() });
-  if (first) {
-    chat.msgs.push({
-      r: 'a',
-      t: lang === 'ru'
-        ? 'Спасибо, мы получили ваше сообщение. Ответим в течение часа в рабочее время.'
-        : 'Thanks, we have received your message. We will reply within an hour during business hours.',
-      ts: Date.now()
-    });
-  }
   chat.name = name; chat.contact = contact;
   chat.msgs = chat.msgs.slice(-MAX_HISTORY);
   await saveJson('chat:' + sid, chat, TTL);

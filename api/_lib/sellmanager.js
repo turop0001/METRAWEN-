@@ -24,6 +24,7 @@ function leadToText(lead) {
     ['Company', lead.company],
     ['Industry', lead.industry],
     ['Chosen slot', lead.slot],
+    ['Style', lead.channel === 'chat' ? 'Live website chat. Short and warm, 1-4 sentences, plain text. No signature, no sign-off line, no subject.' : ''],
     ['Earlier messages in this chat', lead.history],
     ['Message', lead.message],
     ['Page', lead.page],
@@ -135,8 +136,71 @@ function newId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 
+
+function stripSign(body) {
+  return String(body || '').replace(/\n+\s*(METRAWEN team|Команда METRAWEN)\s*$/i, '').trim();
+}
+
+async function pushChat(sid, text) {
+  const key = 'chat:' + sid;
+  const cc = (await loadJson(key)) || { msgs: [] };
+  cc.msgs.push({ r: 't', t: String(text || '').slice(0, 3500), ts: Date.now() });
+  cc.msgs = cc.msgs.slice(-80);
+  await saveJson(key, cc, 60 * 60 * 24 * 3);
+}
+
+// Чат на сайте: ответ уходит клиенту сразу, без подтверждения. Исключение: сложные вопросы (договор, счёт, юридическое).
+async function handleChatLead(lead) {
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  let crmIntent = '';
+  let autoReply = null;
+  try {
+    const d = await generateDraft(lead, 'new', null);
+    d.body = stripSign(d.body);
+    crmIntent = INTENT_RU[d.intent] || d.intent || '';
+    const id = newId();
+    if (d.escalate) {
+      await saveJson('lead:' + id, { lead, draft: d });
+      const hold = lead.chatLang === 'ru'
+        ? 'Передали ваш вопрос специалисту. Он ответит прямо здесь, в чате.'
+        : 'We have passed your question to a specialist. They will reply right here in the chat.';
+      await pushChat(lead.chatSid, hold);
+      await tg('sendMessage', {
+        chat_id: chatId,
+        text: '<b>ЧАТ НА САЙТЕ: нужен ваш ответ</b>\nКлиенту отправлено только уведомление, что вопрос передан специалисту.\n\n' + formatDraft(lead, d),
+        parse_mode: 'HTML',
+        disable_web_page_preview: true,
+        reply_markup: keyboard(id, d.mode)
+      });
+    } else {
+      await pushChat(lead.chatSid, d.body);
+      await saveJson('lead:' + id, { lead, draft: d, approved: true, sent: true });
+      autoReply = d.body;
+      const txt = [
+        '<b>ОТВЕТ ОТПРАВЛЕН В ЧАТ САЙТА БЕЗ ПОДТВЕРЖДЕНИЯ</b>',
+        '────────────────',
+        lead.contact ? '<b>Клиент:</b> ' + esc(lead.contact) : null,
+        '<b>Написал:</b> ' + esc(String(lead.message || '').slice(0, 600)),
+        '<b>Тип обращения:</b> ' + esc(crmIntent || 'не определён'),
+        '',
+        '<b>Что ушло клиенту</b>',
+        '<blockquote>' + esc(String(d.body || '').slice(0, 2600)) + '</blockquote>'
+      ].filter(function (x) { return x !== null; }).join('\n');
+      await tg('sendMessage', { chat_id: chatId, text: txt, parse_mode: 'HTML', disable_web_page_preview: true });
+    }
+  } catch (err) {
+    console.error('sellmanager: чат не обработан', err);
+    try {
+      await tg('sendMessage', { chat_id: chatId, text: 'Чат на сайте: ответ не получился (' + String(err.message || err).slice(0, 200) + '). Клиент ждёт в чате, ответьте вручную: ' + String(lead.contact || '') + '\nВопрос: ' + String(lead.message || '').slice(0, 500) });
+    } catch (e) { /* ничего */ }
+  }
+  await crm.logIncoming(lead, crmIntent);
+  if (autoReply) await crm.logReply(lead, autoReply, true);
+}
+
 // Вызывается из api/lead.js после того, как заявка отправлена в Telegram.
 async function handleNewLead(lead) {
+  if (lead.channel === 'chat' && lead.chatSid && storeEnabled()) return handleChatLead(lead);
   const chatId = process.env.TELEGRAM_CHAT_ID;
   let crmIntent = '';
   try {
