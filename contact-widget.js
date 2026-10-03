@@ -22,7 +22,7 @@
       { href: 'https://t.me/Metrawen_bot?start=site', label: 'Написать в Telegram', id: 'tg' }
     ] : [
       { href: 'https://line.me/R/ti/p/%40179hddny', label: 'Message us on LINE', id: 'line' },
-      { href: 'https://wa.me/66810961901', label: 'Message us on WhatsApp', id: 'wa' }
+      { href: 'https://wa.me/66985955242', label: 'Message us on WhatsApp', id: 'wa' }
     ];
     items.unshift({ href: '#', label: T.chatItem, id: 'chat' });
 
@@ -32,6 +32,7 @@
       '.mw-list a{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:999px;background:#C4A165;color:#151411;font:600 14px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;text-decoration:none;border:1px solid #C4A165;box-shadow:0 10px 30px -12px rgba(0,0,0,.6);transition:background .25s,transform .25s}' +
       '.mw-list a:hover,.mw-list a:focus-visible{background:#D9BC86;border-color:#D9BC86;transform:translateY(-1px)}' +
       '.mw-toggle{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:68px;height:68px;padding:0;border-radius:50%;background:#C4A165;color:#151411;border:1px solid #D9BC86;cursor:pointer;box-shadow:0 10px 30px -12px rgba(0,0,0,.7);font:700 10px/1.1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;text-align:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:background .25s,transform .25s}' +
+      '@media (min-width:769px){.mw-toggle{opacity:.78}.mw-toggle:hover,.mw-contact.open .mw-toggle{opacity:1}}' +
       '.mw-toggle:hover{background:#D9BC86}' +
       '.mw-lbl{display:block;max-width:56px}' +
       '.mw-cl{display:none;font-size:30px;line-height:1;font-weight:400}' +
@@ -39,15 +40,15 @@
       '.mw-contact.open .mw-toggle .mw-cl{display:block}' +
       'body.mw-chat-open .mw-contact{display:none}' +
       '@media (min-width:769px){body.mw-lift .mw-contact{bottom:100px}body.mw-lift .mwc{bottom:100px;height:min(500px,calc(100vh - 116px))}}' +
-      '@media (max-width:768px){.mw-contact{right:12px;bottom:calc(74px + env(safe-area-inset-bottom,0px))}.mw-toggle{width:62px;height:62px;opacity:.92}.mw-list a{padding:10px 13px;font-size:13px}}' +
+      '@media (max-width:768px){.mw-contact{right:12px;bottom:calc(74px + env(safe-area-inset-bottom,0px))}.mw-toggle{width:44px;height:44px;opacity:.55;transition:opacity .25s,background .25s}.mw-toggle .mw-lbl{display:none}.mw-toggle svg{width:20px;height:20px}.mw-contact.open .mw-toggle,.mw-toggle:active{opacity:1}.mw-cl{font-size:26px}.mw-list a{padding:10px 13px;font-size:13px;opacity:.92}}' +
       /* чат */
       '.mwc{position:fixed;right:16px;bottom:16px;z-index:950;width:min(370px,calc(100vw - 24px));height:min(500px,calc(100vh - 32px));display:none;flex-direction:column;background:#151411;color:#f2ede4;border:1px solid #C4A165;border-radius:18px;box-shadow:0 20px 50px -18px rgba(0,0,0,.8);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden}' +
       '.mwc-h{display:flex;align-items:center;gap:11px;padding:11px 12px;background:#1d1b17;border-bottom:1px solid rgba(196,161,101,.35)}' +
       '.mwc-av{position:relative;flex:none;width:42px;height:42px}' +
-      '.mwc-av img{width:42px;height:42px;border-radius:50%;display:block;background:#C4A165}' +
-      '.mwc-av i{position:absolute;right:-1px;bottom:-1px;width:11px;height:11px;border-radius:50%;background:#3ccf7a;border:2px solid #1d1b17}' +
+      '.mwc-av img{width:42px;height:42px;border-radius:50%;display:block;object-fit:cover}' +
+      '.mwc-av i{position:absolute;right:-1px;bottom:-1px;width:11px;height:11px;border-radius:50%;background:#9FBF78;border:2px solid #1d1b17}' +
       '.mwc-ht{flex:1;min-width:0}.mwc-ht b{display:block;color:#f2ede4;font-size:15px;line-height:1.2}' +
-      '.mwc-ht span{display:flex;align-items:center;gap:6px;font-size:12px;color:#3ccf7a}' +
+      '.mwc-ht span{display:flex;align-items:center;gap:6px;font-size:12px;color:#A9BC85}' +
       '.mwc-ht span em{font-style:normal;color:#b9b2a5}' +
       '.mwc-x{background:none;border:0;color:#C4A165;font-size:26px;line-height:1;cursor:pointer;padding:4px 8px}' +
       '.mwc-l{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px;display:flex;flex-direction:column;gap:8px}' +
@@ -55,7 +56,7 @@
       '.mwc-me{align-self:flex-end;background:#C4A165;color:#151411;border-bottom-right-radius:4px}' +
       '.mwc-them{align-self:flex-start;background:#26231e;border-bottom-left-radius:4px}' +
       '.mwc-sys{align-self:center;text-align:center;font-size:12px;color:#b9b2a5;padding:2px 8px}' +
-      '.mwc-sys.ok{color:#3ccf7a}' +
+      '.mwc-sys.ok{color:#A9BC85}' +
       '.mwc-dots span{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:50%;background:#C4A165;animation:mwb 1.2s infinite}' +
       '.mwc-dots span:nth-child(2){animation-delay:.15s}.mwc-dots span:nth-child(3){animation-delay:.3s}' +
       '@keyframes mwb{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}' +
@@ -122,12 +123,8 @@
       catch (e) { for (var j = 0; j < 20; j++) a += c[Math.floor(Math.random() * c.length)]; }
       return a;
     }
-    function svgUri(s) { return 'data:image/svg+xml;utf8,' + encodeURIComponent(s); }
-    var AV_BASE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E3CB9A"/><stop offset="1" stop-color="#A98A52"/></linearGradient></defs><rect width="64" height="64" fill="url(#g)"/>';
-    var AV_BRAND = svgUri(AV_BASE + '<text x="32" y="43" text-anchor="middle" font-family="Georgia,serif" font-size="34" fill="#151411">M</text></svg>');
-    var AV_PERSON = svgUri(ru
-      ? AV_BASE + '<circle cx="32" cy="12" r="6" fill="#151411"/><path d="M19 28c0-9 6-14 13-14s13 5 13 14c0 3-1 5-2 7H21c-1-2-2-4-2-7z" fill="#151411"/><circle cx="32" cy="29" r="9.5" fill="#F1D9B8"/><path d="M12 64c1-13 10-20 20-20s19 7 20 20z" fill="#151411"/></svg>'
-      : AV_BASE + '<path d="M18 30c0-11 6-17 14-17s14 6 14 17v16c-3-3-4-6-6-9H24c-2 3-3 6-6 9z" fill="#151411"/><circle cx="32" cy="29" r="9.5" fill="#F1D9B8"/><path d="M12 64c1-13 10-20 20-20s19 7 20 20z" fill="#151411"/></svg>');
+    var AV_BRAND = '/chat-logo.png';
+    var AV_PERSON = ru ? '/chat-ru.jpg' : '/chat-en.jpg';
 
     function el(tag, cls, text) { var d = document.createElement(tag); if (cls) d.className = cls; if (text != null) d.textContent = text; return d; }
     function countRole(r) { var n = 0; for (var i = 0; i < msgs.length; i++) if (msgs[i].r === r) n++; return n; }
@@ -195,7 +192,7 @@
       var h = el('div', 'mwc-h');
       var av = el('div', 'mwc-av'); hdrImg = document.createElement('img'); hdrImg.alt = ''; av.appendChild(hdrImg); av.appendChild(document.createElement('i'));
       var ht = el('div', 'mwc-ht'); hdrTitle = el('b'); hdrSub = el('div'); hdrSub.className = 'mwc-sub';
-      hdrSub.style.cssText = 'font-size:12px;color:#3ccf7a';
+      hdrSub.style.cssText = 'font-size:12px;color:#A9BC85';
       ht.appendChild(hdrTitle); ht.appendChild(hdrSub);
       var x = el('button', 'mwc-x', '×'); x.type = 'button'; x.setAttribute('aria-label', T.close);
       x.addEventListener('click', closeChat);
