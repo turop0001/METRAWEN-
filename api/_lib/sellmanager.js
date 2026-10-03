@@ -25,7 +25,9 @@ function leadToText(lead) {
     ['Industry', lead.industry],
     ['Chosen slot', lead.slot],
     ['Style', lead.channel === 'chat' ? 'Live website chat. Short and warm, 1-4 sentences, plain text. No signature, no sign-off line, no subject.' : ''],
-    ['Earlier messages in this chat', lead.history],
+    ['Your name in this conversation', detectLang(lead) === 'ru' ? 'Елена (менеджер METRAWEN)' : 'Nicole (METRAWEN manager)'],
+    ['Conversation stage', lead.firstContact ? 'FIRST message from this person: greet and introduce yourself once.' : 'Ongoing conversation: do not introduce yourself again.'],
+    ['Earlier messages in this conversation', lead.history],
     ['Message', lead.message],
     ['Page', lead.page],
     ['Page language', detectLang(lead)]
@@ -54,6 +56,8 @@ async function callModel(lead, mode, previous) {
     intent: String(j.intent || ''),
     escalate: !!j.escalate,
     reason: String(j.reason || ''),
+    stage: String(j.stage || ''),
+    summary: String(j.summary || ''),
     subject: String(j.subject || ''),
     body: String(j.body || '')
   };
@@ -121,6 +125,8 @@ function formatDraft(lead, d) {
     '<b>Куда уйдёт ответ:</b> ' + routeInfo(lead).to,
     chat && lead.message ? '<b>Клиент написал:</b> ' + esc(String(lead.message).slice(0, 500)) : null,
     '<b>Тип обращения:</b> ' + esc(INTENT_RU[d.intent] || d.intent || 'не определён'),
+    d.stage === 'hot' ? '<b>🔥 ГОРЯЧИЙ КЛИЕНТ</b>, готов двигаться' : null,
+    d.summary ? '<b>Что известно:</b> ' + esc(String(d.summary).slice(0, 400)) : null,
     '<b>Что делать:</b> ' + esc(todo),
     d.reason ? '<b>Почему такой ответ:</b> ' + esc(String(d.reason).slice(0, 500)) : null,
     '',
@@ -137,8 +143,59 @@ function newId() {
 }
 
 
+
+function convKey(lead) {
+  if (lead.chatSid) return 'chat:' + lead.chatSid;
+  if (lead.waId) return 'wa:' + lead.waId;
+  if (lead.tgChatId) return 'tg:' + lead.tgChatId;
+  if (lead.lineUserId) return 'line:' + lead.lineUserId;
+  return 'site:' + String(lead.contact || lead.name || '').toLowerCase().slice(0, 120);
+}
+
+// История диалога для живого общения: первое ли это сообщение и что было раньше.
+async function prepContext(lead) {
+  if (!storeEnabled()) { lead.firstContact = !lead.history; return; }
+  try {
+    const key = 'hist:' + convKey(lead);
+    const h = (await loadJson(key)) || [];
+    lead.firstContact = h.length === 0 && !lead.history;
+    if (!lead.history && h.length) {
+      lead.history = h.slice(-10).map(function (m) { return (m.r === 'c' ? 'Client: ' : 'You: ') + m.t; }).join('\n');
+    }
+    h.push({ r: 'c', t: String(lead.message || '').slice(0, 1500) });
+    await saveJson(key, h.slice(-30), 60 * 60 * 24 * 90);
+  } catch (e) { lead.firstContact = !lead.history; }
+}
+
+async function rememberReply(lead, text) {
+  if (!storeEnabled() || !text) return;
+  try {
+    const key = 'hist:' + convKey(lead);
+    const h = (await loadJson(key)) || [];
+    h.push({ r: 't', t: String(text).slice(0, 1500) });
+    await saveJson(key, h.slice(-30), 60 * 60 * 24 * 90);
+  } catch (e) { /* ничего */ }
+}
+
+// Если Елена пообещала смету, сразу готовим черновик КП и присылаем ссылку на редактор.
+async function maybeDraftKp(lead, d) {
+  try {
+    if (!d || d.intent !== 'wants_proposal' || !llm.enabled() || !storeEnabled()) return;
+    const flag = 'kpdraft:' + convKey(lead);
+    if (await loadJson(flag)) return;
+    await saveJson(flag, 1, 60 * 60 * 24);
+    const K = require('./kp');
+    const kp = await K.draftFromConversation(lead, detectLang(lead));
+    await tg('sendMessage', {
+      chat_id: process.env.TELEGRAM_CHAT_ID,
+      text: '📄 <b>Черновик КП готов</b>\n' + esc(kp.title || '') + (kp.client.name ? ' · ' + esc(kp.client.name) : '') + '\nПроверьте цены, добавьте ссылку на оплату и опубликуйте:\n' + K.adminUrl(kp.id),
+      parse_mode: 'HTML', disable_web_page_preview: true
+    });
+  } catch (e) { console.error('sellmanager: черновик КП не получился', e); }
+}
+
 function stripSign(body) {
-  return String(body || '').replace(/\n+\s*(METRAWEN team|Команда METRAWEN)\s*$/i, '').trim();
+  return String(body || '').replace(/\n+\s*(METRAWEN team|Команда METRAWEN|Елена|Nicole)[^\n]{0,40}\s*$/i, '').trim();
 }
 
 async function pushChat(sid, text) {
@@ -151,11 +208,14 @@ async function pushChat(sid, text) {
 
 // Чат на сайте: ответ уходит клиенту сразу, без подтверждения. Исключение: сложные вопросы (договор, счёт, юридическое).
 async function handleChatLead(lead) {
+  await prepContext(lead);
   const chatId = process.env.TELEGRAM_CHAT_ID;
   let crmIntent = '';
+  let lastChatDraft = null;
   let autoReply = null;
   try {
     const d = await generateDraft(lead, 'new', null);
+    lastChatDraft = d;
     d.body = stripSign(d.body);
     crmIntent = INTENT_RU[d.intent] || d.intent || '';
     const id = newId();
@@ -174,6 +234,7 @@ async function handleChatLead(lead) {
       });
     } else {
       await pushChat(lead.chatSid, d.body);
+      await rememberReply(lead, d.body);
       await saveJson('lead:' + id, { lead, draft: d, approved: true, sent: true });
       autoReply = d.body;
       const txt = [
@@ -182,6 +243,8 @@ async function handleChatLead(lead) {
         lead.contact ? '<b>Клиент:</b> ' + esc(lead.contact) : null,
         '<b>Написал:</b> ' + esc(String(lead.message || '').slice(0, 600)),
         '<b>Тип обращения:</b> ' + esc(crmIntent || 'не определён'),
+        d.stage === 'hot' ? '<b>🔥 ГОРЯЧИЙ КЛИЕНТ</b>, готов двигаться. Подключитесь.' : null,
+        d.summary ? '<b>Что известно:</b> ' + esc(String(d.summary).slice(0, 400)) : null,
         '',
         '<b>Что ушло клиенту</b>',
         '<blockquote>' + esc(String(d.body || '').slice(0, 2600)) + '</blockquote>'
@@ -196,15 +259,19 @@ async function handleChatLead(lead) {
   }
   await crm.logIncoming(lead, crmIntent);
   if (autoReply) await crm.logReply(lead, autoReply, true);
+  await maybeDraftKp(lead, lastChatDraft);
 }
 
 // Вызывается из api/lead.js после того, как заявка отправлена в Telegram.
 async function handleNewLead(lead) {
   if (lead.channel === 'chat' && lead.chatSid && storeEnabled()) return handleChatLead(lead);
+  await prepContext(lead);
   const chatId = process.env.TELEGRAM_CHAT_ID;
   let crmIntent = '';
+  let lastDraft = null;
   try {
     const d = await generateDraft(lead, 'new', null);
+    lastDraft = d;
     crmIntent = INTENT_RU[d.intent] || d.intent || '';
     const id = newId();
     let withButtons = false;
@@ -230,6 +297,7 @@ async function handleNewLead(lead) {
   }
   // CRM: сохраняем сообщение клиента в Notion (если задан NOTION_TOKEN)
   await crm.logIncoming(lead, crmIntent);
+  await maybeDraftKp(lead, lastDraft);
 }
 
 // Вызывается из api/telegram.js при нажатии кнопок.
@@ -283,6 +351,7 @@ async function handleAction(action, id, message) {
     }
     await saveJson('lead:' + id, { lead: rec.lead, draft: dd, approved: true, sent: sentLine });
     await crm.logReply(rec.lead, dd.body || '', isLine ? sentLine : false);
+    await rememberReply(rec.lead, dd.body || '');
     const head = isLine
       ? (sentLine ? '<b>ПОДТВЕРЖДЕНО И ОТПРАВЛЕНО В ' + chName + '</b>' : '<b>ПОДТВЕРЖДЕНО, НО В ' + chName + ' НЕ ОТПРАВИЛОСЬ</b>')
       : '<b>ПОДТВЕРЖДЕНО</b>';

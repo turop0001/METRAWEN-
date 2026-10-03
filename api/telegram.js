@@ -59,6 +59,11 @@ module.exports = async function handler(req, res) {
   if (typeof update === 'string') { try { update = JSON.parse(update); } catch (e) { update = {}; } }
   const msg = update && update.message;
   if (msg && !update.callback_query) {
+    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/kp/i.test(String(msg.text || ''))) {
+      const K = require('./_lib/kp');
+      await tg('sendMessage', { chat_id: chatId, text: 'Редактор КП: ' + K.adminUrl() + '\nСсылка с ключом доступа, не пересылайте её.', disable_web_page_preview: true });
+      return res.status(200).json({ ok: true });
+    }
     await handleClientMessage(msg, chatId);
     return res.status(200).json({ ok: true });
   }

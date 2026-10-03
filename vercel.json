@@ -46,6 +46,15 @@
     },
     "api/whatsapp.js": {
       "maxDuration": 60
+    },
+    "api/kp.js": {
+      "maxDuration": 30
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/p/:id",
+      "destination": "/p.html"
+    }
+  ]
 }

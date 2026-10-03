@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>КП · редактор METRAWEN</title>
+<link rel="icon" href="/favicon-32.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#121110;--card:#1a1916;--hair:rgba(255,255,255,.09);--line:rgba(196,161,101,.3);--text:#f2ede4;--dim:#b9b2a5;--faint:#857e72;--gold:#C4A165;--ok:#A9BC85;--mono:"IBM Plex Mono",monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 "Inter",system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:20px}
+h1{font-size:22px;margin:6px 0 18px;font-weight:600}h2{font-size:12px;font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:26px 0 10px;font-weight:500}
+.card{background:var(--card);border:1px solid var(--hair);border-radius:14px;padding:16px}
+label{display:block;font-size:12px;color:var(--faint);margin:10px 0 4px}
+input,textarea,select{width:100%;background:#121110;color:var(--text);border:1px solid #3a352c;border-radius:10px;padding:9px 10px;font:inherit;font-size:15px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold)}
+textarea{min-height:76px;resize:vertical}
+.row{display:grid;gap:10px}@media(min-width:700px){.r2{grid-template-columns:1fr 1fr}.r3{grid-template-columns:1fr 1fr 1fr}.r4{grid-template-columns:1fr 1fr 1fr 1fr}}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:999px;border:1px solid var(--gold);background:var(--gold);color:#151411;font:600 14px Inter,sans-serif;cursor:pointer;text-decoration:none}
+.btn.g{background:transparent;color:var(--gold)}.btn.sm{padding:6px 12px;font-size:13px}.btn.x{border-color:#5a3b33;color:#d08b7a;background:transparent}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.it{display:grid;grid-template-columns:1fr 110px 70px auto;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid var(--hair)}
+.it textarea{min-height:40px;grid-column:1/-1}
+.tot{font-family:var(--mono);color:var(--gold);font-size:18px}
+.st{display:inline-block;padding:2px 10px;border-radius:999px;border:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--gold)}
+.msg{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#26231e;border:1px solid var(--line);padding:10px 16px;border-radius:12px;display:none}
+.save{position:sticky;bottom:0;background:linear-gradient(180deg,transparent,var(--bg) 30%);padding:18px 0 10px;margin-top:20px}
+.list a{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--hair);color:var(--text);text-decoration:none;font-size:14px}
+.list span{color:var(--faint);font-family:var(--mono);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">Загрузка…</div>
+<div class="msg" id="msg"></div>
+<script>
+(function(){
+  var m=location.hash.match(/k=([a-f0-9]{24})/);
+  try{if(m){localStorage.setItem('mw_kp_key',m[1]);history.replaceState(null,'',location.pathname+location.search)}}catch(e){}
+  var key='';try{key=localStorage.getItem('mw_kp_key')||''}catch(e){}
+  var app=document.getElementById('app');
+  if(!key){app.innerHTML='<h1>Нет доступа</h1><p>Откройте ссылку на редактор из Telegram-бота (команда /kp).</p>';return}
+  var H={'x-kp-key':key,'Content-Type':'application/json'},CAT=[],RATE=82,kp=null;
+  function toast(t){var e=document.getElementById('msg');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display='none'},2600)}
+  function api(q,b){return fetch('/api/kp'+(q||''),b?{method:'POST',headers:H,body:JSON.stringify(b)}:{headers:H}).then(function(r){return r.json()})}
+  function price(it,cur){return cur==='RUB'?it.rub:Math.round(it.rub/RATE/5)*5}
+  var id=new URLSearchParams(location.search).get('id');
+  api('?catalog=1').then(function(j){CAT=j.items||[];RATE=j.rate||82;
+    if(id)return api('?id='+id).then(function(j){if(!j.ok)throw 0;kp=j.kp;draw()});
+    return home()}).catch(function(){app.innerHTML='<h1>Ошибка доступа или КП не найдено</h1>'});
+
+  function home(){api('?list=1').then(function(j){
+    if(!j.ok){app.innerHTML='<h1>Нет доступа</h1>';return}
+    var h='<h1>Коммерческие предложения</h1><div class="bar"><button class="btn" id="nru">+ Новое КП (RU)</button><button class="btn g" id="nen">+ New proposal (EN)</button></div><h2>Последние</h2><div class="card list">';
+    (j.list||[]).forEach(function(r){h+='<a href="?id='+r.id+'"><b></b><span>'+r.status+' · '+new Date(r.updated).toLocaleDateString('ru-RU')+'</span></a>'});
+    h+=(j.list||[]).length?'':'<p style="color:var(--faint)">Пока пусто</p>';
+    app.innerHTML=h+'</div>';
+    var as=app.querySelectorAll('.list a b');(j.list||[]).forEach(function(r,i){as[i].textContent=(r.client||'Без имени')+' · '+(r.title||'')});
+    document.getElementById('nru').onclick=function(){api('?new=1&lang=ru').then(function(j){kp=j.kp;draw()})};
+    document.getElementById('nen').onclick=function(){api('?new=1&lang=en').then(function(j){kp=j.kp;draw()})};
+  })}
+
+  function v(path,val){var o=kp,p=path.split('.');for(var i=0;i<p.length-1;i++)o=o[p[i]];if(val===undefined)return o[p[p.length-1]];o[p[p.length-1]]=val}
+  function field(lbl,path,type){var w=document.createElement('div');var l=document.createElement('label');l.textContent=lbl;w.appendChild(l);
+    var e=type==='ta'?document.createElement('textarea'):document.createElement('input');if(type&&type!=='ta')e.type=type;e.value=v(path)==null?'':v(path);
+    e.oninput=function(){v(path,type==='number'?Number(e.value):e.value);sum()};w.appendChild(e);return w}
+  function sum(){var t=(kp.items||[]).reduce(function(a,x){return a+Number(x.price||0)},0);var e=document.getElementById('tot');if(e)e.textContent='Итого основа: '+t.toLocaleString('ru-RU')+(kp.currency==='RUB'?' ₽':' $')}
+  function itemsBlock(listName,title){
+    var box=document.createElement('div');var h=document.createElement('h2');h.textContent=title;box.appendChild(h);var c=document.createElement('div');c.className='card';box.appendChild(c);
+    function redraw(){c.textContent='';(kp[listName]||[]).forEach(function(x,i){var r=document.createElement('div');r.className='it';
+      var n=document.createElement('input');n.value=x.name||'';n.placeholder='Название';n.oninput=function(){x.name=n.value};
+      var p=document.createElement('input');p.type='number';p.value=x.price||0;p.oninput=function(){x.price=Number(p.value);sum()};
+      var d=document.createElement('input');d.type='number';d.value=x.days||0;d.title='дней';d.oninput=function(){x.days=Number(d.value)};
+      var del=document.createElement('button');del.className='btn x sm';del.textContent='✕';del.onclick=function(){kp[listName].splice(i,1);redraw();sum()};
+      var ds=document.createElement('textarea');ds.value=x.desc||'';ds.placeholder='Описание для клиента';ds.oninput=function(){x.desc=ds.value};
+      [n,p,d,del,ds].forEach(function(e){r.appendChild(e)});c.appendChild(r)});
+      var bar=document.createElement('div');bar.className='bar';bar.style.marginTop='10px';
+      var s=document.createElement('select');var o0=document.createElement('option');o0.textContent='+ Добавить из каталога';o0.value='';s.appendChild(o0);
+      CAT.forEach(function(it){var o=document.createElement('option');o.value=it.id;o.textContent=it[kp.lang].nm+' — '+price(it,kp.currency).toLocaleString('ru-RU')+(kp.currency==='RUB'?' ₽':' $');s.appendChild(o)});
+      s.onchange=function(){var it=CAT.find(function(x){return x.id===s.value});if(!it)return;kp[listName].push({name:it[kp.lang].nm,desc:it[kp.lang].sol,price:price(it,kp.currency),days:it.days,ref:it.id});redraw();sum()};
+      var b=document.createElement('button');b.className='btn g sm';b.textContent='+ Своя позиция';b.onclick=function(){kp[listName].push({name:'',desc:'',price:0,days:0});redraw()};
+      bar.appendChild(s);bar.appendChild(b);c.appendChild(bar)}
+    redraw();return box}
+
+  function draw(){
+    kp.items=kp.items||[];kp.addons=kp.addons||[];kp.payLinks=kp.payLinks||['','',''];kp.paid=kp.paid||[false,false,false];kp.schedule=kp.schedule||[30,40,30];kp.client=kp.client||{};kp.demo=kp.demo||{};
+    app.textContent='';
+    var top=document.createElement('div');top.className='bar';top.innerHTML='<a class="btn g sm" href="kp-admin.html">← Все КП</a> <span class="st"></span>';var stt={draft:'черновик',sent:'отправлено',viewed:'просмотрено',accepted:'принято'};top.querySelector('.st').textContent=(stt[kp.status]||kp.status)+' · просмотров: '+(kp.views||0)+' · '+kp.id;app.appendChild(top);
+    if(kp.status!=='draft'){var cl=document.createElement('button');cl.className='btn g sm';cl.textContent='Скопировать ссылку';cl.onclick=function(){var u=location.origin+'/p/'+kp.id;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(function(){toast('Ссылка скопирована')},function(){prompt('Ссылка',u)})};top.appendChild(cl)}
+    if(kp.status==='accepted'){var ac=document.createElement('p');ac.style.cssText='color:var(--ok);margin:10px 0 0';ac.textContent='Клиент принял КП '+new Date(kp.acceptedAt).toLocaleString('ru-RU')+((kp.acceptedAddons||[]).length?'. Допы: '+kp.acceptedAddons.map(function(i){return (kp.addons[i]||{}).name}).join(', '):'');app.appendChild(ac)}
+    var h=document.createElement('h1');h.textContent=kp.title||'Новое предложение';app.appendChild(h);
+    var c1=document.createElement('div');c1.className='card';
+    var r=document.createElement('div');r.className='row r4';
+    var lang=document.createElement('div');lang.innerHTML='<label>Язык</label><select><option value="ru">RU</option><option value="en">EN</option></select>';var ls=lang.querySelector('select');ls.value=kp.lang;ls.onchange=function(){kp.lang=ls.value;draw()};
+    var cur=document.createElement('div');cur.innerHTML='<label>Валюта</label><select><option>RUB</option><option>USD</option></select>';var cs=cur.querySelector('select');cs.value=kp.currency;cs.onchange=function(){kp.currency=cs.value;['items','addons'].forEach(function(n){kp[n].forEach(function(x){var it=CAT.find(function(c){return c.id===x.ref});if(it)x.price=price(it,kp.currency)})});draw()};
+    r.appendChild(lang);r.appendChild(cur);r.appendChild(field('Действует до','validUntil','date'));r.appendChild(field('Менеджер','manager'));c1.appendChild(r);
+    var r2=document.createElement('div');r2.className='row r2';r2.appendChild(field('Имя клиента','client.name'));r2.appendChild(field('Компания / бизнес','client.company'));c1.appendChild(r2);
+    c1.appendChild(field('Заголовок КП','title'));app.appendChild(c1);
+    var h2=document.createElement('h2');h2.textContent='Задача и решение';app.appendChild(h2);
+    var c2=document.createElement('div');c2.className='card';c2.appendChild(field('Ситуация клиента','situation','ta'));c2.appendChild(field('Что мы сделаем','solution','ta'));c2.appendChild(field('Что изменится','result','ta'));app.appendChild(c2);
+    app.appendChild(itemsBlock('items','Состав работ (цена · дни)'));
+    var t=document.createElement('div');t.className='tot';t.id='tot';t.style.margin='10px 0';app.appendChild(t);
+    app.appendChild(itemsBlock('addons','Допы на выбор клиента'));
+    var h3=document.createElement('h2');h3.textContent='Оплата';app.appendChild(h3);
+    var c3=document.createElement('div');c3.className='card';
+    var rs=document.createElement('div');rs.className='row r3';[0,1,2].forEach(function(i){var w=document.createElement('div');w.innerHTML='<label>Этап '+(i+1)+', %</label>';var e=document.createElement('input');e.type='number';e.value=kp.schedule[i];e.oninput=function(){kp.schedule[i]=Number(e.value)};w.appendChild(e);rs.appendChild(w)});c3.appendChild(rs);
+    [0,1,2].forEach(function(i){var w=document.createElement('div');w.className='row';w.style.gridTemplateColumns='1fr auto';w.style.alignItems='end';
+      var a=document.createElement('div');a.innerHTML='<label>Ссылка на оплату, этап '+(i+1)+' (Lava.top / Payoneer)</label>';var e=document.createElement('input');e.placeholder='https://…';e.value=kp.payLinks[i]||'';e.oninput=function(){kp.payLinks[i]=e.value.trim()};a.appendChild(e);
+      var pl=document.createElement('label');pl.style.cssText='display:flex;gap:6px;align-items:center;margin:0 0 10px;color:var(--text)';var cb=document.createElement('input');cb.type='checkbox';cb.style.width='auto';cb.checked=!!kp.paid[i];cb.onchange=function(){kp.paid[i]=cb.checked};pl.appendChild(cb);pl.appendChild(document.createTextNode('оплачено'));
+      w.appendChild(a);w.appendChild(pl);c3.appendChild(w)});
+    app.appendChild(c3);
+    var h4=document.createElement('h2');h4.textContent='Пример работы';app.appendChild(h4);
+    var c4=document.createElement('div');c4.className='card row r2';c4.appendChild(field('Подпись','demo.title'));c4.appendChild(field('Ссылка на демо','demo.url'));app.appendChild(c4);
+    if(kp.source&&kp.source.contact){var src=document.createElement('p');src.style.color='var(--faint)';src.textContent='Клиент: '+kp.source.contact;app.appendChild(src)}
+    var sv=document.createElement('div');sv.className='save bar';
+    var b1=document.createElement('button');b1.className='btn g';b1.textContent='Сохранить';b1.onclick=function(){save(false)};
+    var b2=document.createElement('button');b2.className='btn';b2.textContent=kp.status==='draft'?'Опубликовать и скопировать сообщение':'Сохранить и скопировать сообщение';b2.onclick=function(){save(true,true)};
+    var b3=document.createElement('a');b3.className='btn g';b3.textContent='Предпросмотр';b3.target='_blank';b3.href='/p/'+kp.id;
+    sv.appendChild(b1);sv.appendChild(b2);sv.appendChild(b3);app.appendChild(sv);sum();
+  }
+  function save(publish,copy){api('',{action:'save',kp:kp,publish:!!publish}).then(function(j){if(!j.ok){toast('Ошибка сохранения');return}kp=j.kp;
+    if(history.replaceState)history.replaceState(null,'','?id='+kp.id);
+    if(copy){var ru=kp.lang!=='en';var nm=kp.client&&kp.client.name?kp.client.name:'';
+      var txt=ru?('Здравствуйте'+(nm?', '+nm:'')+'! Подготовила для вас предложение: '+j.url+'\nТам состав работ, сроки и этапы оплаты. Можно сразу отметить нужные допы, итог пересчитается. Если всё подходит, нажмите «Принять предложение», и я пришлю ссылку на первый платёж.')
+        :('Hi'+(nm?' '+nm:'')+'! Here is your proposal: '+j.url+'\nIt covers the scope, timeline and payment stages. You can tick any extras and the total updates. If it all looks good, press "Accept proposal" and I will send the first payment link.');
+      (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){toast('Опубликовано. Сообщение для клиента скопировано')},function(){prompt('Скопируйте сообщение',txt)})}
+    else toast('Сохранено');draw()})}
+})();
+</script>
+</body>
+</html>

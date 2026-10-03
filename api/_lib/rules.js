@@ -44,7 +44,8 @@ function classify(lead) {
 const T = {
   en: {
     hi: n => n ? 'Hi ' + n + ',' : 'Hi,',
-    sign: 'METRAWEN team',
+    sign: '',
+    intro: "I'm Nicole, a manager at METRAWEN.",
     booking: {
       subject: 'Your METRAWEN session',
       full: slot => 'Thanks for booking a session' + (slot ? ' (' + slot + ')' : '') + '. We will confirm the time by email shortly.\n\nTo make the 15 minutes useful, could you tell us in a line or two which process takes most of your time today: answering inquiries, bookings, reports, something else?',
@@ -52,13 +53,13 @@ const T = {
     },
     interested: {
       subject: 'Re: your request to METRAWEN',
-      full: () => 'Thanks for reaching out. What you describe is close to what we build: AI employees for inquiries and bookings, plus bots and websites.\n\nThe quickest way is a free 15-minute call, no pitch, so we can look at your case: ' + SITE + '/#open-booking\nOr reply here with a few details and we will suggest options in writing. What is easier for you?',
-      short: () => 'Thanks for reaching out. Easiest is a free 15-minute call: ' + SITE + '/#open-booking . Or reply with a few details and we will send options in writing.'
+      full: () => 'Thanks for reaching out, happy to help. So I can suggest something that really fits: what kind of business do you have, and what would you most like to take off your plate right now?',
+      short: () => 'Happy to help. What kind of business is it, and what would you most like to take off your plate?'
     },
     price_question: {
       subject: 'Re: pricing',
-      full: () => 'Fair question. The price depends on what exactly you need, so we do not want to guess.\n\nFor sites, bots and dashboards, the calculator gives an instant estimate: ' + SITE + '/digital.html#calculator . For AI employees we prepare a written proposal after a short call.\n\nIt also helps to look at what the problem costs you today: missed inquiries or hours spent by hand. Shall we go through it in 15 minutes?',
-      short: () => 'Price depends on the scope. The calculator gives an instant estimate: ' + SITE + '/digital.html#calculator . For AI employees we send a written proposal after a short call. Want a 15-minute call?'
+      full: () => 'Good question. The price really depends on what the site or bot needs to do, and I do not want to throw out a random number. Tell me a bit about your business and what you expect it to handle, and I will put together an exact estimate for your case.',
+      short: () => 'It depends on what it needs to do. What is your business and what should it handle? Then I will send an exact estimate.'
     },
     has_solution_already: {
       subject: 'Re: your current setup',
@@ -82,13 +83,14 @@ const T = {
     },
     question: {
       subject: 'Re: your message to METRAWEN',
-      full: () => 'Thanks for your message. To answer precisely, could you tell us a bit more about your business and what you would like to automate?\n\nA short free call also works: ' + SITE + '/#open-booking',
-      short: () => 'Thanks for your message. Could you tell us a bit more about your business and what you want to automate? Or book a short call: ' + SITE + '/#open-booking'
+      full: () => 'Thanks for your message. To answer properly, tell me a little about your business and what you would like to improve or automate?',
+      short: () => 'Tell me a little about your business and what you want to improve?'
     }
   },
   ru: {
     hi: n => n ? 'Здравствуйте, ' + n + '.' : 'Здравствуйте.',
-    sign: 'Команда METRAWEN',
+    sign: '',
+    intro: 'Меня зовут Елена, я менеджер METRAWEN.',
     booking: {
       subject: 'Ваша сессия METRAWEN',
       full: slot => 'Спасибо за запись на сессию' + (slot ? ' (' + slot + ')' : '') + '. Время подтвердим по почте в ближайшее время.\n\nЧтобы 15 минут прошли с пользой, напишите, пожалуйста, в одной-двух строках, какой процесс сейчас отнимает больше всего времени: ответы на обращения, записи, отчёты или что-то ещё?',
@@ -96,13 +98,13 @@ const T = {
     },
     interested: {
       subject: 'Re: ваша заявка в METRAWEN',
-      full: () => 'Спасибо за обращение. То, что вы описываете, близко к тому, что мы делаем: AI-сотрудники для обращений и записей, боты и сайты.\n\nСамый быстрый вариант: бесплатный звонок на 15 минут без питча, чтобы мы посмотрели ваш случай: ' + SITE + '/ru/#open-booking\nЛибо ответьте здесь парой деталей, и мы предложим варианты письменно. Как удобнее?',
-      short: () => 'Спасибо за обращение. Проще всего бесплатный звонок на 15 минут: ' + SITE + '/ru/#open-booking . Или ответьте парой деталей, и мы пришлём варианты письменно.'
+      full: () => 'Спасибо, что написали, с удовольствием помогу. Чтобы предложить то, что действительно подойдёт: какой у вас бизнес и что сейчас больше всего хочется снять с себя?',
+      short: () => 'С удовольствием помогу. Какой у вас бизнес и что больше всего хочется снять с себя?'
     },
     price_question: {
       subject: 'Re: стоимость',
-      full: () => 'Вопрос закономерный. Цена зависит от того, что именно нужно, поэтому не хотим называть цифру наугад.\n\nПо сайтам, ботам и дашбордам калькулятор сразу даёт оценку: ' + SITE + '/ru/digital.html#calculator . По AI-сотрудникам мы готовим письменное предложение после короткого звонка.\n\nЕщё полезно посмотреть, во сколько вам сейчас обходится проблема: потерянные заявки или часы ручной работы. Разберём за 15 минут?',
-      short: () => 'Цена зависит от задачи. Калькулятор даёт оценку сразу: ' + SITE + '/ru/digital.html#calculator . По AI-сотрудникам присылаем письменное предложение после короткого звонка. Созвонимся на 15 минут?'
+      full: () => 'Хороший вопрос. Цена зависит от того, что именно должен делать сайт или бот, и называть цифру наугад не хочу. Расскажите немного о вашем бизнесе и что вы от него ждёте, и я посчитаю точную стоимость под ваш случай.',
+      short: () => 'Зависит от задач. Какой у вас бизнес и что он должен делать? Тогда посчитаю точно.'
     },
     has_solution_already: {
       subject: 'Re: ваше текущее решение',
@@ -126,8 +128,8 @@ const T = {
     },
     question: {
       subject: 'Re: ваше сообщение в METRAWEN',
-      full: () => 'Спасибо за сообщение. Чтобы ответить точнее, расскажите, пожалуйста, немного о вашем бизнесе и что вы хотели бы автоматизировать?\n\nМожно и коротким бесплатным звонком: ' + SITE + '/ru/#open-booking',
-      short: () => 'Спасибо за сообщение. Расскажите немного о бизнесе и что хотите автоматизировать? Или запишитесь на короткий звонок: ' + SITE + '/ru/#open-booking'
+      full: () => 'Спасибо за сообщение. Чтобы ответить по делу, расскажите немного о вашем бизнесе и что хотелось бы улучшить или автоматизировать?',
+      short: () => 'Расскажите немного о бизнесе и что хотелось бы улучшить?'
     }
   }
 };
@@ -139,7 +141,7 @@ function draftFromRules(lead, mode) {
   const tpl = t[c.intent] || t.question;
   const variant = mode === 'shorter' ? 'short' : 'full';
   const bodyCore = tpl[variant](lead.slot);
-  const body = t.hi(firstName(lead)) + '\n\n' + bodyCore + '\n\n' + t.sign;
+  const body = t.hi(firstName(lead)) + (lead.firstContact ? ' ' + t.intro : '') + '\n\n' + bodyCore;
   return { intent: c.intent, escalate: c.escalate, reason: c.reason, subject: tpl.subject, body, mode: 'rules' };
 }
 
