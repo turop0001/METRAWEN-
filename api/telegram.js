@@ -18,8 +18,8 @@ async function handleClientMessage(msg, ownerChatId) {
       await tg('sendMessage', {
         chat_id: msg.chat.id,
         text: ru
-          ? 'Здравствуйте! Это METRAWEN. Напишите, чем можем помочь, Дмитрий ответит лично.'
-          : 'Hello! This is METRAWEN. Tell us what you need, Dmitry will reply personally.'
+          ? 'Здравствуйте! Это METRAWEN. Напишите, чем можем помочь: мы прочитаем сообщение и ответим в ближайшее время.'
+          : 'Hello! This is METRAWEN. Tell us what you need and our team will get back to you shortly.'
       });
       return;
     }
