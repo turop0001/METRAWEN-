@@ -9,6 +9,7 @@ const crm = require('./crm');
 
 
 function detectLang(lead) {
+  if (lead.chatLang) return lead.chatLang;
   if (/\/ru(\/|$)/.test(String(lead.page || ''))) return 'ru';
   if (/[а-яё]/i.test(String(lead.message || ''))) return 'ru';
   return 'en';
@@ -17,12 +18,13 @@ function detectLang(lead) {
 function leadToText(lead) {
   const rows = [
     ['Form', lead.label],
-    ['Channel', (lead.channel === 'line' || lead.channel === 'telegram' || lead.channel === 'whatsapp') ? (lead.channel === 'line' ? 'LINE' : lead.channel === 'whatsapp' ? 'WhatsApp' : 'Telegram') + ' chat: a short chat message, no subject line, no email greeting or formatting. Return subject as an empty string. Reply in the language of the lead message.' : ''],
+    ['Channel', (lead.channel === 'line' || lead.channel === 'telegram' || lead.channel === 'whatsapp' || lead.channel === 'chat') ? (lead.channel === 'line' ? 'LINE' : lead.channel === 'whatsapp' ? 'WhatsApp' : lead.channel === 'chat' ? 'Website' : 'Telegram') + ' chat: a short chat message, no subject line, no email greeting or formatting. Return subject as an empty string. Reply in the language of the lead message.' : ''],
     ['Client name (this is the client, NOT Dmitry)', lead.name],
     ['Contact', lead.contact],
     ['Company', lead.company],
     ['Industry', lead.industry],
     ['Chosen slot', lead.slot],
+    ['Earlier messages in this chat', lead.history],
     ['Message', lead.message],
     ['Page', lead.page],
     ['Page language', detectLang(lead)]
@@ -98,13 +100,14 @@ function routeInfo(lead) {
   if (ch === 'line') return { from: 'LINE', to: 'в LINE клиенту, автоматически после «Подтвердить»' };
   if (ch === 'telegram') return { from: 'Telegram (бот)', to: 'в Telegram клиенту, автоматически после «Подтвердить»' };
   if (ch === 'whatsapp') return { from: 'WhatsApp', to: 'в WhatsApp клиенту, автоматически после «Подтвердить»' };
+  if (ch === 'chat') return { from: 'Чат на сайте', to: 'в чат на сайте, автоматически после «Подтвердить» (клиент увидит, пока окно открыто)' };
   if (ch === 'email') return { from: 'Email', to: 'на email клиента (отправка пока вручную)' };
   return { from: 'Сайт, форма заявки', to: 'на email клиента (отправка пока вручную, скопируйте текст после «Подтвердить»)' };
 }
 
 function formatDraft(lead, d) {
-  const chat = lead.channel === 'line' || lead.channel === 'telegram' || lead.channel === 'whatsapp';
-  const chatName = lead.channel === 'telegram' ? 'Telegram' : lead.channel === 'whatsapp' ? 'WhatsApp' : 'LINE';
+  const chat = lead.channel === 'line' || lead.channel === 'telegram' || lead.channel === 'whatsapp' || lead.channel === 'chat';
+  const chatName = lead.channel === 'chat' ? 'чат на сайте' : lead.channel === 'telegram' ? 'Telegram' : lead.channel === 'whatsapp' ? 'WhatsApp' : 'LINE';
   const src = d.mode === 'rules' ? 'по шаблону' : 'ИИ';
   const todo = d.escalate
     ? 'Ответьте сами. Здесь нужен ваш разбор, черновик нейтральный.'
@@ -182,13 +185,21 @@ async function handleAction(action, id, message) {
     const dd = rec.draft || {};
     const isTg = rec.lead.channel === 'telegram' && rec.lead.tgChatId;
     const isWa = rec.lead.channel === 'whatsapp' && rec.lead.waId;
-    const isLine = (rec.lead.channel === 'line' && rec.lead.lineUserId) || isTg || isWa;
-    const chName = isTg ? 'TELEGRAM' : isWa ? 'WHATSAPP' : 'LINE';
+    const isChat = rec.lead.channel === 'chat' && rec.lead.chatSid;
+    const isLine = (rec.lead.channel === 'line' && rec.lead.lineUserId) || isTg || isWa || isChat;
+    const chName = isChat ? 'ЧАТ НА САЙТЕ' : isTg ? 'TELEGRAM' : isWa ? 'WHATSAPP' : 'LINE';
     let sentLine = false;
     let lineErr = '';
     if (isLine) {
       try {
-        if (isTg) { await tg('sendMessage', { chat_id: rec.lead.tgChatId, text: String(dd.body || '').slice(0, 3500) }); }
+        if (isChat) {
+          const ck = 'chat:' + rec.lead.chatSid;
+          const cc = (await loadJson(ck)) || { msgs: [] };
+          cc.msgs.push({ r: 't', t: String(dd.body || '').slice(0, 3500), ts: Date.now() });
+          cc.msgs = cc.msgs.slice(-80);
+          await saveJson(ck, cc, 60 * 60 * 24 * 3);
+        }
+        else if (isTg) { await tg('sendMessage', { chat_id: rec.lead.tgChatId, text: String(dd.body || '').slice(0, 3500) }); }
         else if (isWa) {
           const wr = await require('./whatsapp').send(rec.lead.waId, dd.body || '');
           // запоминаем текст, чтобы при недоставке дать ссылку на ручную отправку

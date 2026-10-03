@@ -32,7 +32,7 @@ async function call(method, path, body) {
   }
 }
 
-const CHANNEL = { line: 'LINE', telegram: 'Telegram', whatsapp: 'WhatsApp', email: 'Email' };
+const CHANNEL = { line: 'LINE', telegram: 'Telegram', whatsapp: 'WhatsApp', email: 'Email', chat: 'Чат на сайте' };
 
 function channelOf(lead) { return CHANNEL[lead.channel] || 'Сайт'; }
 
@@ -40,6 +40,7 @@ function keyOf(lead) {
   if (lead.channel === 'line' && lead.lineUserId) return 'line:' + lead.lineUserId;
   if (lead.channel === 'telegram' && lead.tgChatId) return 'tg:' + lead.tgChatId;
   if (lead.channel === 'whatsapp' && lead.waId) return 'wa:' + lead.waId;
+  if (lead.channel === 'chat' && lead.chatSid) return 'chat:' + lead.chatSid;
   return 'site:' + String(lead.contact || lead.name || 'unknown').toLowerCase().replace(/\s+/g, ' ').slice(0, 120);
 }
 
