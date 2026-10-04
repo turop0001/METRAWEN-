@@ -8,7 +8,7 @@ const { report } = require('./alert');
 const API = 'https://api.notion.com/v1';
 const VERSION = '2022-06-28';
 const clean = function (v) { return String(v || '').replace(/[^\x20-\x7E]/g, '').trim(); };
-const token = function () { return clean(process.env.NOTION_TOKEN); };
+const token = function () { return require('./env').secret('NOTION_TOKEN'); };
 const DB = function () { return clean(process.env.NOTION_AGENCY_HUNTER_DB_ID) || 'c85648b90e694ef7b394582cf4d02336'; };
 
 async function ncall(method, path, body) {
@@ -22,7 +22,7 @@ async function ncall(method, path, body) {
       signal: ctl.signal
     });
     const j = await r.json().catch(function () { return {}; });
-    if (!r.ok) throw new Error('notion ' + r.status + ' ' + String(j.message || '').slice(0, 160));
+    if (!r.ok) throw new Error('notion ' + r.status + ' ' + String(j.message || '').slice(0, 160) + (r.status === 401 ? ' [' + require('./env').diag('NOTION_TOKEN') + ']' : ''));
     return j;
   } finally { clearTimeout(t); }
 }

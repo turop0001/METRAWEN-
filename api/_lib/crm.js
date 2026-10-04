@@ -6,7 +6,7 @@ const VERSION = '2022-06-28';
 const DEFAULT_DB = 'b3fe6fa8665e4cbf8307475d147e1dac';
 
 function clean(v) { return String(v || '').replace(/[^\x20-\x7E]/g, '').trim(); }
-function token() { return clean(process.env.NOTION_TOKEN); }
+function token() { return require('./env').secret('NOTION_TOKEN'); }
 function dbId() { return clean(process.env.NOTION_CRM_DB_ID) || DEFAULT_DB; }
 function enabled() { return !!token(); }
 
@@ -25,7 +25,7 @@ async function call(method, path, body) {
       signal: ctl.signal
     });
     const j = await r.json().catch(function () { return {}; });
-    if (!r.ok) throw new Error('notion ' + r.status + ' ' + String(j.message || '').slice(0, 160));
+    if (!r.ok) throw new Error('notion ' + r.status + ' ' + String(j.message || '').slice(0, 160) + (r.status === 401 ? ' [' + require('./env').diag('NOTION_TOKEN') + ']' : ''));
     return j;
   } finally {
     clearTimeout(t);

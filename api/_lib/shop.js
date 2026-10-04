@@ -5,7 +5,7 @@ const { loadJson, saveJson, enabled: storeEnabled } = require('./store');
 const API = 'https://api.notion.com/v1';
 const VERSION = '2022-06-28';
 const clean = function (v) { return String(v || '').replace(/[^\x20-\x7E]/g, '').trim(); };
-const token = function () { return clean(process.env.NOTION_TOKEN); };
+const token = function () { return require('./env').secret('NOTION_TOKEN'); };
 const GOODS_DB = function () { return clean(process.env.NOTION_GOODS_DB_ID) || '2edf6f2347eb469093aba029e1dd663e'; };
 const HUNTER_DB = function () { return clean(process.env.NOTION_HUNTER_DB_ID) || '07b73fb5e5344edc8467dd687d60ef30'; };
 
@@ -20,7 +20,7 @@ async function ncall(method, path, body) {
       signal: ctl.signal
     });
     const j = await r.json().catch(function () { return {}; });
-    if (!r.ok) throw new Error('notion ' + r.status + ' ' + String(j.message || '').slice(0, 160));
+    if (!r.ok) throw new Error('notion ' + r.status + ' ' + String(j.message || '').slice(0, 160) + (r.status === 401 ? ' [' + require('./env').diag('NOTION_TOKEN') + ']' : ''));
     return j;
   } finally { clearTimeout(t); }
 }

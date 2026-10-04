@@ -7,12 +7,14 @@
 //  Если ключей несколько, LLM_PROVIDER=anthropic|openai выбирает нужный.
 //  Ключей нет: работает режим по шаблонам (без ИИ, бесплатно).
 
+const env = require('./env');
+
 function provider() {
   const want = (process.env.LLM_PROVIDER || '').toLowerCase();
-  if (want === 'openai' && process.env.OPENAI_API_KEY) return 'openai';
-  if (want === 'anthropic' && process.env.ANTHROPIC_API_KEY) return 'anthropic';
-  if (process.env.ANTHROPIC_API_KEY) return 'anthropic';
-  if (process.env.OPENAI_API_KEY) return 'openai';
+  if (want === 'openai' && env.secret('OPENAI_API_KEY')) return 'openai';
+  if (want === 'anthropic' && env.secret('ANTHROPIC_API_KEY')) return 'anthropic';
+  if (env.secret('ANTHROPIC_API_KEY')) return 'anthropic';
+  if (env.secret('OPENAI_API_KEY')) return 'openai';
   return null;
 }
 
@@ -22,7 +24,7 @@ async function complete(system, user, maxTokens) {
   if (p === 'anthropic') {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+      headers: { 'x-api-key': env.secret('ANTHROPIC_API_KEY'), 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
       body: JSON.stringify({
         model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5',
         max_tokens: maxTokens || 900,
@@ -31,13 +33,13 @@ async function complete(system, user, maxTokens) {
       })
     });
     const raw = await r.text();
-    if (!r.ok) throw new Error('anthropic ' + r.status + ' ' + raw.slice(0, 300));
+    if (!r.ok) throw new Error('anthropic ' + r.status + ' ' + raw.slice(0, 300) + (r.status === 401 ? ' [' + env.diag('ANTHROPIC_API_KEY') + ']' : ''));
     return (JSON.parse(raw).content || []).map(b => b.text || '').join('');
   }
   const base = (process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1').replace(/\/$/, '');
   const r = await fetch(base + '/chat/completions', {
     method: 'POST',
-    headers: { Authorization: 'Bearer ' + process.env.OPENAI_API_KEY, 'content-type': 'application/json' },
+    headers: { Authorization: 'Bearer ' + env.secret('OPENAI_API_KEY'), 'content-type': 'application/json' },
     body: JSON.stringify({
       model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
       max_tokens: maxTokens || 900,

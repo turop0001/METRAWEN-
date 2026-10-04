@@ -2,7 +2,7 @@
 // Принимает только запросы от Telegram (секрет считается из токена бота) и только от вашего чата.
 const crypto = require('crypto');
 const { tg } = require('./_lib/tg');
-const { handleAction, handleNewLead } = require('./_lib/sellmanager');
+const { handleAction, handleNewLead, applyEdit } = require('./_lib/sellmanager');
 const { saveJson, loadJson, enabled: storeEnabled } = require('./_lib/store');
 const { report, esc } = require('./_lib/alert');
 
@@ -130,6 +130,10 @@ module.exports = async function handler(req, res) {
       catch (e) { await report('Команда ' + String(msg.text).split(/\s+/)[0], e); }
       return res.status(200).json({ ok: true });
     }
+    if (msg.chat && String(msg.chat.id) === String(chatId)) {
+      try { await applyEdit(msg); } catch (e) { await report('Правка черновика', e); }
+      return res.status(200).json({ ok: true });
+    }
     await handleClientMessage(msg, chatId);
     return res.status(200).json({ ok: true });
   }
@@ -175,13 +179,13 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
-  const m = /^(rg|sh|sk|ok):([a-z0-9]+)$/.exec(String(cq.data || ''));
+  const m = /^(rg|sh|sk|ok|ca|ed):([a-z0-9]+)$/.exec(String(cq.data || ''));
   if (!m) {
     try { await tg('answerCallbackQuery', { callback_query_id: cq.id }); } catch (e) {}
     return res.status(200).json({ ok: true });
   }
 
-  try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: m[1] === 'ok' ? 'Подтверждено' : m[1] === 'sk' ? 'Ок' : 'Пишу новый вариант...' }); } catch (e) {}
+  try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: m[1] === 'ok' ? 'Подтверждено' : m[1] === 'sk' || m[1] === 'ca' ? 'Ок' : m[1] === 'ed' ? 'Жду вашу правку' : 'Пишу новый вариант...' }); } catch (e) {}
 
   try {
     await handleAction(m[1], m[2], cq.message);

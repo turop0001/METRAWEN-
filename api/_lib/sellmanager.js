@@ -48,13 +48,16 @@ function extractJson(text) {
   return JSON.parse(text.slice(start, end + 1));
 }
 
-async function callModel(lead, mode, previous) {
+async function callModel(lead, mode, previous, comment) {
   let instruction = 'Here is a new inbound lead from the website form. Write the draft reply.\n\n<lead>\n' + leadToText(lead) + '\n</lead>';
   if (previous && mode === 'regen') {
     instruction += '\n\nHere is the previous draft. Write a clearly different version (different angle and wording, same rules):\n<previous>\n' + previous.body + '\n</previous>';
   }
   if (previous && mode === 'shorter') {
     instruction += '\n\nHere is the previous draft. Rewrite it noticeably shorter (2-4 sentences), same rules:\n<previous>\n' + previous.body + '\n</previous>';
+  }
+  if (previous && mode === 'edit') {
+    instruction += '\n\nHere is the current draft and the owner\'s comment on what to change. Apply the comment, keep the same rules:\n<previous>\n' + previous.body + '\n</previous>\n<owner_comment>\n' + String(comment || '').slice(0, 1500) + '\n</owner_comment>';
   }
   let sys = SYSTEM;
   let items = [];
@@ -81,25 +84,30 @@ async function callModel(lead, mode, previous) {
 }
 
 // Если задан ключ модели (Claude, OpenAI или совместимый), пишет модель. Иначе работают готовые шаблоны (бесплатно).
-async function generateDraft(lead, mode, previous) {
+async function generateDraft(lead, mode, previous, comment) {
+  let aiErr = '';
   if (llm.enabled()) {
     try {
-      const d = await callModel(lead, mode, previous);
+      const d = await callModel(lead, mode, previous, comment);
       d.mode = 'ai';
       return d;
     } catch (err) {
+      aiErr = String(err && err.message || err).slice(0, 220);
       console.error('sellmanager: модель недоступна, беру шаблон', err);
     }
   }
-  if (lead.brand === 'shop') return { intent: 'question', escalate: true, reason: 'ИИ недоступен (нет ключа модели): ответьте сами.', stage: 'new', summary: '', subject: '', body: '', mode: 'rules' };
-  return draftFromRules(lead, mode);
+  const why = aiErr ? 'ИИ не ответил (' + aiErr + '): ответьте сами.' : 'ИИ недоступен (ключ модели не задан или не читается): ответьте сами.';
+  if (lead.brand === 'shop') return { intent: 'question', escalate: true, reason: why, stage: 'new', summary: '', subject: '', body: '', mode: 'rules' };
+  const r = draftFromRules(lead, mode);
+  if (aiErr && r) r.reason = ((r.reason ? r.reason + ' ' : '') + 'ИИ не ответил: ' + aiErr).slice(0, 400);
+  return r;
 }
 
 function keyboard(id, mode) {
   const row = mode === 'ai'
     ? [{ text: 'Переписать', callback_data: 'rg:' + id }, { text: 'Короче', callback_data: 'sh:' + id }]
     : [{ text: 'Короче', callback_data: 'sh:' + id }];
-  return { inline_keyboard: [row, [{ text: 'Подтвердить', callback_data: 'ok:' + id }]] };
+  return { inline_keyboard: [row, [{ text: '✏️ Править', callback_data: 'ed:' + id }, { text: '✖️ Отмена', callback_data: 'ca:' + id }], [{ text: 'Подтвердить', callback_data: 'ok:' + id }]] };
 }
 
 const INTENT_RU = {
@@ -133,13 +141,13 @@ function routeInfo(lead) {
 function formatDraft(lead, d) {
   const chat = lead.channel === 'line' || lead.channel === 'telegram' || lead.channel === 'whatsapp' || lead.channel === 'chat';
   const chatName = lead.channel === 'chat' ? 'чат на сайте' : lead.channel === 'telegram' ? 'Telegram' : lead.channel === 'whatsapp' ? 'WhatsApp' : 'LINE';
-  const src = d.mode === 'rules' ? 'по шаблону' : 'ИИ';
+  const src = d.mode === 'rules' ? 'по шаблону' : d.mode === 'manual' ? 'ваш текст' : 'ИИ';
   const todo = d.escalate
     ? 'Ответьте сами. Здесь нужен ваш разбор, черновик нейтральный.'
     : 'Прочитайте текст ниже. Если всё верно, нажмите «Подтвердить».';
   const lines = [
     '<b>' + (lead.brand === 'shop' ? '🛍 SHOP · ' + (detectLang(lead) === 'ru' ? 'Алина' : 'Emma') + ' · ' : '') + 'ЧЕРНОВИК ОТВЕТА</b> (' + src + ')',
-    d.guard ? '⛔ <b>' + esc(d.guard) + '</b>: проверьте текст, подтверждение заблокировано до правки (нажмите «Переписать»).' : null,
+    d.guard ? '⛔ <b>' + esc(d.guard) + '</b>: проверьте текст, подтверждение заблокировано до правки (нажмите «Переписать» или «Править»).' : null,
     '────────────────',
     '<b>Откуда:</b> ' + routeInfo(lead).from,
     lead.contact ? '<b>Кому:</b> ' + esc(lead.contact) : null,
@@ -354,8 +362,8 @@ async function handleAction(action, id, message) {
     await tg('sendMessage', { chat_id: chatId, text: 'Заявка не найдена (срок хранения истёк или база не подключена).' });
     return;
   }
-  // убрать кнопки со старого сообщения
-  try {
+  // убрать кнопки со старого сообщения (при «Править» кнопки остаются)
+  if (action !== 'ed') try {
     await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: message.message_id, reply_markup: { inline_keyboard: [] } });
   } catch (e) { /* ничего */ }
 
@@ -434,6 +442,17 @@ async function handleAction(action, id, message) {
     await tg('sendMessage', { chat_id: chatId, text: txt, parse_mode: 'HTML', reply_to_message_id: message.message_id });
     return;
   }
+  if (action === 'ca') {
+    await ops.untrack(id);
+    await saveJson('lead:' + id, { lead: rec.lead, draft: rec.draft, canceled: true });
+    await tg('sendMessage', { chat_id: chatId, text: '✖️ Отменено. Клиенту ничего не отправлено, напоминания по этому письму выключены.', reply_to_message_id: message.message_id });
+    return;
+  }
+  if (action === 'ed') {
+    await saveJson('edit:' + chatId, { id: id, mid: message.message_id }, 60 * 60);
+    await tg('sendMessage', { chat_id: chatId, text: '✏️ Напишите следующим сообщением:\n• комментарий, что изменить, и ИИ перепишет черновик;\n• или «=» и сразу весь текст ответа, он заменит черновик как есть.\nОтменить правку: /cancel.', reply_to_message_id: message.message_id });
+    return;
+  }
   if (action === 'sk') {
     await ops.untrack(id);
     await tg('sendMessage', { chat_id: chatId, text: 'Пропущено.', reply_to_message_id: message.message_id });
@@ -457,4 +476,38 @@ async function handleAction(action, id, message) {
   } catch (e) { /* ничего */ }
 }
 
-module.exports = { handleNewLead, handleAction };
+// Ваше сообщение после «Править»: комментарий для ИИ или «=текст» целиком. true, если сообщение обработано как правка.
+async function applyEdit(msg) {
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const st = await loadJson('edit:' + chatId);
+  if (!st) return false;
+  const text = String(msg.text || '').trim();
+  if (!text) return false;
+  await saveJson('edit:' + chatId, null, 1);
+  if (/^\/cancel\b/i.test(text)) { await tg('sendMessage', { chat_id: chatId, text: 'Правка отменена.' }); return true; }
+  const rec = await loadJson('lead:' + st.id);
+  if (!rec) { await tg('sendMessage', { chat_id: chatId, text: 'Заявка не найдена (срок хранения истёк).' }); return true; }
+  let d;
+  if (text.charAt(0) === '=') {
+    d = Object.assign({}, rec.draft || {}, { body: text.slice(1).trim(), escalate: false, guard: undefined, mode: 'manual', reason: 'Текст ответа ваш.' });
+    if (rec.lead.brand === 'shop') {
+      let items = [];
+      try { items = await shop.loadCatalog(); } catch (e) { /* каталог недоступен */ }
+      const bad = shop.checkDraft(d.body, items);
+      if (bad) { d.guard = bad; d.escalate = true; d.reason = ('СТОП: ' + bad).slice(0, 400); }
+    }
+  } else {
+    if (!llm.enabled()) { await tg('sendMessage', { chat_id: chatId, text: 'ИИ недоступен: чтобы заменить текст, начните сообщение с «=». Нажмите «Править» ещё раз.' }); return true; }
+    d = await generateDraft(rec.lead, 'edit', rec.draft || { body: '' }, text);
+  }
+  await saveJson('lead:' + st.id, { lead: rec.lead, draft: d });
+  const sentMsg = await tg('sendMessage', { chat_id: chatId, text: formatDraft(rec.lead, d), parse_mode: 'HTML', disable_web_page_preview: true, reply_markup: keyboard(st.id, d.mode) });
+  try {
+    const list = (await loadJson('sm:pending')) || [];
+    const x = list.find(function (y) { return y.id === st.id; });
+    if (x && sentMsg && sentMsg.result) { x.m = sentMsg.result.message_id; await saveJson('sm:pending', list, 60 * 60 * 24 * 7); }
+  } catch (e) { /* ничего */ }
+  return true;
+}
+
+module.exports = { handleNewLead, handleAction, applyEdit };
