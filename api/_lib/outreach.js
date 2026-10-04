@@ -12,7 +12,9 @@ const shop = require('./shop');
 const hunter = require('./hunter');
 const { report, stat } = require('./alert');
 
-const SHOP_BOXES = ['dmitry.barinov@getmetrawen.com', 'd.barinov@getmetrawen.com', 'dmytro.pop@getmetrawen.com'];
+// Три ящика getmetrawen.com работают только на холодную рассылку агентства (основные продукты сайта): их присылает мост agency.
+// Для холодной рассылки магазина ящики задаются отдельно через OUTREACH_SHOP_BOXES (через запятую); пока переменная пуста, рассылка магазина не идёт.
+const SHOP_BOXES = String(process.env.OUTREACH_SHOP_BOXES || '').split(',').map(function (s) { return s.trim().toLowerCase(); }).filter(function (s) { return /@/.test(s); });
 const boxTag = function (b) { return String(b).split('@')[0] + '@'; };
 
 // Прогрев: писем в день на один ящик в зависимости от дня с начала рассылки этой ветки.
