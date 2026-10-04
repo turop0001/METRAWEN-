@@ -76,6 +76,16 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
+  if (cq.data === 'em:ok' || cq.data === 'em:no') {
+    const bridge = require('./_lib/emailbridge');
+    let ok = false;
+    try { ok = cq.data === 'em:ok' ? await bridge.approve() : (await bridge.reject(), false); } catch (e) { console.error('telegram: email bridge', e); }
+    try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: cq.data === 'em:ok' ? (ok ? 'Почта подключена' : 'Запрос устарел') : 'Отклонено' }); } catch (e) {}
+    try { await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: cq.message.message_id, reply_markup: { inline_keyboard: [] } }); } catch (e) {}
+    try { await tg('sendMessage', { chat_id: chatId, text: cq.data === 'em:ok' ? (ok ? '✅ Почта подключена к Sell Manager. Письма на sales@, support@, info@, help@ будут приходить сюда черновиками.' : 'Запрос на подключение почты устарел. Запустите register() в скрипте ещё раз.') : 'Подключение почты отклонено.' }); } catch (e) {}
+    return res.status(200).json({ ok: true });
+  }
+
   const m = /^(rg|sh|sk|ok):([a-z0-9]+)$/.exec(String(cq.data || ''));
   if (!m) {
     try { await tg('answerCallbackQuery', { callback_query_id: cq.id }); } catch (e) {}

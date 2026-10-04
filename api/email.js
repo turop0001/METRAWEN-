@@ -32,11 +32,20 @@ function parseFrom(v) {
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') return res.status(405).json({ ok: false });
-  if (!bridge.authorized(req)) return res.status(401).json({ ok: false, error: 'unauthorized' });
-
   let b = req.body;
   if (typeof b === 'string') { try { b = JSON.parse(b); } catch (e) { b = {}; } }
   if (!b || typeof b !== 'object') b = {};
+
+  // Первое подключение скрипта: ключ подтверждает владелец кнопкой в Telegram.
+  if (b.action === 'register') {
+    if (await bridge.hasKey()) return res.status(403).json({ ok: false, error: 'already_connected' });
+    try {
+      const sent = await bridge.register(req.headers['x-email-secret'], b.replyUrl);
+      return res.status(200).json({ ok: true, pending: true, sent: sent });
+    } catch (e) { return res.status(400).json({ ok: false, error: String(e.message || e).slice(0, 80) }); }
+  }
+
+  if (!(await bridge.authorized(req))) return res.status(401).json({ ok: false, error: 'unauthorized' });
 
   await bridge.rememberBridge(b.replyUrl);
 
