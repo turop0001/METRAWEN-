@@ -19,6 +19,7 @@ function leadToText(lead) {
   const rows = [
     ['Form', lead.label],
     ['Channel', (lead.channel === 'line' || lead.channel === 'telegram' || lead.channel === 'whatsapp' || lead.channel === 'chat') ? (lead.channel === 'line' ? 'LINE' : lead.channel === 'whatsapp' ? 'WhatsApp' : lead.channel === 'chat' ? 'Website' : 'Telegram') + ' chat: a short chat message, no subject line, no email greeting or formatting. Return subject as an empty string. Reply in the language of the lead message.' : ''],
+    ['Channel (email)', lead.channel === 'email' ? 'Email reply to a client who wrote to ' + (lead.emailTo || 'the company address') + '. Write a proper short email: greeting by name (Здравствуйте, Анна / Hi Anna), then 3-8 plain sentences in the same live consultative style, then a sign-off on its own lines: your first name and then METRAWEN. No marketing formatting, no bullet lists unless the client asked for options. Put subject as Re: plus their subject.' : ''],
     ['Client name (this is the client, NOT Dmitry)', lead.name],
     ['Contact', lead.contact],
     ['Company', lead.company],
@@ -106,7 +107,7 @@ function routeInfo(lead) {
   if (ch === 'telegram') return { from: 'Telegram (бот)', to: 'в Telegram клиенту, автоматически после «Подтвердить»' };
   if (ch === 'whatsapp') return { from: 'WhatsApp', to: 'в WhatsApp клиенту, автоматически после «Подтвердить»' };
   if (ch === 'chat') return { from: 'Чат на сайте', to: 'в чат на сайте, автоматически после «Подтвердить» (клиент увидит, пока окно открыто)' };
-  if (ch === 'email') return { from: 'Email', to: 'на email клиента (отправка пока вручную)' };
+  if (ch === 'email') return { from: 'Email', to: 'на email клиента, автоматически после «Подтвердить»' };
   return { from: 'Сайт, форма заявки', to: 'на email клиента (отправка пока вручную, скопируйте текст после «Подтвердить»)' };
 }
 
@@ -123,7 +124,7 @@ function formatDraft(lead, d) {
     '<b>Откуда:</b> ' + routeInfo(lead).from,
     lead.contact ? '<b>Кому:</b> ' + esc(lead.contact) : null,
     '<b>Куда уйдёт ответ:</b> ' + routeInfo(lead).to,
-    chat && lead.message ? '<b>Клиент написал:</b> ' + esc(String(lead.message).slice(0, 500)) : null,
+    (chat || lead.channel === 'email') && lead.message ? '<b>Клиент написал:</b> ' + esc(String(lead.message).slice(0, 500)) : null,
     '<b>Тип обращения:</b> ' + esc(INTENT_RU[d.intent] || d.intent || 'не определён'),
     d.stage === 'hot' ? '<b>🔥 ГОРЯЧИЙ КЛИЕНТ</b>, готов двигаться' : null,
     d.summary ? '<b>Что известно:</b> ' + esc(String(d.summary).slice(0, 400)) : null,
@@ -146,6 +147,7 @@ function newId() {
 
 function convKey(lead) {
   if (lead.chatSid) return 'chat:' + lead.chatSid;
+  if (lead.emailAddr) return 'email:' + lead.emailAddr;
   if (lead.waId) return 'wa:' + lead.waId;
   if (lead.tgChatId) return 'tg:' + lead.tgChatId;
   if (lead.lineUserId) return 'line:' + lead.lineUserId;
@@ -318,13 +320,18 @@ async function handleAction(action, id, message) {
     const isTg = rec.lead.channel === 'telegram' && rec.lead.tgChatId;
     const isWa = rec.lead.channel === 'whatsapp' && rec.lead.waId;
     const isChat = rec.lead.channel === 'chat' && rec.lead.chatSid;
-    const isLine = (rec.lead.channel === 'line' && rec.lead.lineUserId) || isTg || isWa || isChat;
-    const chName = isChat ? 'ЧАТ НА САЙТЕ' : isTg ? 'TELEGRAM' : isWa ? 'WHATSAPP' : 'LINE';
+    const isEmail = rec.lead.channel === 'email' && rec.lead.emailAddr;
+    const isLine = (rec.lead.channel === 'line' && rec.lead.lineUserId) || isTg || isWa || isChat || isEmail;
+    const chName = isEmail ? 'EMAIL' : isChat ? 'ЧАТ НА САЙТЕ' : isTg ? 'TELEGRAM' : isWa ? 'WHATSAPP' : 'LINE';
     let sentLine = false;
     let lineErr = '';
     if (isLine) {
       try {
-        if (isChat) {
+        if (isEmail) {
+          const subj = String(dd.subject || '').trim() || ('Re: ' + String(rec.lead.emailSubject || '').replace(/^(re:\s*)+/i, ''));
+          await require('./emailbridge').send(rec.lead, /^re:/i.test(subj) ? subj : 'Re: ' + subj, dd.body || '');
+        }
+        else if (isChat) {
           const ck = 'chat:' + rec.lead.chatSid;
           const cc = (await loadJson(ck)) || { msgs: [] };
           cc.msgs.push({ r: 't', t: String(dd.body || '').slice(0, 3500), ts: Date.now() });
@@ -363,7 +370,7 @@ async function handleAction(action, id, message) {
       '────────────────',
       '<b>Откуда:</b> ' + routeInfo(rec.lead).from,
       rec.lead.contact ? '<b>Кому:</b> ' + esc(rec.lead.contact) : null,
-      !isLine && dd.subject ? '<b>Тема:</b> ' + esc(dd.subject) : null,
+      (!isLine || isEmail) && dd.subject ? '<b>Тема:</b> ' + esc(dd.subject) : null,
       '',
       '<pre>' + esc(String(dd.body || '').slice(0, 3000)) + '</pre>',
       tail ? '' : null,
