@@ -58,12 +58,25 @@
     },
     "api/sale.js": {
       "maxDuration": 30
+    },
+    "api/cron.js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [
     {
       "source": "/p/:id",
       "destination": "/p.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron?job=weekly",
+      "schedule": "0 2 * * 1"
+    },
+    {
+      "path": "/api/cron?job=tick",
+      "schedule": "0 1 * * *"
     }
   ]
 }

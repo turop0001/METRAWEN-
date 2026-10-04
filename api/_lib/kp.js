@@ -62,6 +62,9 @@ async function draftFromConversation(lead, lang) {
   const j = JSON.parse(out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1));
   const kp = blank(lang);
   kp.client.name = String(lead.name || '').slice(0, 80);
+  const em = String(lead.emailAddr || '') || (String(lead.contact || '').match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i) || [''])[0];
+  if (em) kp.client.email = em.toLowerCase();
+  if (lead.company) kp.client.company = String(lead.company).slice(0, 80);
   kp.title = String(j.title || '').slice(0, 140);
   kp.situation = String(j.situation || ''); kp.solution = String(j.solution || ''); kp.result = String(j.result || '');
   kp.items = (j.items || []).map(function (x) { return fromCatalog(x.id, kp.lang, kp.currency, x.desc); }).filter(Boolean);

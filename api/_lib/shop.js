@@ -159,7 +159,7 @@ async function hunterStage(email, stage, note) {
       await ncall('PATCH', '/blocks/' + pg.id + '/children', { children: [{ object: 'block', type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: (d + ' · ' + note).slice(0, 1900) } }] } }] });
     }
     return true;
-  } catch (e) { console.error('shop: хантер не обновлён', e); return false; }
+  } catch (e) { await require('./alert').report('Хантер магазина: этап «' + (stage || 'заметка') + '»', e, email); return false; }
 }
 
 // ---------- продажи ----------
@@ -182,6 +182,10 @@ async function markSale(text, meta) {
       hit = e; break;
     }
   }
+  try {
+    await require('./ops').logSale({ product: meta && meta.product, amount: meta && meta.amount, source: meta && meta.source, hunter: !!hit });
+    await require('./alert').stat('sales');
+  } catch (e) { console.error('shop: журнал продаж', e); }
   const { tg } = require('./tg');
   await tg('sendMessage', { chat_id: process.env.TELEGRAM_CHAT_ID, parse_mode: 'HTML',
     text: '💰 <b>ПРОДАЖА</b> · ' + String((meta && meta.source) || 'площадка') + (meta && meta.product ? '\nТовар: ' + String(meta.product).slice(0, 120) : '') + (meta && meta.amount ? '\nСумма: ' + meta.amount : '') +
@@ -190,7 +194,7 @@ async function markSale(text, meta) {
 }
 
 async function hunterDecline(email) {
-  try { const pg = await findLead(email); if (pg) await ncall('PATCH', '/pages/' + pg.id, { properties: { 'Этап': { select: { name: 'Отказ/Удалено' } } } }); } catch (e) { /* ничего */ }
+  try { const pg = await findLead(email); if (pg) await ncall('PATCH', '/pages/' + pg.id, { properties: { 'Этап': { select: { name: 'Отказ/Удалено' } } } }); } catch (e) { await require('./alert').report('Хантер магазина: отказ', e, email); }
 }
 
 module.exports = { ncall, HUNTER_DB, findLead, isSaleMail, markSale, hunterDecline, loadCatalog, catalogText, systemPrompt, checkDraft, hunterStage, isMarketplace, OWN_SHOP };

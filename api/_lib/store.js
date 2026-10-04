@@ -29,4 +29,19 @@ async function loadJson(key) {
   try { return JSON.parse(v); } catch (e) { return null; }
 }
 
-module.exports = { saveJson, loadJson, enabled: () => !!cfg() };
+// Счётчик для статистики: +1 и срок жизни. Без Redis молча ничего не делает.
+async function incr(key, ttlSeconds) {
+  if (!cfg()) return 0;
+  const n = await cmd(['INCR', key]);
+  if (n === 1) await cmd(['EXPIRE', key, String(ttlSeconds || 60 * 60 * 24 * 60)]);
+  return n;
+}
+
+// Ключ «один раз за период»: true, если ключ поставлен сейчас (его ещё не было).
+async function once(key, ttlSeconds) {
+  if (!cfg()) return true;
+  const r = await cmd(['SET', key, '1', 'NX', 'EX', String(ttlSeconds || 60)]);
+  return r === 'OK';
+}
+
+module.exports = { saveJson, loadJson, incr, once, enabled: () => !!cfg() };

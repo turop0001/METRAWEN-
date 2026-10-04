@@ -4,6 +4,8 @@ const { handleNewLead } = require('./_lib/sellmanager');
 const bridge = require('./_lib/emailbridge');
 const shop = require('./_lib/shop');
 const { saveJson, loadJson, enabled: storeEnabled } = require('./_lib/store');
+const ops = require('./_lib/ops');
+const { report, stat } = require('./_lib/alert');
 
 const SKIP_FROM = /(no-?reply|do-?not-?reply|mailer-daemon|postmaster|notifications?@|bounce|newsletter|marketing@|@(.+\.)?(google|googlemail|vercel|github|notion|porkbun|stripe|paypal|payoneer|canva|facebookmail|instagram|linkedin|telegram)\.)/i;
 const SKIP_SUBJECT = /^(undelivered|delivery status|automatic reply|auto-?reply|out of office|автоответ|не доставлено)/i;
@@ -39,7 +41,7 @@ module.exports = async function handler(req, res) {
 
   // Первое подключение скрипта: ключ подтверждает владелец кнопкой в Telegram.
   if (b.action === 'register') {
-    const scope = b.scope === 'shop' ? 'shop' : 'main';
+    const scope = b.scope === 'shop' ? 'shop' : b.scope === 'agency' ? 'agency' : 'main';
     if (await bridge.hasKey(scope)) return res.status(403).json({ ok: false, error: 'already_connected' });
     try {
       const sent = await bridge.register(req.headers['x-email-secret'], b.replyUrl, scope);
@@ -51,13 +53,18 @@ module.exports = async function handler(req, res) {
   if (!scope) return res.status(401).json({ ok: false, error: 'unauthorized' });
 
   await bridge.rememberBridge(b.replyUrl, scope);
+  await ops.seen(scope);
+  // служебный вызов моста раз в 10 минут: напоминания, контроль мостов, фоновая чистка
+  if (b.action === 'tick') return res.status(200).json(await ops.tick());
 
   const f = parseFrom(b.from);
   const subject = String(b.subject || '').slice(0, 300);
   const text = cleanBody(b.body);
   if (!f.addr || !text) return res.status(200).json({ ok: true, skipped: 'empty' });
   const shopMode = scope === 'shop';
-  if (shopMode ? shop.OWN_SHOP.test(f.addr) : (/@metrawen\.com$/i.test(f.addr) || f.addr === 'metrawen.team@gmail.com')) return res.status(200).json({ ok: true, skipped: 'own' });
+  const agencyMode = scope === 'agency';
+  const ownBoxes = (Array.isArray(b.boxes) ? b.boxes : []).map(function (x) { return String(x).toLowerCase(); });
+  if (shopMode ? shop.OWN_SHOP.test(f.addr) : (/@metrawen\.com$/i.test(f.addr) || f.addr === 'metrawen.team@gmail.com' || ownBoxes.indexOf(f.addr) >= 0)) return res.status(200).json({ ok: true, skipped: 'own' });
   // Письма площадок (Etsy, Gumroad, Lava, Tribute) для ящика магазина пропускать нельзя: это сообщения покупателей.
   const market = shopMode && shop.isMarketplace(f.addr);
   if ((!market && SKIP_FROM.test(f.addr)) || SKIP_SUBJECT.test(subject)) return res.status(200).json({ ok: true, skipped: 'auto' });
@@ -75,13 +82,16 @@ module.exports = async function handler(req, res) {
   }
 
   if (shopMode && market && shop.isSaleMail(subject)) {
-    await shop.markSale(String(b.body || ''), { source: f.addr.split('@')[1], product: subject });
+    try { await shop.markSale(String(b.body || ''), { source: f.addr.split('@')[1], product: subject }); }
+    catch (e) { await report('Продажа из письма площадки', e, subject); }
     return res.status(200).json({ ok: true, sale: true });
   }
 
   const alias = String(b.to || '').toLowerCase();
+  await stat(shopMode ? 'in:email_shop' : 'in:email');
+  try {
   await handleNewLead({
-    label: (shopMode ? 'Shop Email' : 'Email') + (alias ? ' → ' + alias : ''),
+    label: (shopMode ? 'Shop Email' : agencyMode ? 'Холодная почта агентства' : 'Email') + (alias ? ' → ' + alias : ''),
     channel: 'email',
     brand: shopMode ? 'shop' : '',
     emailScope: scope,
@@ -94,5 +104,9 @@ module.exports = async function handler(req, res) {
     contact: (f.name ? f.name + ' <' + f.addr + '>' : f.addr),
     message: (subject ? 'Тема письма: ' + subject + '\n\n' : '') + text
   });
+  } catch (e) {
+    await report('Письмо не обработано', e, f.addr + ' · ' + subject);
+    return res.status(500).json({ ok: false });
+  }
   return res.status(200).json({ ok: true });
 };

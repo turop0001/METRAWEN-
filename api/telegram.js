@@ -4,6 +4,64 @@ const crypto = require('crypto');
 const { tg } = require('./_lib/tg');
 const { handleAction, handleNewLead } = require('./_lib/sellmanager');
 const { saveJson, loadJson, enabled: storeEnabled } = require('./_lib/store');
+const { report, esc } = require('./_lib/alert');
+
+const HELP = [
+  '<b>Команды Sell Manager</b>',
+  '/pack 10 — пачка холодных писем METRAWEN Shop (можно добавить товар: /pack 10 #24)',
+  '/pack agency 10 Клиники — пачка писем агентства по одной отрасли (нужен подключённый ящик холодной почты)',
+  '/dm 10 Салоны красоты — карточки для ручных DM агентства (Instagram, WhatsApp, телефон, LINE)',
+  '/dm shop 10 — карточки постов/комментариев/каталогов магазина (только товары со ссылкой)',
+  '/report — недельный отчёт прямо сейчас',
+  '/cleandrafts — почистить черновики Хантера магазина от плейсхолдеров (идёт в фоне)',
+  '/kp — редактор КП'
+].join('\n');
+
+// Разбор «/pack agency 10 Клиники» → { brand, n, seg }.
+function parseArgs(text, def) {
+  const parts = text.split(/\s+/).slice(1);
+  let brand = '';
+  if (parts[0] && /^(agency|агентство|shop|магазин)$/i.test(parts[0])) brand = /^(agency|агентство)$/i.test(parts.shift()) ? 'agency' : 'shop';
+  let n = def;
+  if (parts[0] && /^\d+$/.test(parts[0])) n = parseInt(parts.shift(), 10);
+  return { brand: brand, n: Math.min(Math.max(n, 1), 30), seg: parts.join(' ').trim() };
+}
+
+async function ownerCommand(text, chatId) {
+  const cmd = text.split(/\s+/)[0].toLowerCase().replace(/@.*/, '');
+  if (cmd === '/help') { await tg('sendMessage', { chat_id: chatId, text: HELP, parse_mode: 'HTML' }); return; }
+  if (cmd === '/report') { await tg('sendMessage', { chat_id: chatId, text: 'Собираю отчёт...' }); await require('./_lib/ops').weekly(true); return; }
+  if (cmd === '/cleandrafts') {
+    await require('./_lib/cleanup').start();
+    await tg('sendMessage', { chat_id: chatId, text: '🧹 Чистка черновиков Хантера магазина запущена: по 4 карточки каждые 10 минут, исходный текст сохраняется в теле карточки. Напишу, когда закончу.' });
+    return;
+  }
+  if (cmd === '/dm') {
+    const a = parseArgs(text, 10);
+    const brand = a.brand || 'agency';
+    await tg('sendMessage', { chat_id: chatId, text: 'Готовлю ' + a.n + ' карточек для ручной отправки (' + (brand === 'shop' ? 'магазин' : 'агентство') + (a.seg ? ', ' + a.seg : '') + ')...' });
+    const n = await require('./_lib/dm').sendPack(chatId, brand, a.n, a.seg);
+    await tg('sendMessage', { chat_id: chatId, text: n ? 'Готово: ' + n + '. Отправьте текст вручную и нажмите «Отправил» — этап в Notion поставлю сам.' : (brand === 'shop' ? 'Нет карточек: у подходящих товаров ещё нет ссылок в каталоге или черновики ждут чистки (/cleandrafts).' : 'Нет лидов без email с готовым черновиком' + (a.seg ? ' в отрасли «' + a.seg + '»' : '') + '.') });
+    return;
+  }
+  // /pack
+  const op = require('./_lib/outreach');
+  const a = parseArgs(text, 10);
+  const brand = a.brand || 'shop';
+  await tg('sendMessage', { chat_id: chatId, text: 'Готовлю пачку из ' + a.n + ' писем (' + (brand === 'agency' ? 'агентство' : 'магазин') + (a.seg ? ', ' + a.seg : '') + ')...' });
+  const p = await op.buildPack(a.n, brand, a.seg);
+  for (let i = 0; i < p.items.length; i++) {
+    const it = p.items[i];
+    await tg('sendMessage', { chat_id: chatId, parse_mode: 'HTML', disable_web_page_preview: true,
+      text: (i + 1) + '/' + p.items.length + ' · <b>' + esc(it.name) + '</b> · ' + esc(it.to) + (it.seg ? ' · ' + esc(it.seg) : '') + '\n<b>Тема:</b> ' + esc(it.subject) + '\n<blockquote>' + esc(it.body) + '</blockquote>' });
+  }
+  const agencyBridge = brand === 'agency' ? await loadJson('email:agency:key') : true;
+  const tail = brand === 'agency'
+    ? (agencyBridge ? 'Отправка пойдёт сама по графику прогрева с ящиков холодной почты агентства, повтор через 4 дня без ответа.' : '⚠️ Ящик холодной почты агентства ещё не подключён: после одобрения письма встанут в очередь и уйдут, когда мост подключится. С metrawen.com холодные письма не отправляются.')
+    : 'Отправка пойдёт сама по графику прогрева (с 3 ящиков getmetrawen.com, повтор через 4 дня без ответа).';
+  await tg('sendMessage', { chat_id: chatId, text: p.items.length ? 'Пачка: ' + p.items.length + ' писем. ' + tail : 'Нет лидов, готовых к рассылке' + (a.seg ? ' по «' + a.seg + '»' : '') + '.',
+    reply_markup: p.items.length ? { inline_keyboard: [[{ text: 'Одобрить пачку', callback_data: 'op:ok:' + p.id }, { text: 'Отменить', callback_data: 'op:no:' + p.id }]] } : undefined });
+}
 
 // Обычное сообщение клиента боту. Клиенту ничего не уходит без «Подтвердить», кроме приветствия на /start.
 async function handleClientMessage(msg, ownerChatId) {
@@ -55,6 +113,9 @@ module.exports = async function handler(req, res) {
     return res.status(401).json({ ok: false });
   }
 
+  // попутно: напоминания и контроль мостов (не чаще раза в 8 минут, ошибки не мешают ответу)
+  try { await require('./_lib/ops').tick(true); } catch (e) { console.error('telegram: tick', e); }
+
   let update = req.body;
   if (typeof update === 'string') { try { update = JSON.parse(update); } catch (e) { update = {}; } }
   const msg = update && update.message;
@@ -64,19 +125,9 @@ module.exports = async function handler(req, res) {
       await tg('sendMessage', { chat_id: chatId, text: 'Редактор КП: ' + K.adminUrl() + '\nСсылка с ключом доступа, не пересылайте её.', disable_web_page_preview: true });
       return res.status(200).json({ ok: true });
     }
-    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/pack/i.test(String(msg.text || ''))) {
-      const op = require('./_lib/outreach');
-      const n = Math.min(Math.max(parseInt(String(msg.text).split(/\s+/)[1], 10) || 10, 1), 30);
-      await tg('sendMessage', { chat_id: chatId, text: 'Готовлю пачку из ' + n + ' писем по Хантеру...' });
-      const p = await op.buildPack(n);
-      const esc = function (t) { return String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
-      for (let i = 0; i < p.items.length; i++) {
-        const it = p.items[i];
-        await tg('sendMessage', { chat_id: chatId, parse_mode: 'HTML', disable_web_page_preview: true,
-          text: (i + 1) + '/' + p.items.length + ' · <b>' + esc(it.name) + '</b> · ' + esc(it.to) + '\n<b>Тема:</b> ' + esc(it.subject) + '\n<blockquote>' + esc(it.body) + '</blockquote>' });
-      }
-      await tg('sendMessage', { chat_id: chatId, text: p.items.length ? 'Пачка: ' + p.items.length + ' писем. Отправка пойдёт сама по графику прогрева (с 3 ящиков, повтор через 4 дня без ответа).' : 'Нет лидов, готовых к рассылке.',
-        reply_markup: p.items.length ? { inline_keyboard: [[{ text: 'Одобрить пачку', callback_data: 'op:ok:' + p.id }, { text: 'Отменить', callback_data: 'op:no:' + p.id }]] } : undefined });
+    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/(pack|dm|report|cleandrafts|help)\b/i.test(String(msg.text || ''))) {
+      try { await ownerCommand(String(msg.text || '').trim(), chatId); }
+      catch (e) { await report('Команда ' + String(msg.text).split(/\s+/)[0], e); }
       return res.status(200).json({ ok: true });
     }
     await handleClientMessage(msg, chatId);
@@ -101,16 +152,26 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
-  const emm = /^em:(ok|no)(:shop)?$/.exec(String(cq.data || ''));
+  const dmm = /^dm:(s|k|x):(a|s):([a-f0-9]{32})$/.exec(String(cq.data || ''));
+  if (dmm) {
+    let txt = '';
+    try { txt = await require('./_lib/dm').action(dmm[1], dmm[2], dmm[3]); }
+    catch (e) { txt = 'Не получилось обновить Notion'; await report('DM-карточка: этап', e); }
+    try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: txt.slice(0, 190) }); } catch (e) {}
+    if (dmm[1] !== 'k') { try { await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: cq.message.message_id, reply_markup: { inline_keyboard: [[{ text: (dmm[1] === 's' ? '✅ ' : '⛔ ') + txt.slice(0, 50), callback_data: 'noop' }]] } }); } catch (e) {} }
+    return res.status(200).json({ ok: true });
+  }
+
+  const emm = /^em:(ok|no)(:shop|:agency)?$/.exec(String(cq.data || ''));
   if (emm) {
     const bridge = require('./_lib/emailbridge');
-    const sc = emm[2] ? 'shop' : 'main';
+    const sc = emm[2] ? emm[2].slice(1) : 'main';
     const yes = emm[1] === 'ok';
     let ok = false;
     try { ok = yes ? await bridge.approve(sc) : (await bridge.reject(sc), false); } catch (e) { console.error('telegram: email bridge', e); }
     try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: yes ? (ok ? 'Почта подключена' : 'Запрос устарел') : 'Отклонено' }); } catch (e) {}
     try { await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: cq.message.message_id, reply_markup: { inline_keyboard: [] } }); } catch (e) {}
-    try { await tg('sendMessage', { chat_id: chatId, text: yes ? (ok ? (sc === 'shop' ? '✅ Почта METRAWEN Shop подключена. Письма на getmetrawen.com и от площадок будут приходить сюда черновиками (Алина / Emma).' : '✅ Почта подключена к Sell Manager. Письма на sales@, support@, info@, help@ будут приходить сюда черновиками.') : 'Запрос на подключение почты устарел. Запустите register() в скрипте ещё раз.') : 'Подключение почты отклонено.' }); } catch (e) {}
+    try { await tg('sendMessage', { chat_id: chatId, text: yes ? (ok ? (sc === 'agency' ? '✅ Холодная почта агентства подключена. Ответы лидов будут приходить сюда черновиками (Елена / Nicole), рассылка: /pack agency 10 <отрасль>.' : sc === 'shop' ? '✅ Почта METRAWEN Shop подключена. Письма на getmetrawen.com и от площадок будут приходить сюда черновиками (Алина / Emma).' : '✅ Почта подключена к Sell Manager. Письма на sales@, support@, info@, help@ будут приходить сюда черновиками.') : 'Запрос на подключение почты устарел. Запустите register() в скрипте ещё раз.') : 'Подключение почты отклонено.' }); } catch (e) {}
     return res.status(200).json({ ok: true });
   }
 

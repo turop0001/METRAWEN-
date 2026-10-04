@@ -118,7 +118,7 @@ async function logIncoming(lead, intent) {
     const extra = lead.slot ? 'слот: ' + lead.slot : '';
     await upsert(lead, 'in', lead.message || '(пусто)', extra, intent, 'Ждёт ответа');
   } catch (e) {
-    console.error('crm: не записал сообщение клиента', e);
+    await require('./alert').report('CRM входящих: сообщение клиента не записано', e, lead.contact);
   }
 }
 
@@ -128,7 +128,7 @@ async function logReply(lead, body, sent) {
   try {
     await upsert(lead, 'out', body || '', sent ? 'отправлено' : 'подтверждено, отправить вручную', '', 'В диалоге');
   } catch (e) {
-    console.error('crm: не записал ответ', e);
+    await require('./alert').report('CRM входящих: ответ не записан', e, lead.contact);
   }
 }
 

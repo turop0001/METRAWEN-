@@ -3,7 +3,7 @@
 const crypto = require('crypto');
 const { saveJson, loadJson, enabled: storeEnabled } = require('./store');
 
-function pre(scope) { return scope === 'shop' ? 'email:shop:' : 'email:'; }
+function pre(scope) { return scope === 'shop' ? 'email:shop:' : scope === 'agency' ? 'email:agency:' : 'email:'; }
 
 function secret() {
   return String(process.env.EMAIL_BRIDGE_SECRET || '').trim();
@@ -21,7 +21,7 @@ function sha(v) {
 }
 
 // Ключ моста: либо EMAIL_BRIDGE_SECRET из Vercel, либо ключ, который владелец подтвердил кнопкой в Telegram.
-// Возвращает '' (нет доступа), 'main' (ящик компании) или 'shop' (ящик цифровых товаров).
+// Возвращает '' (нет доступа), 'main' (ящик компании), 'shop' (ящик цифровых товаров) или 'agency' (холодная почта агентства).
 async function authorized(req) {
   const h = req.headers['x-email-secret'] || '';
   if (!h) return '';
@@ -32,20 +32,22 @@ async function authorized(req) {
   if (k && k.hash && safeEqual(sha(h), k.hash)) return 'main';
   const ks = await loadJson('email:shop:key');
   if (ks && ks.hash && safeEqual(sha(h), ks.hash)) return 'shop';
+  const ka = await loadJson('email:agency:key');
+  if (ka && ka.hash && safeEqual(sha(h), ka.hash)) return 'agency';
   return '';
 }
 
 // Для исходящих запросов к скрипту используем хэш ключа: скрипт сверяет его со своим.
 async function keyHash(scope) {
   const s = secret();
-  if (s && scope !== 'shop') return sha(s);
+  if (s && (!scope || scope === 'main')) return sha(s);
   if (!storeEnabled()) return '';
   const k = await loadJson(pre(scope) + 'key');
   return (k && k.hash) || '';
 }
 
 async function hasKey(scope) {
-  if (scope !== 'shop' && secret()) return true;
+  if ((!scope || scope === 'main') && secret()) return true;
   if (!storeEnabled()) return false;
   return !!(await loadJson(pre(scope) + 'key'));
 }
@@ -54,6 +56,7 @@ async function hasKey(scope) {
 async function register(key, url, scope) {
   const P = pre(scope);
   const shop = scope === 'shop';
+  const agency = scope === 'agency';
   if (!storeEnabled()) throw new Error('store off');
   if (String(key || '').length < 32) throw new Error('weak key');
   if (await loadJson(P + 'reg:rl')) return false;
@@ -62,11 +65,13 @@ async function register(key, url, scope) {
   const { tg } = require('./tg');
   await tg('sendMessage', {
     chat_id: process.env.TELEGRAM_CHAT_ID,
-    text: shop
+    text: agency
+      ? '🏢 <b>Подключение холодной почты агентства METRAWEN</b>\nСкрипт в отдельном ящике для холодных писем просит доступ: ответы лидов из Hunter CRM будут приходить сюда черновиками (Елена / Nicole), рассылка пойдёт по графику прогрева только после «Одобрить пачку».\nЕсли это вы, нажмите «Подключить».'
+      : shop
       ? '🛍 <b>Подключение почты METRAWEN Shop (цифровые товары)</b>\nСкрипт в ящике metrawen.shop просит доступ: письма с getmetrawen.com и площадок будут приходить сюда черновиками (Алина / Emma), а подтверждённые ответы уйдут клиентам с нужного адреса.\nЕсли это вы, нажмите «Подключить».'
       : '📧 <b>Подключение почты к Sell Manager</b>\nСкрипт в ящике metrawen.team просит доступ: письма с sales@, support@, info@, help@ будут приходить сюда черновиками, а подтверждённые ответы уйдут клиентам с нужного адреса.\nЕсли это вы, нажмите «Подключить».',
     parse_mode: 'HTML',
-    reply_markup: { inline_keyboard: [[{ text: 'Подключить', callback_data: shop ? 'em:ok:shop' : 'em:ok' }, { text: 'Отклонить', callback_data: shop ? 'em:no:shop' : 'em:no' }]] }
+    reply_markup: { inline_keyboard: [[{ text: 'Подключить', callback_data: 'em:ok' + (shop ? ':shop' : agency ? ':agency' : '') }, { text: 'Отклонить', callback_data: 'em:no' + (shop ? ':shop' : agency ? ':agency' : '') }]] }
   });
   return true;
 }
@@ -86,7 +91,7 @@ async function reject(scope) {
 }
 
 async function bridgeUrl(scope) {
-  if (scope !== 'shop' && process.env.EMAIL_SEND_URL) return process.env.EMAIL_SEND_URL;
+  if ((!scope || scope === 'main') && process.env.EMAIL_SEND_URL) return process.env.EMAIL_SEND_URL;
   if (!storeEnabled()) return '';
   const b = await loadJson(pre(scope) + 'bridge');
   return (b && b.url) || '';

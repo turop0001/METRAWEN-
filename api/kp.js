@@ -13,6 +13,7 @@ function total(kp, addonIdx) {
 function publicView(kp) {
   const c = JSON.parse(JSON.stringify(kp));
   delete c.source; delete c.notesPrivate;
+  if (c.client) delete c.client.email;
   return c;
 }
 async function notify(text) {
@@ -68,7 +69,8 @@ module.exports = async function handler(req, res) {
     await K.save(kp);
     const sum = total(kp, addons);
     const extra = addons.map(function (i) { return '+ ' + esc(kp.addons[i].name); }).join('\n');
-    await notify('🔥 <b>КП ПРИНЯТО</b>\n' + esc(kp.client.name || kp.client.company || '') + ' · ' + esc(kp.title) + '\nИтого: <b>' + fmt(sum, kp.currency) + '</b>' + (extra ? '\nДопы:\n' + extra : '') + '\n\nПервый платёж ' + (kp.schedule || [30])[0] + '%: ' + fmt(Math.round(sum * (kp.schedule || [30])[0] / 100), kp.currency) + (kp.payLinks && kp.payLinks[0] ? '' : '\n⚠️ Ссылка на оплату не добавлена, добавьте в форме.') + '\nОткрыть: ' + K.adminUrl(kp.id));
+    const hunterName = await require('./_lib/hunter').kpEvent(kp, 'accepted', fmt(sum, kp.currency));
+    await notify('🔥 <b>КП ПРИНЯТО</b>\n' + esc(kp.client.name || kp.client.company || '') + ' · ' + esc(kp.title) + '\nИтого: <b>' + fmt(sum, kp.currency) + '</b>' + (extra ? '\nДопы:\n' + extra : '') + '\n\nПервый платёж ' + (kp.schedule || [30])[0] + '%: ' + fmt(Math.round(sum * (kp.schedule || [30])[0] / 100), kp.currency) + (kp.payLinks && kp.payLinks[0] ? '' : '\n⚠️ Ссылка на оплату не добавлена, добавьте в форме.') + (hunterName ? '\nHunter CRM: ' + esc(hunterName) + ' → «КП принято»' : '') + '\nОткрыть: ' + K.adminUrl(kp.id));
     return res.status(200).json({ ok: true });
   }
 
@@ -84,6 +86,17 @@ module.exports = async function handler(req, res) {
     if (!['draft', 'sent', 'viewed', 'accepted'].includes(kp.status)) kp.status = 'draft';
     if (body.publish && kp.status === 'draft') kp.status = 'sent';
     await K.save(kp);
+    // Первая отметка «оплачено» → сделка в Hunter CRM (этап «Сделка/Оплачено» + сумма договора).
+    try {
+      const wasPaid = !!(prev && (prev.paid || []).some(Boolean));
+      const nowPaid = (kp.paid || []).some(Boolean);
+      if (nowPaid && !wasPaid) {
+        const sum = total(kp, kp.acceptedAddons || []);
+        const name = await require('./_lib/hunter').kpEvent(kp, 'paid', sum);
+        await require('./_lib/alert').stat('sales');
+        await notify('💰 <b>ОПЛАТА ПО КП</b>\n' + esc(kp.client.name || kp.client.company || '') + ' · ' + esc(kp.title) + '\nСумма договора: <b>' + fmt(sum, kp.currency) + '</b>' + (name ? '\nHunter CRM: ' + esc(name) + ' → «Сделка/Оплачено»' : '\nКлиент не найден в Hunter CRM: впишите email клиента в КП, чтобы связка работала.'));
+      }
+    } catch (e) { await require('./_lib/alert').report('КП: отметка оплаты', e, kp.title); }
     return res.status(200).json({ ok: true, id: kp.id, url: K.publicUrl(kp.id), kp: kp });
   }
   return res.status(400).json({ ok: false });

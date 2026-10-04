@@ -7,6 +7,9 @@ const llm = require('./llm');
 const line = require('./line');
 const crm = require('./crm');
 const shop = require('./shop');
+const hunter = require('./hunter');
+const ops = require('./ops');
+const { report, log, stat } = require('./alert');
 
 
 function detectLang(lead) {
@@ -227,6 +230,7 @@ async function pushChat(sid, text) {
 
 // Чат на сайте: ответ уходит клиенту сразу, без подтверждения. Исключение: сложные вопросы (договор, счёт, юридическое).
 async function handleChatLead(lead) {
+  await stat('in:chat');
   await prepContext(lead);
   const chatId = process.env.TELEGRAM_CHAT_ID;
   let crmIntent = '';
@@ -244,13 +248,14 @@ async function handleChatLead(lead) {
         ? 'Передали ваш вопрос специалисту. Он ответит прямо здесь, в чате.'
         : 'We have passed your question to a specialist. They will reply right here in the chat.';
       await pushChat(lead.chatSid, hold);
-      await tg('sendMessage', {
+      const sentMsg = await tg('sendMessage', {
         chat_id: chatId,
         text: '<b>ЧАТ НА САЙТЕ: нужен ваш ответ</b>\nКлиенту отправлено только уведомление, что вопрос передан специалисту.\n\n' + formatDraft(lead, d),
         parse_mode: 'HTML',
         disable_web_page_preview: true,
         reply_markup: keyboard(id, d.mode)
       });
+      await ops.track(id, sentMsg && sentMsg.result && sentMsg.result.message_id, 'чат на сайте · ' + (lead.contact || ''));
     } else {
       await pushChat(lead.chatSid, d.body);
       await rememberReply(lead, d.body);
@@ -293,9 +298,16 @@ async function logShopReply(lead, body, sent, stage) {
   if (!found) await crm.logReply(lead, body, sent);
 }
 
+// Агентство: лид из Hunter CRM (по email) двигаем по этапам; сообщение всё равно пишем в CRM входящих.
+async function logAgencyIncoming(lead, intent) {
+  await crm.logIncoming(lead, intent);
+  if (hunter.emailOf(lead)) await hunter.incoming(lead, intent);
+}
+
 // Вызывается из api/lead.js после того, как заявка отправлена в Telegram.
 async function handleNewLead(lead) {
   if (lead.channel === 'chat' && lead.chatSid && storeEnabled()) return handleChatLead(lead);
+  if (lead.channel !== 'email') await stat('in:' + (lead.channel || 'site'));
   await prepContext(lead);
   const chatId = process.env.TELEGRAM_CHAT_ID;
   let crmIntent = '';
@@ -310,15 +322,17 @@ async function handleNewLead(lead) {
       await saveJson('lead:' + id, { lead, draft: d });
       withButtons = true;
     }
-    await tg('sendMessage', {
+    const sentMsg = await tg('sendMessage', {
       chat_id: chatId,
       text: formatDraft(lead, d),
       parse_mode: 'HTML',
       disable_web_page_preview: true,
       reply_markup: withButtons ? keyboard(id, d.mode) : undefined
     });
+    if (withButtons) await ops.track(id, sentMsg && sentMsg.result && sentMsg.result.message_id, routeInfo(lead).from + ' · ' + (lead.contact || lead.name || ''));
   } catch (err) {
     console.error('sellmanager: не удалось подготовить черновик', err);
+    await log('Черновик не подготовлен', err, lead.contact || lead.label);
     try {
       await tg('sendMessage', {
         chat_id: chatId,
@@ -328,7 +342,7 @@ async function handleNewLead(lead) {
   }
   // CRM: сохраняем сообщение клиента в Notion (если задан NOTION_TOKEN)
   if (lead.brand === 'shop') await logShopIncoming(lead, crmIntent);
-  else await crm.logIncoming(lead, crmIntent);
+  else await logAgencyIncoming(lead, crmIntent);
   await maybeDraftKp(lead, lastDraft);
 }
 
@@ -347,6 +361,8 @@ async function handleAction(action, id, message) {
 
   if (action === 'ok') {
     const dd = rec.draft || {};
+    await ops.untrack(id);
+    await stat('confirmed');
     const isTg = rec.lead.channel === 'telegram' && rec.lead.tgChatId;
     const isWa = rec.lead.channel === 'whatsapp' && rec.lead.waId;
     const isChat = rec.lead.channel === 'chat' && rec.lead.chatSid;
@@ -392,7 +408,11 @@ async function handleAction(action, id, message) {
     }
     await saveJson('lead:' + id, { lead: rec.lead, draft: dd, approved: true, sent: sentLine });
     if (rec.lead.brand === 'shop') await logShopReply(rec.lead, dd.body || '', isLine ? sentLine : false, dd.stage);
-    else await crm.logReply(rec.lead, dd.body || '', isLine ? sentLine : false);
+    else {
+      await crm.logReply(rec.lead, dd.body || '', isLine ? sentLine : false);
+      if (hunter.emailOf(rec.lead)) await hunter.replied(rec.lead, dd.body || '', isLine ? sentLine : false, dd.intent);
+    }
+    if (isLine && !sentLine) await log('Ответ клиенту не ушёл (' + chName + ')', lineErr, rec.lead.contact);
     await rememberReply(rec.lead, dd.body || '');
     const head = isLine
       ? (sentLine ? '<b>ПОДТВЕРЖДЕНО И ОТПРАВЛЕНО В ' + chName + '</b>' : '<b>ПОДТВЕРЖДЕНО, НО В ' + chName + ' НЕ ОТПРАВИЛОСЬ</b>')
@@ -415,19 +435,26 @@ async function handleAction(action, id, message) {
     return;
   }
   if (action === 'sk') {
+    await ops.untrack(id);
     await tg('sendMessage', { chat_id: chatId, text: 'Пропущено.', reply_to_message_id: message.message_id });
     return;
   }
   const mode = action === 'sh' ? 'shorter' : 'regen';
   const d = await generateDraft(rec.lead, mode, rec.draft);
   await saveJson('lead:' + id, { lead: rec.lead, draft: d });
-  await tg('sendMessage', {
+  const sentMsg = await tg('sendMessage', {
     chat_id: chatId,
     text: formatDraft(rec.lead, d),
     parse_mode: 'HTML',
     disable_web_page_preview: true,
     reply_markup: keyboard(id, d.mode)
   });
+  // напоминание переезжает на новый вариант черновика, отсчёт времени сохраняется
+  try {
+    const list = (await loadJson('sm:pending')) || [];
+    const x = list.find(function (y) { return y.id === id; });
+    if (x && sentMsg && sentMsg.result) { x.m = sentMsg.result.message_id; await saveJson('sm:pending', list, 60 * 60 * 24 * 7); }
+  } catch (e) { /* ничего */ }
 }
 
 module.exports = { handleNewLead, handleAction };
