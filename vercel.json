@@ -52,6 +52,12 @@
     },
     "api/kp.js": {
       "maxDuration": 30
+    },
+    "api/outreach.js": {
+      "maxDuration": 60
+    },
+    "api/sale.js": {
+      "maxDuration": 30
     }
   },
   "rewrites": [

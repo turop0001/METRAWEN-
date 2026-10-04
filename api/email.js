@@ -2,6 +2,7 @@
 // Письма передаёт Apps Script из ящика metrawen.team. Дмитрию в Telegram приходит черновик ответа.
 const { handleNewLead } = require('./_lib/sellmanager');
 const bridge = require('./_lib/emailbridge');
+const shop = require('./_lib/shop');
 const { saveJson, loadJson, enabled: storeEnabled } = require('./_lib/store');
 
 const SKIP_FROM = /(no-?reply|do-?not-?reply|mailer-daemon|postmaster|notifications?@|bounce|newsletter|marketing@|@(.+\.)?(google|googlemail|vercel|github|notion|porkbun|stripe|paypal|payoneer|canva|facebookmail|instagram|linkedin|telegram)\.)/i;
@@ -38,23 +39,28 @@ module.exports = async function handler(req, res) {
 
   // Первое подключение скрипта: ключ подтверждает владелец кнопкой в Telegram.
   if (b.action === 'register') {
-    if (await bridge.hasKey()) return res.status(403).json({ ok: false, error: 'already_connected' });
+    const scope = b.scope === 'shop' ? 'shop' : 'main';
+    if (await bridge.hasKey(scope)) return res.status(403).json({ ok: false, error: 'already_connected' });
     try {
-      const sent = await bridge.register(req.headers['x-email-secret'], b.replyUrl);
+      const sent = await bridge.register(req.headers['x-email-secret'], b.replyUrl, scope);
       return res.status(200).json({ ok: true, pending: true, sent: sent });
     } catch (e) { return res.status(400).json({ ok: false, error: String(e.message || e).slice(0, 80) }); }
   }
 
-  if (!(await bridge.authorized(req))) return res.status(401).json({ ok: false, error: 'unauthorized' });
+  const scope = await bridge.authorized(req);
+  if (!scope) return res.status(401).json({ ok: false, error: 'unauthorized' });
 
-  await bridge.rememberBridge(b.replyUrl);
+  await bridge.rememberBridge(b.replyUrl, scope);
 
   const f = parseFrom(b.from);
   const subject = String(b.subject || '').slice(0, 300);
   const text = cleanBody(b.body);
   if (!f.addr || !text) return res.status(200).json({ ok: true, skipped: 'empty' });
-  if (/@metrawen\.com$/i.test(f.addr) || f.addr === 'metrawen.team@gmail.com') return res.status(200).json({ ok: true, skipped: 'own' });
-  if (SKIP_FROM.test(f.addr) || SKIP_SUBJECT.test(subject)) return res.status(200).json({ ok: true, skipped: 'auto' });
+  const shopMode = scope === 'shop';
+  if (shopMode ? shop.OWN_SHOP.test(f.addr) : (/@metrawen\.com$/i.test(f.addr) || f.addr === 'metrawen.team@gmail.com')) return res.status(200).json({ ok: true, skipped: 'own' });
+  // Письма площадок (Etsy, Gumroad, Lava, Tribute) для ящика магазина пропускать нельзя: это сообщения покупателей.
+  const market = shopMode && shop.isMarketplace(f.addr);
+  if ((!market && SKIP_FROM.test(f.addr)) || SKIP_SUBJECT.test(subject)) return res.status(200).json({ ok: true, skipped: 'auto' });
 
   if (storeEnabled()) {
     const seen = 'em:seen:' + String(b.id || '');
@@ -68,10 +74,18 @@ module.exports = async function handler(req, res) {
     if (n > 6) return res.status(200).json({ ok: true, skipped: 'rate' });
   }
 
+  if (shopMode && market && shop.isSaleMail(subject)) {
+    await shop.markSale(String(b.body || ''), { source: f.addr.split('@')[1], product: subject });
+    return res.status(200).json({ ok: true, sale: true });
+  }
+
   const alias = String(b.to || '').toLowerCase();
   await handleNewLead({
-    label: 'Email' + (alias ? ' → ' + alias : ''),
+    label: (shopMode ? 'Shop Email' : 'Email') + (alias ? ' → ' + alias : ''),
     channel: 'email',
+    brand: shopMode ? 'shop' : '',
+    emailScope: scope,
+    noSend: market,
     emailAddr: f.addr,
     emailThread: String(b.threadId || ''),
     emailTo: alias,

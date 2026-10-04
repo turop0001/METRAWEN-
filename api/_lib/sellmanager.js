@@ -6,6 +6,7 @@ const { draftFromRules } = require('./rules');
 const llm = require('./llm');
 const line = require('./line');
 const crm = require('./crm');
+const shop = require('./shop');
 
 
 function detectLang(lead) {
@@ -16,17 +17,18 @@ function detectLang(lead) {
 }
 
 function leadToText(lead) {
+  const isShop = lead.brand === 'shop';
   const rows = [
     ['Form', lead.label],
     ['Channel', (lead.channel === 'line' || lead.channel === 'telegram' || lead.channel === 'whatsapp' || lead.channel === 'chat') ? (lead.channel === 'line' ? 'LINE' : lead.channel === 'whatsapp' ? 'WhatsApp' : lead.channel === 'chat' ? 'Website' : 'Telegram') + ' chat: a short chat message, no subject line, no email greeting or formatting. Return subject as an empty string. Reply in the language of the lead message.' : ''],
-    ['Channel (email)', lead.channel === 'email' ? 'Email reply to a client who wrote to ' + (lead.emailTo || 'the company address') + '. Write a proper short email: greeting by name (Здравствуйте, Анна / Hi Anna), then 3-8 plain sentences in the same live consultative style, then a sign-off on its own lines: your first name and then METRAWEN. No marketing formatting, no bullet lists unless the client asked for options. Put subject as Re: plus their subject.' : ''],
+    ['Channel (email)', isShop && lead.channel === 'email' ? 'Email reply to a person who wrote to ' + (lead.emailTo || 'the shop address') + (lead.noSend ? ' (a marketplace message: it will be pasted into the marketplace chat, write it as a chat message without subject)' : '') + '. Write a short plain email: greeting by name, 2-6 sentences, no sign-off (the mailbox adds the team signature). Subject: Re: plus their subject.' : lead.channel === 'email' ? 'Email reply to a client who wrote to ' + (lead.emailTo || 'the company address') + '. Write a proper short email: greeting by name (Здравствуйте, Анна / Hi Anna), then 3-8 plain sentences in the same live consultative style, then a sign-off on its own lines: your first name and then METRAWEN. No marketing formatting, no bullet lists unless the client asked for options. Put subject as Re: plus their subject.' : ''],
     ['Client name (this is the client, NOT Dmitry)', lead.name],
     ['Contact', lead.contact],
     ['Company', lead.company],
     ['Industry', lead.industry],
     ['Chosen slot', lead.slot],
     ['Style', lead.channel === 'chat' ? 'Live website chat. Short and warm, 1-4 sentences, plain text. No signature, no sign-off line, no subject.' : ''],
-    ['Your name in this conversation', detectLang(lead) === 'ru' ? 'Елена (менеджер METRAWEN)' : 'Nicole (METRAWEN manager)'],
+    ['Your name in this conversation', isShop ? (detectLang(lead) === 'ru' ? 'Алина (команда METRAWEN Shop)' : 'Emma (METRAWEN Shop team)') : detectLang(lead) === 'ru' ? 'Елена (менеджер METRAWEN)' : 'Nicole (METRAWEN manager)'],
     ['Conversation stage', lead.firstContact ? 'FIRST message from this person: greet and introduce yourself once.' : 'Ongoing conversation: do not introduce yourself again.'],
     ['Earlier messages in this conversation', lead.history],
     ['Message', lead.message],
@@ -51,9 +53,15 @@ async function callModel(lead, mode, previous) {
   if (previous && mode === 'shorter') {
     instruction += '\n\nHere is the previous draft. Rewrite it noticeably shorter (2-4 sentences), same rules:\n<previous>\n' + previous.body + '\n</previous>';
   }
-  const text = await llm.complete(SYSTEM, instruction, 900);
+  let sys = SYSTEM;
+  let items = [];
+  if (lead.brand === 'shop') {
+    try { items = await shop.loadCatalog(); } catch (e) { console.error('shop: каталог не загружен', e); }
+    sys = shop.systemPrompt(detectLang(lead), shop.catalogText(items, detectLang(lead)));
+  }
+  const text = await llm.complete(sys, instruction, 900);
   const j = extractJson(text);
-  return {
+  const out = {
     intent: String(j.intent || ''),
     escalate: !!j.escalate,
     reason: String(j.reason || ''),
@@ -62,6 +70,11 @@ async function callModel(lead, mode, previous) {
     subject: String(j.subject || ''),
     body: String(j.body || '')
   };
+  if (lead.brand === 'shop') {
+    const bad = shop.checkDraft(out.body, items);
+    if (bad) { out.escalate = true; out.reason = ('СТОП: ' + bad + '. ' + out.reason).slice(0, 400); out.guard = bad; }
+  }
+  return out;
 }
 
 // Если задан ключ модели (Claude, OpenAI или совместимый), пишет модель. Иначе работают готовые шаблоны (бесплатно).
@@ -75,6 +88,7 @@ async function generateDraft(lead, mode, previous) {
       console.error('sellmanager: модель недоступна, беру шаблон', err);
     }
   }
+  if (lead.brand === 'shop') return { intent: 'question', escalate: true, reason: 'ИИ недоступен (нет ключа модели): ответьте сами.', stage: 'new', summary: '', subject: '', body: '', mode: 'rules' };
   return draftFromRules(lead, mode);
 }
 
@@ -107,6 +121,8 @@ function routeInfo(lead) {
   if (ch === 'telegram') return { from: 'Telegram (бот)', to: 'в Telegram клиенту, автоматически после «Подтвердить»' };
   if (ch === 'whatsapp') return { from: 'WhatsApp', to: 'в WhatsApp клиенту, автоматически после «Подтвердить»' };
   if (ch === 'chat') return { from: 'Чат на сайте', to: 'в чат на сайте, автоматически после «Подтвердить» (клиент увидит, пока окно открыто)' };
+  if (ch === 'email' && lead.noSend) return { from: 'Площадка (письмо-уведомление)', to: 'НЕ уходит автоматически: после «Подтвердить» скопируйте текст и вставьте в диалог на площадке' };
+  if (ch === 'email' && lead.brand === 'shop') return { from: 'Email METRAWEN Shop', to: 'на email клиента с адреса ' + (lead.emailTo || 'магазина') + ', автоматически после «Подтвердить»' };
   if (ch === 'email') return { from: 'Email', to: 'на email клиента, автоматически после «Подтвердить»' };
   return { from: 'Сайт, форма заявки', to: 'на email клиента (отправка пока вручную, скопируйте текст после «Подтвердить»)' };
 }
@@ -119,7 +135,8 @@ function formatDraft(lead, d) {
     ? 'Ответьте сами. Здесь нужен ваш разбор, черновик нейтральный.'
     : 'Прочитайте текст ниже. Если всё верно, нажмите «Подтвердить».';
   const lines = [
-    '<b>ЧЕРНОВИК ОТВЕТА</b> (' + src + ')',
+    '<b>' + (lead.brand === 'shop' ? '🛍 SHOP · ' + (detectLang(lead) === 'ru' ? 'Алина' : 'Emma') + ' · ' : '') + 'ЧЕРНОВИК ОТВЕТА</b> (' + src + ')',
+    d.guard ? '⛔ <b>' + esc(d.guard) + '</b>: проверьте текст, подтверждение заблокировано до правки (нажмите «Переписать»).' : null,
     '────────────────',
     '<b>Откуда:</b> ' + routeInfo(lead).from,
     lead.contact ? '<b>Кому:</b> ' + esc(lead.contact) : null,
@@ -264,6 +281,18 @@ async function handleChatLead(lead) {
   await maybeDraftKp(lead, lastChatDraft);
 }
 
+// Магазин: лид из Хантера двигаем на этап «Ответ», остальных (покупатели площадок) пишем в CRM.
+async function logShopIncoming(lead, intent) {
+  const found = await shop.hunterStage(lead.emailAddr, 'Ответ', 'Ответ клиента: ' + String(lead.message || '').slice(0, 600));
+  if (found && /Отказ/.test(intent || '')) await shop.hunterDecline(lead.emailAddr);
+  if (!found) { lead.company = lead.company || 'METRAWEN Shop'; await crm.logIncoming(lead, intent); }
+}
+
+async function logShopReply(lead, body, sent, stage) {
+  const found = await shop.hunterStage(lead.emailAddr, stage === 'hot' ? 'Ответ' : '', (sent ? 'Отправлен ответ: ' : 'Подтверждён ответ (отправить вручную): ') + String(body || '').slice(0, 600));
+  if (!found) await crm.logReply(lead, body, sent);
+}
+
 // Вызывается из api/lead.js после того, как заявка отправлена в Telegram.
 async function handleNewLead(lead) {
   if (lead.channel === 'chat' && lead.chatSid && storeEnabled()) return handleChatLead(lead);
@@ -298,7 +327,8 @@ async function handleNewLead(lead) {
     } catch (e) { /* ничего */ }
   }
   // CRM: сохраняем сообщение клиента в Notion (если задан NOTION_TOKEN)
-  await crm.logIncoming(lead, crmIntent);
+  if (lead.brand === 'shop') await logShopIncoming(lead, crmIntent);
+  else await crm.logIncoming(lead, crmIntent);
   await maybeDraftKp(lead, lastDraft);
 }
 
@@ -320,7 +350,11 @@ async function handleAction(action, id, message) {
     const isTg = rec.lead.channel === 'telegram' && rec.lead.tgChatId;
     const isWa = rec.lead.channel === 'whatsapp' && rec.lead.waId;
     const isChat = rec.lead.channel === 'chat' && rec.lead.chatSid;
-    const isEmail = rec.lead.channel === 'email' && rec.lead.emailAddr;
+    const isEmail = rec.lead.channel === 'email' && rec.lead.emailAddr && !rec.lead.noSend;
+    if (rec.lead.brand === 'shop' && rec.draft && rec.draft.guard) {
+      await tg('sendMessage', { chat_id: chatId, text: '⛔ Подтверждение заблокировано: ' + esc(rec.draft.guard) + '. Нажмите «Переписать» или отправьте вручную.', parse_mode: 'HTML', reply_to_message_id: message.message_id, reply_markup: keyboard(id, 'ai') });
+      return;
+    }
     const isLine = (rec.lead.channel === 'line' && rec.lead.lineUserId) || isTg || isWa || isChat || isEmail;
     const chName = isEmail ? 'EMAIL' : isChat ? 'ЧАТ НА САЙТЕ' : isTg ? 'TELEGRAM' : isWa ? 'WHATSAPP' : 'LINE';
     let sentLine = false;
@@ -357,14 +391,15 @@ async function handleAction(action, id, message) {
       }
     }
     await saveJson('lead:' + id, { lead: rec.lead, draft: dd, approved: true, sent: sentLine });
-    await crm.logReply(rec.lead, dd.body || '', isLine ? sentLine : false);
+    if (rec.lead.brand === 'shop') await logShopReply(rec.lead, dd.body || '', isLine ? sentLine : false, dd.stage);
+    else await crm.logReply(rec.lead, dd.body || '', isLine ? sentLine : false);
     await rememberReply(rec.lead, dd.body || '');
     const head = isLine
       ? (sentLine ? '<b>ПОДТВЕРЖДЕНО И ОТПРАВЛЕНО В ' + chName + '</b>' : '<b>ПОДТВЕРЖДЕНО, НО В ' + chName + ' НЕ ОТПРАВИЛОСЬ</b>')
       : '<b>ПОДТВЕРЖДЕНО</b>';
     const tail = isLine
       ? (sentLine ? null : 'Ошибка ' + chName + ': ' + esc(lineErr) + '\nСкопируйте текст и ответьте клиенту вручную.')
-      : 'Отправка из бота заработает после подключения почты. Пока скопируйте текст (нажатие на блок копирует его) и отправьте вручную.';
+      : (rec.lead.noSend ? 'Это сообщение площадки: скопируйте текст (нажатие на блок копирует его) и вставьте в диалог с покупателем на площадке.' : 'Отправка из бота заработает после подключения почты. Пока скопируйте текст (нажатие на блок копирует его) и отправьте вручную.');
     const txt = [
       head,
       '────────────────',

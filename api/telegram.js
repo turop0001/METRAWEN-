@@ -64,6 +64,21 @@ module.exports = async function handler(req, res) {
       await tg('sendMessage', { chat_id: chatId, text: 'Редактор КП: ' + K.adminUrl() + '\nСсылка с ключом доступа, не пересылайте её.', disable_web_page_preview: true });
       return res.status(200).json({ ok: true });
     }
+    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/pack/i.test(String(msg.text || ''))) {
+      const op = require('./_lib/outreach');
+      const n = Math.min(Math.max(parseInt(String(msg.text).split(/\s+/)[1], 10) || 10, 1), 30);
+      await tg('sendMessage', { chat_id: chatId, text: 'Готовлю пачку из ' + n + ' писем по Хантеру...' });
+      const p = await op.buildPack(n);
+      const esc = function (t) { return String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+      for (let i = 0; i < p.items.length; i++) {
+        const it = p.items[i];
+        await tg('sendMessage', { chat_id: chatId, parse_mode: 'HTML', disable_web_page_preview: true,
+          text: (i + 1) + '/' + p.items.length + ' · <b>' + esc(it.name) + '</b> · ' + esc(it.to) + '\n<b>Тема:</b> ' + esc(it.subject) + '\n<blockquote>' + esc(it.body) + '</blockquote>' });
+      }
+      await tg('sendMessage', { chat_id: chatId, text: p.items.length ? 'Пачка: ' + p.items.length + ' писем. Отправка пойдёт сама по графику прогрева (с 3 ящиков, повтор через 4 дня без ответа).' : 'Нет лидов, готовых к рассылке.',
+        reply_markup: p.items.length ? { inline_keyboard: [[{ text: 'Одобрить пачку', callback_data: 'op:ok:' + p.id }, { text: 'Отменить', callback_data: 'op:no:' + p.id }]] } : undefined });
+      return res.status(200).json({ ok: true });
+    }
     await handleClientMessage(msg, chatId);
     return res.status(200).json({ ok: true });
   }
@@ -76,13 +91,26 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
-  if (cq.data === 'em:ok' || cq.data === 'em:no') {
-    const bridge = require('./_lib/emailbridge');
-    let ok = false;
-    try { ok = cq.data === 'em:ok' ? await bridge.approve() : (await bridge.reject(), false); } catch (e) { console.error('telegram: email bridge', e); }
-    try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: cq.data === 'em:ok' ? (ok ? 'Почта подключена' : 'Запрос устарел') : 'Отклонено' }); } catch (e) {}
+  const opm = /^op:(ok|no):([a-z0-9]+)$/.exec(String(cq.data || ''));
+  if (opm) {
+    let n = 0;
+    try { if (opm[1] === 'ok') n = await require('./_lib/outreach').approvePack(opm[2]); } catch (e) { console.error('telegram: пачка', e); }
+    try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: opm[1] === 'ok' ? 'Одобрено: ' + n : 'Отменено' }); } catch (e) {}
     try { await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: cq.message.message_id, reply_markup: { inline_keyboard: [] } }); } catch (e) {}
-    try { await tg('sendMessage', { chat_id: chatId, text: cq.data === 'em:ok' ? (ok ? '✅ Почта подключена к Sell Manager. Письма на sales@, support@, info@, help@ будут приходить сюда черновиками.' : 'Запрос на подключение почты устарел. Запустите register() в скрипте ещё раз.') : 'Подключение почты отклонено.' }); } catch (e) {}
+    try { await tg('sendMessage', { chat_id: chatId, text: opm[1] === 'ok' ? '✅ Одобрено ' + n + ' писем. Встали в очередь рассылки.' : 'Пачка отменена.' }); } catch (e) {}
+    return res.status(200).json({ ok: true });
+  }
+
+  const emm = /^em:(ok|no)(:shop)?$/.exec(String(cq.data || ''));
+  if (emm) {
+    const bridge = require('./_lib/emailbridge');
+    const sc = emm[2] ? 'shop' : 'main';
+    const yes = emm[1] === 'ok';
+    let ok = false;
+    try { ok = yes ? await bridge.approve(sc) : (await bridge.reject(sc), false); } catch (e) { console.error('telegram: email bridge', e); }
+    try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: yes ? (ok ? 'Почта подключена' : 'Запрос устарел') : 'Отклонено' }); } catch (e) {}
+    try { await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: cq.message.message_id, reply_markup: { inline_keyboard: [] } }); } catch (e) {}
+    try { await tg('sendMessage', { chat_id: chatId, text: yes ? (ok ? (sc === 'shop' ? '✅ Почта METRAWEN Shop подключена. Письма на getmetrawen.com и от площадок будут приходить сюда черновиками (Алина / Emma).' : '✅ Почта подключена к Sell Manager. Письма на sales@, support@, info@, help@ будут приходить сюда черновиками.') : 'Запрос на подключение почты устарел. Запустите register() в скрипте ещё раз.') : 'Подключение почты отклонено.' }); } catch (e) {}
     return res.status(200).json({ ok: true });
   }
 
