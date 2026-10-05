@@ -50,17 +50,21 @@ const BRANDS = {
       return { and: f };
     },
     approved: 'Одобрено', sent: 'Опубликовано/Отправлено',
-    followupFilter: function (old) {
+    followupFilter: function (old, n) {
       return { and: [
         { property: 'Этап', select: { equals: 'Опубликовано/Отправлено' } },
-        { property: 'Касаний', number: { equals: 1 } },
+        { property: 'Касаний', number: { equals: n || 1 } },
         { property: 'Отправлено', date: { on_or_before: old } },
         { property: 'Публичный email', email: { is_not_empty: true } }
       ] };
     },
     prompt: `You rewrite a cold email draft for METRAWEN Shop (a small team selling ready-made digital templates and tools). Output ONE JSON {"subject":"...","body":"..."}.
-Rules: language = draft language. 50-90 words. Plain text, no links, no placeholders in square brackets, no prices. Team voice ("we"/"мы"), never "I". Keep the specific personal detail from the draft (why we wrote to them). Describe the product in one plain sentence. End with a soft question offering to send the link (EN e.g. "Want me to send you the link?", RU e.g. "Прислать ссылку?"). No signature, no sign-off name, no unsubscribe line (the mailbox adds it). Subject: short, lowercase-friendly, no clickbait, no "free", max 6 words.`,
-    followup: { ru: 'Поднимаю письмо наверх, вдруг потерялось. Если тема неактуальна, просто ответьте «нет».', en: 'Just bumping this in case it got buried. If it is not relevant, a quick "no" is totally fine.' }
+Structure: (1) one specific observation about THEM taken from the draft (why we wrote to them), (2) one plain sentence about what the product is and what it saves them, (3) one soft question offering the link.
+Rules: language = draft language. 45-80 words, 3-5 short sentences. Plain text, no links, no placeholders in square brackets, no prices, no attachments. Team voice ("we"/"мы"), never "I". Plain everyday words; no "не X, а Y" contrasts, no praise or flattery, no buzzwords (уникальный, инновационный, решение, synergy), no em dashes, no exclamation marks. Question like "Want me to send you the link?" / "Прислать ссылку?". No signature, no sign-off name, no unsubscribe line (the mailbox adds it). Subject: 2-5 words, lowercase-friendly, concrete, no clickbait, no "free", no "Re:".`,
+    followups: {
+      1: { ru: 'Добавлю одну деталь: если удобнее, вместо ссылки пришлю короткий пример того, что внутри. Что вам полезнее?', en: 'One small addition: if it is easier, I can send a short example of what is inside instead of the link. Which would help more?' },
+      2: { ru: 'Это моё последнее письмо, чтобы не надоедать. Если тема появится позже, просто ответьте на него, и мы пришлём ссылку.', en: 'This is my last note so I do not crowd your inbox. If it becomes relevant later, just reply and we will send the link.' }
+    },
   },
   agency: {
     key: 'opa',
@@ -79,18 +83,22 @@ Rules: language = draft language. 50-90 words. Plain text, no links, no placehol
       return { and: f };
     },
     approved: 'Готово к отправке', sent: 'Отправлено',
-    followupFilter: function (old) {
+    followupFilter: function (old, n) {
       return { and: [
         { property: 'Этап', select: { equals: 'Отправлено' } },
-        { property: 'Касаний', number: { equals: 1 } },
+        { property: 'Касаний', number: { equals: n || 1 } },
         { property: 'Отправлено', date: { on_or_before: old } },
         { property: 'Публичный email', email: { is_not_empty: true } }
       ] };
     },
     prompt: `You write the FIRST cold email from METRAWEN, a small team that builds websites, landing pages, booking and order bots, AI assistants that answer client questions, and simple dashboards for small businesses. Output ONE JSON {"subject":"...","body":"..."}.
 Input: a draft (may be empty), the business name, its industry, country and the signal we noticed about them.
-Rules: language = draft language, or Russian if the country is Russia/CIS and there is no draft, otherwise English. 50-90 words. Plain text. NO links, NO prices, no placeholders in square brackets, no attachments. Team voice ("we"/"мы"), never "I". Open with the specific signal (what we noticed about THEIR business), then one concrete idea of what we would build for them and what it changes for them, without invented numbers or guarantees. End with ONE soft question offering a short example (EN e.g. "Want me to send a quick example?", RU e.g. "Показать пример, как это может выглядеть?"). No signature, no sign-off, no unsubscribe line (the mailbox adds it). Subject: short, specific, no clickbait, max 6 words.`,
-    followup: { ru: 'Поднимаю письмо наверх, вдруг потерялось. Если неактуально, просто ответьте «нет», и мы больше не напишем.', en: 'Just bumping this in case it got buried. If it is not relevant, a quick "no" is totally fine and we will not write again.' }
+Structure: (1) observation: the specific thing we noticed about THEIR business (the signal), (2) one concrete idea of what we would build for them and what it changes in their day, no invented numbers or guarantees, (3) one soft question offering a short example.
+Rules: language = draft language, or Russian if the country is Russia/CIS and there is no draft, otherwise English. 50-85 words, 3-5 short sentences. Plain text. NO links, NO prices, no placeholders in square brackets, no attachments. Team voice ("we"/"мы"), never "I". Plain everyday words; no "не X, а Y" contrasts, no flattery, no buzzwords (уникальный, комплексный, инновационный, digital transformation), no em dashes, no exclamation marks. Question like "Want me to send a quick example?" / "Показать пример, как это может выглядеть?". No signature, no sign-off, no unsubscribe line (the mailbox adds it). Subject: 2-5 words, specific to their business, no clickbait, no "Re:".`,
+    followups: {
+      1: { ru: 'Добавлю конкретики: мы бы начали с одного небольшого шага, например с бота, который отвечает клиентам и записывает их, чтобы вы увидели, как это работает, до больших вложений. Показать пример?', en: 'To be more concrete: we would start with one small step, for example a bot that answers clients and books them, so you can see how it works before any bigger investment. Want a quick example?' },
+      2: { ru: 'Это наше последнее письмо, чтобы не надоедать. Если тема появится позже, просто ответьте на него, и мы вернёмся с примером.', en: 'This is our last note so we do not crowd your inbox. If it becomes relevant later, just reply and we will come back with an example.' }
+    }
   }
 };
 
@@ -183,17 +191,19 @@ async function due(brand, boxesFromBridge) {
     await saveJson(ck, c, 60 * 60 * 30);
   }
   await saveJson(B.key + ':queue', q, 60 * 60 * 24 * 30);
-  // повторы: 1 касание, 4+ дня, без ответа
+  // повторы: касание 2 через 4 дня, касание 3 («последнее письмо») через 9 дней от первого, только без ответа
   try {
-    const old = new Date(Date.now() - 4 * 86400000).toISOString().slice(0, 10);
-    const rows = await query(B, B.followupFilter(old), 10, [{ property: 'Отправлено', direction: 'ascending' }]);
-    rows.forEach(function (pg) {
-      const lang = B.lang(pg);
-      const tag = prop(pg, 'Ящик');
-      const from = boxes.find(function (b) { return boxTag(b) === tag; });
-      if (!from) return; // ящик, с которого писали, больше не подключён: повтор с чужого адреса не шлём
-      out.push({ id: pg.id, to: String(prop(pg, B.email)).toLowerCase(), from: from, lang: lang, kind: 'followup', body: B.followup[lang] });
-    });
+    for (const step of [{ n: 1, days: 4 }, { n: 2, days: 9 }]) {
+      const old = new Date(Date.now() - step.days * 86400000).toISOString().slice(0, 10);
+      const rows = await query(B, B.followupFilter(old, step.n), 10, [{ property: 'Отправлено', direction: 'ascending' }]);
+      rows.forEach(function (pg) {
+        const lang = B.lang(pg);
+        const tag = prop(pg, 'Ящик');
+        const from = boxes.find(function (b) { return boxTag(b) === tag; });
+        if (!from) return; // ящик, с которого писали, больше не подключён: повтор с чужого адреса не шлём
+        out.push({ id: pg.id, to: String(prop(pg, B.email)).toLowerCase(), from: from, lang: lang, kind: 'followup', body: B.followups[step.n][lang] });
+      });
+    }
   } catch (e) { await report('Рассылка: повторы (' + (brand || 'shop') + ')', e); }
   return out;
 }

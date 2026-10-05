@@ -76,6 +76,30 @@ function extractJson(text) {
   throw new Error('bad json in model output');
 }
 
+
+// Проверка «живого тона» перед показом владельцу: слишком длинно, списки, много цен, шаблонные фразы.
+const STOCK = /(хороший|отличный|интересный) вопрос|буду рада помочь|буду рад помочь|обращайтесь|great question|happy to help|let me know if you have/i;
+const CONTRAST = /(^|[.!?]\s+)[^.!?\n]{0,70}(?<![а-яёa-z])не(?![а-яёa-z])[^.!?\n]{1,70},\s*а(?![а-яё])|\bnot just\b[^.!?\n]{1,60}\bbut\b/i;
+function styleIssue(body, lead) {
+  const t = String(body || '');
+  const chat = lead.channel === 'chat' || lead.channel === 'telegram' || lead.channel === 'whatsapp' || lead.channel === 'line';
+  const limit = chat ? 4 : 6;
+  const sentences = t.split(/[.!?]+(?:\s|$)/).filter(function (x) { return x.trim().length > 2; }).length;
+  const issues = [];
+  if (sentences > limit) issues.push('too long: at most ' + limit + ' sentences');
+  if (/^\s*([-•*]|\d+[.)])\s/m.test(t)) issues.push('no lists');
+  if ((t.match(/\d[\d\s]*\s?(₽|\$|руб|usd|rub)/gi) || []).length > 2) issues.push('at most two prices in one message');
+  if (STOCK.test(t)) issues.push('remove stock phrases (praise openers, "happy to help" closers)');
+  if (CONTRAST.test(t)) issues.push('no "not X but Y" contrasts');
+  if ((t.match(/!/g) || []).length > 1) issues.push('at most one exclamation mark');
+  return issues.join('; ');
+}
+
+// Механическая чистка: тире, markdown.
+function tidy(body) {
+  return String(body || '').replace(/\s+[—–]\s+/g, ', ').replace(/\*\*([^*]+)\*\*/g, '$1').replace(/^#+\s*/gm, '').trim();
+}
+
 async function callModel(lead, mode, previous, comment) {
   let instruction = 'Here is a new inbound lead from the website form. Write the draft reply.\n\n<lead>\n' + leadToText(lead) + '\n</lead>';
   if (previous && mode === 'regen') {
@@ -104,6 +128,17 @@ async function callModel(lead, mode, previous, comment) {
     subject: String(j.subject || ''),
     body: String(j.body || '')
   };
+  out.body = tidy(out.body);
+  if (!out.escalate) {
+    const issue = styleIssue(out.body, lead);
+    if (issue) {
+      try {
+        const again = await llm.complete(sys, 'Rewrite ONLY the reply text below so that it fixes these problems: ' + issue + '. Keep the meaning, facts, language, greeting and sign-off. Output ONE JSON {"body":"..."} and nothing else.\n<reply>\n' + out.body + '\n</reply>', 1200);
+        const fixed = tidy(String(extractJson(again).body || ''));
+        if (fixed && styleIssue(fixed, lead).length <= issue.length) out.body = fixed;
+      } catch (e) { console.error('sellmanager: перепись тона не удалась', e); }
+    }
+  }
   if (lead.brand === 'shop') {
     const bad = shop.checkDraft(out.body, items);
     if (bad) { out.escalate = true; out.reason = ('СТОП: ' + bad + '. ' + out.reason).slice(0, 400); out.guard = bad; }
@@ -365,7 +400,7 @@ async function handleNewLead(lead) {
       disable_web_page_preview: true,
       reply_markup: withButtons ? keyboard(id, d.mode) : undefined
     });
-    if (withButtons) await ops.track(id, sentMsg && sentMsg.result && sentMsg.result.message_id, routeInfo(lead).from + ' · ' + (lead.contact || lead.name || ''));
+    if (withButtons) await ops.track(id, sentMsg && sentMsg.result && sentMsg.result.message_id, routeInfo(lead).from + ' · ' + (lead.contact || lead.name || ''), d.stage === 'hot');
   } catch (err) {
     console.error('sellmanager: не удалось подготовить черновик', err);
     await log('Черновик не подготовлен', err, lead.contact || lead.label);

@@ -11,10 +11,10 @@ const { report, week, esc } = require('./alert');
 const chat = function () { return process.env.TELEGRAM_CHAT_ID; };
 
 // ---------- неподтверждённые черновики ----------
-async function track(id, messageId, label) {
+async function track(id, messageId, label, hot) {
   if (!storeEnabled() || !messageId) return;
   const list = (await loadJson('sm:pending')) || [];
-  list.push({ id: id, m: messageId, l: String(label || '').slice(0, 80), ts: Date.now(), r: 0 });
+  list.push({ id: id, m: messageId, l: String(label || '').slice(0, 80), ts: Date.now(), r: 0, h: hot ? 1 : 0 });
   await saveJson('sm:pending', list.slice(-60), 60 * 60 * 24 * 7);
 }
 
@@ -32,16 +32,18 @@ async function remind() {
   let changed = false;
   for (const x of list) {
     const age = now - x.ts;
-    const need = (x.r === 0 && age > 2 * 3600e3) || (x.r === 1 && age > 24 * 3600e3);
-    if (!need) continue;
+    // горячий клиент: через 30 минут, 2 часа и сутки; обычный: через 2 часа и сутки
+    const steps = x.h ? [30 * 60e3, 2 * 3600e3, 24 * 3600e3] : [2 * 3600e3, 24 * 3600e3];
+    if (x.r >= steps.length || age < steps[x.r]) continue;
+    const label = x.h ? ['🔥 Горячий клиент ждёт ответа больше 30 минут', 'больше 2 часов', 'больше суток'][x.r] : ['больше 2 часов', 'больше суток'][x.r];
     x.r += 1; changed = true;
     try {
       await tg('sendMessage', { chat_id: chat(), reply_to_message_id: x.m, allow_sending_without_reply: true,
-        text: '⏰ Черновик ждёт подтверждения ' + (x.r === 1 ? 'больше 2 часов' : 'больше суток') + (x.l ? ': ' + x.l : '') + '. Клиент ждёт ответа: «Подтвердить», «Переписать» или ответьте сами.' });
+        text: (x.h && x.r === 1 ? label : '⏰ Черновик ждёт подтверждения ' + label) + (x.l ? ': ' + x.l : '') + '. Клиент ждёт ответа: «Подтвердить», «Переписать» или ответьте сами.' });
     } catch (e) { console.error('ops: напоминание', e); }
   }
   // старше 3 суток не напоминаем
-  const keep = list.filter(function (x) { return now - x.ts < 3 * 86400e3 && x.r < 2; });
+  const keep = list.filter(function (x) { return now - x.ts < 3 * 86400e3 && x.r < (x.h ? 3 : 2); });
   if (changed || keep.length !== list.length) await saveJson('sm:pending', keep, 60 * 60 * 24 * 7);
 }
 
