@@ -291,14 +291,19 @@ async function maybeDraftKp(lead, d) {
   } catch (e) { console.error('sellmanager: черновик КП не получился', e); }
 }
 
+// Подпись в чате не нужна: имя менеджера видно в шапке виджета и мессенджера.
 function stripSign(body) {
-  return String(body || '').replace(/\n+\s*(METRAWEN team|Команда METRAWEN|Елена|Nicole)[^\n]{0,40}\s*$/i, '').trim();
+  let t = String(body || '').trim();
+  for (let i = 0; i < 3; i++) {
+    t = t.replace(/\n+\s*[-—–]?\s*(best( regards)?,?|cheers,?|с уважением,?|всего доброго,?)?\s*(METRAWEN( Shop)? team|the METRAWEN team|Команда METRAWEN( Shop)?|METRAWEN( Shop)?|Елена|Nicole|Алина|Emma)(\s*[|/·,]\s*METRAWEN( Shop)?)?\s*$/i, '').trim();
+  }
+  return t;
 }
 
 async function pushChat(sid, text) {
   const key = 'chat:' + sid;
   const cc = (await loadJson(key)) || { msgs: [] };
-  cc.msgs.push({ r: 't', t: String(text || '').slice(0, 3500), ts: Date.now() });
+  cc.msgs.push({ r: 't', t: stripSign(text).slice(0, 3500), ts: Date.now() });
   cc.msgs = cc.msgs.slice(-80);
   await saveJson(key, cc, 60 * 60 * 24 * 3);
 }
