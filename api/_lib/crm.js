@@ -36,11 +36,15 @@ const CHANNEL = { line: 'LINE', telegram: 'Telegram', whatsapp: 'WhatsApp', emai
 
 function channelOf(lead) { return CHANNEL[lead.channel] || 'Сайт'; }
 
+// Старый ключ писем (по «имя <адрес>»): чтобы не плодить вторую карточку у уже заведённых клиентов.
+function legacyKey(lead) { return 'site:' + String(lead.contact || lead.name || 'unknown').toLowerCase().replace(/\s+/g, ' ').slice(0, 120); }
+
 function keyOf(lead) {
   if (lead.channel === 'line' && lead.lineUserId) return 'line:' + lead.lineUserId;
   if (lead.channel === 'telegram' && lead.tgChatId) return 'tg:' + lead.tgChatId;
   if (lead.channel === 'whatsapp' && lead.waId) return 'wa:' + lead.waId;
   if (lead.channel === 'chat' && lead.chatSid) return 'chat:' + lead.chatSid;
+  if (lead.emailAddr) return 'email:' + String(lead.emailAddr).toLowerCase().trim();
   return 'site:' + String(lead.contact || lead.name || 'unknown').toLowerCase().replace(/\s+/g, ' ').slice(0, 120);
 }
 
@@ -84,6 +88,7 @@ async function upsert(lead, kind, body, extra, intent, stage) {
   const key = keyOf(lead);
   const nowIso = new Date().toISOString();
   let page = await findPage(key);
+  if (!page && lead.emailAddr) page = await findPage(legacyKey(lead));
   const children = blocks(kind, body, extra);
   if (!page) {
     const props = {
