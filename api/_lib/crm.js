@@ -37,9 +37,10 @@ const CHANNEL = { line: 'LINE', telegram: 'Telegram', whatsapp: 'WhatsApp', emai
 function channelOf(lead) { return CHANNEL[lead.channel] || 'Сайт'; }
 
 // Старый ключ писем (по «имя <адрес>»): чтобы не плодить вторую карточку у уже заведённых клиентов.
-function legacyKey(lead) { return 'site:' + String(lead.contact || lead.name || 'unknown').toLowerCase().replace(/\s+/g, ' ').slice(0, 120); }
+function legacyKey(lead) { lead = Object.assign({}, lead, { contact: String(lead.contact || '').replace(/\s+/g, ' ').trim() }); return 'site:' + String(lead.contact || lead.name || 'unknown').toLowerCase().replace(/\s+/g, ' ').slice(0, 120); }
 
 function keyOf(lead) {
+  lead = Object.assign({}, lead, { contact: oneLine(lead.contact), name: oneLine(lead.name) });
   if (lead.channel === 'line' && lead.lineUserId) return 'line:' + lead.lineUserId;
   if (lead.channel === 'telegram' && lead.tgChatId) return 'tg:' + lead.tgChatId;
   if (lead.channel === 'whatsapp' && lead.waId) return 'wa:' + lead.waId;
@@ -47,6 +48,16 @@ function keyOf(lead) {
   if (lead.emailAddr) return 'email:' + String(lead.emailAddr).toLowerCase().trim();
   return 'site:' + String(lead.contact || lead.name || 'unknown').toLowerCase().replace(/\s+/g, ' ').slice(0, 120);
 }
+
+// Письма приходят из почтового моста с html-хвостами (<br>, </tr>): в CRM пишем чистый текст.
+function plain(s) {
+  return String(s == null ? '' : s)
+    .replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|tr|td|table|tbody|li)>/gi, '\n')
+    .replace(/<\/?(p|div|tr|td|table|tbody|li|span|b|i|strong|em|html|body|head|style)\b[^>]*>/gi, '')
+    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+function oneLine(s) { return plain(s).replace(/\s+/g, ' ').trim(); }
 
 function text(s) {
   const out = [];
@@ -86,15 +97,16 @@ function countOf(page) {
 
 async function upsert(lead, kind, body, extra, intent, stage) {
   const key = keyOf(lead);
+  body = plain(body);
   const nowIso = new Date().toISOString();
   let page = await findPage(key);
   if (!page && lead.emailAddr) page = await findPage(legacyKey(lead));
   const children = blocks(kind, body, extra);
   if (!page) {
     const props = {
-      'Клиент': { title: text(lead.name || lead.contact || 'Без имени').slice(0, 1) },
+      'Клиент': { title: text(oneLine(lead.name) || oneLine(lead.contact) || 'Без имени').slice(0, 1) },
       'Канал': { select: { name: channelOf(lead) } },
-      'Контакт': { rich_text: text(lead.contact || '') },
+      'Контакт': { rich_text: text(oneLine(lead.contact)) },
       'Ключ': { rich_text: text(key) },
       'Этап': { select: { name: stage || 'Новый' } },
       'Первое обращение': { date: { start: nowIso } },
@@ -102,6 +114,7 @@ async function upsert(lead, kind, body, extra, intent, stage) {
       'Сообщений': { number: 1 }
     };
     if (intent) props['Тип обращения'] = { rich_text: text(intent) };
+    props[kind === 'in' ? 'Последнее от клиента' : 'Последний ответ'] = { rich_text: text(body.slice(0, 1900)) };
     if (lead.company) props['Заметки'] = { rich_text: text('Компания: ' + lead.company + (lead.industry ? ', ' + lead.industry : '')) };
     await call('POST', '/pages', { parent: { database_id: dbId() }, properties: props, children: children });
     return;
@@ -112,6 +125,7 @@ async function upsert(lead, kind, body, extra, intent, stage) {
   };
   if (stage) props['Этап'] = { select: { name: stage } };
   if (intent) props['Тип обращения'] = { rich_text: text(intent) };
+  props[kind === 'in' ? 'Последнее от клиента' : 'Последний ответ'] = { rich_text: text(body.slice(0, 1900)) };
   await call('PATCH', '/pages/' + page.id, { properties: props });
   await call('PATCH', '/blocks/' + page.id + '/children', { children: children });
 }
