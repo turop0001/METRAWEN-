@@ -3,6 +3,7 @@
 const { handleNewLead } = require('./_lib/sellmanager');
 const bridge = require('./_lib/emailbridge');
 const shop = require('./_lib/shop');
+const hunter = require('./_lib/hunter');
 const { saveJson, loadJson, enabled: storeEnabled } = require('./_lib/store');
 const ops = require('./_lib/ops');
 const { report, stat } = require('./_lib/alert');
@@ -88,12 +89,32 @@ module.exports = async function handler(req, res) {
   }
 
   const alias = String(b.to || '').toLowerCase();
+
+  // Три ящика getmetrawen.com общие для холодной рассылки магазина и агентства, и ответы приходят в один мост.
+  // Чей это ответ, определяем по отправителю: метка при отправке, а если её нет, по базе Hunter CRM агентства.
+  let agencyReply = false;
+  if (shopMode && !market) {
+    // главный признак: на какой адрес написали (getmetrawen.com = агентство, metrawenshop.com = магазин)
+    const dom = (alias.split('@')[1] || '');
+    if (dom === 'getmetrawen.com') agencyReply = true;
+    else if (dom !== 'metrawenshop.com') try {
+      const tag = storeEnabled() ? await loadJson('op:rcpt:' + f.addr) : null;
+      if (tag === 'agency') agencyReply = true;
+      else if (tag !== 'shop') agencyReply = !!(await hunter.findByEmail(f.addr));
+    } catch (e) { console.error('email: ветка ответа не определена, считаем магазином', e); }
+  }
+  // Одно и то же письмо могут принести два моста (если ящик пересылается в обе почты): второй раз не обрабатываем.
+  if (storeEnabled()) {
+    const dk = 'em:dd:' + f.addr + ':' + subject.slice(0, 60) + ':' + text.slice(0, 80);
+    if (await loadJson(dk)) return res.status(200).json({ ok: true, skipped: 'dup2' });
+    await saveJson(dk, 1, 60 * 60);
+  }
   await stat(shopMode ? 'in:email_shop' : 'in:email');
   try {
   await handleNewLead({
-    label: (shopMode ? 'Shop Email' : agencyMode ? 'Холодная почта агентства' : 'Email') + (alias ? ' → ' + alias : ''),
+    label: (agencyReply ? 'Ответ на рассылку агентства' : shopMode ? 'Shop Email' : agencyMode ? 'Холодная почта агентства' : 'Email') + (alias ? ' → ' + alias : ''),
     channel: 'email',
-    brand: shopMode ? 'shop' : '',
+    brand: shopMode && !agencyReply ? 'shop' : '',
     emailScope: scope,
     noSend: market,
     emailAddr: f.addr,

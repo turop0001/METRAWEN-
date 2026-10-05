@@ -44,8 +44,14 @@ function leadToText(lead) {
 function extractJson(text) {
   const start = text.indexOf('{');
   const end = text.lastIndexOf('}');
-  if (start < 0 || end <= start) throw new Error('no json in model output');
-  return JSON.parse(text.slice(start, end + 1));
+  if (start < 0 || end <= start) {
+    // модель ответила обычным текстом без JSON: берём его как тело черновика, но просим владельца проверить
+    const plain = String(text || '').trim();
+    if (!plain) throw new Error('empty model output');
+    return { intent: 'question', escalate: true, reason: 'ИИ ответил без структуры: проверьте текст.', stage: 'new', summary: '', subject: '', body: plain };
+  }
+  try { return JSON.parse(text.slice(start, end + 1)); }
+  catch (e) { throw new Error('bad json in model output'); }
 }
 
 async function callModel(lead, mode, previous, comment) {
