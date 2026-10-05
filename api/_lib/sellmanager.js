@@ -24,7 +24,7 @@ function leadToText(lead) {
   const rows = [
     ['Form', lead.label],
     ['Channel', (lead.channel === 'line' || lead.channel === 'telegram' || lead.channel === 'whatsapp' || lead.channel === 'chat') ? (lead.channel === 'line' ? 'LINE' : lead.channel === 'whatsapp' ? 'WhatsApp' : lead.channel === 'chat' ? 'Website' : 'Telegram') + ' chat: a short chat message, no subject line, no email greeting or formatting. Return subject as an empty string. Reply in the language of the lead message.' : ''],
-    ['Channel (email)', isShop && lead.channel === 'email' ? 'Email reply to a person who wrote to ' + (lead.emailTo || 'the shop address') + (lead.noSend ? ' (a marketplace message: it will be pasted into the marketplace chat, write it as a chat message without subject)' : '') + '. Write a short plain email: greeting by name, 2-6 sentences, no sign-off (the mailbox adds the team signature). Subject: Re: plus their subject.' : lead.channel === 'email' ? 'Email reply to a client who wrote to ' + (lead.emailTo || 'the company address') + '. Write a proper short email: greeting by name (Здравствуйте, Анна / Hi Anna), then 3-8 plain sentences in the same live consultative style, then a sign-off on its own lines: your first name and then METRAWEN. No marketing formatting, no bullet lists unless the client asked for options. Put subject as Re: plus their subject.' : ''],
+    ['Channel (email)', isShop && lead.channel === 'email' ? 'Email reply to a person who wrote to ' + (lead.emailTo || 'the shop address') + (lead.noSend ? ' (a marketplace message: it will be pasted into the marketplace chat, write it as a chat message without subject)' : '') + '. Write a short plain email: greeting by name, 2-6 sentences, no sign-off (the mailbox adds the team signature). Subject: Re: plus their subject.' : lead.channel === 'email' ? 'Email reply to a client who wrote to ' + (lead.emailTo || 'the company address') + '. Write it the way a real, friendly manager writes to a person by email: greeting by name (Здравствуйте, Анна / Hi Anna), then 3-5 short sentences in simple everyday words, no bureaucratic or template phrasing, no lists, no bold, no walls of text. Answer exactly what was asked: if they ask the price, give ONE fitting starting figure (not the whole price list) and one sentence on what it depends on, then ask ONE simple question to learn their business and goal. Never promise to come back with an estimate and plan in the first reply. Then a sign-off on its own lines: your first name and then METRAWEN. Put subject as Re: plus their subject. The whole JSON must stay short: body under 900 characters.' : ''],
     ['Client name (this is the client, NOT Dmitry)', lead.name],
     ['Contact', lead.contact],
     ['Company', lead.company],
@@ -41,17 +41,39 @@ function leadToText(lead) {
   return rows.filter(r => r[1]).map(r => r[0] + ': ' + String(r[1]).slice(0, 1500)).join('\n');
 }
 
+function unescapeJsonString(v) {
+  try { return JSON.parse('"' + v + '"'); } catch (e) { return v.replace(/\\n/g, '\n').replace(/\\"/g, '"'); }
+}
+
+// Достаёт поле из JSON, даже если ответ модели оборвался на середине.
+function pullField(text, name) {
+  const m = text.match(new RegExp('"' + name + '"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)', 's'));
+  return m ? unescapeJsonString(m[1]) : '';
+}
+
 function extractJson(text) {
   const start = text.indexOf('{');
   const end = text.lastIndexOf('}');
-  if (start < 0 || end <= start) {
-    // модель ответила обычным текстом без JSON: берём его как тело черновика, но просим владельца проверить
-    const plain = String(text || '').trim();
+  if (start >= 0 && end > start) {
+    try { return JSON.parse(text.slice(start, end + 1)); } catch (e) { /* пробуем достать поля вручную */ }
+  }
+  const t = String(text || '');
+  const body = pullField(t, 'body');
+  if (body) {
+    // ответ оборван: берём тело письма до последнего целого предложения
+    const cut = body.length > 200 && !/[.!?…]\s*$/.test(body) ? body.replace(/[^.!?…]*$/, '').trim() || body : body;
+    return {
+      intent: pullField(t, 'intent') || 'question', escalate: /"escalate"\s*:\s*true/.test(t),
+      reason: 'Ответ ИИ оборвался, проверьте текст.', stage: pullField(t, 'stage') || 'new',
+      summary: pullField(t, 'summary'), subject: pullField(t, 'subject'), body: cut
+    };
+  }
+  if (start < 0) {
+    const plain = t.trim();
     if (!plain) throw new Error('empty model output');
     return { intent: 'question', escalate: true, reason: 'ИИ ответил без структуры: проверьте текст.', stage: 'new', summary: '', subject: '', body: plain };
   }
-  try { return JSON.parse(text.slice(start, end + 1)); }
-  catch (e) { throw new Error('bad json in model output'); }
+  throw new Error('bad json in model output');
 }
 
 async function callModel(lead, mode, previous, comment) {
@@ -71,7 +93,7 @@ async function callModel(lead, mode, previous, comment) {
     try { items = await shop.loadCatalog(); } catch (e) { console.error('shop: каталог не загружен', e); }
     sys = shop.systemPrompt(detectLang(lead), shop.catalogText(items, detectLang(lead)));
   }
-  const text = await llm.complete(sys, instruction, 900);
+  const text = await llm.complete(sys, instruction, 2000);
   const j = extractJson(text);
   const out = {
     intent: String(j.intent || ''),
@@ -113,7 +135,7 @@ function keyboard(id, mode) {
   const row = mode === 'ai'
     ? [{ text: 'Переписать', callback_data: 'rg:' + id }, { text: 'Короче', callback_data: 'sh:' + id }]
     : [{ text: 'Короче', callback_data: 'sh:' + id }];
-  return { inline_keyboard: [row, [{ text: '✏️ Править', callback_data: 'ed:' + id }, { text: '✖️ Отмена', callback_data: 'ca:' + id }], [{ text: 'Подтвердить', callback_data: 'ok:' + id }]] };
+  return { inline_keyboard: [row, [{ text: '✏️ Править', callback_data: 'ed:' + id }, { text: '✖️ Отмена', callback_data: 'ca:' + id }], [{ text: '✅ Подтвердить', callback_data: 'ok:' + id }]] };
 }
 
 const INTENT_RU = {
@@ -152,7 +174,7 @@ function formatDraft(lead, d) {
     ? 'Ответьте сами. Здесь нужен ваш разбор, черновик нейтральный.'
     : 'Прочитайте текст ниже. Если всё верно, нажмите «Подтвердить».';
   const lines = [
-    '<b>' + (lead.brand === 'shop' ? '🛍 SHOP · ' + (detectLang(lead) === 'ru' ? 'Алина' : 'Emma') + ' · ' : '') + 'ЧЕРНОВИК ОТВЕТА</b> (' + src + ')',
+    '<b>' + (lead.brand === 'shop' ? '🛍 SHOP · ' + (detectLang(lead) === 'ru' ? 'Алина' : 'Emma') : '🏢 СТУДИЯ · ' + (detectLang(lead) === 'ru' ? 'Елена' : 'Nicole')) + '</b> · ответ клиенту (' + src + ')',
     d.guard ? '⛔ <b>' + esc(d.guard) + '</b>: проверьте текст, подтверждение заблокировано до правки (нажмите «Переписать» или «Править»).' : null,
     '────────────────',
     '<b>Откуда:</b> ' + routeInfo(lead).from,
