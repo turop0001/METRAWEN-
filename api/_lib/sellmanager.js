@@ -78,6 +78,7 @@ function extractJson(text) {
 
 
 // Проверка «живого тона» перед показом владельцу: слишком длинно, списки, много цен, шаблонные фразы.
+const humanize = require('./humanize');
 const STOCK = /меня зовут [а-яё]+,? я менеджер|я менеджер METRAWEN|(хороший|отличный|интересный) вопрос|буду рада помочь|буду рад помочь|обращайтесь|great question|happy to help|let me know if you have/i;
 const CONTRAST = /(^|[.!?]\s+)[^.!?\n]{0,70}(?<![а-яёa-z])не(?![а-яёa-z])[^.!?\n]{1,70},\s*а(?![а-яё])|\bnot just\b[^.!?\n]{1,60}\bbut\b/i;
 function styleIssue(body, lead) {
@@ -91,6 +92,8 @@ function styleIssue(body, lead) {
   if ((t.match(/\d[\d\s]*\s?(₽|\$|руб|usd|rub)/gi) || []).length > 2) issues.push('at most two prices in one message');
   if (STOCK.test(t)) issues.push('remove stock phrases (praise openers, "happy to help" closers)');
   if (CONTRAST.test(t)) issues.push('no "not X but Y" contrasts');
+  const bot = humanize.find(t);
+  if (bot.length) issues.push('replace these template/bot-sounding words with plain spoken ones: ' + bot.join(', '));
   if (/[—–]/.test(t)) issues.push('no dashes, use a comma or hyphen');
   if ((t.match(/!/g) || []).length > 1) issues.push('at most one exclamation mark');
   return issues.join('; ');
