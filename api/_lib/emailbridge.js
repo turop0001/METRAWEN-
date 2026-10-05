@@ -103,6 +103,12 @@ async function rememberBridge(url, scope) {
   if (!cur || cur.url !== url) await saveJson(pre(scope) + 'bridge', { url: url, ts: Date.now() }, 60 * 60 * 24 * 90);
 }
 
+function personaName(lead, body) {
+  const ru = /[а-яё]/i.test(String(body || ''));
+  if (lead.brand === 'shop') return (ru ? 'Алина' : 'Emma') + ' | METRAWEN Shop';
+  return (ru ? 'Елена' : 'Nicole') + ' | METRAWEN';
+}
+
 // Отправка ответа клиенту через Apps Script.
 async function send(lead, subject, body) {
   const url = await bridgeUrl(lead.emailScope);
@@ -118,7 +124,10 @@ async function send(lead, subject, body) {
       to: lead.emailAddr,
       from: lead.emailTo || '',
       subject: subject,
-      body: body
+      body: body,
+      // кто отвечает: имя отправителя и подпись зависят от ветки (студия или магазин)
+      brand: lead.brand === 'shop' ? 'shop' : 'agency',
+      name: personaName(lead, body)
     })
   });
   const text = await r.text();
