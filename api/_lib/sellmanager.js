@@ -32,7 +32,7 @@ function leadToText(lead) {
     ['Chosen slot', lead.slot],
     ['Style', lead.channel === 'chat' ? 'Live website chat. Short and warm, 1-4 sentences, plain text. No signature, no sign-off line, no subject.' : ''],
     ['Your name in this conversation', isShop ? (detectLang(lead) === 'ru' ? 'Алина (команда METRAWEN Shop)' : 'Emma (METRAWEN Shop team)') : detectLang(lead) === 'ru' ? 'Елена (менеджер METRAWEN)' : 'Nicole (METRAWEN manager)'],
-    ['Conversation stage', lead.firstContact ? 'FIRST message from this person: greet and introduce yourself once.' : 'Ongoing conversation: do not introduce yourself again.'],
+    ['Conversation stage', lead.firstContact ? 'FIRST message from this person: greet by name and go straight to the point, do not introduce yourself with "Меня зовут..." or "я менеджер" (the signature shows who you are).' : 'Ongoing conversation: do not introduce yourself again.'],
     ['Earlier messages in this conversation', lead.history],
     ['Message', lead.message],
     ['Page', lead.page],
@@ -78,7 +78,7 @@ function extractJson(text) {
 
 
 // Проверка «живого тона» перед показом владельцу: слишком длинно, списки, много цен, шаблонные фразы.
-const STOCK = /(хороший|отличный|интересный) вопрос|буду рада помочь|буду рад помочь|обращайтесь|great question|happy to help|let me know if you have/i;
+const STOCK = /меня зовут [а-яё]+,? я менеджер|я менеджер METRAWEN|(хороший|отличный|интересный) вопрос|буду рада помочь|буду рад помочь|обращайтесь|great question|happy to help|let me know if you have/i;
 const CONTRAST = /(^|[.!?]\s+)[^.!?\n]{0,70}(?<![а-яёa-z])не(?![а-яёa-z])[^.!?\n]{1,70},\s*а(?![а-яё])|\bnot just\b[^.!?\n]{1,60}\bbut\b/i;
 function styleIssue(body, lead) {
   const t = String(body || '');
@@ -91,13 +91,14 @@ function styleIssue(body, lead) {
   if ((t.match(/\d[\d\s]*\s?(₽|\$|руб|usd|rub)/gi) || []).length > 2) issues.push('at most two prices in one message');
   if (STOCK.test(t)) issues.push('remove stock phrases (praise openers, "happy to help" closers)');
   if (CONTRAST.test(t)) issues.push('no "not X but Y" contrasts');
+  if (/[—–]/.test(t)) issues.push('no dashes, use a comma or hyphen');
   if ((t.match(/!/g) || []).length > 1) issues.push('at most one exclamation mark');
   return issues.join('; ');
 }
 
 // Механическая чистка: тире, markdown.
 function tidy(body) {
-  return String(body || '').replace(/\s+[—–]\s+/g, ', ').replace(/\*\*([^*]+)\*\*/g, '$1').replace(/^#+\s*/gm, '').trim();
+  return String(body || '').replace(/(\d)\s?[—–]\s?(\d)/g, '$1-$2').replace(/\s+[—–]\s+/g, ', ').replace(/[—–]/g, '-').replace(/\*\*([^*]+)\*\*/g, '$1').replace(/^#+\s*/gm, '').trim();
 }
 
 async function callModel(lead, mode, previous, comment) {

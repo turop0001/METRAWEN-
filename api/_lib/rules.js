@@ -45,7 +45,7 @@ const T = {
   en: {
     hi: n => n ? 'Hi ' + n + ',' : 'Hi,',
     sign: '',
-    intro: "I'm Nicole, a manager at METRAWEN.",
+    intro: "",
     booking: {
       subject: 'Your METRAWEN session',
       full: slot => 'Thanks for booking a session' + (slot ? ' (' + slot + ')' : '') + '. We will confirm the time by email shortly.\n\nTo make the 15 minutes useful, could you tell us in a line or two which process takes most of your time today: answering inquiries, bookings, reports, something else?',
@@ -90,7 +90,7 @@ const T = {
   ru: {
     hi: n => n ? 'Здравствуйте, ' + n + '.' : 'Здравствуйте.',
     sign: '',
-    intro: 'Меня зовут Елена, я менеджер METRAWEN.',
+    intro: '',
     booking: {
       subject: 'Ваша сессия METRAWEN',
       full: slot => 'Спасибо за запись на сессию' + (slot ? ' (' + slot + ')' : '') + '. Время подтвердим по почте в ближайшее время.\n\nЧтобы 15 минут прошли с пользой, напишите, пожалуйста, в одной-двух строках, какой процесс сейчас отнимает больше всего времени: ответы на обращения, записи, отчёты или что-то ещё?',
@@ -141,7 +141,7 @@ function draftFromRules(lead, mode) {
   const tpl = t[c.intent] || t.question;
   const variant = mode === 'shorter' ? 'short' : 'full';
   const bodyCore = tpl[variant](lead.slot);
-  const body = t.hi(firstName(lead)) + (lead.firstContact ? ' ' + t.intro : '') + '\n\n' + bodyCore;
+  const body = t.hi(firstName(lead)) + (lead.firstContact && t.intro ? ' ' + t.intro : '') + '\n\n' + bodyCore;
   return { intent: c.intent, escalate: c.escalate, reason: c.reason, subject: tpl.subject, body, mode: 'rules' };
 }
 
