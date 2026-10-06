@@ -25,6 +25,7 @@ function leadToText(lead) {
     ['Form', lead.label],
     ['Channel', (lead.channel === 'line' || lead.channel === 'telegram' || lead.channel === 'whatsapp' || lead.channel === 'chat') ? (lead.channel === 'line' ? 'LINE' : lead.channel === 'whatsapp' ? 'WhatsApp' : lead.channel === 'chat' ? 'Website' : 'Telegram') + ' chat: a short chat message, no subject line, no email greeting or formatting. Return subject as an empty string. Reply in the language of the lead message.' : ''],
     ['Channel (email)', isShop && lead.channel === 'email' ? 'Email reply to a person who wrote to ' + (lead.emailTo || 'the shop address') + (lead.noSend ? ' (a marketplace message: it will be pasted into the marketplace chat, write it as a chat message without subject)' : '') + '. Write a short plain email: greeting by name, 2-6 sentences, no sign-off (the mailbox adds the team signature). Subject: Re: plus their subject.' : lead.channel === 'email' ? 'Email reply to a client who wrote to ' + (lead.emailTo || 'the company address') + '. Write it the way a real, friendly manager writes to a person by email: greeting by name (Здравствуйте, Анна / Hi Anna), then 3-5 short sentences in simple everyday words, no bureaucratic or template phrasing, no lists, no bold, no walls of text. Answer exactly what was asked: if they ask the price, give ONE fitting starting figure (not the whole price list) and one sentence on what it depends on, then ask ONE simple question to learn their business and goal. Never promise to come back with an estimate and plan in the first reply. Then a sign-off on its own lines: your first name and then METRAWEN. Put subject as Re: plus their subject. The whole JSON must stay short: body under 900 characters.' : ''],
+    ['Store of this conversation', isShop ? (lead.platform ? shop.PF.NAMES[lead.platform] : 'UNKNOWN (ask which store, give no price and no link)') : ''],
     ['Client name (this is the client, NOT Dmitry)', lead.name],
     ['Contact', lead.contact],
     ['Company', lead.company],
@@ -104,6 +105,25 @@ function tidy(body) {
   return String(body || '').replace(/(\d)\s?[—–]\s?(\d)/g, '$1-$2').replace(/\s+[—–]\s+/g, ', ').replace(/[—–]/g, '-').replace(/\*\*([^*]+)\*\*/g, '$1').replace(/^#+\s*/gm, '').trim();
 }
 
+// Площадка клиента: по отправителю, ссылке или тексту письма, по памяти диалога, для лида Хантера по языку рассылки.
+async function resolvePlatform(lead, items, lang) {
+  const key = 'plat:' + convKey(lead);
+  let memory = '';
+  if (storeEnabled()) { try { memory = (await loadJson(key)) || ''; } catch (e) { /* без памяти */ } }
+  const base = { addr: lead.emailAddr, text: lead.message, items: items, memory: memory, lang: lang };
+  let d = shop.PF.detect(base);
+  if (!d.platform && d.source !== 'ambiguous' && lead.channel === 'email' && lead.emailAddr) {
+    try {
+      const found = await shop.findLead(lead.emailAddr);
+      if (found) d = shop.PF.detect(Object.assign({}, base, { hunter: true }));
+    } catch (e) { /* Хантер недоступен: считаем неизвестной */ }
+  }
+  if (d.platform && d.source !== 'memory' && d.source !== 'hunter' && storeEnabled() && d.platform !== memory) {
+    try { await saveJson(key, d.platform, 60 * 60 * 24 * 90); } catch (e) { /* ничего */ }
+  }
+  return d;
+}
+
 async function callModel(lead, mode, previous, comment) {
   let instruction = 'Here is a new inbound lead from the website form. Write the draft reply.\n\n<lead>\n' + leadToText(lead) + '\n</lead>';
   if (previous && mode === 'regen') {
@@ -117,9 +137,15 @@ async function callModel(lead, mode, previous, comment) {
   }
   let sys = SYSTEM;
   let items = [];
+  let pf = { platform: '', source: '' };
   if (lead.brand === 'shop') {
     try { items = await shop.loadCatalog(); } catch (e) { console.error('shop: каталог не загружен', e); }
-    sys = shop.systemPrompt(detectLang(lead), shop.catalogText(items, detectLang(lead)));
+    const lang = detectLang(lead);
+    pf = await resolvePlatform(lead, items, lang);
+    lead.platform = pf.platform;
+    lead.platformSrc = pf.source;
+    sys = shop.systemPrompt(lang, shop.catalogText(items, lang, pf.platform), pf.platform, pf.source);
+    instruction = instruction.replace(/Store of this conversation: [^\n]*/, 'Store of this conversation: ' + (pf.platform ? shop.PF.NAMES[pf.platform] : 'UNKNOWN (ask which store, give no price and no link)'));
   }
   const text = await llm.complete(sys, instruction, 2000);
   const j = extractJson(text);
@@ -144,7 +170,14 @@ async function callModel(lead, mode, previous, comment) {
     }
   }
   if (lead.brand === 'shop') {
-    const bad = shop.checkDraft(out.body, items);
+    let bad = shop.checkDraft(out.body, items, pf.platform);
+    if (bad && !out.escalate) {
+      try {
+        const again = await llm.complete(sys, 'Rewrite ONLY the reply text below so that it fixes this problem: ' + bad + '. Follow the STORE rules and use only the prices and links shown in the catalog for this store. Keep the language, greeting and tone. Output ONE JSON {"body":"..."} and nothing else.\n<reply>\n' + out.body + '\n</reply>', 1200);
+        const fixed = tidy(String(extractJson(again).body || ''));
+        if (fixed && !shop.checkDraft(fixed, items, pf.platform)) { out.body = fixed; bad = ''; }
+      } catch (e) { console.error('sellmanager: исправление цены или ссылки не удалось', e); }
+    }
     if (bad) { out.escalate = true; out.reason = ('СТОП: ' + bad + '. ' + out.reason).slice(0, 400); out.guard = bad; }
   }
   return out;
@@ -217,6 +250,7 @@ function formatDraft(lead, d) {
     d.guard ? '⛔ <b>' + esc(d.guard) + '</b>: проверьте текст, подтверждение заблокировано до правки (нажмите «Переписать» или «Править»).' : null,
     '────────────────',
     '<b>Откуда:</b> ' + routeInfo(lead).from,
+    lead.brand === 'shop' ? '<b>Площадка:</b> ' + esc(shop.PF.label({ platform: lead.platform || '', source: lead.platformSrc || '' })) : null,
     lead.contact ? '<b>Кому:</b> ' + esc(lead.contact) : null,
     '<b>Куда уйдёт ответ:</b> ' + routeInfo(lead).to,
     (chat || lead.channel === 'email') && lead.message ? '<b>Клиент написал:</b> ' + esc(String(lead.message).slice(0, 500)) : null,
@@ -565,7 +599,7 @@ async function applyEdit(msg) {
     if (rec.lead.brand === 'shop') {
       let items = [];
       try { items = await shop.loadCatalog(); } catch (e) { /* каталог недоступен */ }
-      const bad = shop.checkDraft(d.body, items);
+      const bad = shop.checkDraft(d.body, items, rec.lead.platform);
       if (bad) { d.guard = bad; d.escalate = true; d.reason = ('СТОП: ' + bad).slice(0, 400); }
     }
   } else {
