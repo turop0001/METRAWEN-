@@ -6,7 +6,7 @@
 const NAMES = { gumroad: 'Gumroad', etsy: 'Etsy', lava: 'Lava', tribute: 'Tribute' };
 const CUR = { gumroad: 'USD', etsy: 'EUR', lava: 'RUB', tribute: 'RUB' };
 
-// Gumroad, доллары.
+// Gumroad, доллары. Сверено с живыми страницами 2026-10-06: везде действует стартовая цена (первое число).
 const GUM = {
   1: [29, 39, null], 2: [15, 19, null], 3: [19, 29, null], 5: [29, 39, null], 6: [15, 19, null], 7: [12, 15, null], 8: [12, 17, null],
   9: [19, 24, '2026-10-19'], 10: [14, 19, '2026-10-19'], 11: [9, 12, '2026-10-19'], 12: [11, 15, '2026-10-19'], 13: [17, 24, '2026-10-19'],
@@ -14,13 +14,18 @@ const GUM = {
   21: [12, 15, '2026-10-19'], 22: [14, 19, '2026-10-19'], 23: [19, 29, null], 24: [12, 17, '2026-10-19'], 25: [17, 24, null], 26: [19, 29, null]
 };
 
-// Etsy, евро. Известны только №1-3 (из заметок Notion). Для остальных товаров цену на Etsy бот не называет: «цена на странице листинга».
-const ETSY = { 1: [null, 27, null], 2: [14, 17, null], 3: [18, 27, null] };
+// Etsy, евро. Сверено с живыми страницами листингов 2026-10-06 (цена в метаданных страницы, базовая валюта EUR).
+// Обычную цену знаем только для №2 и №3; после конца старта для остальных бот цену не назовёт («цена на странице листинга»).
+// №19: ссылка Etsy ведёт на листинг №13, поэтому товар отключён в DISABLED до исправления ссылки.
+const ETSY = {
+  1: [27, null, null], 2: [14, 17, null], 3: [18, 27, null], 6: [14, null, null], 7: [11, null, null], 8: [11, null, null], 9: [18, null, null],
+  10: [13, null, null], 12: [10, null, null], 13: [16, null, null], 14: [13, null, null], 17: [33, null, null], 20: [18, null, null]
+};
 
-// Lava и Tribute, рубли (цена на обеих одинаковая).
+// Lava и Tribute, рубли (цена на обеих одинаковая). Lava сверена по живым страницам 2026-10-06 (все совпали, №5 без старта, №9 1490, №10 стартовая 690). Tribute закрыт для ботов (robots.txt), не сверялась.
 const RUB = {
   1: [1990, 2990, null], 2: [990, 1290, null], 3: [1290, 1990, null], 4: [690, 990, null], 5: [null, 1990, null], 7: [null, 790, null],
-  8: [null, 990, null], 10: [null, 990, null], 11: [490, 790, '2026-10-19'], 12: [490, 690, '2026-10-19'], 13: [990, 1490, '2026-10-19'],
+  8: [null, 990, null], 9: [null, 1490, null], 10: [690, 990, '2026-10-19'], 11: [490, 790, '2026-10-19'], 12: [490, 690, '2026-10-19'], 13: [990, 1490, '2026-10-19'],
   15: [790, 990, null], 16: [790, 990, null], 17: [1490, 1990, '2026-10-12'], 18: [990, 1490, null], 19: [990, 1490, null], 20: [990, 1490, null],
   21: [690, 990, '2026-10-19'], 22: [990, 1490, '2026-10-19'], 23: [990, 1490, null], 24: [690, 990, '2026-10-19'],
   27: [790, 990, null], 28: [990, 1190, null], 29: [390, 490, null], 30: [990, 1290, null], 31: [790, 990, null], 32: [490, 590, null],
@@ -30,7 +35,8 @@ const RUB = {
 const TABLE = { gumroad: GUM, etsy: ETSY, lava: RUB, tribute: RUB };
 
 // Листинги, которых больше нет на площадке (даже если ссылка осталась в Notion).
-const DISABLED = { 11: ['etsy'] };
+// №11: листинг на Etsy удалён. №19: ссылки Etsy и Lava показывают страницу №13 (проверено 2026-10-06), пока не исправят, ссылки не даём.
+const DISABLED = { 11: ['etsy'], 19: ['etsy', 'lava'] };
 
 function today(now) { return (now ? new Date(now) : new Date()).toISOString().slice(0, 10); }
 
@@ -120,7 +126,7 @@ function catalogLines(items, platform, lang, cards, now) {
     const pr = priceNow(it.n, platform, now);
     let priceTxt;
     if (!pr) priceTxt = 'PRICE: not set here, do not name a number, say the price is on the listing page';
-    else priceTxt = 'PRICE NOW: ' + money(pr.cur, pr.value) + (pr.phase === 'launch' ? ' (launch price' + (pr.until ? ' until ' + pr.until : '') + '; regular price later: ' + money(pr.cur, pr.regular) + ')' : '');
+    else priceTxt = 'PRICE NOW: ' + money(pr.cur, pr.value) + (pr.phase === 'launch' ? ' (launch price' + (pr.until ? ' until ' + pr.until : '') + (pr.regular != null ? '; regular price later: ' + money(pr.cur, pr.regular) : '') + ')' : '');
     return '#' + it.n + ' ' + it.title + ' | ' + priceTxt + ' | LINK: ' + it[platform] + (cards[it.n] ? ' | INFO: ' + cards[it.n] : '');
   }).join('\n');
 }
