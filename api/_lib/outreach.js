@@ -74,13 +74,22 @@ Rules: language = draft language. 45-80 words, 3-5 short sentences. Plain text, 
     title: 'Компания', email: 'Публичный email', draft: 'Черновик сообщения A', signal: 'Найденный сигнал',
     lang: function (pg) { return RU_COUNTRIES.test(prop(pg, 'Страна')) ? 'ru' : 'en'; },
     // Сначала Hot, по одной отрасли за пачку (одна тема: проще писать и мерить ответ). Skip и отказы не берём.
+    useDraft: true,
+    // Пачка по важности (hot / warm / cold) или по отрасли («Клиники»), можно вместе: «hot Клиники». Skip и отказы не берём.
     pickFilter: function (seg) {
       const f = [
         { property: 'Публичный email', email: { is_not_empty: true } },
         { or: [{ property: 'Этап', select: { equals: 'Черновик готов' } }, { property: 'Этап', select: { equals: 'Готово к отправке' } }, { property: 'Этап', select: { equals: 'Новый' } }] },
         { property: 'Скоринг', select: { does_not_equal: 'Skip' } }
       ];
-      if (seg) f.push({ property: 'Отрасль', select: { equals: seg } });
+      let rest = String(seg || '').trim();
+      const m = /(^|\s)(hot|горяч\S*|warm|тепл\S*|cold|холод\S*)(?=\s|$)/i.exec(rest);
+      if (m) {
+        const w = m[2].toLowerCase();
+        f.push({ property: 'Скоринг', select: { equals: /^(hot|горяч)/.test(w) ? 'Hot' : /^(warm|тепл)/.test(w) ? 'Warm' : 'Cold' } });
+        rest = (rest.slice(0, m.index) + ' ' + rest.slice(m.index + m[0].length)).trim();
+      }
+      if (rest) f.push({ property: 'Отрасль', select: { equals: rest } });
       return { and: f };
     },
     approved: 'Готово к отправке', sent: 'Отправлено',
@@ -119,11 +128,34 @@ async function query(B, filter, n, sorts) {
 // Плейсхолдеры и следы шаблона, которые не должны уйти клиенту.
 const BAD = /\[[^\]]{1,60}\]|\{\{|\}\}|<link>|your-link|example\.com|ссылка здесь|https?:\/\/|I won'?t (write|email)/i;
 
+const sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+
+// Вызов модели с повтором при лимитах и перегрузке (429, 5xx).
+async function complete(system, user, tokens) {
+  let last;
+  for (let a = 0; a < 3; a++) {
+    try { return await llm.complete(system, user, tokens); }
+    catch (e) { last = e; if (!/ 429| 5\d\d|overload|rate/i.test(String(e.message || e))) throw e; await sleep(1500 * (a + 1)); }
+  }
+  throw last;
+}
+
+// Готовый черновик из Notion берём как есть, если в нём нет ссылок, цен и плейсхолдеров. Тему делаем по шаблону.
+const PRICE = /[$€₽£]\s?\d|\d\s?(usd|eur|rub|руб|долл)/i;
+function fromDraft(B, pg) {
+  if (!B.useDraft) return null;
+  const d = String(prop(pg, B.draft) || '').trim();
+  if (d.length < 40 || d.length > 1400 || BAD.test(d) || PRICE.test(d)) return null;
+  const name = String(prop(pg, B.title) || '').trim();
+  const ru = B.lang(pg) === 'ru';
+  return { subject: ((ru ? 'Идея для ' : 'Quick idea for ') + name).slice(0, 70), body: d };
+}
+
 async function rewrite(B, pg) {
   const draft = prop(pg, B.draft);
   const signal = prop(pg, B.signal);
   if (!draft && !signal) throw new Error('нет черновика и сигнала');
-  const t = await llm.complete(B.prompt, '<draft>\n' + draft + '\n</draft>\nLead: ' + prop(pg, B.title) + '\nIndustry: ' + (prop(pg, 'Отрасль') || '') + '\nCountry: ' + (prop(pg, 'Страна') || prop(pg, 'Регион') || '') + '\nSignal: ' + signal, 500);
+  const t = await complete(B.prompt, '<draft>\n' + draft + '\n</draft>\nLead: ' + prop(pg, B.title) + '\nIndustry: ' + (prop(pg, 'Отрасль') || '') + '\nCountry: ' + (prop(pg, 'Страна') || prop(pg, 'Регион') || '') + '\nSignal: ' + signal, 500);
   const j = JSON.parse(t.slice(t.indexOf('{'), t.lastIndexOf('}') + 1));
   const body = String(j.body || '').trim();
   if (!body || BAD.test(body)) throw new Error('rewrite guard');
@@ -133,37 +165,52 @@ async function rewrite(B, pg) {
 // Пачка на одобрение. seg: для shop — продукт («#24 …»), для agency — отрасль («Клиники»).
 async function buildPack(n, brand, seg) {
   const B = cfg(brand);
-  const rows = await query(B, B.pickFilter(seg), Math.min(n * 2, 60));
+  const rows = await query(B, B.pickFilter(seg), Math.min(n * 3, 100));
   const queued = ((await loadJson(B.key + ':queue')) || []).map(function (x) { return x.to; });
   const items = [];
   let skipped = 0;
+  let fromNotion = 0;
   const seen = {};
-  const cands = [];
-  rows.forEach(function (pg) {
+  const gen = [];
+  const mk = function (pg, to, r) { return { id: pg.id, to: to, name: prop(pg, B.title), lang: B.lang(pg), subject: r.subject, body: r.body, seg: prop(pg, 'Отрасль') || '' }; };
+  for (let i = 0; i < rows.length; i++) {
+    const pg = rows[i];
     const to = String(prop(pg, B.email) || '').toLowerCase();
-    if (!to || queued.indexOf(to) >= 0 || seen[to]) return;
+    if (!to || queued.indexOf(to) >= 0 || seen[to]) continue;
     seen[to] = 1;
-    cands.push({ pg: pg, to: to });
-  });
-  // Письма переписываются пачками по 5 параллельно, с запасом по времени (функция живёт 60 с).
-  const deadline = Date.now() + 42000;
+    const r = fromDraft(B, pg);
+    if (r) { if (items.length < n) { items.push(mk(pg, to, r)); fromNotion++; } }
+    else gen.push({ pg: pg, to: to });
+  }
+  // Без готового черновика (или для магазина) письмо пишет модель: по 3 параллельно, с повтором при лимитах.
+  const deadline = Date.now() + 38000;
   let pos = 0;
-  while (pos < cands.length && items.length < n && Date.now() < deadline) {
-    const chunk = cands.slice(pos, pos + Math.max(1, Math.min(5, n - items.length)));
+  while (pos < gen.length && items.length < n && Date.now() < deadline) {
+    const chunk = gen.slice(pos, pos + Math.max(1, Math.min(3, n - items.length)));
     pos += chunk.length;
     const res = await Promise.all(chunk.map(function (c) {
       return rewrite(B, c.pg).then(function (r) { return { c: c, r: r }; }, function (e) { console.error('outreach: черновик пропущен', e); return null; });
     }));
     res.forEach(function (x) {
       if (!x) { skipped++; return; }
-      if (items.length >= n) return;
-      items.push({ id: x.c.pg.id, to: x.c.to, name: prop(x.c.pg, B.title), lang: B.lang(x.c.pg), subject: x.r.subject, body: x.r.body, seg: prop(x.c.pg, 'Отрасль') || '' });
+      if (items.length < n) items.push(mk(x.c.pg, x.c.to, x.r));
     });
   }
   if (skipped >= 3) await report('Рассылка: черновики не переписались', skipped + ' из ' + (items.length + skipped), brand);
+  // Тексты писем кладём в карточки Notion: чат не засоряем, всё видно в базе.
+  const nd = Date.now() + 12000;
+  for (let i = 0; i < items.length && Date.now() < nd; i += 10) {
+    await Promise.all(items.slice(i, i + 10).map(function (it) {
+      return B.call('PATCH', '/blocks/' + it.id + '/children', { children: [
+        { object: 'block', type: 'heading_3', heading_3: { rich_text: [{ type: 'text', text: { content: 'Письмо в рассылку ' + today() } }] } },
+        { object: 'block', type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: 'Тема: ' + it.subject } }] } },
+        { object: 'block', type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: String(it.body).slice(0, 1900) } }] } }
+      ] }).catch(function (e) { console.error('outreach: текст в Notion', e); });
+    }));
+  }
   const id = Date.now().toString(36);
   await saveJson('op:pack:' + id, { brand: brand === 'agency' ? 'agency' : 'shop', items: items }, 60 * 60 * 24 * 3);
-  return { id: id, items: items, brand: brand };
+  return { id: id, items: items, brand: brand, fromNotion: fromNotion, written: items.length - fromNotion };
 }
 
 async function approvePack(id) {
@@ -244,4 +291,4 @@ async function sent(it, brand) {
   } catch (e) { await report('Рассылка: отметка «отправлено»', e, it.id); }
 }
 
-module.exports = { buildPack, approvePack, due, sent, SHOP_BOXES, BOXES: SHOP_BOXES, BRANDS, cfg, BAD, dailyCap, rewrite };
+module.exports = { buildPack, approvePack, due, sent, SHOP_BOXES, BOXES: SHOP_BOXES, BRANDS, cfg, BAD, dailyCap, rewrite, fromDraft };

@@ -9,7 +9,7 @@ const { report, esc } = require('./_lib/alert');
 const HELP = [
   '<b>Команды Sell Manager</b>',
   '/pack 10 — пачка холодных писем METRAWEN Shop (можно добавить товар: /pack 10 #24)',
-  '/pack agency 10 Клиники — пачка писем агентства по одной отрасли (нужен подключённый ящик холодной почты)',
+  '/pack agency 15 hot (или warm, или отрасль: /pack agency 15 Клиники, можно вместе: hot Клиники) — пачка писем агентства',
   '/dm 10 Салоны красоты — карточки для ручных DM агентства (Instagram, WhatsApp, телефон, LINE)',
   '/dm shop 10 — карточки постов/комментариев/каталогов магазина (только товары со ссылкой)',
   '/report — недельный отчёт прямо сейчас',
@@ -25,13 +25,14 @@ function parseArgs(text, def) {
   if (parts[0] && /^(agency|агентство|shop|магазин)$/i.test(parts[0])) brand = /^(agency|агентство)$/i.test(parts.shift()) ? 'agency' : 'shop';
   let n = def;
   if (parts[0] && /^\d+$/.test(parts[0])) n = parseInt(parts.shift(), 10);
-  return { brand: brand, n: Math.min(Math.max(n, 1), 30), seg: parts.join(' ').trim() };
+  return { brand: brand, n: Math.min(Math.max(n, 1), 50), seg: parts.join(' ').trim() };
 }
 
 const INDUSTRIES = ['Фитнес и спорт', 'Салоны красоты', 'Недвижимость', 'Рестораны и кафе', 'Услуги B2B', 'Клиники', 'Туры и экскурсии', 'Интернет-магазины', 'Образование и курсы', 'Отели и виллы', 'Ритейл', 'Эксперты и консалтинг'];
 
 const MAIN_MENU = { inline_keyboard: [
-  [{ text: '📨 Пачка писем агентства', callback_data: 'mn:pa' }],
+  [{ text: '🔥 Пачка Hot (15)', callback_data: 'mn:ph' }, { text: '🌤 Пачка Warm (15)', callback_data: 'mn:pw' }],
+  [{ text: '📨 Пачка по отрасли', callback_data: 'mn:pa' }],
   [{ text: '🛍 Пачка писем Shop', callback_data: 'mn:ps' }],
   [{ text: '💬 Карточки для ручных DM', callback_data: 'mn:dm' }],
   [{ text: '📊 Отчёт сейчас', callback_data: 'mn:rp' }, { text: '📝 Редактор КП', callback_data: 'mn:kp' }],
@@ -69,6 +70,8 @@ function industryKeyboard(prefix) {
 async function menuAction(data, chatId) {
   const p = data.split(':');
   if (p[1] === 'main') { await tg('sendMessage', { chat_id: chatId, text: 'Что делаем?', reply_markup: MAIN_MENU }); return; }
+  if (p[1] === 'ph') { await ownerCommand('/pack agency 15 hot', chatId); return; }
+  if (p[1] === 'pw') { await ownerCommand('/pack agency 15 warm', chatId); return; }
   if (p[1] === 'pa' && p[2] === undefined) { await tg('sendMessage', { chat_id: chatId, text: 'Пачка агентства (15 писем). Выберите отрасль:', reply_markup: industryKeyboard('mn:pa') }); return; }
   if (p[1] === 'pa') { const seg = INDUSTRIES[parseInt(p[2], 10)]; if (seg) await ownerCommand('/pack agency 15 ' + seg, chatId); return; }
   if (p[1] === 'ps') { await ownerCommand('/pack shop 10', chatId); return; }
@@ -108,16 +111,11 @@ async function ownerCommand(text, chatId) {
   let p;
   try { p = await op.buildPack(a.n, brand, a.seg); }
   finally { if (storeEnabled()) { try { await saveJson(lockKey, null, 1); } catch (e) {} } }
-  for (let i = 0; i < p.items.length; i++) {
-    const it = p.items[i];
-    await tg('sendMessage', { chat_id: chatId, parse_mode: 'HTML', disable_web_page_preview: true,
-      text: (i + 1) + '/' + p.items.length + ' · <b>' + esc(it.name) + '</b> · ' + esc(it.to) + (it.seg ? ' · ' + esc(it.seg) : '') + '\n<b>Тема:</b> ' + esc(it.subject) + '\n<blockquote>' + esc(it.body) + '</blockquote>' });
-  }
   const agencyBridge = brand === 'agency' ? await loadJson('email:agency:key') : true;
   const tail = brand === 'agency'
     ? (agencyBridge ? 'Отправка пойдёт сама по графику прогрева с ящиков холодной почты агентства, повтор через 4 дня без ответа.' : '⚠️ Ящик холодной почты агентства ещё не подключён: после одобрения письма встанут в очередь и уйдут, когда мост подключится. С metrawen.com холодные письма не отправляются.')
     : 'Отправка пойдёт сама по графику прогрева (с 3 ящиков getmetrawen.com, повтор через 4 дня без ответа).';
-  await tg('sendMessage', { chat_id: chatId, text: p.items.length ? '✅ Готово. Пачка: ' + p.items.length + (p.items.length < a.n ? ' из ' + a.n : '') + ' писем. ' + tail : 'Нет лидов, готовых к рассылке' + (a.seg ? ' по «' + a.seg + '»' : '') + '.',
+  await tg('sendMessage', { chat_id: chatId, text: p.items.length ? '✅ Готово. Пачка: ' + p.items.length + (p.items.length < a.n ? ' из ' + a.n + ' (в этой выборке больше нет подходящих лидов)' : '') + ' писем' + (a.seg ? ' (' + a.seg + ')' : '') + '. Из черновиков Notion: ' + (p.fromNotion || 0) + ', написано заново: ' + (p.written || 0) + '. Тексты записаны в карточки лидов в Notion. ' + tail : 'Нет лидов, готовых к рассылке' + (a.seg ? ' по «' + a.seg + '»' : '') + '.',
     reply_markup: p.items.length ? { inline_keyboard: [[{ text: 'Одобрить пачку', callback_data: 'op:ok:' + p.id }, { text: 'Отменить', callback_data: 'op:no:' + p.id }]] } : undefined });
 }
 
