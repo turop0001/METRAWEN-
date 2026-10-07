@@ -40,7 +40,7 @@ const MAIN_MENU = { inline_keyboard: [
 const AGENCY_MENU = { inline_keyboard: [
   [{ text: '⭐ Агентство: топ 15 (Hot+Warm) — рекомендуем', callback_data: 'mn:pt:15' }],
   [{ text: '⭐ Агентство: топ 30', callback_data: 'mn:pt:30' }, { text: '⭐ Агентство: топ 50', callback_data: 'mn:pt:50' }],
-  [{ text: '🔥 Агентство: только Hot (15)', callback_data: 'mn:ph' }, { text: '🌤 Агентство: только Warm (15)', callback_data: 'mn:pw' }],
+  [{ text: '🔥 Агентство: Hot (15)', callback_data: 'mn:ph' }, { text: '🌤 Агентство: Warm (15)', callback_data: 'mn:pw' }],
   [{ text: '📨 Агентство: пачка по отрасли', callback_data: 'mn:pa' }],
   [{ text: '💬 Агентство: карточки для ручных DM', callback_data: 'mn:dm' }],
   [{ text: '← Главное меню', callback_data: 'mn:main' }]

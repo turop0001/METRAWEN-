@@ -171,10 +171,20 @@ async function rewrite(B, pg) {
 // Пачка на одобрение. seg: для shop — продукт («#24 …»), для agency — отрасль («Клиники»).
 async function buildPack(n, brand, seg) {
   const B = cfg(brand);
-  const rows = await query(B, B.pickFilter(seg), Math.min(n * 3, 100));
+  let rows = [];
+  if (B.useDraft) {
+    // сначала карточки с уже готовым черновиком (письмо берём из Notion без модели), потом остальные
+    const fd = B.pickFilter(seg);
+    fd.and.push({ property: 'Этап', select: { equals: 'Черновик готов' } });
+    rows = await query(B, fd, 100);
+    if (rows.length < n * 2) rows = rows.concat(await query(B, B.pickFilter(seg), 100));
+  } else {
+    rows = await query(B, B.pickFilter(seg), Math.min(n * 3, 100));
+  }
   const queued = ((await loadJson(B.key + ':queue')) || []).map(function (x) { return x.to; });
   const items = [];
   let skipped = 0;
+  let firstErr = '';
   let fromNotion = 0;
   const seen = {};
   const gen = [];
@@ -195,14 +205,14 @@ async function buildPack(n, brand, seg) {
     const chunk = gen.slice(pos, pos + Math.max(1, Math.min(3, n - items.length)));
     pos += chunk.length;
     const res = await Promise.all(chunk.map(function (c) {
-      return rewrite(B, c.pg).then(function (r) { return { c: c, r: r }; }, function (e) { console.error('outreach: черновик пропущен', e); return null; });
+      return rewrite(B, c.pg).then(function (r) { return { c: c, r: r }; }, function (e) { console.error('outreach: черновик пропущен', e); if (!firstErr) firstErr = String(e && e.message || e).slice(0, 160); return null; });
     }));
     res.forEach(function (x) {
       if (!x) { skipped++; return; }
       if (items.length < n) items.push(mk(x.c.pg, x.c.to, x.r));
     });
   }
-  if (skipped >= 3) await report('Рассылка: черновики не переписались', skipped + ' из ' + (items.length + skipped), brand);
+  if (skipped >= 3) await report('Рассылка: черновики не переписались', skipped + ' из ' + (items.length + skipped) + (firstErr ? '. Причина: ' + firstErr : ''), brand);
   // Тексты писем кладём в карточки Notion: чат не засоряем, всё видно в базе.
   const nd = Date.now() + 12000;
   for (let i = 0; i < items.length && Date.now() < nd; i += 10) {
