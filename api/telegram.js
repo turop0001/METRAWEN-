@@ -14,6 +14,7 @@ const HELP = [
   '/dm shop 10 — карточки постов/комментариев/каталогов магазина (только товары со ссылкой)',
   '/report — недельный отчёт прямо сейчас',
   '/cleandrafts — почистить черновики Хантера магазина от плейсхолдеров (идёт в фоне)',
+  '/menu — меню кнопками',
   '/kp — редактор КП'
 ].join('\n');
 
@@ -27,8 +28,60 @@ function parseArgs(text, def) {
   return { brand: brand, n: Math.min(Math.max(n, 1), 30), seg: parts.join(' ').trim() };
 }
 
+const INDUSTRIES = ['Фитнес и спорт', 'Салоны красоты', 'Недвижимость', 'Рестораны и кафе', 'Услуги B2B', 'Клиники', 'Туры и экскурсии', 'Интернет-магазины', 'Образование и курсы', 'Отели и виллы', 'Ритейл', 'Эксперты и консалтинг'];
+
+const MAIN_MENU = { inline_keyboard: [
+  [{ text: '📨 Пачка писем агентства', callback_data: 'mn:pa' }],
+  [{ text: '🛍 Пачка писем Shop', callback_data: 'mn:ps' }],
+  [{ text: '💬 Карточки для ручных DM', callback_data: 'mn:dm' }],
+  [{ text: '📊 Отчёт сейчас', callback_data: 'mn:rp' }, { text: '📝 Редактор КП', callback_data: 'mn:kp' }],
+  [{ text: '❓ Все команды', callback_data: 'mn:hp' }]
+] };
+
+async function sendMenu(chatId) {
+  await tg('sendMessage', { chat_id: chatId, text: '<b>METRAWEN Sell Manager</b>\nЧто делаем?', parse_mode: 'HTML', reply_markup: MAIN_MENU });
+  try {
+    if (storeEnabled() && !(await loadJson('tg:cmds:v1'))) {
+      await tg('setMyCommands', { commands: [
+        { command: 'menu', description: 'Меню действий' },
+        { command: 'pack', description: 'Пачка писем: /pack agency 15 Отрасль' },
+        { command: 'dm', description: 'Карточки для ручных DM' },
+        { command: 'report', description: 'Отчёт сейчас' },
+        { command: 'kp', description: 'Редактор КП' },
+        { command: 'help', description: 'Все команды' }
+      ] });
+      await saveJson('tg:cmds:v1', 1, 60 * 60 * 24 * 365);
+    }
+  } catch (e) { console.error('telegram: setMyCommands', e); }
+}
+
+function industryKeyboard(prefix) {
+  const rows = [];
+  for (let i = 0; i < INDUSTRIES.length; i += 2) {
+    const r = [{ text: INDUSTRIES[i], callback_data: prefix + ':' + i }];
+    if (INDUSTRIES[i + 1]) r.push({ text: INDUSTRIES[i + 1], callback_data: prefix + ':' + (i + 1) });
+    rows.push(r);
+  }
+  rows.push([{ text: '← Назад', callback_data: 'mn:main' }]);
+  return { inline_keyboard: rows };
+}
+
+async function menuAction(data, chatId) {
+  const p = data.split(':');
+  if (p[1] === 'main') { await tg('sendMessage', { chat_id: chatId, text: 'Что делаем?', reply_markup: MAIN_MENU }); return; }
+  if (p[1] === 'pa' && p[2] === undefined) { await tg('sendMessage', { chat_id: chatId, text: 'Пачка агентства (15 писем). Выберите отрасль:', reply_markup: industryKeyboard('mn:pa') }); return; }
+  if (p[1] === 'pa') { const seg = INDUSTRIES[parseInt(p[2], 10)]; if (seg) await ownerCommand('/pack agency 15 ' + seg, chatId); return; }
+  if (p[1] === 'ps') { await ownerCommand('/pack shop 10', chatId); return; }
+  if (p[1] === 'dm' && p[2] === undefined) { await tg('sendMessage', { chat_id: chatId, text: 'Карточки DM агентства (10 штук). Выберите отрасль:', reply_markup: industryKeyboard('mn:dm') }); return; }
+  if (p[1] === 'dm') { const seg = INDUSTRIES[parseInt(p[2], 10)]; if (seg) await ownerCommand('/dm agency 10 ' + seg, chatId); return; }
+  if (p[1] === 'rp') { await ownerCommand('/report', chatId); return; }
+  if (p[1] === 'hp') { await ownerCommand('/help', chatId); return; }
+  if (p[1] === 'kp') { const K = require('./_lib/kp'); await tg('sendMessage', { chat_id: chatId, text: 'Редактор КП: ' + K.adminUrl() + '\nСсылка с ключом доступа, не пересылайте её.', disable_web_page_preview: true }); return; }
+}
+
 async function ownerCommand(text, chatId) {
   const cmd = text.split(/\s+/)[0].toLowerCase().replace(/@.*/, '');
+  if (cmd === '/menu' || cmd === '/start') { await sendMenu(chatId); return; }
   if (cmd === '/help') { await tg('sendMessage', { chat_id: chatId, text: HELP, parse_mode: 'HTML' }); return; }
   if (cmd === '/report') { await tg('sendMessage', { chat_id: chatId, text: 'Собираю отчёт...' }); await require('./_lib/ops').weekly(true); return; }
   if (cmd === '/cleandrafts') {
@@ -48,8 +101,13 @@ async function ownerCommand(text, chatId) {
   const op = require('./_lib/outreach');
   const a = parseArgs(text, 10);
   const brand = a.brand || 'shop';
-  await tg('sendMessage', { chat_id: chatId, text: 'Готовлю пачку из ' + a.n + ' писем (' + (brand === 'agency' ? 'агентство' : 'магазин') + (a.seg ? ', ' + a.seg : '') + ')...' });
-  const p = await op.buildPack(a.n, brand, a.seg);
+  const lockKey = 'op:lock:' + brand;
+  if (storeEnabled() && await loadJson(lockKey)) { await tg('sendMessage', { chat_id: chatId, text: '⏳ Пачка уже в процессе, подождите минуту.' }); return; }
+  if (storeEnabled()) await saveJson(lockKey, 1, 90);
+  await tg('sendMessage', { chat_id: chatId, text: '⏳ В процессе: готовлю пачку из ' + a.n + ' писем (' + (brand === 'agency' ? 'агентство' : 'магазин') + (a.seg ? ', ' + a.seg : '') + ')...' });
+  let p;
+  try { p = await op.buildPack(a.n, brand, a.seg); }
+  finally { if (storeEnabled()) { try { await saveJson(lockKey, null, 1); } catch (e) {} } }
   for (let i = 0; i < p.items.length; i++) {
     const it = p.items[i];
     await tg('sendMessage', { chat_id: chatId, parse_mode: 'HTML', disable_web_page_preview: true,
@@ -59,7 +117,7 @@ async function ownerCommand(text, chatId) {
   const tail = brand === 'agency'
     ? (agencyBridge ? 'Отправка пойдёт сама по графику прогрева с ящиков холодной почты агентства, повтор через 4 дня без ответа.' : '⚠️ Ящик холодной почты агентства ещё не подключён: после одобрения письма встанут в очередь и уйдут, когда мост подключится. С metrawen.com холодные письма не отправляются.')
     : 'Отправка пойдёт сама по графику прогрева (с 3 ящиков getmetrawen.com, повтор через 4 дня без ответа).';
-  await tg('sendMessage', { chat_id: chatId, text: p.items.length ? 'Пачка: ' + p.items.length + ' писем. ' + tail : 'Нет лидов, готовых к рассылке' + (a.seg ? ' по «' + a.seg + '»' : '') + '.',
+  await tg('sendMessage', { chat_id: chatId, text: p.items.length ? '✅ Готово. Пачка: ' + p.items.length + (p.items.length < a.n ? ' из ' + a.n : '') + ' писем. ' + tail : 'Нет лидов, готовых к рассылке' + (a.seg ? ' по «' + a.seg + '»' : '') + '.',
     reply_markup: p.items.length ? { inline_keyboard: [[{ text: 'Одобрить пачку', callback_data: 'op:ok:' + p.id }, { text: 'Отменить', callback_data: 'op:no:' + p.id }]] } : undefined });
 }
 
@@ -113,6 +171,17 @@ module.exports = async function handler(req, res) {
     return res.status(401).json({ ok: false });
   }
 
+  // Telegram повторяет апдейт, если ответ не пришёл вовремя: один и тот же update_id обрабатываем один раз.
+  try {
+    let u0 = req.body;
+    if (typeof u0 === 'string') { try { u0 = JSON.parse(u0); } catch (e) { u0 = {}; } }
+    if (u0 && u0.update_id && storeEnabled()) {
+      const dk = 'tg:upd:' + u0.update_id;
+      if (await loadJson(dk)) return res.status(200).json({ ok: true });
+      await saveJson(dk, 1, 3600);
+    }
+  } catch (e) { console.error('telegram: dedup', e); }
+
   // попутно: напоминания и контроль мостов (не чаще раза в 8 минут, ошибки не мешают ответу)
   try { await require('./_lib/ops').tick(true); } catch (e) { console.error('telegram: tick', e); }
 
@@ -125,7 +194,7 @@ module.exports = async function handler(req, res) {
       await tg('sendMessage', { chat_id: chatId, text: 'Редактор КП: ' + K.adminUrl() + '\nСсылка с ключом доступа, не пересылайте её.', disable_web_page_preview: true });
       return res.status(200).json({ ok: true });
     }
-    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/(pack|dm|report|cleandrafts|help)\b/i.test(String(msg.text || ''))) {
+    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/(pack|dm|report|cleandrafts|help|menu|start)\b/i.test(String(msg.text || ''))) {
       try { await ownerCommand(String(msg.text || '').trim(), chatId); }
       catch (e) { await report('Команда ' + String(msg.text).split(/\s+/)[0], e); }
       return res.status(200).json({ ok: true });
@@ -143,6 +212,12 @@ module.exports = async function handler(req, res) {
   // только ваш чат
   if (String(cq.message.chat.id) !== String(chatId)) {
     try { await tg('answerCallbackQuery', { callback_query_id: cq.id }); } catch (e) {}
+    return res.status(200).json({ ok: true });
+  }
+
+  if (/^mn:/.test(String(cq.data || ''))) {
+    try { await tg('answerCallbackQuery', { callback_query_id: cq.id }); } catch (e) {}
+    try { await menuAction(String(cq.data), chatId); } catch (e) { await report('Меню бота', e); }
     return res.status(200).json({ ok: true });
   }
 

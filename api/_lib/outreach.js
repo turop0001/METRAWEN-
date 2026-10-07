@@ -137,14 +137,28 @@ async function buildPack(n, brand, seg) {
   const queued = ((await loadJson(B.key + ':queue')) || []).map(function (x) { return x.to; });
   const items = [];
   let skipped = 0;
-  for (let i = 0; i < rows.length && items.length < n; i++) {
-    const pg = rows[i];
+  const seen = {};
+  const cands = [];
+  rows.forEach(function (pg) {
     const to = String(prop(pg, B.email) || '').toLowerCase();
-    if (!to || queued.indexOf(to) >= 0) continue;
-    try {
-      const r = await rewrite(B, pg);
-      items.push({ id: pg.id, to: to, name: prop(pg, B.title), lang: B.lang(pg), subject: r.subject, body: r.body, seg: prop(pg, 'Отрасль') || '' });
-    } catch (e) { skipped++; console.error('outreach: черновик пропущен', e); }
+    if (!to || queued.indexOf(to) >= 0 || seen[to]) return;
+    seen[to] = 1;
+    cands.push({ pg: pg, to: to });
+  });
+  // Письма переписываются пачками по 5 параллельно, с запасом по времени (функция живёт 60 с).
+  const deadline = Date.now() + 42000;
+  let pos = 0;
+  while (pos < cands.length && items.length < n && Date.now() < deadline) {
+    const chunk = cands.slice(pos, pos + Math.max(1, Math.min(5, n - items.length)));
+    pos += chunk.length;
+    const res = await Promise.all(chunk.map(function (c) {
+      return rewrite(B, c.pg).then(function (r) { return { c: c, r: r }; }, function (e) { console.error('outreach: черновик пропущен', e); return null; });
+    }));
+    res.forEach(function (x) {
+      if (!x) { skipped++; return; }
+      if (items.length >= n) return;
+      items.push({ id: x.c.pg.id, to: x.c.to, name: prop(x.c.pg, B.title), lang: B.lang(x.c.pg), subject: x.r.subject, body: x.r.body, seg: prop(x.c.pg, 'Отрасль') || '' });
+    });
   }
   if (skipped >= 3) await report('Рассылка: черновики не переписались', skipped + ' из ' + (items.length + skipped), brand);
   const id = Date.now().toString(36);
