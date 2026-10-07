@@ -9,7 +9,7 @@ const { report, esc } = require('./_lib/alert');
 const HELP = [
   '<b>Команды Sell Manager</b>',
   '/pack 10 — пачка холодных писем METRAWEN Shop (можно добавить товар: /pack 10 #24)',
-  '/pack agency 15 hot (или warm, или отрасль: /pack agency 15 Клиники, можно вместе: hot Клиники) — пачка писем агентства',
+  '/pack agency 15 top — рекомендуемая пачка (самые Hot и Warm); можно hot, warm или отрасль: /pack agency 15 Клиники, вместе: hot Клиники',
   '/dm 10 Салоны красоты — карточки для ручных DM агентства (Instagram, WhatsApp, телефон, LINE)',
   '/dm shop 10 — карточки постов/комментариев/каталогов магазина (только товары со ссылкой)',
   '/report — недельный отчёт прямо сейчас',
@@ -31,9 +31,10 @@ function parseArgs(text, def) {
 const INDUSTRIES = ['Фитнес и спорт', 'Салоны красоты', 'Недвижимость', 'Рестораны и кафе', 'Услуги B2B', 'Клиники', 'Туры и экскурсии', 'Интернет-магазины', 'Образование и курсы', 'Отели и виллы', 'Ритейл', 'Эксперты и консалтинг'];
 
 const MAIN_MENU = { inline_keyboard: [
-  [{ text: '🔥 Пачка Hot (15)', callback_data: 'mn:ph' }, { text: '🌤 Пачка Warm (15)', callback_data: 'mn:pw' }],
-  [{ text: '📨 Пачка по отрасли', callback_data: 'mn:pa' }],
-  [{ text: '🛍 Пачка писем Shop', callback_data: 'mn:ps' }],
+  [{ text: '⭐ Рекомендуемая: самые Hot и Warm (15)', callback_data: 'mn:pt:15' }],
+  [{ text: '⭐ 30 лучших', callback_data: 'mn:pt:30' }, { text: '⭐ 50 лучших', callback_data: 'mn:pt:50' }],
+  [{ text: '🔥 Только Hot (15)', callback_data: 'mn:ph' }, { text: '🌤 Только Warm (15)', callback_data: 'mn:pw' }],
+  [{ text: '📨 Пачка по отрасли', callback_data: 'mn:pa' }, { text: '🛍 Пачка Shop', callback_data: 'mn:ps' }],
   [{ text: '💬 Карточки для ручных DM', callback_data: 'mn:dm' }],
   [{ text: '📊 Отчёт сейчас', callback_data: 'mn:rp' }, { text: '📝 Редактор КП', callback_data: 'mn:kp' }],
   [{ text: '❓ Все команды', callback_data: 'mn:hp' }]
@@ -70,6 +71,7 @@ function industryKeyboard(prefix) {
 async function menuAction(data, chatId) {
   const p = data.split(':');
   if (p[1] === 'main') { await tg('sendMessage', { chat_id: chatId, text: 'Что делаем?', reply_markup: MAIN_MENU }); return; }
+  if (p[1] === 'pt') { const k = Math.min(Math.max(parseInt(p[2], 10) || 15, 1), 50); await ownerCommand('/pack agency ' + k + ' top', chatId); return; }
   if (p[1] === 'ph') { await ownerCommand('/pack agency 15 hot', chatId); return; }
   if (p[1] === 'pw') { await ownerCommand('/pack agency 15 warm', chatId); return; }
   if (p[1] === 'pa' && p[2] === undefined) { await tg('sendMessage', { chat_id: chatId, text: 'Пачка агентства (15 писем). Выберите отрасль:', reply_markup: industryKeyboard('mn:pa') }); return; }

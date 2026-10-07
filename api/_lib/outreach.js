@@ -83,7 +83,13 @@ Rules: language = draft language. 45-80 words, 3-5 short sentences. Plain text, 
         { property: 'Скоринг', select: { does_not_equal: 'Skip' } }
       ];
       let rest = String(seg || '').trim();
-      const m = /(^|\s)(hot|горяч\S*|warm|тепл\S*|cold|холод\S*)(?=\s|$)/i.exec(rest);
+      // «top» (рекомендуемая): самые перспективные, Hot и Warm; Hot идут первыми
+      const tm = /(^|\s)(top|топ|рекоменд\S*|лучш\S*)(?=\s|$)/i.exec(rest);
+      if (tm) {
+        f.push({ or: [{ property: 'Скоринг', select: { equals: 'Hot' } }, { property: 'Скоринг', select: { equals: 'Warm' } }] });
+        rest = (rest.slice(0, tm.index) + ' ' + rest.slice(tm.index + tm[0].length)).trim();
+      }
+      const m = !tm && /(^|\s)(hot|горяч\S*|warm|тепл\S*|cold|холод\S*)(?=\s|$)/i.exec(rest);
       if (m) {
         const w = m[2].toLowerCase();
         f.push({ property: 'Скоринг', select: { equals: /^(hot|горяч)/.test(w) ? 'Hot' : /^(warm|тепл)/.test(w) ? 'Warm' : 'Cold' } });
