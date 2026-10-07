@@ -31,13 +31,26 @@ function parseArgs(text, def) {
 const INDUSTRIES = ['Фитнес и спорт', 'Салоны красоты', 'Недвижимость', 'Рестораны и кафе', 'Услуги B2B', 'Клиники', 'Туры и экскурсии', 'Интернет-магазины', 'Образование и курсы', 'Отели и виллы', 'Ритейл', 'Эксперты и консалтинг'];
 
 const MAIN_MENU = { inline_keyboard: [
-  [{ text: '⭐ Рекомендуемая: самые Hot и Warm (15)', callback_data: 'mn:pt:15' }],
-  [{ text: '⭐ 30 лучших', callback_data: 'mn:pt:30' }, { text: '⭐ 50 лучших', callback_data: 'mn:pt:50' }],
-  [{ text: '🔥 Только Hot (15)', callback_data: 'mn:ph' }, { text: '🌤 Только Warm (15)', callback_data: 'mn:pw' }],
-  [{ text: '📨 Пачка по отрасли', callback_data: 'mn:pa' }, { text: '🛍 Пачка Shop', callback_data: 'mn:ps' }],
-  [{ text: '💬 Карточки для ручных DM', callback_data: 'mn:dm' }],
+  [{ text: '🏢 АГЕНТСТВО (услуги студии)', callback_data: 'mn:ag' }],
+  [{ text: '🛍 SHOP (цифровые товары)', callback_data: 'mn:sh' }],
   [{ text: '📊 Отчёт сейчас', callback_data: 'mn:rp' }, { text: '📝 Редактор КП', callback_data: 'mn:kp' }],
   [{ text: '❓ Все команды', callback_data: 'mn:hp' }]
+] };
+
+const AGENCY_MENU = { inline_keyboard: [
+  [{ text: '⭐ Агентство: топ 15 (Hot+Warm) — рекомендуем', callback_data: 'mn:pt:15' }],
+  [{ text: '⭐ Агентство: топ 30', callback_data: 'mn:pt:30' }, { text: '⭐ Агентство: топ 50', callback_data: 'mn:pt:50' }],
+  [{ text: '🔥 Агентство: только Hot (15)', callback_data: 'mn:ph' }, { text: '🌤 Агентство: только Warm (15)', callback_data: 'mn:pw' }],
+  [{ text: '📨 Агентство: пачка по отрасли', callback_data: 'mn:pa' }],
+  [{ text: '💬 Агентство: карточки для ручных DM', callback_data: 'mn:dm' }],
+  [{ text: '← Главное меню', callback_data: 'mn:main' }]
+] };
+
+const SHOP_MENU = { inline_keyboard: [
+  [{ text: '🛍 Shop: пачка 15 писем — рекомендуем', callback_data: 'mn:ps:15' }],
+  [{ text: '🛍 Shop: пачка 30', callback_data: 'mn:ps:30' }, { text: '🛍 Shop: пачка 50', callback_data: 'mn:ps:50' }],
+  [{ text: '💬 Shop: карточки для ручных DM (10)', callback_data: 'mn:dms' }],
+  [{ text: '← Главное меню', callback_data: 'mn:main' }]
 ] };
 
 async function sendMenu(chatId) {
@@ -64,19 +77,22 @@ function industryKeyboard(prefix) {
     if (INDUSTRIES[i + 1]) r.push({ text: INDUSTRIES[i + 1], callback_data: prefix + ':' + (i + 1) });
     rows.push(r);
   }
-  rows.push([{ text: '← Назад', callback_data: 'mn:main' }]);
+  rows.push([{ text: '← Назад в «Агентство»', callback_data: 'mn:ag' }]);
   return { inline_keyboard: rows };
 }
 
 async function menuAction(data, chatId) {
   const p = data.split(':');
   if (p[1] === 'main') { await tg('sendMessage', { chat_id: chatId, text: 'Что делаем?', reply_markup: MAIN_MENU }); return; }
+  if (p[1] === 'ag') { await tg('sendMessage', { chat_id: chatId, text: '<b>🏢 АГЕНТСТВО</b> (холодные письма по Hunter CRM, ящики getmetrawen.com)\nКакую пачку готовим?', parse_mode: 'HTML', reply_markup: AGENCY_MENU }); return; }
+  if (p[1] === 'sh') { await tg('sendMessage', { chat_id: chatId, text: '<b>🛍 SHOP</b> (цифровые товары, холодные письма по лидам магазина)\nКакую пачку готовим?', parse_mode: 'HTML', reply_markup: SHOP_MENU }); return; }
+  if (p[1] === 'dms') { await ownerCommand('/dm shop 10', chatId); return; }
   if (p[1] === 'pt') { const k = Math.min(Math.max(parseInt(p[2], 10) || 15, 1), 50); await ownerCommand('/pack agency ' + k + ' top', chatId); return; }
   if (p[1] === 'ph') { await ownerCommand('/pack agency 15 hot', chatId); return; }
   if (p[1] === 'pw') { await ownerCommand('/pack agency 15 warm', chatId); return; }
   if (p[1] === 'pa' && p[2] === undefined) { await tg('sendMessage', { chat_id: chatId, text: 'Пачка агентства (15 писем). Выберите отрасль:', reply_markup: industryKeyboard('mn:pa') }); return; }
   if (p[1] === 'pa') { const seg = INDUSTRIES[parseInt(p[2], 10)]; if (seg) await ownerCommand('/pack agency 15 ' + seg, chatId); return; }
-  if (p[1] === 'ps') { await ownerCommand('/pack shop 10', chatId); return; }
+  if (p[1] === 'ps') { const k = Math.min(Math.max(parseInt(p[2], 10) || 15, 1), 50); await ownerCommand('/pack shop ' + k, chatId); return; }
   if (p[1] === 'dm' && p[2] === undefined) { await tg('sendMessage', { chat_id: chatId, text: 'Карточки DM агентства (10 штук). Выберите отрасль:', reply_markup: industryKeyboard('mn:dm') }); return; }
   if (p[1] === 'dm') { const seg = INDUSTRIES[parseInt(p[2], 10)]; if (seg) await ownerCommand('/dm agency 10 ' + seg, chatId); return; }
   if (p[1] === 'rp') { await ownerCommand('/report', chatId); return; }
