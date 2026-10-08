@@ -58,16 +58,18 @@ const SHOP_MENU = { inline_keyboard: [
 async function sendMenu(chatId) {
   await tg('sendMessage', { chat_id: chatId, text: '<b>METRAWEN Sell Manager</b>\nЧто делаем?', parse_mode: 'HTML', reply_markup: MAIN_MENU });
   try {
-    if (storeEnabled() && !(await loadJson('tg:cmds:v1'))) {
+    if (storeEnabled() && !(await loadJson('tg:cmds:v2'))) {
       await tg('setMyCommands', { commands: [
         { command: 'menu', description: 'Меню действий' },
         { command: 'pack', description: 'Пачка писем: /pack agency 15 Отрасль' },
+        { command: 'status', description: 'Статусы рассылок и счётчики' },
+        { command: 'cancel', description: 'Отменить очередь: /cancel agency' },
         { command: 'dm', description: 'Карточки для ручных DM' },
         { command: 'report', description: 'Отчёт сейчас' },
         { command: 'kp', description: 'Редактор КП' },
         { command: 'help', description: 'Все команды' }
       ] });
-      await saveJson('tg:cmds:v1', 1, 60 * 60 * 24 * 365);
+      await saveJson('tg:cmds:v2', 1, 60 * 60 * 24 * 365);
     }
   } catch (e) { console.error('telegram: setMyCommands', e); }
 }
