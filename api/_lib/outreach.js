@@ -18,7 +18,8 @@ const { tg } = require('./tg');
 // Три ящика getmetrawen.com общие: с них идёт холодная рассылка и магазина, и агентства (ящики агентства присылает мост agency).
 // Суточный лимит ящика делится поровну между ветками, чтобы суммарно не выходить за потолок прогрева.
 // Свой набор ящиков магазина можно задать переменной OUTREACH_SHOP_BOXES (через запятую).
-const DEFAULT_SHOP_BOXES = ['dmitry.barinov@getmetrawen.com', 'd.barinov@getmetrawen.com', 'dmytro.pop@getmetrawen.com'];
+// Ящики getmetrawen.com закреплены за агентством. Для магазина нужны другие ящики: задайте OUTREACH_SHOP_BOXES.
+const DEFAULT_SHOP_BOXES = [];
 const envBoxes = String(process.env.OUTREACH_SHOP_BOXES || '').split(',').map(function (s) { return s.trim().toLowerCase(); }).filter(function (s) { return /@/.test(s); });
 const SHOP_BOXES = envBoxes.length ? envBoxes : DEFAULT_SHOP_BOXES;
 const boxTag = function (b) { return String(b).split('@')[0] + '@'; };
@@ -231,6 +232,11 @@ async function buildPack(n, brand, seg) {
   return { id: id, items: items, brand: brand, fromNotion: fromNotion, written: items.length - fromNotion };
 }
 
+// Суточный лимит на ящик: ящики у веток раздельные, поэтому лимит не делится.
+async function capFor(brand) {
+  return dailyCap(await startDay(cfg(brand)));
+}
+
 function tzOfItem(it) { return tzm.zone(it.country, it.lang); }
 
 // Плановый старт пачки по Таиланду: самое раннее окно 9-18 среди стран лидов.
@@ -270,9 +276,8 @@ async function approvePack(id) {
   });
   const rows = Object.keys(byC).sort(function (a, b) { return byC[a].t - byC[b].t; }).slice(0, 8)
     .map(function (k) { return '• ' + k + ': ' + byC[k].n + ' пис., с ' + tzm.bangkok(byC[k].t); });
-  const boxes = B === BRANDS.agency ? 3 : SHOP_BOXES.length;
-  const day = await startDay(B);
-  const perDay = Math.max(1, boxes * Math.max(1, Math.floor(dailyCap(day) / (envBoxes.length ? 1 : 2))));
+  const nb = B === BRANDS.agency ? (((await loadJson(B.key + ':boxes')) || []).length || 3) : SHOP_BOXES.length;
+  const perDay = Math.max(1, nb * (await capFor(p.brand)));
   const days = Math.ceil(p.items.length / perDay);
   const rec = { id: id, brand: p.brand, total: p.items.length, sent: 0, failed: 0, approved: now, plan: first, started: 0, finished: 0 };
   await saveJson(B.key + ':batch:' + id, rec, 60 * 60 * 24 * 60);
@@ -307,7 +312,7 @@ async function statusText() {
     const B = cfg(b);
     const bx = b === 'agency' ? ((await loadJson(B.key + ':boxes')) || []) : SHOP_BOXES;
     if (!bx.length) continue;
-    const cap = (envBoxes.length ? dailyCap(await startDay(B)) : (b === 'agency' ? Math.ceil(dailyCap(await startDay(B)) / 2) : Math.floor(dailyCap(await startDay(B)) / 2)));
+    const cap = await capFor(b);
     const parts = [];
     for (const x of bx) parts.push(boxTag(x) + ' ' + ((await loadJson(B.key + ':cnt:' + boxTag(x) + d)) || 0) + '/' + cap);
     box.push((b === 'agency' ? 'агентство' : 'магазин') + ': ' + parts.join(', '));
@@ -360,11 +365,7 @@ async function due(brand, boxesFromBridge) {
     : SHOP_BOXES;
   if (!boxes.length) return [];
   if (brand === 'agency') await saveJson(B.key + ':boxes', boxes, 60 * 60 * 24 * 30);
-  const day = await startDay(B);
-  // общий потолок на ящик делится между магазином и агентством (если задан свой набор ящиков магазина, делить не нужно)
-  const shared = !envBoxes.length;
-  const full = dailyCap(day);
-  const cap = shared ? (brand === 'agency' ? Math.ceil(full / 2) : Math.floor(full / 2)) : full;
+  const cap = await capFor(brand);
   const d = today();
   let q = (await loadJson(B.key + ':queue')) || [];
   const out = [];
