@@ -145,7 +145,8 @@ async function ownerCommand(text, chatId) {
   const tail = brand === 'agency'
     ? (agencyBridge ? 'Отправка пойдёт сама по графику прогрева с ящиков холодной почты агентства, повтор через 4 дня без ответа.' : '⚠️ Ящик холодной почты агентства ещё не подключён: после одобрения письма встанут в очередь и уйдут, когда мост подключится. С metrawen.com холодные письма не отправляются.')
     : 'Отправка пойдёт сама по графику прогрева (с 3 ящиков getmetrawen.com, повтор через 4 дня без ответа).';
-  await tg('sendMessage', { chat_id: chatId, text: p.items.length ? '✅ Готово. Пачка: ' + p.items.length + (p.items.length < a.n ? ' из ' + a.n + ' (в этой выборке больше нет подходящих лидов)' : '') + ' писем' + (a.seg ? ' (' + a.seg + ')' : '') + '. Из черновиков Notion: ' + (p.fromNotion || 0) + ', написано заново: ' + (p.written || 0) + '. Тексты записаны в карточки лидов в Notion. ' + tail : 'Нет лидов, готовых к рассылке' + (a.seg ? ' по «' + a.seg + '»' : '') + '.',
+  const st = p.items.length ? op.planStart(p.items) : '';
+  await tg('sendMessage', { chat_id: chatId, text: p.items.length ? '✅ Пачка готова: ' + p.items.length + ' писем' + (a.seg ? ' (' + a.seg + ')' : '') + (p.items.length < a.n ? ' из ' + a.n : '') + '. Тексты в карточках Notion.\n🗓 Старт по графику: ' + st + ' (время Таиланда). Окно 9–18 по стране лида, повтор через 4 дня без ответа.' + (brand === 'agency' && !agencyBridge ? '\n⚠️ Ящик холодной почты агентства не подключён: письма уйдут, когда мост подключится.' : '') : 'Нет лидов, готовых к рассылке' + (a.seg ? ' по «' + a.seg + '»' : '') + '.',
     reply_markup: p.items.length ? { inline_keyboard: [[{ text: 'Одобрить пачку', callback_data: 'op:ok:' + p.id }, { text: 'Отменить', callback_data: 'op:no:' + p.id }]] } : undefined });
 }
 

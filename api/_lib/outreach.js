@@ -233,6 +233,14 @@ async function buildPack(n, brand, seg) {
 
 function tzOfItem(it) { return tzm.zone(it.country, it.lang); }
 
+// Плановый старт пачки по Таиланду: самое раннее окно 9-18 среди стран лидов.
+function planStart(items) {
+  const now = Date.now();
+  let first = Infinity;
+  (items || []).forEach(function (it) { first = Math.min(first, tzm.nextOpen(tzOfItem(it).tz, now)); });
+  return first === Infinity ? '' : tzm.bangkok(first);
+}
+
 async function notify(text) {
   try { await tg('sendMessage', { chat_id: process.env.TELEGRAM_CHAT_ID, text: text }); } catch (e) { console.error('outreach: уведомление', e); }
 }
@@ -423,4 +431,4 @@ async function sent(it, brand) {
   } catch (e) { await report('Рассылка: отметка «отправлено»', e, it.id); }
 }
 
-module.exports = { buildPack, approvePack, cancelQueue, statusText, failed, due, sent, SHOP_BOXES, BOXES: SHOP_BOXES, BRANDS, cfg, BAD, dailyCap, rewrite, fromDraft };
+module.exports = { buildPack, approvePack, planStart, cancelQueue, statusText, failed, due, sent, SHOP_BOXES, BOXES: SHOP_BOXES, BRANDS, cfg, BAD, dailyCap, rewrite, fromDraft };
