@@ -279,7 +279,7 @@ async function approvePack(id) {
   return { n: p.items.length, text: text, id: id };
 }
 
-const STATUS = function (r) { return r.finished ? '✅ завершена' : r.started ? '🚀 идёт' : '⏳ в очереди'; };
+const STATUS = function (r) { return r.cancelled ? '❌ отменена' : r.finished ? '✅ завершена' : r.started ? '🚀 идёт' : '⏳ в очереди'; };
 
 async function batchLine(r) {
   return '#' + r.id.slice(-4) + ' · ' + (r.brand === 'agency' ? 'агентство' : 'магазин') + ' · ' + STATUS(r) + ' · ' + r.sent + '/' + r.total + (r.failed ? ' (ошибок ' + r.failed + ')' : '') +
@@ -324,6 +324,25 @@ async function track(B, brand, itemId, kind) {
 }
 
 async function failed(it, brand) { return track(cfg(brand), brand, it.id, 'failed'); }
+
+// Отмена всей очереди ещё не отправленных писем: этап возвращается, пачку можно собрать заново.
+async function cancelQueue(brand) {
+  const B = cfg(brand);
+  const q = (await loadJson(B.key + ':queue')) || [];
+  const back = B === BRANDS.agency ? 'Черновик готов' : 'Ждёт выставления товара';
+  let n = 0;
+  const packs = {};
+  for (const it of q) {
+    if (it.pack) packs[it.pack] = 1;
+    try { await B.call('PATCH', '/pages/' + it.id, { properties: { 'Этап': { select: { name: back } } } }); n++; } catch (e) { await report('Отмена очереди: этап', e, it.name); }
+  }
+  await saveJson(B.key + ':queue', [], 60 * 60 * 24 * 30);
+  for (const id of Object.keys(packs)) {
+    const r = await loadJson(B.key + ':batch:' + id);
+    if (r && !r.finished) { r.cancelled = true; r.finished = Date.now(); await saveJson(B.key + ':batch:' + id, r, 60 * 60 * 24 * 60); }
+  }
+  return { total: q.length, restored: n };
+}
 
 // Вызывается мостом раз в час. boxes — ящики, с которых мост умеет отправлять (для agency их присылает сам мост).
 async function due(brand, boxesFromBridge) {
@@ -404,4 +423,4 @@ async function sent(it, brand) {
   } catch (e) { await report('Рассылка: отметка «отправлено»', e, it.id); }
 }
 
-module.exports = { buildPack, approvePack, statusText, failed, due, sent, SHOP_BOXES, BOXES: SHOP_BOXES, BRANDS, cfg, BAD, dailyCap, rewrite, fromDraft };
+module.exports = { buildPack, approvePack, cancelQueue, statusText, failed, due, sent, SHOP_BOXES, BOXES: SHOP_BOXES, BRANDS, cfg, BAD, dailyCap, rewrite, fromDraft };

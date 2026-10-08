@@ -8,6 +8,7 @@ const { report, esc } = require('./_lib/alert');
 
 const HELP = [
   '<b>Команды Sell Manager</b>',
+  '/cancel agency — отменить очередь неотправленных писем (или /cancel shop)',
   '/status — статусы пачек рассылки (в очереди / идёт / завершена, время Таиланда)',
   '/pack 10 — пачка холодных писем METRAWEN Shop (можно добавить товар: /pack 10 #24)',
   '/pack agency 15 top — рекомендуемая пачка (самые Hot и Warm); можно hot, warm или отрасль: /pack agency 15 Клиники, вместе: hot Клиники',
@@ -106,6 +107,12 @@ async function ownerCommand(text, chatId) {
   const cmd = text.split(/\s+/)[0].toLowerCase().replace(/@.*/, '');
   if (cmd === '/menu' || cmd === '/start') { await sendMenu(chatId); return; }
   if (cmd === '/help') { await tg('sendMessage', { chat_id: chatId, text: HELP, parse_mode: 'HTML' }); return; }
+  if (cmd === '/cancel') {
+    const a = parseArgs(text, 1);
+    const r = await require('./_lib/outreach').cancelQueue(a.brand || 'agency');
+    await tg('sendMessage', { chat_id: chatId, text: r.total ? '❌ Очередь отменена (' + (a.brand === 'shop' ? 'магазин' : 'агентство') + '): ' + r.total + ' писем не отправлены, этапы в Notion возвращены (' + r.restored + '). Уже отправленные остались. Соберите новую пачку: /pack agency 15 top' : 'Очередь пуста, отменять нечего.' });
+    return;
+  }
   if (cmd === '/status') { await tg('sendMessage', { chat_id: chatId, text: await require('./_lib/outreach').statusText() }); return; }
   if (cmd === '/report') { await tg('sendMessage', { chat_id: chatId, text: 'Собираю отчёт...' }); await require('./_lib/ops').weekly(true); return; }
   if (cmd === '/cleandrafts') {
@@ -213,7 +220,7 @@ module.exports = async function handler(req, res) {
       await tg('sendMessage', { chat_id: chatId, text: 'Редактор КП: ' + K.adminUrl() + '\nСсылка с ключом доступа, не пересылайте её.', disable_web_page_preview: true });
       return res.status(200).json({ ok: true });
     }
-    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/(pack|status|dm|report|cleandrafts|help|menu|start)\b/i.test(String(msg.text || ''))) {
+    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/(pack|status|cancel|dm|report|cleandrafts|help|menu|start)\b/i.test(String(msg.text || ''))) {
       try { await ownerCommand(String(msg.text || '').trim(), chatId); }
       catch (e) { await report('Команда ' + String(msg.text).split(/\s+/)[0], e); }
       return res.status(200).json({ ok: true });
