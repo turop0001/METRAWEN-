@@ -12,6 +12,8 @@ const shop = require('./shop');
 const hunter = require('./hunter');
 const humanize = require('./humanize');
 const { report, stat } = require('./alert');
+const tzm = require('./tz');
+const { tg } = require('./tg');
 
 // Три ящика getmetrawen.com общие: с них идёт холодная рассылка и магазина, и агентства (ящики агентства присылает мост agency).
 // Суточный лимит ящика делится поровну между ветками, чтобы суммарно не выходить за потолок прогрева.
@@ -188,7 +190,7 @@ async function buildPack(n, brand, seg) {
   let fromNotion = 0;
   const seen = {};
   const gen = [];
-  const mk = function (pg, to, r) { return { id: pg.id, to: to, name: prop(pg, B.title), lang: B.lang(pg), subject: r.subject, body: r.body, seg: prop(pg, 'Отрасль') || '' }; };
+  const mk = function (pg, to, r) { return { id: pg.id, to: to, name: prop(pg, B.title), lang: B.lang(pg), subject: r.subject, body: r.body, seg: prop(pg, 'Отрасль') || '', country: prop(pg, 'Страна') || prop(pg, 'Регион') || '' }; };
   for (let i = 0; i < rows.length; i++) {
     const pg = rows[i];
     const to = String(prop(pg, B.email) || '').toLowerCase();
@@ -229,19 +231,99 @@ async function buildPack(n, brand, seg) {
   return { id: id, items: items, brand: brand, fromNotion: fromNotion, written: items.length - fromNotion };
 }
 
+function tzOfItem(it) { return tzm.zone(it.country, it.lang); }
+
+async function notify(text) {
+  try { await tg('sendMessage', { chat_id: process.env.TELEGRAM_CHAT_ID, text: text }); } catch (e) { console.error('outreach: уведомление', e); }
+}
+
+// Одобрение: пачка получает номер, считаем плановый старт по Таиланду (окно 9-18 по местному времени каждого лида).
 async function approvePack(id) {
   const p = await loadJson('op:pack:' + id);
-  if (!p) return 0;
+  if (!p) return { n: 0, text: '' };
   const B = cfg(p.brand);
   const q = (await loadJson(B.key + ':queue')) || [];
-  p.items.forEach(function (it) { if (!q.some(function (x) { return x.to === it.to; })) q.push(it); });
+  p.items.forEach(function (it) { it.pack = id; if (!q.some(function (x) { return x.to === it.to; })) q.push(it); });
   await saveJson(B.key + ':queue', q, 60 * 60 * 24 * 30);
   for (const it of p.items) {
     try { await B.call('PATCH', '/pages/' + it.id, { properties: { 'Этап': { select: { name: B.approved } } } }); } catch (e) { await report('Рассылка: этап «' + B.approved + '»', e, it.name); }
   }
+  const now = Date.now();
+  const byC = {};
+  let first = Infinity, last = 0, guessed = 0;
+  p.items.forEach(function (it) {
+    const z = tzOfItem(it);
+    if (z.guess) guessed++;
+    const t = tzm.nextOpen(z.tz, now);
+    first = Math.min(first, t); last = Math.max(last, t);
+    const k = (it.country || 'не указана') + ' (' + z.tz.split('/')[1].replace(/_/g, ' ') + ')';
+    if (!byC[k]) byC[k] = { n: 0, t: t };
+    byC[k].n++; byC[k].t = Math.min(byC[k].t, t);
+  });
+  const rows = Object.keys(byC).sort(function (a, b) { return byC[a].t - byC[b].t; }).slice(0, 8)
+    .map(function (k) { return '• ' + k + ': ' + byC[k].n + ' пис., с ' + tzm.bangkok(byC[k].t); });
+  const boxes = B === BRANDS.agency ? 3 : SHOP_BOXES.length;
+  const day = await startDay(B);
+  const perDay = Math.max(1, boxes * Math.max(1, Math.floor(dailyCap(day) / (envBoxes.length ? 1 : 2))));
+  const days = Math.ceil(p.items.length / perDay);
+  const rec = { id: id, brand: p.brand, total: p.items.length, sent: 0, failed: 0, approved: now, plan: first, started: 0, finished: 0 };
+  await saveJson(B.key + ':batch:' + id, rec, 60 * 60 * 24 * 60);
+  const ids = ((await loadJson(B.key + ':batches')) || []).filter(function (x) { return x !== id; });
+  ids.unshift(id);
+  await saveJson(B.key + ':batches', ids.slice(0, 10), 60 * 60 * 24 * 60);
   await saveJson('op:pack:' + id, null, 1);
-  return p.items.length;
+  const text = '\n\n🗓 Плановый старт (время Таиланда, GMT+7): ' + tzm.bangkok(first) + '\nОкно отправки: пн–пт, 9:00–18:00 по местному времени каждой страны.\n' + rows.join('\n') +
+    '\nЛимит прогрева: до ' + perDay + ' писем в день, значит вся пачка уйдёт примерно за ' + days + ' раб. дн.' +
+    (guessed ? '\n⚠️ У ' + guessed + ' лидов страна не распознана, время взято по умолчанию.' : '') +
+    '\n\nСтатус: ⏳ в очереди. Напишу, когда рассылка начнётся и когда завершится (/status покажет текущее).';
+  return { n: p.items.length, text: text, id: id };
 }
+
+const STATUS = function (r) { return r.finished ? '✅ завершена' : r.started ? '🚀 идёт' : '⏳ в очереди'; };
+
+async function batchLine(r) {
+  return '#' + r.id.slice(-4) + ' · ' + (r.brand === 'agency' ? 'агентство' : 'магазин') + ' · ' + STATUS(r) + ' · ' + r.sent + '/' + r.total + (r.failed ? ' (ошибок ' + r.failed + ')' : '') +
+    (r.finished ? ' · завершена ' + tzm.bangkok(r.finished) : r.started ? ' · началась ' + tzm.bangkok(r.started) : ' · старт по плану ' + tzm.bangkok(r.plan)) + ' (Таиланд)';
+}
+
+async function statusText() {
+  const lines = [];
+  for (const b of ['agency', 'shop']) {
+    const B = cfg(b);
+    const ids = (await loadJson(B.key + ':batches')) || [];
+    for (const id of ids.slice(0, 4)) { const r = await loadJson(B.key + ':batch:' + id); if (r) lines.push(await batchLine(r)); }
+  }
+  const d = today();
+  const box = [];
+  for (const b of ['agency', 'shop']) {
+    const B = cfg(b);
+    const bx = b === 'agency' ? ((await loadJson(B.key + ':boxes')) || []) : SHOP_BOXES;
+    if (!bx.length) continue;
+    const cap = (envBoxes.length ? dailyCap(await startDay(B)) : (b === 'agency' ? Math.ceil(dailyCap(await startDay(B)) / 2) : Math.floor(dailyCap(await startDay(B)) / 2)));
+    const parts = [];
+    for (const x of bx) parts.push(boxTag(x) + ' ' + ((await loadJson(B.key + ':cnt:' + boxTag(x) + d)) || 0) + '/' + cap);
+    box.push((b === 'agency' ? 'агентство' : 'магазин') + ': ' + parts.join(', '));
+  }
+  return (lines.length ? '📬 Рассылки (время Таиланда, GMT+7):\n' + lines.join('\n') : 'Пока нет одобренных пачек.') + (box.length ? '\n\nСегодня по ящикам (ушло/лимит):\n' + box.join('\n') : '');
+}
+
+// Событие по письму из пачки: «отправлено» или «ошибка». Первое отправленное = «началась», последнее = «завершена».
+async function track(B, brand, itemId, kind) {
+  const pack = await loadJson(B.key + ':out:' + itemId);
+  if (!pack) return;
+  const r = await loadJson(B.key + ':batch:' + pack);
+  if (!r || r.finished) return;
+  const wasStarted = !!r.started;
+  if (kind === 'sent') { r.sent++; if (!r.started) r.started = Date.now(); } else r.failed++;
+  const fin = r.sent + r.failed >= r.total;
+  if (fin) r.finished = Date.now();
+  await saveJson(B.key + ':batch:' + pack, r, 60 * 60 * 24 * 60);
+  const name = '#' + pack.slice(-4) + ' (' + (brand === 'agency' ? 'агентство' : 'магазин') + ')';
+  if (kind === 'sent' && !wasStarted) await notify('🚀 Рассылка ' + name + ' началась: ' + tzm.bangkok(r.started) + ' по Таиланду. Всего в пачке ' + r.total + '.');
+  if (fin) await notify('✅ Рассылка ' + name + ' завершена: ' + tzm.bangkok(r.finished) + ' по Таиланду. Отправлено ' + r.sent + ' из ' + r.total + (r.failed ? ', ошибок ' + r.failed : '') + '.');
+}
+
+async function failed(it, brand) { return track(cfg(brand), brand, it.id, 'failed'); }
 
 // Вызывается мостом раз в час. boxes — ящики, с которых мост умеет отправлять (для agency их присылает сам мост).
 async function due(brand, boxesFromBridge) {
@@ -250,24 +332,37 @@ async function due(brand, boxesFromBridge) {
     ? (Array.isArray(boxesFromBridge) ? boxesFromBridge : []).map(function (b) { return String(b).toLowerCase(); }).filter(function (b) { return /@/.test(b) && !/@metrawen\.com$/.test(b); }).slice(0, 5)
     : SHOP_BOXES;
   if (!boxes.length) return [];
+  if (brand === 'agency') await saveJson(B.key + ':boxes', boxes, 60 * 60 * 24 * 30);
   const day = await startDay(B);
   // общий потолок на ящик делится между магазином и агентством (если задан свой набор ящиков магазина, делить не нужно)
   const shared = !envBoxes.length;
   const full = dailyCap(day);
   const cap = shared ? (brand === 'agency' ? Math.ceil(full / 2) : Math.floor(full / 2)) : full;
   const d = today();
-  const q = (await loadJson(B.key + ':queue')) || [];
+  let q = (await loadJson(B.key + ':queue')) || [];
   const out = [];
+  // окно 9-18 по местному времени получателя (пн–пт): письма вне окна остаются в очереди
+  const open = [], rest = [];
+  let lookups = 0;
+  for (const it of q) {
+    if (!it.country && it.country !== '' && lookups < 6) {
+      lookups++;
+      try { const pg = await B.call('GET', '/pages/' + it.id); it.country = prop(pg, 'Страна') || prop(pg, 'Регион') || ''; } catch (e) { it.country = ''; }
+    }
+    (tzm.isOpen(tzOfItem(it).tz) ? open : rest).push(it);
+  }
   for (const box of boxes) {
     const ck = B.key + ':cnt:' + boxTag(box) + d;
     let c = (await loadJson(ck)) || 0;
     // не больше 2 писем за запуск на ящик, чтобы растянуть отправку на день
     let k = 0;
-    while (q.length && c < cap && k < 2) {
-      const it = q.shift(); it.from = box; it.kind = 'first'; out.push(it); c++; k++;
+    while (open.length && c < cap && k < 2) {
+      const it = open.shift(); it.from = box; it.kind = 'first'; out.push(it); c++; k++;
+      if (it.pack) await saveJson(B.key + ':out:' + it.id, it.pack, 60 * 60 * 24 * 14);
     }
     await saveJson(ck, c, 60 * 60 * 30);
   }
+  q = rest.concat(open);
   await saveJson(B.key + ':queue', q, 60 * 60 * 24 * 30);
   // повторы: касание 2 через 4 дня, касание 3 («последнее письмо») через 9 дней от первого, только без ответа
   try {
@@ -278,6 +373,7 @@ async function due(brand, boxesFromBridge) {
         const lang = B.lang(pg);
         const tag = prop(pg, 'Ящик');
         const from = boxes.find(function (b) { return boxTag(b) === tag; });
+        if (!tzm.isOpen(tzm.zone(prop(pg, 'Страна') || prop(pg, 'Регион'), lang).tz)) return; // вне окна 9-18 получателя
         if (!from) return; // ящик, с которого писали, больше не подключён: повтор с чужого адреса не шлём
         out.push({ id: pg.id, to: String(prop(pg, B.email)).toLowerCase(), from: from, lang: lang, kind: 'followup', body: B.followups[step.n][lang] });
       });
@@ -304,7 +400,8 @@ async function sent(it, brand) {
     const em = String(it.to || '').toLowerCase();
     if (em) await saveJson('op:rcpt:' + em, brand === 'agency' ? 'agency' : 'shop', 60 * 60 * 24 * 120);
     await stat('sent:' + (brand === 'agency' ? 'agency' : 'shop'));
+    if (it.kind !== 'followup') await track(B, brand, it.id, 'sent');
   } catch (e) { await report('Рассылка: отметка «отправлено»', e, it.id); }
 }
 
-module.exports = { buildPack, approvePack, due, sent, SHOP_BOXES, BOXES: SHOP_BOXES, BRANDS, cfg, BAD, dailyCap, rewrite, fromDraft };
+module.exports = { buildPack, approvePack, statusText, failed, due, sent, SHOP_BOXES, BOXES: SHOP_BOXES, BRANDS, cfg, BAD, dailyCap, rewrite, fromDraft };

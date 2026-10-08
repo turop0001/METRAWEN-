@@ -8,6 +8,7 @@ const { report, esc } = require('./_lib/alert');
 
 const HELP = [
   '<b>Команды Sell Manager</b>',
+  '/status — статусы пачек рассылки (в очереди / идёт / завершена, время Таиланда)',
   '/pack 10 — пачка холодных писем METRAWEN Shop (можно добавить товар: /pack 10 #24)',
   '/pack agency 15 top — рекомендуемая пачка (самые Hot и Warm); можно hot, warm или отрасль: /pack agency 15 Клиники, вместе: hot Клиники',
   '/dm 10 Салоны красоты — карточки для ручных DM агентства (Instagram, WhatsApp, телефон, LINE)',
@@ -34,7 +35,7 @@ const MAIN_MENU = { inline_keyboard: [
   [{ text: '🏢 АГЕНТСТВО (услуги студии)', callback_data: 'mn:ag' }],
   [{ text: '🛍 SHOP (цифровые товары)', callback_data: 'mn:sh' }],
   [{ text: '📊 Отчёт сейчас', callback_data: 'mn:rp' }, { text: '📝 Редактор КП', callback_data: 'mn:kp' }],
-  [{ text: '❓ Все команды', callback_data: 'mn:hp' }]
+  [{ text: '📬 Статус рассылок', callback_data: 'mn:st' }, { text: '❓ Все команды', callback_data: 'mn:hp' }]
 ] };
 
 const AGENCY_MENU = { inline_keyboard: [
@@ -97,6 +98,7 @@ async function menuAction(data, chatId) {
   if (p[1] === 'dm') { const seg = INDUSTRIES[parseInt(p[2], 10)]; if (seg) await ownerCommand('/dm agency 10 ' + seg, chatId); return; }
   if (p[1] === 'rp') { await ownerCommand('/report', chatId); return; }
   if (p[1] === 'hp') { await ownerCommand('/help', chatId); return; }
+  if (p[1] === 'st') { await ownerCommand('/status', chatId); return; }
   if (p[1] === 'kp') { const K = require('./_lib/kp'); await tg('sendMessage', { chat_id: chatId, text: 'Редактор КП: ' + K.adminUrl() + '\nСсылка с ключом доступа, не пересылайте её.', disable_web_page_preview: true }); return; }
 }
 
@@ -104,6 +106,7 @@ async function ownerCommand(text, chatId) {
   const cmd = text.split(/\s+/)[0].toLowerCase().replace(/@.*/, '');
   if (cmd === '/menu' || cmd === '/start') { await sendMenu(chatId); return; }
   if (cmd === '/help') { await tg('sendMessage', { chat_id: chatId, text: HELP, parse_mode: 'HTML' }); return; }
+  if (cmd === '/status') { await tg('sendMessage', { chat_id: chatId, text: await require('./_lib/outreach').statusText() }); return; }
   if (cmd === '/report') { await tg('sendMessage', { chat_id: chatId, text: 'Собираю отчёт...' }); await require('./_lib/ops').weekly(true); return; }
   if (cmd === '/cleandrafts') {
     await require('./_lib/cleanup').start();
@@ -210,7 +213,7 @@ module.exports = async function handler(req, res) {
       await tg('sendMessage', { chat_id: chatId, text: 'Редактор КП: ' + K.adminUrl() + '\nСсылка с ключом доступа, не пересылайте её.', disable_web_page_preview: true });
       return res.status(200).json({ ok: true });
     }
-    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/(pack|dm|report|cleandrafts|help|menu|start)\b/i.test(String(msg.text || ''))) {
+    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/(pack|status|dm|report|cleandrafts|help|menu|start)\b/i.test(String(msg.text || ''))) {
       try { await ownerCommand(String(msg.text || '').trim(), chatId); }
       catch (e) { await report('Команда ' + String(msg.text).split(/\s+/)[0], e); }
       return res.status(200).json({ ok: true });
@@ -239,11 +242,11 @@ module.exports = async function handler(req, res) {
 
   const opm = /^op:(ok|no):([a-z0-9]+)$/.exec(String(cq.data || ''));
   if (opm) {
-    let n = 0;
-    try { if (opm[1] === 'ok') n = await require('./_lib/outreach').approvePack(opm[2]); } catch (e) { console.error('telegram: пачка', e); }
+    let n = 0, apText = '';
+    try { if (opm[1] === 'ok') { const ap = await require('./_lib/outreach').approvePack(opm[2]); n = ap.n; apText = ap.text; } } catch (e) { console.error('telegram: пачка', e); }
     try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: opm[1] === 'ok' ? 'Одобрено: ' + n : 'Отменено' }); } catch (e) {}
     try { await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: cq.message.message_id, reply_markup: { inline_keyboard: [] } }); } catch (e) {}
-    try { await tg('sendMessage', { chat_id: chatId, text: opm[1] === 'ok' ? '✅ Одобрено ' + n + ' писем. Встали в очередь рассылки.' : 'Пачка отменена.' }); } catch (e) {}
+    try { await tg('sendMessage', { chat_id: chatId, text: opm[1] === 'ok' ? '✅ Одобрено ' + n + ' писем. Встали в очередь рассылки.' + apText : 'Пачка отменена.' }); } catch (e) {}
     return res.status(200).json({ ok: true });
   }
 

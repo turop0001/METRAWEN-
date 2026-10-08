@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
   try {
     if (b.action === 'due') return res.status(200).json({ ok: true, items: await op.due(scope, b.boxes) });
     if (b.action === 'sent' && b.item) { await op.sent(b.item, scope); return res.status(200).json({ ok: true }); }
-    if (b.action === 'failed' && b.item) { await report('Мост не отправил письмо (' + scope + ')', String(b.error || 'ошибка Gmail'), b.item.to); return res.status(200).json({ ok: true }); }
+    if (b.action === 'failed' && b.item) { await report('Мост не отправил письмо (' + scope + ')', String(b.error || 'ошибка Gmail'), b.item.to); try { await op.failed(b.item, scope); } catch (e) {} return res.status(200).json({ ok: true }); }
     return res.status(400).json({ ok: false });
   } catch (e) {
     await report('Рассылка (' + scope + ')', e);
