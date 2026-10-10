@@ -254,9 +254,9 @@ module.exports = async function handler(req, res) {
   if (opm) {
     let n = 0, apText = '';
     try { if (opm[1] === 'ok') { const ap = await require('./_lib/outreach').approvePack(opm[2]); n = ap.n; apText = ap.text; } } catch (e) { console.error('telegram: пачка', e); }
-    try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: opm[1] === 'ok' ? 'Одобрено: ' + n : 'Отменено' }); } catch (e) {}
+    try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: opm[1] === 'ok' ? (n ? 'Одобрено: ' + n : 'Пачка уже одобрена') : 'Отменено' }); } catch (e) {}
     try { await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: cq.message.message_id, reply_markup: { inline_keyboard: [] } }); } catch (e) {}
-    try { await tg('sendMessage', { chat_id: chatId, text: opm[1] === 'ok' ? '✅ Одобрено ' + n + ' писем. Встали в очередь рассылки.' + apText : 'Пачка отменена.' }); } catch (e) {}
+    try { await tg('sendMessage', { chat_id: chatId, text: opm[1] === 'ok' ? (n ? '✅ Одобрено ' + n + ' писем. Встали в очередь рассылки.' + apText : 'ℹ️ Эта пачка уже одобрена, повторно ничего не добавлено.') : 'Пачка отменена.' }); } catch (e) {}
     return res.status(200).json({ ok: true });
   }
 
