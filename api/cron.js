@@ -19,7 +19,9 @@ module.exports = async function handler(req, res) {
   try {
     if (scope) await ops.seen(scope);
     if (job === 'weekly') return res.status(200).json(await ops.weekly(false));
-    return res.status(200).json(await ops.tick());
+    const t = await ops.tick();
+    if (fromVercel) { try { t.auto = await require('./_lib/autopack').run(); } catch (e) { await report('Автопачка', e); } }
+    return res.status(200).json(t);
   } catch (e) {
     await report('Служебный вызов ' + job, e);
     return res.status(500).json({ ok: false });

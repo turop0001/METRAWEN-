@@ -115,6 +115,13 @@ async function ownerCommand(text, chatId) {
     await tg('sendMessage', { chat_id: chatId, text: r.total ? '❌ Очередь отменена (' + (a.brand === 'shop' ? 'магазин' : 'агентство') + '): ' + r.total + ' писем не отправлены, этапы в Notion возвращены (' + r.restored + '). Уже отправленные остались. Соберите новую пачку: /pack agency 15 top' : 'Очередь пуста, отменять нечего.' });
     return;
   }
+  if (cmd === '/autopack') {
+    await tg('sendMessage', { chat_id: chatId, text: '⏳ Собираю автопачку до дневного лимита ящиков...' });
+    const r = await require('./_lib/autopack').run(true);
+    const bad = (r.out || []).filter(function (x) { return x && x.skip; }).map(function (x) { return (x.brand === 'agency' ? 'агентство' : 'магазин') + ': ' + x.skip; });
+    if (bad.length) await tg('sendMessage', { chat_id: chatId, text: 'Не собрана: ' + bad.join('; ') });
+    return;
+  }
   if (cmd === '/status') { await tg('sendMessage', { chat_id: chatId, text: await require('./_lib/outreach').statusText() }); return; }
   if (cmd === '/report') { await tg('sendMessage', { chat_id: chatId, text: 'Собираю отчёт...' }); await require('./_lib/ops').weekly(true); return; }
   if (cmd === '/cleandrafts') {
