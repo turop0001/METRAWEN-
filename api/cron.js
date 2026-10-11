@@ -20,6 +20,7 @@ module.exports = async function handler(req, res) {
     if (scope) await ops.seen(scope);
     if (job === 'weekly') return res.status(200).json(await ops.weekly(false));
     const t = await ops.tick();
+    if (fromVercel) { try { t.drafts = await require('./_lib/drafts').fillMissing(20, 40000); } catch (e) { await report('Авточерновики', e); } }
     if (fromVercel) { try { t.auto = await require('./_lib/autopack').run(); } catch (e) { await report('Автопачка', e); } }
     return res.status(200).json(t);
   } catch (e) {

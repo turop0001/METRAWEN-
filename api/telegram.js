@@ -15,6 +15,7 @@ const HELP = [
   '/dm 10 Салоны красоты — карточки для ручных DM агентства (Instagram, WhatsApp, телефон, LINE)',
   '/dm shop 10 — карточки постов/комментариев/каталогов магазина (только товары со ссылкой)',
   '/report — недельный отчёт прямо сейчас',
+  '/drafts — написать черновики для новых лидов Хантера агентства (и так идёт автоматически)',
   '/cleandrafts — почистить черновики Хантера магазина от плейсхолдеров (идёт в фоне)',
   '/menu — меню кнопками',
   '/kp — редактор КП'
@@ -120,6 +121,12 @@ async function ownerCommand(text, chatId) {
     const r = await require('./_lib/autopack').run(true);
     const bad = (r.out || []).filter(function (x) { return x && x.skip; }).map(function (x) { return (x.brand === 'agency' ? 'агентство' : 'магазин') + ': ' + x.skip; });
     if (bad.length) await tg('sendMessage', { chat_id: chatId, text: 'Не собрана: ' + bad.join('; ') });
+    return;
+  }
+  if (cmd === '/drafts') {
+    await tg('sendMessage', { chat_id: chatId, text: '✍️ Пишу черновики для лидов Хантера без текста...' });
+    const r = await require('./_lib/drafts').fillMissing(12, 45000);
+    await tg('sendMessage', { chat_id: chatId, text: r.skipped ? 'Не запущено: ' + r.skipped : ('Готово: написано ' + r.done + (r.failed ? ', не получилось ' + r.failed + (r.err ? ' (' + r.err + ')' : '') : '') + (r.left ? '. Осталось ещё ' + r.left + ', допишу автоматически или повторите /drafts' : '. Лидов без черновика больше нет.')) });
     return;
   }
   if (cmd === '/status') { await tg('sendMessage', { chat_id: chatId, text: await require('./_lib/outreach').statusText() }); return; }
@@ -230,7 +237,7 @@ module.exports = async function handler(req, res) {
       await tg('sendMessage', { chat_id: chatId, text: 'Редактор КП: ' + K.adminUrl() + '\nСсылка с ключом доступа, не пересылайте её.', disable_web_page_preview: true });
       return res.status(200).json({ ok: true });
     }
-    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/(pack|status|cancel|dm|report|cleandrafts|help|menu|start)\b/i.test(String(msg.text || ''))) {
+    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/(pack|status|cancel|dm|report|cleandrafts|drafts|autopack|help|menu|start)\b/i.test(String(msg.text || ''))) {
       try { await ownerCommand(String(msg.text || '').trim(), chatId); }
       catch (e) { await report('Команда ' + String(msg.text).split(/\s+/)[0], e); }
       return res.status(200).json({ ok: true });

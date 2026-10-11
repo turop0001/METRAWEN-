@@ -80,6 +80,8 @@ async function tick(light) {
     const msg = await require('./cleanup').step();
     if (msg) await tg('sendMessage', { chat_id: chat(), text: msg });
   } catch (e) { await report('Чистка черновиков', e); }
+  // каждому новому лиду Хантера агентства сразу пишем черновик первого письма
+  try { out.drafts = await require('./drafts').step(); } catch (e) { await report('Авточерновики', e); }
   return out;
 }
 
