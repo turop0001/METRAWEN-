@@ -67,7 +67,7 @@ function brief(pg) {
 async function complete(user) {
   let last;
   for (let a = 0; a < 3; a++) {
-    try { return await llm.complete(SYSTEM, user, 600); }
+    try { return await llm.complete(SYSTEM, user, 700); }
     catch (e) { last = e; if (!/ 429| 5\d\d|overload|rate/i.test(String(e.message || e))) throw e; await new Promise(function (r) { setTimeout(r, 1500 * (a + 1)); }); }
   }
   throw last;
@@ -83,6 +83,7 @@ async function write(pg) {
     if (!body) { problems = ['empty or unreadable output: ' + String(t || '').replace(/\s+/g, ' ').slice(0, 120)]; continue; }
     problems = issues(body, ru);
     if (!problems.length) return body;
+    problems.push('text was: ' + body.slice(0, 100));
   }
   throw new Error('черновик не прошёл проверки: ' + problems.join('; '));
 }
@@ -130,8 +131,9 @@ async function step() {
   if (!storeEnabled() || process.env.DRAFTS_AUTO === '0') return null;
   if (!(await once('drafts:step', 9 * 60))) return null;
   try {
-    const r = await fillMissing(6, 30000);
-    if (r.failed >= 3) await report('Авточерновики: часть лидов не обработана', r.failed + ' из ' + (r.done + r.failed) + '. Причина: ' + r.err);
+    const r = await fillMissing(8, 35000);
+    // Одно спокойное уведомление раз в 6 часов, без названий компаний (иначе каждое сообщение «новое»). Подробности: команда /drafts.
+    if (r.failed >= 3 && r.done === 0 && (await once('drafts:alert', 6 * 3600))) await report('Авточерновики не получаются', 'Не вышло ' + r.failed + ' из ' + (r.done + r.failed) + ' карточек. Напишите /drafts, бот покажет причину.');
     return r;
   } catch (e) { await report('Авточерновики', e); return null; }
 }

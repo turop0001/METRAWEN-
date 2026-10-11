@@ -165,7 +165,7 @@ async function rewrite(B, pg) {
   const signal = prop(pg, B.signal);
   if (!draft && !signal) throw new Error('нет черновика и сигнала');
   const t = await complete(B.prompt, '<draft>\n' + draft + '\n</draft>\nLead: ' + prop(pg, B.title) + '\nIndustry: ' + (prop(pg, 'Отрасль') || '') + '\nCountry: ' + (prop(pg, 'Страна') || prop(pg, 'Регион') || '') + '\nSignal: ' + signal, 500);
-  const j = JSON.parse(t.slice(t.indexOf('{'), t.lastIndexOf('}') + 1));
+  const j = llm.looseJson(t, ['subject', 'body']);
   const body = String(j.body || '').trim();
   if (!body || BAD.test(body)) throw new Error('rewrite guard');
   return { subject: String(j.subject || prop(pg, 'Заголовок') || '').slice(0, 80), body: body };

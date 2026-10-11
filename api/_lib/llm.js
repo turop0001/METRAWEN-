@@ -27,14 +27,17 @@ async function complete(system, user, maxTokens) {
       headers: { 'x-api-key': env.secret('ANTHROPIC_API_KEY'), 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
       body: JSON.stringify({
         model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5',
-        max_tokens: maxTokens || 900,
+        max_tokens: (maxTokens || 900) + 1500, // запас: если модель «думает», рассуждение тоже тратит лимит и текст обрывался или не приходил
         system: system,
         messages: [{ role: 'user', content: user }]
       })
     });
     const raw = await r.text();
     if (!r.ok) throw new Error('anthropic ' + r.status + ' ' + raw.slice(0, 300) + (r.status === 401 ? ' [' + env.diag('ANTHROPIC_API_KEY') + ']' : ''));
-    return (JSON.parse(raw).content || []).map(b => b.text || '').join('');
+    const j = JSON.parse(raw);
+    const text = (j.content || []).filter(b => b.type === 'text').map(b => b.text || '').join('');
+    if (!text.trim()) throw new Error('empty model output (stop_reason=' + j.stop_reason + ', blocks=' + (j.content || []).map(b => b.type).join('+') + ', out_tokens=' + (j.usage && j.usage.output_tokens) + ')');
+    return text;
   }
   const base = (process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1').replace(/\/$/, '');
   const r = await fetch(base + '/chat/completions', {
@@ -52,4 +55,20 @@ async function complete(system, user, maxTokens) {
   return (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
 }
 
-module.exports = { complete, provider, enabled: () => !!provider() };
+// Терпимый разбор ответа с полями-строками: строгий JSON, иначе поля достаются вручную (кавычки и переносы внутри текста не ломают).
+function looseJson(text, keys) {
+  const t = String(text || '');
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  if (a >= 0 && b > a) { try { return JSON.parse(t.slice(a, b + 1)); } catch (e) { /* ниже вручную */ } }
+  const out = {};
+  const order = keys.map(k => ({ k, i: t.indexOf('"' + k + '"') })).filter(x => x.i >= 0).sort((x, y) => x.i - y.i);
+  order.forEach((x, n) => {
+    const end = n + 1 < order.length ? order[n + 1].i : t.length;
+    const m = t.slice(x.i, end).match(/^"[^"]+"\s*:\s*"([\s\S]*)"\s*[,}]?\s*$/);
+    if (m) out[x.k] = m[1].replace(/\\n/g, ' ').replace(/\\"/g, '"').replace(/\s*\n+\s*/g, ' ').trim();
+  });
+  if (!Object.keys(out).length) throw new Error('unreadable model output: ' + t.replace(/\s+/g, ' ').slice(0, 120));
+  return out;
+}
+
+module.exports = { complete, looseJson, provider, enabled: () => !!provider() };
