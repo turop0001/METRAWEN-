@@ -60,6 +60,11 @@ module.exports = async function handler(req, res) {
 
   const f = parseFrom(b.from);
   const subject = String(b.subject || '').slice(0, 300);
+  // Отказ доставки («адрес не существует»): помечаем лида, остальное письмо не обрабатываем.
+  try {
+    const bn = await require('./_lib/bounce').handle({ from: b.from, subject: subject, body: b.body }, Array.isArray(b.boxes) ? b.boxes : []);
+    if (bn) return res.status(200).json({ ok: true, bounce: bn.kind });
+  } catch (e) { await report('Отказ доставки', e, subject); }
   const text = cleanBody(b.body);
   if (!f.addr || !text) return res.status(200).json({ ok: true, skipped: 'empty' });
   const shopMode = scope === 'shop';
