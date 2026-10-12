@@ -155,4 +155,35 @@ async function kpEvent(kp, kind, amount) {
   } catch (e) { await report('Хантер агентства: КП', e, kp && kp.title); return ''; }
 }
 
-module.exports = { ncall, DB, schema, onlyKnown, prop, advance, findByEmail, incoming, replied, kpEvent, emailOf, today, plusDays, note };
+// Пометки о доставке в карточке лида (Hunter CRM в Notion). Когда CRM переедет в Metrawen OS, менять только эти функции.
+const MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+function parseBack(text) {
+  const m = String(text || '').match(/(?:until|till|back on|return(?:ing)? on|reopen(?:ing)? on)\s+(?:(?:mon|tues|wednes|thurs|fri|satur|sun)day,?\s+)?(\d{1,2})(?:st|nd|rd|th)?\s+(?:of\s+)?(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?(?:\s+(\d{4}))?/i);
+  if (!m) return '';
+  const now = new Date(Date.now() + 7 * 3600 * 1000);
+  let y = m[3] ? +m[3] : now.getUTCFullYear();
+  let d = new Date(Date.UTC(y, MON[m[2].toLowerCase()] - 1, +m[1]));
+  if (!m[3] && d.getTime() < now.getTime() - 86400000) d = new Date(Date.UTC(y + 1, MON[m[2].toLowerCase()] - 1, +m[1]));
+  return d.toISOString().slice(0, 10);
+}
+async function mark(addr, line, extra) {
+  const pg = await findByEmail(String(addr || '').toLowerCase());
+  if (!pg) return null;
+  const old = prop(pg, 'Заметки');
+  const props = Object.assign({ 'Заметки': { rich_text: [{ type: 'text', text: { content: (line + (old ? ' ' + old : '')).slice(0, 1900) } }] } }, extra || {});
+  const known = await onlyKnown(props);
+  await ncall('PATCH', '/pages/' + pg.id, { properties: known });
+  try { await note(pg.id, line); } catch (e) { /* заметка в теле не критична */ }
+  return pg;
+}
+// Автоответчик («в отпуске», «закрыто до…»): не ответ клиента, этап не меняем.
+async function autoReply(addr, subject, body) {
+  const back = parseBack(String(subject || '') + ' ' + String(body || ''));
+  return mark(addr, 'АВТООТВЕТ (отпуск или закрыто' + (back ? ' до ' + back : '') + ', ' + today() + '). Это не ответ клиента.', back ? { 'Следующее касание': { date: { start: back } } } : {});
+}
+// Письмо не ушло из-за ошибки моста или Gmail.
+async function sendFailed(addr, err) {
+  return mark(addr, 'ПИСЬМО НЕ ОТПРАВИЛОСЬ (' + today() + '): ' + String(err || 'ошибка Gmail').slice(0, 150));
+}
+
+module.exports = { mark, autoReply, sendFailed, parseBack, ncall, DB, schema, onlyKnown, prop, advance, findByEmail, incoming, replied, kpEvent, emailOf, today, plusDays, note };

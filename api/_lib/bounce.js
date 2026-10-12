@@ -41,7 +41,14 @@ async function handle(b, ownBoxes) {
   const subject = String(b.subject || '');
   if (!isBounce(b.from, subject)) return null;
   const body = String(b.body || '');
-  if (SOFT_RE.test(body) && !HARD_RE.test(body)) return { handled: true, kind: 'soft' };
+  if (SOFT_RE.test(body) && !HARD_RE.test(body)) {
+    try {
+      const own0 = (ownBoxes || []).map(function (x) { return String(x).toLowerCase(); }).concat(['metrawen.team@gmail.com']);
+      const a0 = failedAddress(body, own0);
+      if (a0) { const hunter0 = require('./hunter'); await hunter0.mark(a0, 'ВРЕМЕННАЯ ОШИБКА ДОСТАВКИ (ящик получателя переполнен или недоступен, ' + hunter0.today() + '). Адрес пока не удалён.'); }
+    } catch (e) { /* пометка не критична */ }
+    return { handled: true, kind: 'soft' };
+  }
   if (!HARD_RE.test(body) && !/failure/i.test(subject)) return { handled: true, kind: 'unknown' };
   const own = (ownBoxes || []).map(function (x) { return String(x).toLowerCase(); }).concat(['metrawen.team@gmail.com']);
   const addr = failedAddress(body, own);

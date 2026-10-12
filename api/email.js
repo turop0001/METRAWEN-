@@ -76,8 +76,14 @@ module.exports = async function handler(req, res) {
   if (shopMode ? shop.OWN_SHOP.test(f.addr) : (/@metrawen\.com$/i.test(f.addr) || f.addr === 'metrawen.team@gmail.com' || ownBoxes.indexOf(f.addr) >= 0)) return res.status(200).json({ ok: true, skipped: 'own' });
   // Письма площадок (Etsy, Gumroad, Lava, Tribute) для ящика магазина пропускать нельзя: это сообщения покупателей.
   const market = shopMode && shop.isMarketplace(f.addr);
+  if (!market && /^(automatic reply|auto-?reply|out of office|автоответ)/i.test(subject)) {
+    try { await hunter.autoReply(f.addr, subject, text); } catch (e) { console.error('email: пометка автоответа не записана', e); }
+  }
   if ((!market && SKIP_FROM.test(f.addr)) || SKIP_SUBJECT.test(subject)) return res.status(200).json({ ok: true, skipped: 'auto' });
-  if (!market && (SKIP_SUBJECT_ANY.test(subject) || (text.length < 1500 && SKIP_BODY_AUTO.test(text)))) return res.status(200).json({ ok: true, skipped: 'autoresponder' });
+  if (!market && (SKIP_SUBJECT_ANY.test(subject) || (text.length < 1500 && SKIP_BODY_AUTO.test(text)))) {
+    try { await hunter.autoReply(f.addr, subject, text); } catch (e) { console.error('email: пометка автоответа не записана', e); }
+    return res.status(200).json({ ok: true, skipped: 'autoresponder' });
+  }
 
   if (storeEnabled()) {
     const seen = 'em:seen:' + String(b.id || '');
