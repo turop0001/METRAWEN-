@@ -475,6 +475,10 @@ async function handleAction(action, id, message) {
 
   if (action === 'ok') {
     const dd = rec.draft || {};
+    if (!String(dd.body || '').trim()) {
+      await tg('sendMessage', { chat_id: chatId, text: '⛔ В черновике нет текста, отправлять нечего. Нажмите «Переписать» или «Править», либо «Отмена».', reply_markup: { inline_keyboard: [[{ text: '✖️ Отмена', callback_data: 'ca:' + id }]] } });
+      return;
+    }
     await ops.untrack(id);
     await stat('confirmed');
     const isTg = rec.lead.channel === 'telegram' && rec.lead.tgChatId;

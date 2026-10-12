@@ -10,6 +10,9 @@ const { report, stat } = require('./_lib/alert');
 
 const SKIP_FROM = /(no-?reply|do-?not-?reply|mailer-daemon|postmaster|notifications?@|bounce|newsletter|marketing@|@(.+\.)?(google|googlemail|vercel|github|notion|porkbun|stripe|paypal|payoneer|canva|facebookmail|instagram|linkedin|telegram)\.)/i;
 const SKIP_SUBJECT = /^(undelivered|delivery status|automatic reply|auto-?reply|out of office|автоответ|не доставлено)/i;
+// Автоответчики «в отпуске / закрыто до»: не живой ответ, Sell Manager на них не отвечает.
+const SKIP_SUBJECT_ANY = /(closed until|closed for (the )?(holiday|holidays|vacation)|out of (the )?office|on (vacation|holiday|leave)|away until|auto-?response|auto-?reply|automatic reply|vacation (reply|responder)|currently (away|closed|out)|we are (currently )?closed|закрыт[ыо]? до|в отпуске|автоответ)/i;
+const SKIP_BODY_AUTO = /(out of (the )?office|currently (on (vacation|holiday|leave)|away|out of)|(automatic|auto)[ -]?(reply|response|responder)|this is an automated|will not be (checking|reading|monitoring) (my |our )?(e-?mails?|messages|inbox)|am away from (my|the) (desk|office)|я в отпуске|автоматический ответ)/i;
 
 function cleanBody(t) {
   let s = String(t || '').replace(/\r/g, '');
@@ -74,6 +77,7 @@ module.exports = async function handler(req, res) {
   // Письма площадок (Etsy, Gumroad, Lava, Tribute) для ящика магазина пропускать нельзя: это сообщения покупателей.
   const market = shopMode && shop.isMarketplace(f.addr);
   if ((!market && SKIP_FROM.test(f.addr)) || SKIP_SUBJECT.test(subject)) return res.status(200).json({ ok: true, skipped: 'auto' });
+  if (!market && (SKIP_SUBJECT_ANY.test(subject) || (text.length < 1500 && SKIP_BODY_AUTO.test(text)))) return res.status(200).json({ ok: true, skipped: 'autoresponder' });
 
   if (storeEnabled()) {
     const seen = 'em:seen:' + String(b.id || '');
