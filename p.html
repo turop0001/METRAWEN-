@@ -112,7 +112,7 @@ h1{font-size:clamp(30px,4.6vw,50px);line-height:1.1;letter-spacing:-.02em;margin
     var sel={};(kp.acceptedAddons||[]).forEach(function(i){sel[i]=1});
     var accepted=kp.status==='accepted', expired=kp.validUntil&&new Date(kp.validUntil+'T23:59:59')<new Date()&&!accepted;
     var vd=kp.validUntil?new Date(kp.validUntil+'T00:00:00').toLocaleDateString(ru?'ru-RU':'en-US',{day:'numeric',month:'long',year:'numeric'}):'';
-    var ask=ru?'https://t.me/Metrawen_bot?start=kp':'https://wa.me/66985955242';
+    var ask=ru?'https://t.me/metrawen_os_bot?start=kp':'https://wa.me/66985955242';
     app.textContent='';
     var w=el('div','wrap');app.appendChild(w);
     var top=el('div','top');var lg=el('a','logo','METRAWEN');lg.href='/'+(ru?'ru/':'');top.appendChild(lg);

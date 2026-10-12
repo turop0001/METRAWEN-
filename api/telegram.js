@@ -1,7 +1,7 @@
 // api/telegram.js — webhook для кнопок под черновиками Sell Manager.
 // Принимает только запросы от Telegram (секрет считается из токена бота) и только от вашего чата.
 const crypto = require('crypto');
-const { tg } = require('./_lib/tg');
+const { tg, tgc } = require('./_lib/tg');
 const { handleAction, handleNewLead, applyEdit } = require('./_lib/sellmanager');
 const { saveJson, loadJson, enabled: storeEnabled } = require('./_lib/store');
 const { report, esc } = require('./_lib/alert');
@@ -15,6 +15,7 @@ const HELP = [
   '/dm 10 Салоны красоты — карточки для ручных DM агентства (Instagram, WhatsApp, телефон, LINE)',
   '/dm shop 10 — карточки постов/комментариев/каталогов магазина (только товары со ссылкой)',
   '/report — недельный отчёт прямо сейчас',
+  '/clientbot — подключить бота для клиентов @metrawen_os_bot (после добавления токена в Vercel)',
   '/drafts — написать черновики для новых лидов Хантера агентства (и так идёт автоматически)',
   '/cleandrafts — почистить черновики Хантера магазина от плейсхолдеров (идёт в фоне)',
   '/menu — меню кнопками',
@@ -109,6 +110,17 @@ async function menuAction(data, chatId) {
 async function ownerCommand(text, chatId) {
   const cmd = text.split(/\s+/)[0].toLowerCase().replace(/@.*/, '');
   if (cmd === '/menu' || cmd === '/start') { await sendMenu(chatId); return; }
+  if (cmd === '/clientbot') {
+    const ct = process.env.TELEGRAM_CLIENT_BOT_TOKEN;
+    if (!ct) { await tg('sendMessage', { chat_id: chatId, text: 'Сначала добавьте TELEGRAM_CLIENT_BOT_TOKEN (токен @metrawen_os_bot) в Vercel и пересоберите проект, потом снова /clientbot.' }); return; }
+    const sec = crypto.createHash('sha256').update(ct).digest('hex').slice(0, 32);
+    const base = process.env.PUBLIC_BASE_URL || 'https://metrawen.com';
+    await tgc('setWebhook', { url: base + '/api/tgclient', secret_token: sec, allowed_updates: ['message'] });
+    let who = '';
+    try { const me = await tgc('getMe', {}); who = me && me.result && me.result.username ? '@' + me.result.username : ''; } catch (e) { /* не критично */ }
+    await tg('sendMessage', { chat_id: chatId, text: '✅ Бот для клиентов подключён ' + who + '. Сообщения клиентов идут туда, подтверждения ответов остаются здесь.' });
+    return;
+  }
   if (cmd === '/help') { await tg('sendMessage', { chat_id: chatId, text: HELP, parse_mode: 'HTML' }); return; }
   if (cmd === '/cancel') {
     const a = parseArgs(text, 1);
@@ -174,7 +186,7 @@ async function handleClientMessage(msg, ownerChatId) {
     const text = String(msg.text || '').trim();
     if (!text) return;
     if (/^\/start/i.test(text)) {
-      await tg('sendMessage', {
+      await tgc('sendMessage', {
         chat_id: msg.chat.id,
         text: ru
           ? 'Здравствуйте! Это METRAWEN. Напишите, чем можем помочь: мы прочитаем сообщение и ответим в ближайшее время.'
@@ -192,6 +204,7 @@ async function handleClientMessage(msg, ownerChatId) {
       label: 'Telegram',
       channel: 'telegram',
       tgChatId: msg.chat.id,
+      tgVia: 'client',
       name: name,
       contact: 'Telegram: ' + (from.username ? '@' + from.username : (name || String(msg.chat.id))),
       message: text.slice(0, 2000),
@@ -237,7 +250,7 @@ module.exports = async function handler(req, res) {
       await tg('sendMessage', { chat_id: chatId, text: 'Редактор КП: ' + K.adminUrl() + '\nСсылка с ключом доступа, не пересылайте её.', disable_web_page_preview: true });
       return res.status(200).json({ ok: true });
     }
-    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/(pack|status|cancel|dm|report|cleandrafts|drafts|autopack|help|menu|start)\b/i.test(String(msg.text || ''))) {
+    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/(pack|status|cancel|dm|report|cleandrafts|drafts|autopack|clientbot|help|menu|start)\b/i.test(String(msg.text || ''))) {
       try { await ownerCommand(String(msg.text || '').trim(), chatId); }
       catch (e) { await report('Команда ' + String(msg.text).split(/\s+/)[0], e); }
       return res.status(200).json({ ok: true });
@@ -246,7 +259,13 @@ module.exports = async function handler(req, res) {
       try { await applyEdit(msg); } catch (e) { await report('Правка черновика', e); }
       return res.status(200).json({ ok: true });
     }
-    await handleClientMessage(msg, chatId);
+    // Клиентов здесь больше не принимаем: переписка с клиентами идёт в @metrawen_os_bot, этот бот только для управления.
+    try {
+      if (msg.chat && msg.chat.type === 'private') {
+        const ruu = /^ru|^uk|^be|^kk/i.test(String((msg.from || {}).language_code || ''));
+        await tg('sendMessage', { chat_id: msg.chat.id, text: ruu ? 'Чтобы написать команде METRAWEN, откройте @metrawen_os_bot: https://t.me/metrawen_os_bot' : 'To message the METRAWEN team, please use @metrawen_os_bot: https://t.me/metrawen_os_bot' });
+      }
+    } catch (e) { console.error('telegram: перенаправление клиента', e); }
     return res.status(200).json({ ok: true });
   }
   const cq = update && update.callback_query;
@@ -313,3 +332,4 @@ module.exports = async function handler(req, res) {
   }
   return res.status(200).json({ ok: true });
 };
+module.exports.handleClientMessage = handleClientMessage;

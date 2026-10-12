@@ -1,7 +1,7 @@
 // Sell Manager v1: генерирует ЧЕРНОВИК ответа на заявку. Ничего клиенту не отправляет.
 const { SYSTEM } = require('./kb');
 const { saveJson, loadJson, enabled: storeEnabled } = require('./store');
-const { tg } = require('./tg');
+const { tg, tgc } = require('./tg');
 const { draftFromRules } = require('./rules');
 const llm = require('./llm');
 const line = require('./line');
@@ -506,7 +506,7 @@ async function handleAction(action, id, message) {
           cc.msgs = cc.msgs.slice(-80);
           await saveJson(ck, cc, 60 * 60 * 24 * 3);
         }
-        else if (isTg) { await tg('sendMessage', { chat_id: rec.lead.tgChatId, text: String(dd.body || '').slice(0, 3500) }); }
+        else if (isTg) { await (rec.lead.tgVia === 'client' ? tgc : tg)('sendMessage', { chat_id: rec.lead.tgChatId, text: String(dd.body || '').slice(0, 3500) }); }
         else if (isWa) {
           const wr = await require('./whatsapp').send(rec.lead.waId, dd.body || '');
           // запоминаем текст, чтобы при недоставке дать ссылку на ручную отправку

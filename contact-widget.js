@@ -19,7 +19,7 @@
       err: 'Could not send. Please try again or message us on LINE.', close: 'Close'
     };
     var items = ru ? [
-      { href: 'https://t.me/Metrawen_bot?start=site', label: 'Написать в Telegram', id: 'tg' }
+      { href: 'https://t.me/metrawen_os_bot?start=site', label: 'Написать в Telegram', id: 'tg' }
     ] : [
       { href: 'https://line.me/R/ti/p/%40179hddny', label: 'Message us on LINE', id: 'line' },
       { href: 'https://wa.me/66985955242', label: 'Message us on WhatsApp', id: 'wa' }
