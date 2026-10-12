@@ -1,7 +1,7 @@
 // api/tgclient.js: webhook бота для клиентов (@metrawen_os_bot).
 // Клиентские сообщения превращаются в лид, черновик ответа приходит владельцу в METRAWEN Assistant на «Подтвердить».
 const crypto = require('crypto');
-const { saveJson, loadJson, enabled: storeEnabled } = require('./_lib/store');
+const { once, enabled: storeEnabled } = require('./_lib/store');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(200).send('ok');
@@ -13,11 +13,14 @@ module.exports = async function handler(req, res) {
 
   let update = req.body;
   if (typeof update === 'string') { try { update = JSON.parse(update); } catch (e) { update = {}; } }
+  // Telegram может прислать один апдейт дважды (повтор, гонка). Берём атомарную метку (SET NX), а не «прочитать, потом записать».
   try {
     if (update && update.update_id && storeEnabled()) {
-      const dk = 'tgc:upd:' + update.update_id;
-      if (await loadJson(dk)) return res.status(200).json({ ok: true });
-      await saveJson(dk, 1, 3600);
+      if (!(await once('tgc:upd:' + update.update_id, 3600))) return res.status(200).json({ ok: true });
+    }
+    const m0 = update && update.message;
+    if (m0 && m0.chat && m0.message_id && storeEnabled()) {
+      if (!(await once('tgc:msg:' + m0.chat.id + ':' + m0.message_id, 86400))) return res.status(200).json({ ok: true });
     }
   } catch (e) { console.error('tgclient: dedup', e); }
 

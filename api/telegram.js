@@ -186,19 +186,16 @@ async function handleClientMessage(msg, ownerChatId) {
     const text = String(msg.text || '').trim();
     if (!text) return;
     if (/^\/start/i.test(text)) {
+      if (storeEnabled() && !(await require('./_lib/store').once('tgc:greet:' + msg.chat.id, 30))) return;
       await tgc('sendMessage', {
         chat_id: msg.chat.id,
         text: ru
-          ? 'Здравствуйте! Это METRAWEN. Напишите, чем можем помочь: мы прочитаем сообщение и ответим в ближайшее время.'
-          : 'Hello! This is METRAWEN. Tell us what you need and our team will get back to you shortly.'
+          ? 'Здравствуйте. На связи Елена из METRAWEN. Расскажите, что хотите сделать: сайт, бота или AI сотрудника, и для какого бизнеса. Отвечу вам прямо здесь.'
+          : "Hi, this is Nicole from METRAWEN. Tell me what you'd like to build (a website, a bot or an AI employee) and for what kind of business. I'll reply right here."
       });
       return;
     }
-    if (storeEnabled()) {
-      const key = 'tg:rl:' + msg.chat.id;
-      if (await loadJson(key)) return;
-      await saveJson(key, 1, 8);
-    }
+    if (storeEnabled() && !(await require('./_lib/store').once('tg:rl:' + msg.chat.id, 8))) return;
     const name = [from.first_name, from.last_name].filter(Boolean).join(' ');
     await handleNewLead({
       label: 'Telegram',
