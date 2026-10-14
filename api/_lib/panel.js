@@ -78,30 +78,59 @@ async function build(force) {
   const queue = enabled() ? ((await loadJson('opa:queue')) || []).length : 0;
 
   const now = th(0).toISOString().slice(0, 16).replace('T', ' ');
+  const ago = function (iso) {
+    const h = Math.max(0, Math.round((Date.now() - Date.parse(iso || 0)) / 3600e3));
+    return h < 1 ? 'только что' : h < 48 ? h + ' ч назад' : Math.round(h / 24) + ' дн назад';
+  };
+  const cut = function (v, n) { v = String(v || '').replace(/\s+/g, ' ').trim(); return v.length > n ? v.slice(0, n - 1) + '…' : v; };
+  const waitRows = ib.filter(function (r) { return p(r, 'Этап') === 'Ждёт ответа'; })
+    .sort(function (a, b) { return Date.parse(p(a, 'Последнее сообщение') || 0) - Date.parse(p(b, 'Последнее сообщение') || 0); });
+  const NEXT = { 'Ответ получен': 'ответить и предложить бесплатный созвон', 'Встреча назначена': 'провести бесплатный созвон', 'КП принято': 'ждём оплату', 'Сделка/Оплачено': 'оплачено, ведём проект' };
+  const replSorted = replRows.slice().sort(function (a, b) { return String(p(b, 'Ответил')).localeCompare(String(p(a, 'Ответил'))); });
+  const stageN = {};
+  hr.forEach(function (r) { const k = stage(r); stageN[k] = (stageN[k] || 0) + 1; });
+  const noAns = stageN['Без ответа (закрыт)'] || 0, fu = stageN['Follow-up запланирован'] || 0, sentOnly = stageN['Отправлено'] || 0;
+
   const L = [];
   L.push('<b>📈 Кабинет METRAWEN</b> · ' + now + ' (Таиланд)');
   L.push('');
-  L.push('<b>🌐 Сайт сегодня</b>');
-  L.push('Просмотры ' + s.vt + ' (вчера ' + s.vy + '), посетители ' + s.ut + ' (вчера ' + s.uy + ')');
-  L.push('За 7 дней: просмотры ' + s.v7 + ', посетители ' + s.u7);
+  L.push('<b>🌐 Сайт</b>');
+  L.push('Сегодня: ' + s.vt + ' просм. / ' + s.ut + ' посетит. (вчера ' + s.vy + ' / ' + s.uy + ')');
+  L.push('За 7 дней: ' + s.v7 + ' просм. / ' + s.u7 + ' посетит.');
   L.push('Заявок с сайта сегодня: ' + fromSiteToday + (s.ut ? ' (конверсия ' + pct(fromSiteToday, s.ut) + ')' : ''));
   if (s.top.length) L.push('Страницы: ' + esc(s.top.join(', ')));
   if (s.ref.length) L.push('Откуда: ' + esc(s.ref.join(', ')));
   L.push('');
-  L.push('<b>🎯 Заявки</b>');
-  L.push('Сегодня ' + ibToday.length + ' · всего ' + ib.length + ' · ждут ответа ' + waiting + ' · встреч ' + booked);
+  L.push('<b>🎯 Входящие заявки</b> (пишут вам сами: сайт, чат, WhatsApp, бот)');
+  L.push('Сегодня ' + ibToday.length + ' · всего ' + ib.length + ' · созвонов записано ' + booked);
   if (Object.keys(chanToday).length) L.push('Сегодня по каналам: ' + esc(Object.keys(chanToday).map(function (k) { return k + ' ' + chanToday[k]; }).join(', ')));
-  L.push('✍️ Ответов ждут вашего «Подтвердить»: ' + pending);
+  L.push('Клиент написал, а ответа ещё не было: <b>' + waiting + '</b>');
+  waitRows.slice(0, 5).forEach(function (r) {
+    L.push('  • ' + esc(cut(p(r, 'Клиент'), 24)) + ' (' + esc(p(r, 'Канал') || '—') + ', ' + ago(p(r, 'Последнее сообщение')) + '): «' + esc(cut(p(r, 'Последнее от клиента'), 60)) + '»');
+  });
+  L.push('Черновиков ответа, которые ждут вашего «Подтвердить»: <b>' + pending + '</b>');
+  if (waiting > 0 && pending === 0) L.push('⚠️ Клиенты есть, а черновиков нет: ответ ушёл вне бота или черновик устарел (живут 7 дней). Откройте «Входящие клиенты» в Notion и закройте или ответьте.');
   L.push('');
-  L.push('<b>📬 Холодная рассылка (Hunter)</b>');
-  L.push('Лидов в базе ' + hr.length + ' (новых сегодня ' + newToday + ', за 7 дней ' + new7 + ')');
-  L.push('С email ' + withEmail + ' · Hot ' + sc.Hot + ' / Warm ' + sc.Warm + ' / Cold ' + sc.Cold);
-  L.push('Отправлено: сегодня ' + sentToday + ', за 7 дней ' + sent7 + ', всего ' + sentRows.length);
-  L.push('Ответили: сегодня ' + replToday + ', всего ' + replRows.length + ' (' + pct(replRows.length, sentRows.length) + ')');
-  L.push('В очереди сейчас ' + queue + ' · готово к отправке ' + ready + ' · с черновиком ' + drafted + ' · битых адресов ' + bounced);
+  L.push('<b>📬 Холодная рассылка (Hunter, письма по email)</b>');
+  L.push('Лидов в базе ' + hr.length + ' (новых сегодня ' + newToday + ', за 7 дней ' + new7 + ') · с email ' + withEmail);
+  L.push('Приоритет: Hot ' + sc.Hot + ' · Warm ' + sc.Warm + ' · Cold ' + sc.Cold);
+  L.push('Отправлено писем: сегодня ' + sentToday + ' из 15 (лимит прогрева), за 7 дней ' + sent7 + ', всего ' + sentRows.length);
+  L.push('Ответили на письмо: сегодня ' + replToday + ', всего ' + replRows.length + ' (' + pct(replRows.length, sentRows.length) + ')');
+  replSorted.slice(0, 5).forEach(function (r) {
+    L.push('  • ' + esc(cut(p(r, 'Компания'), 26)) + ' — ' + esc(stage(r)) + (p(r, 'Ответил') ? ' (' + String(p(r, 'Ответил')).slice(0, 10) + ')' : '') + '. Дальше: ' + (NEXT[stage(r)] || 'проверить ответ'));
+  });
+  L.push('Ждём ответа: ' + (sentOnly + fu) + ' (из них follow-up запланирован ' + fu + ') · закрыто без ответа ' + noAns);
+  L.push('Очередь отправки ' + queue + ' · готово к отправке ' + ready + ' · с черновиком ' + drafted + ' · битых адресов ' + bounced);
   L.push('');
   L.push('<b>💰 Деньги</b>');
-  L.push('Продаж ' + deals.length + ' · сумма ' + money(dealSum) + ' · расход на рекламу ' + money(spend) + ' · итог ' + money(rev - spend));
+  L.push('Продаж ' + deals.length + ' · сумма ' + money(dealSum) + ' · реклама ' + money(spend) + ' · итог ' + money(rev - spend));
+  const todo = [];
+  if (pending) todo.push('подтвердить ' + pending + ' ответ(а) клиентам');
+  if (waiting) todo.push('ответить ' + waiting + ' клиент(ам) из списка выше');
+  if (replRows.length - meetings) todo.push('предложить бесплатный созвон тем, кто ответил на письмо');
+  if (!todo.length) todo.push('срочного нет, рассылка идёт сама');
+  L.push('');
+  L.push('<b>✅ Что делать сейчас:</b> ' + todo.join('; '));
   const t = L.join('\n');
   if (enabled()) { try { await saveJson('panel:cache', { t: t }, 180); } catch (e) { /* ничего */ } }
   return t;
