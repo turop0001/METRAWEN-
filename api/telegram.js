@@ -182,7 +182,7 @@ async function ownerCommand(text, chatId) {
     : 'Отправка пойдёт сама по графику прогрева (с 3 ящиков getmetrawen.com, повтор через 4 дня без ответа).';
   const st = p.items.length ? op.planStart(p.items) : '';
   await tg('sendMessage', { chat_id: chatId, text: p.items.length ? '✅ Пачка готова: ' + p.items.length + ' писем' + (a.seg ? ' (' + a.seg + ')' : '') + (p.items.length < a.n ? ' из ' + a.n : '') + '. Тексты в карточках Notion.\n🗓 Старт по графику: ' + st + ' (время Таиланда). Окно 9–18 по стране лида, повтор через 4 дня без ответа.' + (brand === 'agency' && !agencyBridge ? '\n⚠️ Ящик холодной почты агентства не подключён: письма уйдут, когда мост подключится.' : '') : 'Нет лидов, готовых к рассылке' + (a.seg ? ' по «' + a.seg + '»' : '') + '.',
-    reply_markup: p.items.length ? { inline_keyboard: [[{ text: 'Одобрить пачку', callback_data: 'op:ok:' + p.id }, { text: 'Отменить', callback_data: 'op:no:' + p.id }]] } : undefined });
+    reply_markup: p.items.length ? { inline_keyboard: [[{ text: '✅ Одобрить пачку', callback_data: 'op:ok:' + p.id }, { text: '✖️ Отменить', callback_data: 'op:no:' + p.id }]] } : undefined });
 }
 
 // Обычное сообщение клиента боту. Клиенту ничего не уходит без «Подтвердить», кроме приветствия на /start.

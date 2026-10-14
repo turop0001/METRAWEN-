@@ -33,7 +33,7 @@ async function one(brand) {
   const text = '📦 Пачка на сегодня готова (' + name + '): ' + p.items.length + ' писем из ' + perDay + ' по дневному лимиту (' + nb + ' ящ. × ' + (perDay / nb) + ').\n' +
     'Тексты в карточках Notion. 🗓 Старт по графику: ' + op.planStart(p.items) + ' (время Таиланда), окно 9–18 по стране лида, повтор через 4 дня без ответа.\n\nОдобрить?';
   await tg('sendMessage', { chat_id: process.env.TELEGRAM_CHAT_ID, text: text,
-    reply_markup: { inline_keyboard: [[{ text: 'Одобрить пачку', callback_data: 'op:ok:' + p.id }, { text: 'Отменить', callback_data: 'op:no:' + p.id }]] } });
+    reply_markup: { inline_keyboard: [[{ text: '✅ Одобрить пачку', callback_data: 'op:ok:' + p.id }, { text: '✖️ Отменить', callback_data: 'op:no:' + p.id }]] } });
   return { brand: brand, n: p.items.length };
 }
 
