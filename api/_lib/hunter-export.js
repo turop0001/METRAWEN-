@@ -3,9 +3,9 @@
 // Только чтение: ничего в Notion не меняет. Отдаёт до 100 строк за вызов, продолжение по cursor.
 const API = 'https://api.notion.com/v1';
 const VERSION = '2022-06-28';
-const DEFAULT_DB = 'b3fe6fa8665e4cbf8307475d147e1dac';
+const DEFAULT_DB = 'c85648b90e694ef7b394582cf4d02336';
 
-function db() { return String(process.env.NOTION_CRM_DB_ID || '').replace(/[^0-9a-fA-F-]/g, '') || DEFAULT_DB; }
+function db() { return String(process.env.NOTION_AGENCY_HUNTER_DB_ID || '').replace(/[^0-9a-fA-F-]/g, '') || DEFAULT_DB; }
 
 function txt(p) {
   if (!p) return '';
