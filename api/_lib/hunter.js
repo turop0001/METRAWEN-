@@ -110,6 +110,7 @@ async function advance(pg, stage, extra, text) {
   const known = await onlyKnown(props);
   if (Object.keys(known).length) await ncall('PATCH', '/pages/' + pg.id, { properties: known });
   if (text) await note(pg.id, text);
+  await require('./os-sync').push(pg.id, text);
   return pg;
 }
 
@@ -174,6 +175,7 @@ async function mark(addr, line, extra) {
   const known = await onlyKnown(props);
   await ncall('PATCH', '/pages/' + pg.id, { properties: known });
   try { await note(pg.id, line); } catch (e) { /* заметка в теле не критична */ }
+  await require('./os-sync').push(pg.id, line);
   return pg;
 }
 // Автоответчик («в отпуске», «закрыто до…»): не ответ клиента, этап не меняем.

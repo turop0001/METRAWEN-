@@ -424,6 +424,7 @@ async function sent(it, brand) {
     if (brand === 'agency') props['Следующее касание'] = { date: n ? null : { start: hunter.plusDays(4) } };
     const known = brand === 'agency' ? await hunter.onlyKnown(props) : props;
     await B.call('PATCH', '/pages/' + it.id, { properties: known });
+    if (brand === 'agency') await require('./os-sync').push(it.id, (n ? 'Повтор отправлен' : 'Письмо отправлено') + ' (' + boxTag(it.from) + ')');
     // запоминаем, чей это лид: ящики общие, и по этой метке ответ уходит в нужную ветку (агентство или магазин)
     const em = String(it.to || '').toLowerCase();
     if (em) await saveJson('op:rcpt:' + em, brand === 'agency' ? 'agency' : 'shop', 60 * 60 * 24 * 120);
