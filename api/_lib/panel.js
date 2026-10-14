@@ -5,6 +5,7 @@ const H = require('./hunter');
 const D = require('./digest');
 const { loadJson, saveJson, enabled } = require('./store');
 const { esc } = require('./alert');
+const OB = require('./outbound');
 
 const p = H.prop;
 const SENT = ['Отправлено', 'Follow-up запланирован', 'Ответ получен', 'Встреча назначена', 'Без ответа (закрыт)', 'КП принято', 'Сделка/Оплачено'];
@@ -74,6 +75,8 @@ async function build(force) {
   const booked = ib.filter(function (r) { return p(r, 'Этап') === 'Встреча назначена'; }).length;
 
   const s = await site();
+  let ob = null, obErr = '';
+  try { ob = await OB.stats(today); } catch (e) { obErr = String(e.message || e).slice(0, 80); }
   const pending = enabled() ? ((await loadJson('sm:pending')) || []).length : 0;
   const queue = enabled() ? ((await loadJson('opa:queue')) || []).length : 0;
 
@@ -121,6 +124,10 @@ async function build(force) {
   });
   L.push('Ждём ответа: ' + (sentOnly + fu) + ' (из них follow-up запланирован ' + fu + ') · закрыто без ответа ' + noAns);
   L.push('Очередь отправки ' + queue + ' · готово к отправке ' + ready + ' · с черновиком ' + drafted + ' · битых адресов ' + bounced);
+  L.push('');
+  L.push('<b>🧭 Мои ручные рассылки (галочки в Notion)</b>');
+  if (ob) OB.lines(ob, esc).forEach(function (x) { L.push(x); });
+  else L.push('Не удалось прочитать базу «Лиды по каналам»: ' + esc(obErr) + '. Откройте доступ интеграции к странице в Notion.');
   L.push('');
   L.push('<b>💰 Деньги</b>');
   L.push('Продаж ' + deals.length + ' · сумма ' + money(dealSum) + ' · реклама ' + money(spend) + ' · итог ' + money(rev - spend));
