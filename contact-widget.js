@@ -1,3 +1,15 @@
+/* Счётчик посещений без cookies: случайный номер браузера и путь страницы. Свои визиты не считаются после открытия metrawen.com/?nohit=1 */
+(function () {
+  try {
+    if (/[?&]nohit=1/.test(location.search)) localStorage.setItem('mw_nohit', '1');
+    if (localStorage.getItem('mw_nohit')) return;
+    var v = localStorage.getItem('mw_vid');
+    if (!v) { v = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('mw_vid', v); }
+    var r = '';
+    try { r = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+    fetch('/api/hit?p=' + encodeURIComponent(location.pathname) + '&v=' + v + '&r=' + encodeURIComponent(r), { method: 'POST', keepalive: true });
+  } catch (e) {}
+})();
 /* Круглая кнопка связи с выпадающим списком каналов и встроенный чат с менеджером. */
 (function () {
   try {

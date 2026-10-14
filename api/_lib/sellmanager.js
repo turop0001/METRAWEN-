@@ -469,13 +469,18 @@ async function handleAction(action, id, message) {
     return;
   }
   // убрать кнопки со старого сообщения (при «Править» кнопки остаются)
-  if (action !== 'ed') try {
-    await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: message.message_id, reply_markup: { inline_keyboard: [] } });
-  } catch (e) { /* ничего */ }
+  // вместо пустой клавиатуры показываем отметку, чтобы было видно, что нажато (при «Править» кнопки остаются)
+  const MARK = { ok: '⏳ Подтверждаю...', ca: '✖️ Отменено', sk: '✖️ Пропущено', sh: '↩️ Заменён короткой версией', rg: '↩️ Заменён новым вариантом' };
+  const setMark = async function (label) {
+    try { await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: message.message_id, reply_markup: { inline_keyboard: [[{ text: label, callback_data: 'noop' }]] } }); }
+    catch (e) { /* ничего */ }
+  };
+  if (action !== 'ed') await setMark(MARK[action] || '⏳ ...');
 
   if (action === 'ok') {
     const dd = rec.draft || {};
     if (!String(dd.body || '').trim()) {
+      await setMark('⛔ Нет текста, не отправлено');
       await tg('sendMessage', { chat_id: chatId, text: '⛔ В черновике нет текста, отправлять нечего. Нажмите «Переписать» или «Править», либо «Отмена».', reply_markup: { inline_keyboard: [[{ text: '✖️ Отмена', callback_data: 'ca:' + id }]] } });
       return;
     }
@@ -486,6 +491,7 @@ async function handleAction(action, id, message) {
     const isChat = rec.lead.channel === 'chat' && rec.lead.chatSid;
     const isEmail = rec.lead.channel === 'email' && rec.lead.emailAddr && !rec.lead.noSend;
     if (rec.lead.brand === 'shop' && rec.draft && rec.draft.guard) {
+      await setMark('⛔ Заблокировано проверкой');
       await tg('sendMessage', { chat_id: chatId, text: '⛔ Подтверждение заблокировано: ' + esc(rec.draft.guard) + '. Нажмите «Переписать» или отправьте вручную.', parse_mode: 'HTML', reply_to_message_id: message.message_id, reply_markup: keyboard(id, 'ai') });
       return;
     }
@@ -525,6 +531,7 @@ async function handleAction(action, id, message) {
       }
     }
     await saveJson('lead:' + id, { lead: rec.lead, draft: dd, approved: true, sent: sentLine });
+    await setMark(isLine ? (sentLine ? '✅ Подтверждено и отправлено' : '⚠️ Подтверждено, не отправлено') : '✅ Подтверждено');
     if (rec.lead.brand === 'shop') await logShopReply(rec.lead, dd.body || '', isLine ? sentLine : false, dd.stage);
     else {
       await crm.logReply(rec.lead, dd.body || '', isLine ? sentLine : false);

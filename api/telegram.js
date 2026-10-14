@@ -9,6 +9,7 @@ const { report, esc } = require('./_lib/alert');
 const HELP = [
   '<b>Команды Sell Manager</b>',
   '/cancel agency — отменить очередь неотправленных писем (или /cancel shop)',
+  '/panel — кабинет руководителя: сайт, заявки, рассылка, деньги',
   '/status — статусы пачек рассылки (в очереди / идёт / завершена, время Таиланда)',
   '/pack 10 — пачка холодных писем METRAWEN Shop (можно добавить товар: /pack 10 #24)',
   '/pack agency 15 top — рекомендуемая пачка (самые Hot и Warm); можно hot, warm или отрасль: /pack agency 15 Клиники, вместе: hot Клиники',
@@ -35,6 +36,7 @@ function parseArgs(text, def) {
 const INDUSTRIES = ['Фитнес и спорт', 'Салоны красоты', 'Недвижимость', 'Рестораны и кафе', 'Услуги B2B', 'Клиники', 'Туры и экскурсии', 'Интернет-магазины', 'Образование и курсы', 'Отели и виллы', 'Ритейл', 'Эксперты и консалтинг'];
 
 const MAIN_MENU = { inline_keyboard: [
+  [{ text: '📈 Кабинет (цифры за сегодня)', callback_data: 'mn:pr' }],
   [{ text: '🏢 АГЕНТСТВО (услуги студии)', callback_data: 'mn:ag' }],
   [{ text: '🛍 SHOP (цифровые товары)', callback_data: 'mn:sh' }],
   [{ text: '📊 Отчёт сейчас', callback_data: 'mn:rp' }, { text: '📝 Редактор КП', callback_data: 'mn:kp' }],
@@ -60,9 +62,10 @@ const SHOP_MENU = { inline_keyboard: [
 async function sendMenu(chatId) {
   await tg('sendMessage', { chat_id: chatId, text: '<b>METRAWEN Sell Manager</b>\nЧто делаем?', parse_mode: 'HTML', reply_markup: MAIN_MENU });
   try {
-    if (storeEnabled() && !(await loadJson('tg:cmds:v2'))) {
+    if (storeEnabled() && !(await loadJson('tg:cmds:v3'))) {
       await tg('setMyCommands', { commands: [
         { command: 'menu', description: 'Меню действий' },
+        { command: 'panel', description: 'Кабинет: сайт, заявки, рассылка, деньги' },
         { command: 'pack', description: 'Пачка писем: /pack agency 15 Отрасль' },
         { command: 'status', description: 'Статусы рассылок и счётчики' },
         { command: 'cancel', description: 'Отменить очередь: /cancel agency' },
@@ -71,7 +74,7 @@ async function sendMenu(chatId) {
         { command: 'kp', description: 'Редактор КП' },
         { command: 'help', description: 'Все команды' }
       ] });
-      await saveJson('tg:cmds:v2', 1, 60 * 60 * 24 * 365);
+      await saveJson('tg:cmds:v3', 1, 60 * 60 * 24 * 365);
     }
   } catch (e) { console.error('telegram: setMyCommands', e); }
 }
@@ -104,6 +107,7 @@ async function menuAction(data, chatId) {
   if (p[1] === 'rp') { await ownerCommand('/report', chatId); return; }
   if (p[1] === 'hp') { await ownerCommand('/help', chatId); return; }
   if (p[1] === 'st') { await ownerCommand('/status', chatId); return; }
+  if (p[1] === 'pr') { await ownerCommand('/panel', chatId); return; }
   if (p[1] === 'kp') { const K = require('./_lib/kp'); await tg('sendMessage', { chat_id: chatId, text: 'Редактор КП: ' + K.adminUrl() + '\nСсылка с ключом доступа, не пересылайте её.', disable_web_page_preview: true }); return; }
 }
 
@@ -139,6 +143,11 @@ async function ownerCommand(text, chatId) {
     await tg('sendMessage', { chat_id: chatId, text: '✍️ Пишу черновики для лидов Хантера без текста...' });
     const r = await require('./_lib/drafts').fillMissing(12, 45000);
     await tg('sendMessage', { chat_id: chatId, text: r.skipped ? 'Не запущено: ' + r.skipped : ('Готово: написано ' + r.done + (r.failed ? ', не получилось ' + r.failed + (r.err ? ' (' + r.err + ')' : '') : '') + (r.left ? '. Осталось ещё ' + r.left + ', допишу автоматически или повторите /drafts' : '. Лидов без черновика больше нет.')) });
+    return;
+  }
+  if (cmd === '/panel' || cmd === '/cabinet') {
+    const P = require('./_lib/panel');
+    await tg('sendMessage', { chat_id: chatId, text: await P.build(true), parse_mode: 'HTML', reply_markup: P.KEYBOARD });
     return;
   }
   if (cmd === '/status') { await tg('sendMessage', { chat_id: chatId, text: await require('./_lib/outreach').statusText() }); return; }
@@ -247,7 +256,7 @@ module.exports = async function handler(req, res) {
       await tg('sendMessage', { chat_id: chatId, text: 'Редактор КП: ' + K.adminUrl() + '\nСсылка с ключом доступа, не пересылайте её.', disable_web_page_preview: true });
       return res.status(200).json({ ok: true });
     }
-    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/(pack|status|cancel|dm|report|cleandrafts|drafts|autopack|clientbot|help|menu|start)\b/i.test(String(msg.text || ''))) {
+    if (msg.chat && String(msg.chat.id) === String(chatId) && /^\/(pack|panel|cabinet|status|cancel|dm|report|cleandrafts|drafts|autopack|clientbot|help|menu|start)\b/i.test(String(msg.text || ''))) {
       try { await ownerCommand(String(msg.text || '').trim(), chatId); }
       catch (e) { await report('Команда ' + String(msg.text).split(/\s+/)[0], e); }
       return res.status(200).json({ ok: true });
@@ -274,6 +283,17 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
+  if (String(cq.data || '') === 'mn:pr') {
+    try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: 'Обновляю...' }); } catch (e) {}
+    try {
+      const P = require('./_lib/panel');
+      const txt = await P.build(true);
+      try { await tg('editMessageText', { chat_id: chatId, message_id: cq.message.message_id, text: txt, parse_mode: 'HTML', reply_markup: P.KEYBOARD }); }
+      catch (e1) { if (!/not modified/i.test(String(e1.message || e1))) await tg('sendMessage', { chat_id: chatId, text: txt, parse_mode: 'HTML', reply_markup: P.KEYBOARD }); }
+    } catch (e) { await report('Кабинет', e); }
+    return res.status(200).json({ ok: true });
+  }
+
   if (/^mn:/.test(String(cq.data || ''))) {
     try { await tg('answerCallbackQuery', { callback_query_id: cq.id }); } catch (e) {}
     try { await menuAction(String(cq.data), chatId); } catch (e) { await report('Меню бота', e); }
@@ -285,7 +305,7 @@ module.exports = async function handler(req, res) {
     let n = 0, apText = '';
     try { if (opm[1] === 'ok') { const ap = await require('./_lib/outreach').approvePack(opm[2]); n = ap.n; apText = ap.text; } } catch (e) { console.error('telegram: пачка', e); }
     try { await tg('answerCallbackQuery', { callback_query_id: cq.id, text: opm[1] === 'ok' ? (n ? 'Одобрено: ' + n : 'Пачка уже одобрена') : 'Отменено' }); } catch (e) {}
-    try { await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: cq.message.message_id, reply_markup: { inline_keyboard: [] } }); } catch (e) {}
+    try { await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: cq.message.message_id, reply_markup: { inline_keyboard: [[{ text: opm[1] === 'ok' ? (n ? '✅ Одобрено: ' + n + ' писем' : '✅ Уже одобрена') : '✖️ Отменено', callback_data: 'noop' }]] } }); } catch (e) {}
     try { await tg('sendMessage', { chat_id: chatId, text: opm[1] === 'ok' ? (n ? '✅ Одобрено ' + n + ' писем. Встали в очередь рассылки.' + apText : 'ℹ️ Эта пачка уже одобрена, повторно ничего не добавлено.') : 'Пачка отменена.' }); } catch (e) {}
     return res.status(200).json({ ok: true });
   }
