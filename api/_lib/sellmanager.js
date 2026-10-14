@@ -9,6 +9,7 @@ const crm = require('./crm');
 const shop = require('./shop');
 const hunter = require('./hunter');
 const ops = require('./ops');
+const autoflow = require('./autoflow');
 const { report, log, stat } = require('./alert');
 
 
@@ -420,6 +421,7 @@ async function logAgencyIncoming(lead, intent) {
 
 // Вызывается из api/lead.js после того, как заявка отправлена в Telegram.
 async function handleNewLead(lead) {
+  await autoflow.disarm(lead); // клиент написал сам: цепочка касаний останавливается
   if (lead.channel === 'chat' && lead.chatSid && storeEnabled()) return handleChatLead(lead);
   if (lead.channel !== 'email') await stat('in:' + (lead.channel || 'site'));
   await prepContext(lead);
@@ -436,14 +438,16 @@ async function handleNewLead(lead) {
       await saveJson('lead:' + id, { lead, draft: d });
       withButtons = true;
     }
+    const autoMin = withButtons && autoflow.eligible(lead, d) ? autoflow.delayMin(lead) : 0;
     const sentMsg = await tg('sendMessage', {
       chat_id: chatId,
-      text: formatDraft(lead, d),
+      text: formatDraft(lead, d) + (autoMin ? '\n\n🤖 Типовой вопрос: ответ уйдёт клиенту сам примерно через ' + autoMin + ' мин. Не нужно: нажмите «Отмена» или «Править».' : ''),
       parse_mode: 'HTML',
       disable_web_page_preview: true,
       reply_markup: withButtons ? keyboard(id, d.mode) : undefined
     });
     if (withButtons) await ops.track(id, sentMsg && sentMsg.result && sentMsg.result.message_id, routeInfo(lead).from + ' · ' + (lead.contact || lead.name || ''), d.stage === 'hot');
+    if (autoMin && sentMsg && sentMsg.result) await autoflow.schedule(id, sentMsg.result.message_id, autoMin);
   } catch (err) {
     console.error('sellmanager: не удалось подготовить черновик', err);
     await log('Черновик не подготовлен', err, lead.contact || lead.label);
@@ -475,6 +479,7 @@ async function handleAction(action, id, message) {
     try { await tg('editMessageReplyMarkup', { chat_id: chatId, message_id: message.message_id, reply_markup: { inline_keyboard: [[{ text: label, callback_data: 'noop' }]] } }); }
     catch (e) { /* ничего */ }
   };
+  if (action === 'rg' || action === 'sh' || action === 'ed' || action === 'ca' || action === 'sk') await autoflow.cancelAuto(id); // вы вмешались: автоотправка этого черновика выключена
   if (action !== 'ed') await setMark(MARK[action] || '⏳ ...');
 
   if (action === 'ok') {
@@ -539,6 +544,7 @@ async function handleAction(action, id, message) {
     }
     if (isLine && !sentLine) await log('Ответ клиенту не ушёл (' + chName + ')', lineErr, rec.lead.contact);
     await rememberReply(rec.lead, dd.body || '');
+    if (sentLine) await autoflow.armNudge(rec.lead, dd);
     const head = isLine
       ? (sentLine ? '<b>ПОДТВЕРЖДЕНО И ОТПРАВЛЕНО В ' + chName + '</b>' : '<b>ПОДТВЕРЖДЕНО, НО В ' + chName + ' НЕ ОТПРАВИЛОСЬ</b>')
       : '<b>ПОДТВЕРЖДЕНО</b>';

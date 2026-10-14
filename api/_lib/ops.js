@@ -70,12 +70,14 @@ async function tick(light) {
   if (light) {
     if (!(await once('ops:tick:light', 8 * 60))) return { ok: true, skipped: true };
     try { await remind(); await watchBridges(); } catch (e) { await report('Напоминания', e); }
+    try { await require('./autoflow').run(); } catch (e) { await report('Автоматика ответов', e); }
     return { ok: true, light: true };
   }
   if (!(await once('ops:tick', 8 * 60))) return { ok: true, skipped: true };
   const out = { ok: true };
   try { await remind(); } catch (e) { await report('Напоминания', e); }
   try { await watchBridges(); } catch (e) { await report('Контроль мостов', e); }
+  try { out.auto = await require('./autoflow').run(); } catch (e) { await report('Автоматика ответов', e); }
   try {
     const msg = await require('./cleanup').step();
     if (msg) await tg('sendMessage', { chat_id: chat(), text: msg });

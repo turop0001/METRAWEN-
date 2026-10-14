@@ -85,7 +85,7 @@ async function build(force) {
   const cut = function (v, n) { v = String(v || '').replace(/\s+/g, ' ').trim(); return v.length > n ? v.slice(0, n - 1) + '…' : v; };
   const waitRows = ib.filter(function (r) { return p(r, 'Этап') === 'Ждёт ответа'; })
     .sort(function (a, b) { return Date.parse(p(a, 'Последнее сообщение') || 0) - Date.parse(p(b, 'Последнее сообщение') || 0); });
-  const NEXT = { 'Ответ получен': 'ответить и предложить бесплатный созвон', 'Встреча назначена': 'провести бесплатный созвон', 'КП принято': 'ждём оплату', 'Сделка/Оплачено': 'оплачено, ведём проект' };
+  const NEXT = { 'Ответ получен': 'подтвердите готовый черновик ответа в боте (или ответьте сами)', 'Встреча назначена': 'провести бесплатный созвон', 'КП принято': 'ждём оплату', 'Сделка/Оплачено': 'оплачено, ведём проект' };
   const replSorted = replRows.slice().sort(function (a, b) { return String(p(b, 'Ответил')).localeCompare(String(p(a, 'Ответил'))); });
   const stageN = {};
   hr.forEach(function (r) { const k = stage(r); stageN[k] = (stageN[k] || 0) + 1; });
@@ -127,7 +127,7 @@ async function build(force) {
   const todo = [];
   if (pending) todo.push('подтвердить ' + pending + ' ответ(а) клиентам');
   if (waiting) todo.push('ответить ' + waiting + ' клиент(ам) из списка выше');
-  if (replRows.length - meetings) todo.push('предложить бесплатный созвон тем, кто ответил на письмо');
+  if (replRows.length - meetings) todo.push('проверить ответы на холодные письма: черновики ждут в боте');
   if (!todo.length) todo.push('срочного нет, рассылка идёт сама');
   L.push('');
   L.push('<b>✅ Что делать сейчас:</b> ' + todo.join('; '));
