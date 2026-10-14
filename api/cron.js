@@ -7,6 +7,14 @@ const { report } = require('./_lib/alert');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
+  if (String((req.query && req.query.job) || '') === 'hunter-export') {
+    // Разовая выгрузка Hunter CRM для METRAWEN OS: отдельный ключ, только чтение.
+    const want = String(process.env.HUNTER_EXPORT_TOKEN || '').replace(/\s+/g, '');
+    const got = String(req.headers['x-export-token'] || '');
+    if (!want || got !== want) return res.status(401).json({ ok: false });
+    try { return res.status(200).json(await require('./_lib/hunter-export').page(String((req.query && req.query.cursor) || '') || null)); }
+    catch (e) { return res.status(500).json({ ok: false, error: String(e.message).slice(0, 200) }); }
+  }
   const cs = String(process.env.CRON_SECRET || '');
   const auth = String(req.headers.authorization || '');
   const ua = String(req.headers['user-agent'] || '');
