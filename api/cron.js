@@ -25,6 +25,10 @@ module.exports = async function handler(req, res) {
       try { return res.status(200).json(await require('./_lib/channels-export').act(pb.id, pb.action)); }
       catch (e) { return res.status(400).json({ ok: false, error: String(e.message).slice(0, 200) }); }
     }
+    if (String((req.query && req.query.what) || '') === 'mailboxes') {
+      try { return res.status(200).json(await require('./_lib/outreach').mailboxStats()); }
+      catch (e) { return res.status(500).json({ ok: false, error: String(e.message).slice(0, 200) }); }
+    }
     try { const ce = require('./_lib/channels-export'); return res.status(200).json(String((req.query && req.query.rows) || '') ? await ce.rowsAll() : await ce.run()); }
     catch (e) { return res.status(500).json({ ok: false, error: String(e.message).slice(0, 200) }); }
   }

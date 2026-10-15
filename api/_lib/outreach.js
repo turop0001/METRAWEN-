@@ -433,4 +433,22 @@ async function sent(it, brand) {
   } catch (e) { await report('Рассылка: отметка «отправлено»', e, it.id); }
 }
 
-module.exports = { buildPack, approvePack, capFor, planStart, cancelQueue, statusText, failed, due, sent, SHOP_BOXES, BOXES: SHOP_BOXES, BRANDS, cfg, BAD, dailyCap, rewrite, fromDraft };
+async function mailboxStats() {
+  const B = cfg('agency');
+  const day = await startDay(B);
+  const cap = dailyCap(day);
+  const boxes = ((await loadJson(B.key + ':boxes')) || []);
+  const d = today();
+  const y = new Date(Date.now() + 7 * 3600 * 1000 - 86400000).toISOString().slice(0, 10);
+  const rows = [];
+  for (const b of boxes) {
+    const t = (await loadJson(B.key + ':cnt:' + boxTag(b) + d)) || 0;
+    const yy = (await loadJson(B.key + ':cnt:' + boxTag(b) + y)) || 0;
+    rows.push({ box: b, today: t, yesterday: yy, cap: cap });
+  }
+  const q = (await loadJson(B.key + ':queue')) || [];
+  return { ok: true, day: day, week: Math.floor(day / 7) + 1, cap: cap, queue: q.length,
+    schedule: [{ week: 1, cap: 5 }, { week: 2, cap: 10 }, { week: 3, cap: 15 }, { week: 4, cap: 20 }], boxes: rows };
+}
+
+module.exports = { mailboxStats, buildPack, approvePack, capFor, planStart, cancelQueue, statusText, failed, due, sent, SHOP_BOXES, BOXES: SHOP_BOXES, BRANDS, cfg, BAD, dailyCap, rewrite, fromDraft };
