@@ -1,0 +1,140 @@
+{
+  "version": "2026.10.1",
+  "currency": "USD",
+  "rubRate": 82,
+  "rubRound": 100,
+  "audit": { "serviceCode": "ai_audit", "price": 199, "creditDays": 30 },
+  "markets": {
+    "us": { "ru": "США, Канада, Австралия", "en": "US, Canada, Australia", "currency": "USD", "mult": 1, "audit": 199 },
+    "eu": { "ru": "Европа", "en": "Europe", "currency": "USD", "mult": 1, "audit": 199 },
+    "asia": { "ru": "Таиланд, Индонезия, Азия", "en": "Thailand, Indonesia, Asia", "currency": "USD", "mult": 0.5, "audit": 99 },
+    "ru": { "ru": "Россия, СНГ", "en": "Russia, CIS", "currency": "RUB", "mult": 1, "audit": 199 }
+  },
+  "paymentTerms": {
+    "audit": [100],
+    "ai": [50, 50],
+    "digital": [30, 40, 30]
+  },
+  "evidence": {
+    "status": "DIRECTIONAL: internal bands from METRAWEN_PRICING_ARCHITECTURE.md (2026-09-15), not independently re-verified",
+    "starterBand": "Chatbot/receptionist build baseline $1,000-5,000 setup and $200-750/mo; Thailand lead-qualification bot benchmark about $950-1,490",
+    "proBand": "Growth workflow package $4,000-12,000; Thailand full booking bot about $1,890-3,240",
+    "systemBand": "Locked floor from $10,000 and from $1,000/mo; complex $20,000-30,000+ is internal only"
+  },
+  "roles": [
+    { "id": "hunter", "ru": "Охотник", "en": "Hunter", "descRu": "Ищет и квалифицирует новых клиентов, делает первый контакт", "descEn": "Finds and qualifies new customers and makes first contact" },
+    { "id": "sales", "ru": "Продавец", "en": "Sales Rep", "descRu": "Ведёт диалог, снимает возражения, считает цену и доводит до оплаты", "descEn": "Chats with the lead, handles objections, prices and takes them to payment" },
+    { "id": "marketer", "ru": "Маркетолог", "en": "Marketer", "descRu": "Готовит тексты и черновики рекламы, следит за метриками", "descEn": "Prepares copy and draft ads, tracks metrics" },
+    { "id": "assistant", "ru": "Ассистент", "en": "Assistant", "descRu": "Принимает обращения, записывает клиентов, отвечает на частые вопросы", "descEn": "Takes inquiries, books customers, answers common questions" },
+    { "id": "analyst", "ru": "Аналитик", "en": "Analyst", "descRu": "Собирает данные из CRM и каналов в понятные отчёты", "descEn": "Pulls data from CRM and channels into clear reports" },
+    { "id": "content", "ru": "Контент-мейкер", "en": "Content Creator", "descRu": "Пишет посты и материалы в голосе вашего бренда", "descEn": "Writes posts and materials in your brand voice" },
+    { "id": "pm", "ru": "Проджект-менеджер", "en": "Project Manager", "descRu": "Ставит задачи, напоминает о сроках, собирает статус проекта", "descEn": "Assigns tasks, sends deadline reminders, collects project status" }
+  ],
+  "departments": [
+    { "id": "sales", "ru": "Продажи", "en": "Sales" },
+    { "id": "marketing", "ru": "Маркетинг", "en": "Marketing" },
+    { "id": "service", "ru": "Сервис и поддержка", "en": "Service and support" },
+    { "id": "operations", "ru": "Операции", "en": "Operations" },
+    { "id": "documents", "ru": "Документы", "en": "Documents" }
+  ],
+  "products": {
+    "starter": {
+      "serviceCode": "ai_employee_starter", "ru": "AI-сотрудник Starter", "en": "AI Employee Starter", "from": 1000,
+      "taglineRu": "Один AI-сотрудник полностью закрывает одну роль", "taglineEn": "One AI employee fully covers one role",
+      "roles": { "min": 1, "max": 1 }, "firstRole": 1000, "nextRole": 800,
+      "link": 0, "orchestration": 0, "departments": null,
+      "monthly": { "base": 150, "perExtraRole": 0, "perExtraDepartment": 0 },
+      "weeks": "2–3 недели", "weeksEn": "2–3 weeks",
+      "includesRu": ["1 роль под вашу задачу", "1 канал связи и 1 язык", "База знаний до 50 страниц", "До 300 обращений в месяц", "Передача диалога человеку в нужный момент", "Ежемесячный отчёт с цифрами"],
+      "includesEn": ["1 role built for your task", "1 channel and 1 language", "Knowledge base up to 50 pages", "Up to 300 requests per month", "Hand-off to a human when needed", "Monthly report with numbers"]
+    },
+    "pro": {
+      "serviceCode": "ai_employee_pro", "ru": "AI-сотрудник Pro", "en": "AI Employee Pro", "from": 3000,
+      "taglineRu": "2–4 роли работают как один отдел на общих данных", "taglineEn": "2–4 roles work as one department on shared data",
+      "roles": { "min": 2, "max": 4 }, "firstRole": 1000, "nextRole": 800,
+      "link": 1200, "orchestration": 0, "departments": null,
+      "monthly": { "base": 400, "perExtraRole": 100, "extraRoleAfter": 2, "perExtraDepartment": 0 },
+      "weeks": "4–6 недель", "weeksEn": "4–6 weeks",
+      "includesRu": ["От 2 до 4 ролей, выбранных под ваш бизнес", "1 канал связи и 1 язык", "База знаний до 50 страниц", "До 300 обращений в месяц", "Передача диалога человеку в нужный момент", "Единый отчёт по отделу"],
+      "includesEn": ["2 to 4 roles chosen for your business", "1 channel and 1 language", "Knowledge base up to 50 pages", "Up to 300 requests per month", "Hand-off to a human when needed", "One report for the whole department"]
+    },
+    "system": {
+      "serviceCode": "ai_system", "ru": "AI System", "en": "AI System", "from": 10000,
+      "taglineRu": "Несколько AI-отделов, собранных в одну систему под структуру бизнеса", "taglineEn": "Several AI departments built into one system around your business",
+      "roles": { "min": 2, "max": 4 }, "firstRole": 1000, "nextRole": 800,
+      "link": 1200, "orchestration": 4000, "departments": { "min": 2, "max": 6 },
+      "monthly": { "base": 1000, "perExtraRole": 0, "perExtraDepartment": 250, "extraDepartmentAfter": 2 },
+      "weeks": "срок определяется после аудита", "weeksEn": "timeline is set after the audit",
+      "includesRu": ["От 2 отделов, в каждом 2–4 роли", "Общая модель данных между отделами", "Сквозной отчёт по всем отделам", "План поэтапного запуска", "Правила согласования человеком", "Передача диалога человеку в нужный момент"],
+      "includesEn": ["From 2 departments, 2–4 roles each", "Shared data model across departments", "One report across all departments", "Phased rollout plan", "Human approval rules", "Hand-off to a human when needed"]
+    }
+  },
+  "lineTexts": {
+    "role": { "ru": "Роль", "en": "Role", "whatRu": ["Настройка сценариев под вашу задачу", "Подключение к вашим данным и инструкциям", "Тестирование на реальных вопросах перед запуском"], "whatEn": ["Scenarios set up for your task", "Connected to your data and instructions", "Tested on real questions before launch"] },
+    "link": { "ru": "Связка ролей в отдел", "en": "Roles linked into a department", "whatRu": ["Общая карточка клиента: клиент не повторяется перед другой ролью", "Автоматическая передача заявки от роли к роли", "Единый сценарий и единый отчёт по отделу"], "whatEn": ["Shared customer record: the customer never repeats themselves to another role", "Automatic hand-off of an inquiry between roles", "One scenario and one report for the department"] },
+    "orchestration": { "ru": "Объединение отделов в систему", "en": "Departments joined into one system", "whatRu": ["Общая модель данных между отделами", "Сквозная отчётность для руководителя", "План поэтапного запуска по отделам", "Правила, где решение за человеком"], "whatEn": ["Shared data model across departments", "Cross-department reporting for management", "Phased rollout plan by department", "Rules for where a human decides"] },
+    "urgent": { "ru": "Срочный запуск", "en": "Rush launch", "whatRu": ["Ваш проект идёт вне общей очереди", "Срок согласуем в предложении"], "whatEn": ["Your project skips the general queue", "Timeline agreed in the proposal"] },
+    "credit": { "ru": "Зачёт оплаченного аудита", "en": "Paid audit credit", "whatRu": ["Стоимость AI Opportunity Audit вычитается из внедрения, если заказ оформлен в течение 30 дней"], "whatEn": ["The AI Opportunity Audit fee is deducted if you order within 30 days"] }
+  },
+  "options": [
+    { "id": "channels", "type": "count", "min": 1, "max": 7, "included": 1, "each": 150,
+      "ru": "Сколько каналов связи подключить?", "en": "How many channels to connect?",
+      "helpRu": "WhatsApp, Telegram, LINE, Instagram, чат на сайте, почта, SMS. Один канал уже в базе.", "helpEn": "WhatsApp, Telegram, LINE, Instagram, website chat, email, SMS. One channel is in the base price.",
+      "lineRu": "Дополнительные каналы связи", "lineEn": "Extra channels", "whatRu": ["Отдельная настройка каждого канала", "Единая история диалога из всех каналов"], "whatEn": ["Each channel set up separately", "One conversation history from all channels"] },
+    { "id": "languages", "type": "count", "min": 1, "max": 5, "included": 1, "each": 200,
+      "ru": "На скольких языках отвечать?", "en": "How many languages?",
+      "helpRu": "Один язык уже в базе. Каждый следующий — отдельная проверка ответов.", "helpEn": "One language is in the base price. Each extra language gets its own answer check.",
+      "lineRu": "Дополнительные языки", "lineEn": "Extra languages", "whatRu": ["Ответы и сценарии на каждом языке", "Проверка терминов вашей сферы"], "whatEn": ["Answers and scenarios in each language", "Check of your industry terms"] },
+    { "id": "crm", "type": "choice", "default": "none",
+      "ru": "С какой системой учёта связать?", "en": "Which system to connect?",
+      "helpRu": "Куда записывать клиентов и откуда брать данные.", "helpEn": "Where to record customers and where to read data from.",
+      "choices": [
+        { "v": "none", "ru": "Не нужно, хватит таблицы или чата", "en": "Not needed, a sheet or chat is enough", "price": 0 },
+        { "v": "standard", "ru": "Стандартная CRM или таблица (Google Sheets, amoCRM, Bitrix24, HubSpot)", "en": "Standard CRM or sheet (Google Sheets, amoCRM, Bitrix24, HubSpot)", "price": 300 },
+        { "v": "custom", "ru": "Своя система, API или ERP", "en": "Own system, API or ERP", "price": 1200 }
+      ],
+      "lineRu": "Подключение к системе учёта", "lineEn": "System integration", "whatRu": ["Запись и чтение данных клиента", "Проверка, что данные не теряются"], "whatEn": ["Reads and writes customer data", "Check that no data is lost"] },
+    { "id": "knowledge", "type": "choice", "default": "small",
+      "ru": "Сколько материалов должен знать сотрудник?", "en": "How much material must the employee know?",
+      "helpRu": "Прайс, FAQ, регламенты, описания услуг. Страница — около одного экрана текста.", "helpEn": "Price list, FAQ, rules, service descriptions. A page is about one screen of text.",
+      "choices": [
+        { "v": "small", "ru": "До 50 страниц", "en": "Up to 50 pages", "price": 0 },
+        { "v": "medium", "ru": "От 50 до 200 страниц", "en": "50 to 200 pages", "price": 300 },
+        { "v": "large", "ru": "Больше 200 страниц", "en": "More than 200 pages", "price": 800 }
+      ],
+      "lineRu": "Расширенная база знаний", "lineEn": "Extended knowledge base", "whatRu": ["Разбор и структурирование материалов", "Проверка точности ответов по базе"], "whatEn": ["Materials sorted and structured", "Accuracy check of answers against the base"] },
+    { "id": "volume", "type": "choice", "default": "low",
+      "ru": "Сколько обращений в месяц ожидаете?", "en": "How many requests per month do you expect?",
+      "helpRu": "Считайте все каналы вместе. Если не знаете, возьмите цифру из аудита.", "helpEn": "Count all channels together. If unsure, use the figure from the audit.",
+      "choices": [
+        { "v": "low", "ru": "До 300", "en": "Up to 300", "price": 0, "monthly": 0 },
+        { "v": "mid", "ru": "От 300 до 1 500", "en": "300 to 1,500", "price": 300, "monthly": 0 },
+        { "v": "high", "ru": "Больше 1 500", "en": "More than 1,500", "price": 700, "monthly": 100 }
+      ],
+      "lineRu": "Высокая нагрузка", "lineEn": "Higher volume", "whatRu": ["Настройка очередей и ограничений нагрузки", "Контроль качества на большом потоке"], "whatEn": ["Queues and load limits set up", "Quality control at higher volume"] },
+    { "id": "actions", "type": "flag", "default": false, "price": 400,
+      "ru": "Нужны ли запись или оплата прямо в диалоге?", "en": "Booking or payment inside the chat?",
+      "helpRu": "Сотрудник сам записывает на время и выставляет ссылку на оплату.", "helpEn": "The employee books a slot and sends a payment link by itself.",
+      "lineRu": "Запись и оплата в диалоге", "lineEn": "Booking and payment in chat", "whatRu": ["Календарь и свободные слоты", "Ссылка на оплату в диалоге"], "whatEn": ["Calendar and free slots", "Payment link in the chat"] },
+    { "id": "voice", "type": "flag", "default": false, "price": 900, "monthly": 100,
+      "ru": "Нужны ли голосовые звонки?", "en": "Do you need voice calls?",
+      "helpRu": "Сотрудник говорит по телефону, а не пишет.", "helpEn": "The employee speaks on the phone instead of writing.",
+      "lineRu": "Голосовой канал", "lineEn": "Voice channel", "whatRu": ["Входящие и исходящие звонки", "Расшифровка разговоров в карточку клиента"], "whatEn": ["Inbound and outbound calls", "Call transcripts saved to the customer record"] },
+    { "id": "dashboard", "type": "flag", "default": false, "price": 400, "includedIn": ["system"],
+      "ru": "Нужен ли дашборд с цифрами?", "en": "Do you need a dashboard with numbers?",
+      "helpRu": "Заявки, ответы, конверсия и узкие места в одном экране. В AI System входит.", "helpEn": "Inquiries, replies, conversion and bottlenecks on one screen. Included in AI System.",
+      "lineRu": "Дашборд отчётов", "lineEn": "Reporting dashboard", "whatRu": ["Ключевые цифры на одном экране", "Обновление без ручной работы"], "whatEn": ["Key numbers on one screen", "Updates without manual work"] },
+    { "id": "security", "type": "choice", "default": "standard",
+      "ru": "Есть ли особые требования к данным?", "en": "Any special data requirements?",
+      "helpRu": "Хранение в определённой стране, NDA, договор на обработку данных, свой сервер.", "helpEn": "Storage in a specific country, NDA, data processing agreement, own server.",
+      "choices": [
+        { "v": "standard", "ru": "Нет, достаточно стандартных условий", "en": "No, standard terms are enough", "price": 0 },
+        { "v": "special", "ru": "Да, особые условия хранения и доступа", "en": "Yes, special storage and access terms", "price": 1500 }
+      ],
+      "lineRu": "Особые условия безопасности", "lineEn": "Special security terms", "whatRu": ["Отдельные условия хранения и доступа", "Согласование с вашим юристом или службой безопасности"], "whatEn": ["Separate storage and access terms", "Alignment with your lawyer or security team"] },
+    { "id": "urgent", "type": "flag", "default": false, "percent": 20,
+      "ru": "Нужен срочный запуск?", "en": "Do you need a rush launch?",
+      "helpRu": "Проект идёт вне общей очереди. Доплата 20% от стоимости настройки.", "helpEn": "The project skips the queue. Surcharge of 20% of the setup price.",
+      "lineRu": "Срочный запуск", "lineEn": "Rush launch", "whatRu": [], "whatEn": [] }
+  ]
+}

@@ -3,6 +3,9 @@ const crypto = require('crypto');
 const { saveJson, loadJson } = require('./store');
 const { ITEMS, RATE } = require('./catalog');
 const llm = require('./llm');
+// AI-расчёт по чек-листу: один и тот же файл расчёта и тот же конфиг, что в METRAWEN OS (aiquote.js, ai-quote.json в корне сайта).
+const AQ = require('../../aiquote.js');
+const AQCFG = require('../../ai-quote.json');
 
 const SITE = 'https://metrawen.com';
 const TTL = 60 * 60 * 24 * 180;
@@ -28,6 +31,46 @@ async function save(kp) {
   await saveJson('kp:index', next, TTL);
   return kp;
 }
+
+
+const OPT_IDS = AQCFG.options.map(function (o) { return o.id; });
+const PRODUCTS = ['starter', 'pro', 'system'];
+/** Аудит засчитывается только если КП принято не позже чем через creditDays после оплаты аудита. */
+function creditActive(kp, at) {
+  const q = kp.quote;
+  if (!q || !/^\d{4}-\d{2}-\d{2}$/.test(String(q.auditPaidAt || ''))) return false;
+  const paid = Date.parse(q.auditPaidAt + 'T00:00:00Z');
+  const ref = at || kp.acceptedAt || Date.now();
+  return ref >= paid && ref <= paid + (AQCFG.audit.creditDays + 1) * 864e5;
+}
+function strArr(a, max) { return (Array.isArray(a) ? a : []).slice(0, max).map(function (x) { return String(x).slice(0, 30); }); }
+/** Берём из присланного только известные поля: цену клиент не присылает, её считает сервер. */
+function cleanQuote(q, prev) {
+  q = q || {};
+  const product = PRODUCTS.indexOf(q.product) >= 0 ? q.product : (prev && prev.product);
+  const out = { product: product, roles: strArr(q.roles, 4), answers: {} };
+  if (product === 'system') out.departments = (Array.isArray(q.departments) ? q.departments : []).slice(0, 6).map(function (d) { return { id: String((d && d.id) || '').slice(0, 30), roles: strArr(d && d.roles, 4) }; });
+  OPT_IDS.forEach(function (id) { if (q.answers && q.answers[id] !== undefined) out.answers[id] = q.answers[id]; });
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(q.auditPaidAt || ''))) out.auditPaidAt = q.auditPaidAt;
+  if (['us', 'eu', 'asia', 'ru'].indexOf(q.market) >= 0) out.market = q.market;
+  if (prev && prev.locked) out.locked = true;
+  return out;
+}
+/** Пересчитывает КП по чек-листу и записывает позиции, график оплаты 50/50 и итог. */
+function applyQuote(kp) {
+  if (!kp.quote) return { ok: true, none: true };
+  const q = kp.quote;
+  const r = AQ.compute(AQCFG, { product: q.product, roles: q.roles, departments: q.departments, answers: q.answers, auditCredit: creditActive(kp), currency: kp.currency, market: q.market });
+  if (!r.ok) return r;
+  const ru = kp.lang !== 'en';
+  kp.items = r.lines.map(function (l) { return { name: ru ? l.titleRu : l.titleEn, desc: (ru ? l.whatRu : l.whatEn).join('. '), price: l.amount, days: 0, ref: 'aiq:' + l.id }; });
+  kp.addons = [];
+  kp.schedule = [r.schedule[0].percent, r.schedule[1].percent, 0];
+  kp.quoteSummary = { total: r.total, monthly: r.monthly, currency: r.currency, version: r.configVersion };
+  return r;
+}
+/** Конфиг для страницы КП и редактора: без внутренних пометок о рынке. */
+function publicConfig() { const c = JSON.parse(JSON.stringify(AQCFG)); delete c.evidence; return c; }
 
 function price(item, cur) { return cur === 'RUB' ? item.rub : Math.round(item.rub / RATE / 5) * 5; }
 function fromCatalog(id, lang, cur, desc) {
@@ -74,4 +117,4 @@ async function draftFromConversation(lead, lang) {
   return save(kp);
 }
 
-module.exports = { adminKey, checkKey, adminUrl, publicUrl, load, save, blank, draftFromConversation, ITEMS, RATE, price };
+module.exports = { creditActive, cleanQuote, applyQuote, publicConfig, adminKey, checkKey, adminUrl, publicUrl, load, save, blank, draftFromConversation, ITEMS, RATE, price };

@@ -34,6 +34,8 @@ textarea{min-height:76px;resize:vertical}
 <body>
 <div class="wrap" id="app">Загрузка…</div>
 <div class="msg" id="msg"></div>
+<script src="/aiquote.js"></script>
+<script src="/aiquote-ui.js"></script>
 <script>
 (function(){
   var m=location.hash.match(/k=([a-f0-9]{24})/);
@@ -41,12 +43,12 @@ textarea{min-height:76px;resize:vertical}
   var key='';try{key=localStorage.getItem('mw_kp_key')||''}catch(e){}
   var app=document.getElementById('app');
   if(!key){app.innerHTML='<h1>Нет доступа</h1><p>Откройте ссылку на редактор из Telegram-бота (команда /kp).</p>';return}
-  var H={'x-kp-key':key,'Content-Type':'application/json'},CAT=[],RATE=82,kp=null;
+  var H={'x-kp-key':key,'Content-Type':'application/json'},CAT=[],RATE=82,kp=null,QCFG=null;
   function toast(t){var e=document.getElementById('msg');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display='none'},2600)}
   function api(q,b){return fetch('/api/kp'+(q||''),b?{method:'POST',headers:H,body:JSON.stringify(b)}:{headers:H}).then(function(r){return r.json()})}
   function price(it,cur){return cur==='RUB'?it.rub:Math.round(it.rub/RATE/5)*5}
   var id=new URLSearchParams(location.search).get('id');
-  api('?catalog=1').then(function(j){CAT=j.items||[];RATE=j.rate||82;
+  api('?catalog=1').then(function(j){CAT=j.items||[];RATE=j.rate||82;QCFG=j.quoteConfig||null;
     if(id)return api('?id='+id).then(function(j){if(!j.ok)throw 0;kp=j.kp;draw()});
     return home()}).catch(function(){app.innerHTML='<h1>Ошибка доступа или КП не найдено</h1>'});
 
@@ -65,7 +67,10 @@ textarea{min-height:76px;resize:vertical}
   function field(lbl,path,type){var w=document.createElement('div');var l=document.createElement('label');l.textContent=lbl;w.appendChild(l);
     var e=type==='ta'?document.createElement('textarea'):document.createElement('input');if(type&&type!=='ta')e.type=type;e.value=v(path)==null?'':v(path);
     e.oninput=function(){v(path,type==='number'?Number(e.value):e.value);sum()};w.appendChild(e);return w}
-  function sum(){var t=(kp.items||[]).reduce(function(a,x){return a+Number(x.price||0)},0);var e=document.getElementById('tot');if(e)e.textContent='Итого основа: '+t.toLocaleString('ru-RU')+(kp.currency==='RUB'?' ₽':' $')}
+  function quoteCalc(){var q=kp.quote;var d=q.auditPaidAt?Date.parse(q.auditPaidAt+'T00:00:00Z'):NaN;var cr=!isNaN(d)&&Date.now()>=d&&Date.now()<=d+(QCFG.audit.creditDays+1)*864e5;
+    return AiQuote.compute(QCFG,{product:q.product,roles:q.roles,departments:q.departments,answers:q.answers,auditCredit:cr,currency:kp.currency,market:q.market})}
+  function sum(){if(kp.quote&&QCFG){var r=quoteCalc();var e0=document.getElementById('tot');if(e0)e0.textContent=r.ok?('Итого по чек-листу: '+AiQuote.fmt(r.total,r.currency)+' · поддержка '+AiQuote.fmt(r.monthly,r.currency)+'/мес · оплата 50% / 50%'):'Выберите роли: '+r.errors.map(function(x){return x.message}).join('; ');return}
+    var t=(kp.items||[]).reduce(function(a,x){return a+Number(x.price||0)},0);var e=document.getElementById('tot');if(e)e.textContent='Итого основа: '+t.toLocaleString('ru-RU')+(kp.currency==='RUB'?' ₽':' $')}
   function itemsBlock(listName,title){
     var box=document.createElement('div');var h=document.createElement('h2');h.textContent=title;box.appendChild(h);var c=document.createElement('div');c.className='card';box.appendChild(c);
     function redraw(){c.textContent='';(kp[listName]||[]).forEach(function(x,i){var r=document.createElement('div');r.className='it';
@@ -83,6 +88,24 @@ textarea{min-height:76px;resize:vertical}
       bar.appendChild(s);bar.appendChild(b);c.appendChild(bar)}
     redraw();return box}
 
+  function quoteBlock(){
+    var box=document.createElement('div');var h=document.createElement('h2');h.textContent='AI-расчёт по чек-листу';box.appendChild(h);
+    var c=document.createElement('div');c.className='card';box.appendChild(c);
+    if(!QCFG){c.textContent='Конфиг расчёта не загружен.';return box}
+    if(!kp.quote){
+      var p=document.createElement('p');p.style.cssText='color:var(--dim);margin:0 0 10px';p.textContent='Для AI-сотрудника или отдела вместо ручных позиций включите чек-лист: клиент или вы отмечаете параметры, цена считается по правилам и становится точной.';c.appendChild(p);
+      var bar=document.createElement('div');bar.className='bar';var s=document.createElement('select');s.style.maxWidth='320px';
+      [['starter','AI-сотрудник Starter (1 роль)'],['pro','AI-сотрудник Pro (2–4 роли)'],['system','AI System (от 2 отделов)']].forEach(function(x){var o=document.createElement('option');o.value=x[0];o.textContent=x[1];s.appendChild(o)});
+      var b=document.createElement('button');b.className='btn g sm';b.textContent='Включить AI-расчёт';b.onclick=function(){var d=AiQuote.defaultInput(QCFG,s.value);kp.quote={product:d.product,market:kp.currency==='RUB'?'ru':'us',roles:d.roles||[],departments:d.departments,answers:d.answers};if(!kp.title)kp.title=QCFG.products[s.value][kp.lang==='en'?'en':'ru'];kp.currency=kp.currency||'USD';draw()};
+      bar.appendChild(s);bar.appendChild(b);c.appendChild(bar);return box}
+    var q=kp.quote,def=AiQuote.defaultInput(QCFG,q.product);q.roles=q.roles&&q.roles.length?q.roles:(def.roles||[]);q.answers=Object.assign({},def.answers,q.answers||{});if(q.product==='system'&&!q.departments)q.departments=def.departments;
+    var nm=document.createElement('p');nm.style.cssText='margin:0 0 6px;font-weight:600';nm.textContent=QCFG.products[q.product][kp.lang==='en'?'en':'ru']+' · базовая цена от '+AiQuote.fmt(QCFG.products[q.product].from,'USD');c.appendChild(nm);
+    var ad=document.createElement('div');ad.innerHTML='<label>Аудит оплачен (дата). Если КП примут в течение '+QCFG.audit.creditDays+' дней, '+AiQuote.fmt(QCFG.audit.price,'USD')+' вычтем из цены</label>';var ai=document.createElement('input');ai.type='date';ai.value=q.auditPaidAt||'';ai.style.maxWidth='220px';ai.oninput=function(){q.auditPaidAt=ai.value||undefined;sum()};ad.appendChild(ai);c.appendChild(ad);var mk=document.createElement('div');mk.innerHTML='<label>Рынок клиента (цена AI и аудита)</label><select>'+Object.keys(QCFG.markets).map(function(k){return '<option value="'+k+'">'+QCFG.markets[k].ru+'</option>'}).join('')+'</select>';var ms=mk.querySelector('select');ms.value=q.market||(kp.currency==='RUB'?'ru':'us');q.market=ms.value;ms.onchange=function(){q.market=ms.value;if(QCFG.markets[q.market].currency==='RUB'&&kp.currency!=='RUB'){kp.currency='RUB'}else if(QCFG.markets[q.market].currency!=='RUB'&&kp.currency==='RUB'){kp.currency='USD'}draw()};c.appendChild(mk);
+    var mt=document.createElement('div');mt.style.marginTop='14px';c.appendChild(mt);
+    AiQuoteUI.mount(mt,{cfg:QCFG,lang:kp.lang==='en'?'en':'ru',currency:kp.currency==='RUB'?'RUB':'USD',state:q,locked:kp.status==='accepted',onChange:function(){sum()}});
+    if(kp.status!=='accepted'){var rm=document.createElement('button');rm.className='btn x sm';rm.style.marginTop='12px';rm.textContent='Убрать AI-расчёт';rm.onclick=function(){kp.quote=null;draw()};c.appendChild(rm)}
+    return box}
+
   function draw(){
     kp.items=kp.items||[];kp.addons=kp.addons||[];kp.payLinks=kp.payLinks||['','',''];kp.paid=kp.paid||[false,false,false];kp.schedule=kp.schedule||[30,40,30];kp.client=kp.client||{};kp.demo=kp.demo||{};
     app.textContent='';
@@ -99,13 +122,14 @@ textarea{min-height:76px;resize:vertical}
     c1.appendChild(field('Заголовок КП','title'));app.appendChild(c1);
     var h2=document.createElement('h2');h2.textContent='Задача и решение';app.appendChild(h2);
     var c2=document.createElement('div');c2.className='card';c2.appendChild(field('Ситуация клиента','situation','ta'));c2.appendChild(field('Что мы сделаем','solution','ta'));c2.appendChild(field('Что изменится','result','ta'));app.appendChild(c2);
-    app.appendChild(itemsBlock('items','Состав работ (цена · дни)'));
+    app.appendChild(quoteBlock());
+    if(!kp.quote)app.appendChild(itemsBlock('items','Состав работ (цена · дни)'));
     var t=document.createElement('div');t.className='tot';t.id='tot';t.style.margin='10px 0';app.appendChild(t);
-    app.appendChild(itemsBlock('addons','Допы на выбор клиента'));
+    if(!kp.quote)app.appendChild(itemsBlock('addons','Допы на выбор клиента'));
     var h3=document.createElement('h2');h3.textContent='Оплата';app.appendChild(h3);
     var c3=document.createElement('div');c3.className='card';
-    var rs=document.createElement('div');rs.className='row r3';[0,1,2].forEach(function(i){var w=document.createElement('div');w.innerHTML='<label>Этап '+(i+1)+', %</label>';var e=document.createElement('input');e.type='number';e.value=kp.schedule[i];e.oninput=function(){kp.schedule[i]=Number(e.value)};w.appendChild(e);rs.appendChild(w)});c3.appendChild(rs);
-    [0,1,2].forEach(function(i){var w=document.createElement('div');w.className='row';w.style.gridTemplateColumns='1fr auto';w.style.alignItems='end';
+    var rs=document.createElement('div');rs.className='row r3';[0,1,2].forEach(function(i){var w=document.createElement('div');w.innerHTML='<label>Этап '+(i+1)+', %</label>';var e=document.createElement('input');e.type='number';e.value=kp.schedule[i];e.oninput=function(){kp.schedule[i]=Number(e.value)};w.appendChild(e);rs.appendChild(w)});if(kp.quote){var pn=document.createElement('p');pn.style.cssText='color:var(--dim);margin:0 0 6px';pn.textContent='AI-продукт: 50% при старте и 50% при запуске. Проценты задаёт калькулятор.';c3.appendChild(pn)}else c3.appendChild(rs);
+    (kp.quote?[0,1]:[0,1,2]).forEach(function(i){var w=document.createElement('div');w.className='row';w.style.gridTemplateColumns='1fr auto';w.style.alignItems='end';
       var a=document.createElement('div');a.innerHTML='<label>Ссылка на оплату, этап '+(i+1)+' (Lava.top / Payoneer)</label>';var e=document.createElement('input');e.placeholder='https://…';e.value=kp.payLinks[i]||'';e.oninput=function(){kp.payLinks[i]=e.value.trim()};a.appendChild(e);
       var pl=document.createElement('label');pl.style.cssText='display:flex;gap:6px;align-items:center;margin:0 0 10px;color:var(--text)';var cb=document.createElement('input');cb.type='checkbox';cb.style.width='auto';cb.checked=!!kp.paid[i];cb.onchange=function(){kp.paid[i]=cb.checked};pl.appendChild(cb);pl.appendChild(document.createTextNode('оплачено'));
       w.appendChild(a);w.appendChild(pl);c3.appendChild(w)});
@@ -122,8 +146,8 @@ textarea{min-height:76px;resize:vertical}
   function save(publish,copy){api('',{action:'save',kp:kp,publish:!!publish}).then(function(j){if(!j.ok){toast('Ошибка сохранения');return}kp=j.kp;
     if(history.replaceState)history.replaceState(null,'','?id='+kp.id);
     if(copy){var ru=kp.lang!=='en';var nm=kp.client&&kp.client.name?kp.client.name:'';
-      var txt=ru?('Здравствуйте'+(nm?', '+nm:'')+'! Подготовила для вас предложение: '+j.url+'\nТам состав работ, сроки и этапы оплаты. Можно сразу отметить нужные допы, итог пересчитается. Если всё подходит, нажмите «Принять предложение», и я пришлю ссылку на первый платёж.')
-        :('Hi'+(nm?' '+nm:'')+'! Here is your proposal: '+j.url+'\nIt covers the scope, timeline and payment stages. You can tick any extras and the total updates. If it all looks good, press "Accept proposal" and I will send the first payment link.');
+      var txt=ru?('Здравствуйте'+(nm?', '+nm:'')+'! Подготовила для вас предложение: '+j.url+'\n'+(kp.quote?'Там можно отметить, что нужно именно вам: цена пересчитается сразу и станет точной.':'Там состав работ, сроки и этапы оплаты. Можно сразу отметить нужные допы, итог пересчитается.')+' Если всё подходит, нажмите «Принять предложение», и я пришлю ссылку на первый платёж.')
+        :('Hi'+(nm?' '+nm:'')+'! Here is your proposal: '+j.url+'\n'+(kp.quote?'You can tick what your business needs: the price updates instantly and becomes exact.':'It covers the scope, timeline and payment stages. You can tick any extras and the total updates.')+' If it all looks good, press "Accept proposal" and I will send the first payment link.');
       (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){toast('Опубликовано. Сообщение для клиента скопировано')},function(){prompt('Скопируйте сообщение',txt)})}
     else toast('Сохранено');draw()})}
 })();

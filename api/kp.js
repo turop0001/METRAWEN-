@@ -14,6 +14,7 @@ function publicView(kp) {
   const c = JSON.parse(JSON.stringify(kp));
   delete c.source; delete c.notesPrivate;
   if (c.client) delete c.client.email;
+  if (c.quote) c.quote.auditCredit = K.creditActive(kp);
   return c;
 }
 async function notify(text) {
@@ -29,7 +30,7 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'GET') {
     const q = req.query || {};
-    if (q.catalog) return res.status(200).json({ ok: true, items: K.ITEMS, rate: K.RATE });
+    if (q.catalog) return res.status(200).json({ ok: true, items: K.ITEMS, rate: K.RATE, quoteConfig: admin ? K.publicConfig() : undefined });
     if (q.list) {
       if (!admin) return res.status(401).json({ ok: false });
       return res.status(200).json({ ok: true, list: (await loadJson('kp:index')) || [] });
@@ -40,7 +41,7 @@ module.exports = async function handler(req, res) {
     }
     const kp = await K.load(q.id);
     if (!kp) return res.status(404).json({ ok: false });
-    if (admin) return res.status(200).json({ ok: true, kp: kp, url: K.publicUrl(kp.id) });
+    if (admin) return res.status(200).json({ ok: true, kp: kp, url: K.publicUrl(kp.id), quoteConfig: kp.quote ? K.publicConfig() : undefined });
     if (kp.status === 'draft') return res.status(404).json({ ok: false });
     kp.views = (kp.views || 0) + 1;
     if (kp.status === 'sent') kp.status = 'viewed';
@@ -49,7 +50,7 @@ module.exports = async function handler(req, res) {
       await saveJson('kp:seen:' + kp.id, 1, 60 * 60 * 3);
       await notify('👀 <b>Клиент открыл КП</b>\n' + esc(kp.client.name || kp.client.company || '') + ' · ' + esc(kp.title) + '\nПросмотров: ' + kp.views + '\n' + K.publicUrl(kp.id));
     }
-    return res.status(200).json({ ok: true, kp: publicView(kp) });
+    return res.status(200).json({ ok: true, kp: publicView(kp), quoteConfig: kp.quote ? K.publicConfig() : undefined });
   }
 
   if (req.method !== 'POST') return res.status(405).json({ ok: false });
@@ -65,12 +66,21 @@ module.exports = async function handler(req, res) {
     if (await loadJson('kp:acc:' + kp.id)) return res.status(429).json({ ok: false });
     await saveJson('kp:acc:' + kp.id, 1, 5);
     const addons = (Array.isArray(body.addons) ? body.addons : []).map(Number).filter(function (i) { return i >= 0 && i < (kp.addons || []).length; });
+    if (kp.quote) {
+      // Итог считает сервер по сохранённому чек-листу: цифра из браузера не принимается.
+      // Чек-лист заполняет менеджер: ответы клиента из браузера не принимаются, берётся то, что сохранено в КП.
+      kp.quote = K.cleanQuote(kp.quote, kp.quote);
+      kp.quote.locked = true;
+      kp.acceptedAt = Date.now();
+      const rq = K.applyQuote(kp);
+      if (!rq.ok) { delete kp.acceptedAt; return res.status(400).json({ ok: false, error: 'quote', errors: rq.errors }); }
+    }
     kp.status = 'accepted'; kp.acceptedAt = Date.now(); kp.acceptedAddons = addons;
     await K.save(kp);
     const sum = total(kp, addons);
     const extra = addons.map(function (i) { return '+ ' + esc(kp.addons[i].name); }).join('\n');
     const hunterName = await require('./_lib/hunter').kpEvent(kp, 'accepted', fmt(sum, kp.currency));
-    await notify('🔥 <b>КП ПРИНЯТО</b>\n' + esc(kp.client.name || kp.client.company || '') + ' · ' + esc(kp.title) + '\nИтого: <b>' + fmt(sum, kp.currency) + '</b>' + (extra ? '\nДопы:\n' + extra : '') + '\n\nПервый платёж ' + (kp.schedule || [30])[0] + '%: ' + fmt(Math.round(sum * (kp.schedule || [30])[0] / 100), kp.currency) + (kp.payLinks && kp.payLinks[0] ? '' : '\n⚠️ Ссылка на оплату не добавлена, добавьте в форме.') + (hunterName ? '\nHunter CRM: ' + esc(hunterName) + ' → «КП принято»' : '') + '\nОткрыть: ' + K.adminUrl(kp.id));
+    await notify('🔥 <b>КП ПРИНЯТО</b>\n' + esc(kp.client.name || kp.client.company || '') + ' · ' + esc(kp.title) + '\nИтого: <b>' + fmt(sum, kp.currency) + '</b>' + (extra ? '\nДопы:\n' + extra : '') + '\n\nПервый платёж ' + (kp.schedule || [30])[0] + '%: ' + fmt(Math.round(sum * (kp.schedule || [30])[0] / 100), kp.currency) + (kp.payLinks && kp.payLinks[0] ? '' : '\n⚠️ Ссылка на оплату не добавлена, добавьте в форме.') + (kp.quoteSummary ? '\nПоддержка после запуска: ' + fmt(kp.quoteSummary.monthly, kp.currency) + '/мес' : '') + (hunterName ? '\nHunter CRM: ' + esc(hunterName) + ' → «КП принято»' : '') + '\nОткрыть: ' + K.adminUrl(kp.id));
     return res.status(200).json({ ok: true });
   }
 
@@ -81,10 +91,19 @@ module.exports = async function handler(req, res) {
     const base = prev || K.blank(inKp.lang);
     const keep = ['id', 'created', 'views', 'acceptedAt', 'acceptedAddons', 'source', 'status'];
     const kp = Object.assign({}, base, inKp);
+    if (inKp.quote) {
+      kp.quote = K.cleanQuote(inKp.quote, prev && prev.quote);
+      if (!kp.quote.product) return res.status(400).json({ ok: false, error: 'quote' });
+    } else if (inKp.quote === null) { delete kp.quote; delete kp.quoteSummary; }
+    else if (prev && prev.quote) { kp.quote = prev.quote; }
     if (prev) keep.forEach(function (k) { if (prev[k] !== undefined) kp[k] = prev[k]; });
     if (!/^[a-z0-9]{6,16}$/.test(String(kp.id || ''))) kp.id = base.id;
     if (!['draft', 'sent', 'viewed', 'accepted'].includes(kp.status)) kp.status = 'draft';
     if (body.publish && kp.status === 'draft') kp.status = 'sent';
+    if (kp.quote && kp.status !== 'accepted') {
+      const rq = K.applyQuote(kp);
+      if (!rq.ok) return res.status(400).json({ ok: false, error: 'quote', errors: rq.errors });
+    }
     await K.save(kp);
     // Первая отметка «оплачено» → сделка в Hunter CRM (этап «Сделка/Оплачено» + сумма договора).
     try {
