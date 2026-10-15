@@ -48,6 +48,7 @@ const AGENCY_MENU = { inline_keyboard: [
   [{ text: '⭐ Агентство: топ 30', callback_data: 'mn:pt:30' }, { text: '⭐ Агентство: топ 50', callback_data: 'mn:pt:50' }],
   [{ text: '🔥 Агентство: Hot (15)', callback_data: 'mn:ph' }, { text: '🌤 Агентство: Warm (15)', callback_data: 'mn:pw' }],
   [{ text: '📨 Агентство: пачка по отрасли', callback_data: 'mn:pa' }],
+  [{ text: '➕ Новые лиды +25', callback_data: 'mn:nl:agency:25' }, { text: '➕ +50', callback_data: 'mn:nl:agency:50' }, { text: '➕ +100', callback_data: 'mn:nl:agency:100' }],
   [{ text: '💬 Агентство: карточки для ручных DM', callback_data: 'mn:dm' }],
   [{ text: '← Главное меню', callback_data: 'mn:main' }]
 ] };
@@ -56,6 +57,7 @@ const SHOP_MENU = { inline_keyboard: [
   [{ text: '🛍 Shop: пачка 15 писем — рекомендуем', callback_data: 'mn:ps:15' }],
   [{ text: '🛍 Shop: пачка 30', callback_data: 'mn:ps:30' }, { text: '🛍 Shop: пачка 50', callback_data: 'mn:ps:50' }],
   [{ text: '💬 Shop: карточки для ручных DM (10)', callback_data: 'mn:dms' }],
+  [{ text: '➕ Новые лиды +25', callback_data: 'mn:nl:shop:25' }, { text: '➕ +50', callback_data: 'mn:nl:shop:50' }, { text: '➕ +100', callback_data: 'mn:nl:shop:100' }],
   [{ text: '← Главное меню', callback_data: 'mn:main' }]
 ] };
 
@@ -95,6 +97,13 @@ async function menuAction(data, chatId) {
   if (p[1] === 'main') { await tg('sendMessage', { chat_id: chatId, text: 'Что делаем?', reply_markup: MAIN_MENU }); return; }
   if (p[1] === 'ag') { await tg('sendMessage', { chat_id: chatId, text: '<b>🏢 АГЕНТСТВО</b> (холодные письма по Hunter CRM, ящики getmetrawen.com)\nКакую пачку готовим?', parse_mode: 'HTML', reply_markup: AGENCY_MENU }); return; }
   if (p[1] === 'sh') { await tg('sendMessage', { chat_id: chatId, text: '<b>🛍 SHOP</b> (цифровые товары, холодные письма по лидам магазина)\nКакую пачку готовим?', parse_mode: 'HTML', reply_markup: SHOP_MENU }); return; }
+  if (p[1] === 'nl') {
+    try {
+      const r = await require('./_lib/huntreq').create(p[2], p[3]);
+      await tg('sendMessage', { chat_id: chatId, text: '➕ Запрос принят: +' + r.n + ' новых лидов для ' + (r.brand === 'shop' ? 'Shop' : 'Агентства') + '. Ассистент Hunter добавит их в CRM с черновиками, и я пришлю сообщение, когда будет готово. Статус виден в Notion: база «Лиды по каналам», канал «Запрос лидов».' });
+    } catch (e) { await tg('sendMessage', { chat_id: chatId, text: '⚠️ Не удалось записать запрос: ' + String(e.message || e).slice(0, 120) }); }
+    return;
+  }
   if (p[1] === 'dms') { await ownerCommand('/dm shop 10', chatId); return; }
   if (p[1] === 'pt') { const k = Math.min(Math.max(parseInt(p[2], 10) || 15, 1), 50); await ownerCommand('/pack agency ' + k + ' top', chatId); return; }
   if (p[1] === 'ph') { await ownerCommand('/pack agency 15 hot', chatId); return; }
