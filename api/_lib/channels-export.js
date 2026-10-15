@@ -67,5 +67,33 @@ function summary(list) {
   return { at: new Date().toISOString(), days: days, channels: res };
 }
 
+function txt(p) {
+  if (!p) return '';
+  if (p.type === 'title') return (p.title || []).map(function (x) { return x.plain_text; }).join('');
+  if (p.type === 'rich_text') return (p.rich_text || []).map(function (x) { return x.plain_text; }).join('');
+  if (p.type === 'url') return p.url || '';
+  return '';
+}
+
+// Строки для переноса в лиды OS: только три личных канала, без Upwork и служебных «Запрос лидов».
+function rows(list) {
+  const key = {}; CHANNELS.forEach(function (c) { key[c.notion] = c.key; });
+  const out = [];
+  list.forEach(function (pg) {
+    const P = pg.properties || {};
+    const ch = key[sel(P['Канал'])];
+    if (!ch || ch === 'upwork') return;
+    const name = String(txt(P['Название']) || '').trim();
+    if (!name) return;
+    const o = { id: pg.id, name: name, channel: ch, inContacts: chk(P['Добавил в контакты']), noteSent: chk(P['Записка отправлена']), replied: chk(P['Ответил']) };
+    const set = function (k, v) { v = String(v || '').trim(); if (v) o[k] = v; };
+    set('link', txt(P['Ссылка'])); set('city', txt(P['Город'])); set('segment', sel(P['Сегмент']));
+    set('why', txt(P['Почему подходит'])); set('note', txt(P['Заметки'])); set('result', sel(P['Результат'])); set('sentAt', day(P['Дата отправки']));
+    out.push(o);
+  });
+  return out;
+}
+
 async function run() { return summary(await pages()); }
-module.exports = { run, summary };
+async function rowsAll() { return { rows: rows(await pages()) }; }
+module.exports = { run, rowsAll, summary, rows };

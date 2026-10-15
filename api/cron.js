@@ -20,7 +20,7 @@ module.exports = async function handler(req, res) {
     const want = String(process.env.OS_INGEST_TOKEN || '').replace(/[^\x21-\x7E]/g, '');
     const got = String(req.headers['x-ingest-token'] || '');
     if (!want || got !== want) return res.status(401).json({ ok: false });
-    try { return res.status(200).json(await require('./_lib/channels-export').run()); }
+    try { const ce = require('./_lib/channels-export'); return res.status(200).json(String((req.query && req.query.rows) || '') ? await ce.rowsAll() : await ce.run()); }
     catch (e) { return res.status(500).json({ ok: false, error: String(e.message).slice(0, 200) }); }
   }
   const cs = String(process.env.CRON_SECRET || '');
