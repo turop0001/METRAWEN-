@@ -15,6 +15,14 @@ module.exports = async function handler(req, res) {
     try { return res.status(200).json(await require('./_lib/hunter-export').page(String((req.query && req.query.cursor) || '') || null)); }
     catch (e) { return res.status(500).json({ ok: false, error: String(e.message).slice(0, 200) }); }
   }
+  if (String((req.query && req.query.job) || '') === 'channels-export') {
+    // Сводка по ручным отправкам для рабочего стола OS. Ключ тот же, что у двойной записи (OS_INGEST_TOKEN), только чтение.
+    const want = String(process.env.OS_INGEST_TOKEN || '').replace(/[^\x21-\x7E]/g, '');
+    const got = String(req.headers['x-ingest-token'] || '');
+    if (!want || got !== want) return res.status(401).json({ ok: false });
+    try { return res.status(200).json(await require('./_lib/channels-export').run()); }
+    catch (e) { return res.status(500).json({ ok: false, error: String(e.message).slice(0, 200) }); }
+  }
   const cs = String(process.env.CRON_SECRET || '');
   const auth = String(req.headers.authorization || '');
   const ua = String(req.headers['user-agent'] || '');
