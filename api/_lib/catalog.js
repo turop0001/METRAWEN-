@@ -3,7 +3,7 @@ const RATE = 82;
 const ITEMS = [
 {
 "id": "a_site",
-"rub": 24900,
+"rub": 16300,
 "days": 4,
 "ru": {
 "nm": "Лендинг: Базовый",
@@ -36,12 +36,12 @@ const ITEMS = [
 "rub": 84900,
 "days": 10,
 "ru": {
-"nm": "Сайт Start",
+"nm": "Сайт Business",
 "sol": "Многостраничный сайт вместо одного лендинга — когда для одной страницы информации уже мало",
 "cat": "Сайт и страницы"
 },
 "en": {
-"nm": "Website Start",
+"nm": "Website Business",
 "sol": "A multi-page website instead of a single landing page, for when one page isn't enough",
 "cat": "Websites and pages"
 }
@@ -51,12 +51,12 @@ const ITEMS = [
 "rub": 119500,
 "days": 15,
 "ru": {
-"nm": "Сайт PRO",
+"nm": "Сайт Business PRO",
 "sol": "Корпоративный сайт с блогом и усиленными блоками доверия — для тех, кто работает на репутацию и SEO-трафик",
 "cat": "Сайт и страницы"
 },
 "en": {
-"nm": "Website PRO",
+"nm": "Website Business PRO",
 "sol": "A company website with a blog and stronger trust sections, for businesses that grow on reputation and SEO traffic",
 "cat": "Websites and pages"
 }
@@ -123,7 +123,7 @@ const ITEMS = [
 },
 {
 "id": "a_bot",
-"rub": 19900,
+"rub": 12200,
 "days": 4,
 "ru": {
 "nm": "Чат-бот в Telegram: Базовый",
