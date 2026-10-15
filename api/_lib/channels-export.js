@@ -97,3 +97,19 @@ function rows(list) {
 async function run() { return summary(await pages()); }
 async function rowsAll() { return { rows: rows(await pages()) }; }
 module.exports = { run, rowsAll, summary, rows };
+
+// Действие из карточки лида в OS -> галочки в Notion (источник правды пока Notion).
+const ACTIONS = {
+  written: function () { return { 'Записка отправлена': { checkbox: true }, 'Дата отправки': { date: { start: new Date().toISOString().slice(0, 10) } } }; },
+  replied: function () { return { 'Ответил': { checkbox: true }, 'Результат': { select: { name: 'Диалог' } } }; },
+  call: function () { return { 'Ответил': { checkbox: true }, 'Результат': { select: { name: 'Созвон' } } }; },
+  order: function () { return { 'Ответил': { checkbox: true }, 'Результат': { select: { name: 'Заказ' } } }; },
+  refused: function () { return { 'Результат': { select: { name: 'Отказ' } } }; }
+};
+async function act(pageId, action) {
+  const make = ACTIONS[action];
+  if (!make || !/^[0-9a-fA-F-]{32,36}$/.test(String(pageId))) throw new Error('bad action');
+  await require('./hunter').ncall('PATCH', '/pages/' + pageId, { properties: make() });
+  return { ok: true };
+}
+module.exports.act = act;
