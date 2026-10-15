@@ -4,10 +4,10 @@
 const shop = require('./shop');
 const { tg } = require('./tg');
 const DB = function () { return String(process.env.NOTION_OUTBOUND_DB_ID || '2ab374b320594ee5bd115f329a9c3594').replace(/[^0-9a-f]/gi, ''); };
-const NAME = { agency: 'Агентство', shop: 'Shop' };
+const NAME = { agency: 'Агентство', shop: 'Shop', ig: 'Instagram (личная отправка)', li: 'LinkedIn (личная отправка)', tgg: 'Telegram-группы (личная отправка)' };
 
 async function create(brand, n, seg) {
-  const b = brand === 'shop' ? 'shop' : 'agency';
+  const b = NAME[brand] ? brand : 'agency';
   const num = Math.min(Math.max(parseInt(n, 10) || 50, 1), 200);
   const title = '+' + num + ' · ' + NAME[b] + (seg ? ' · ' + seg : '');
   await shop.ncall('POST', '/pages', {

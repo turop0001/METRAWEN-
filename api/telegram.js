@@ -39,8 +39,16 @@ const MAIN_MENU = { inline_keyboard: [
   [{ text: '📈 Кабинет (цифры за сегодня)', callback_data: 'mn:pr' }],
   [{ text: '🏢 АГЕНТСТВО (услуги студии)', callback_data: 'mn:ag' }],
   [{ text: '🛍 SHOP (цифровые товары)', callback_data: 'mn:sh' }],
+  [{ text: '🧭 МОИ ЛИДЫ для личной отправки', callback_data: 'mn:my' }],
   [{ text: '📊 Отчёт сейчас', callback_data: 'mn:rp' }, { text: '📝 Редактор КП', callback_data: 'mn:kp' }],
   [{ text: '📬 Статус рассылок', callback_data: 'mn:st' }, { text: '❓ Все команды', callback_data: 'mn:hp' }]
+] };
+
+const MY_MENU = { inline_keyboard: [
+  [{ text: '📸 Instagram +25', callback_data: 'mn:nl:ig:25' }, { text: '+50', callback_data: 'mn:nl:ig:50' }],
+  [{ text: '💼 LinkedIn +25', callback_data: 'mn:nl:li:25' }, { text: '+50', callback_data: 'mn:nl:li:50' }],
+  [{ text: '✈️ Telegram-группы +25', callback_data: 'mn:nl:tgg:25' }, { text: '+50', callback_data: 'mn:nl:tgg:50' }],
+  [{ text: '← Назад', callback_data: 'mn:main' }]
 ] };
 
 const AGENCY_MENU = { inline_keyboard: [
@@ -97,10 +105,11 @@ async function menuAction(data, chatId) {
   if (p[1] === 'main') { await tg('sendMessage', { chat_id: chatId, text: 'Что делаем?', reply_markup: MAIN_MENU }); return; }
   if (p[1] === 'ag') { await tg('sendMessage', { chat_id: chatId, text: '<b>🏢 АГЕНТСТВО</b> (холодные письма по Hunter CRM, ящики getmetrawen.com)\nКакую пачку готовим?', parse_mode: 'HTML', reply_markup: AGENCY_MENU }); return; }
   if (p[1] === 'sh') { await tg('sendMessage', { chat_id: chatId, text: '<b>🛍 SHOP</b> (цифровые товары, холодные письма по лидам магазина)\nКакую пачку готовим?', parse_mode: 'HTML', reply_markup: SHOP_MENU }); return; }
+  if (p[1] === 'my') { await tg('sendMessage', { chat_id: chatId, text: '<b>🧭 МОИ ЛИДЫ</b> (база «Лиды по каналам» в Notion, для вашей личной отправки)\nСколько новых добавить и куда?', parse_mode: 'HTML', reply_markup: MY_MENU }); return; }
   if (p[1] === 'nl') {
     try {
       const r = await require('./_lib/huntreq').create(p[2], p[3]);
-      await tg('sendMessage', { chat_id: chatId, text: '➕ Запрос принят: +' + r.n + ' новых лидов для ' + (r.brand === 'shop' ? 'Shop' : 'Агентства') + '. Ассистент Hunter добавит их в CRM с черновиками, и я пришлю сообщение, когда будет готово. Статус виден в Notion: база «Лиды по каналам», канал «Запрос лидов».' });
+      await tg('sendMessage', { chat_id: chatId, text: '➕ Запрос принят: +' + r.n + ' новых лидов для ' + (r.brand === 'shop' ? 'Shop' : r.brand === 'agency' ? 'Агентства' : r.brand === 'ig' ? 'Instagram' : r.brand === 'li' ? 'LinkedIn' : r.brand === 'tgg' ? 'Telegram-групп' : r.brand) + (['ig','li','tgg'].includes(r.brand) ? '. Ассистент найдёт публичные профили и добавит строки в вашу базу «Лиды по каналам» с текстом сообщения; я пришлю сообщение, когда будет готово.' : '. Ассистент Hunter добавит их в CRM с черновиками, и я пришлю сообщение, когда будет готово.') + ' Статус виден в Notion: база «Лиды по каналам», канал «Запрос лидов».' });
     } catch (e) { await tg('sendMessage', { chat_id: chatId, text: '⚠️ Не удалось записать запрос: ' + String(e.message || e).slice(0, 120) }); }
     return;
   }
