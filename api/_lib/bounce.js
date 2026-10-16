@@ -82,13 +82,7 @@ async function handle(b, ownBoxes) {
     dequeued = q.length - nq.length;
     if (dequeued) await saveJson(key, nq, 60 * 60 * 24 * 30);
   } catch (e) { /* очередь не критична */ }
-  try {
-    const { tg } = require('./tg');
-    await tg('sendMessage', {
-      chat_id: process.env.TELEGRAM_CHAT_ID,
-      text: '📭 Адрес не существует: ' + addr + (company ? ' (' + company + ')' : '') + '\n' + (marked ? 'Лид в Hunter CRM помечен «email невалидный», этап Skip, повторы отключены.' : 'В Hunter CRM такого лида нет, адрес добавлен в чёрный список.') + (dequeued ? '\nУбрано из очереди рассылки: ' + dequeued + '.' : '')
-    });
-  } catch (e) { /* уведомление не критично */ }
+  // Уведомление в Telegram убрано по просьбе владельца: пометка остаётся только в Notion (и видна в OS).
   return { handled: true, kind: 'hard', addr: addr, marked: marked };
 }
 
