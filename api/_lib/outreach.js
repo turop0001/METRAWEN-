@@ -338,6 +338,27 @@ async function track(B, brand, itemId, kind) {
 
 async function failed(it, brand) { return track(cfg(brand), brand, it.id, 'failed'); }
 
+// Возврат в очередь писем, которые «due» уже выдал, но мост их не отправил (лимит почты Google, сбой моста):
+// у таких карточек этап так и остался «одобрено», а из очереди они уже вынуты. Тексты берём из Notion.
+async function recover(brand) {
+  const B = cfg(brand);
+  const rows = await query(B, { and: [{ property: 'Этап', select: { equals: B.approved } }, { property: B.email, email: { is_not_empty: true } }] }, 100);
+  const q = (await loadJson(B.key + ':queue')) || [];
+  const have = {};
+  q.forEach(function (x) { have[x.to] = 1; });
+  const back = [];
+  rows.forEach(function (pg) {
+    const to = String(prop(pg, B.email) || '').toLowerCase();
+    if (!to || have[to]) return;
+    const r = fromDraft(B, pg);
+    if (!r) return;
+    have[to] = 1;
+    back.push({ id: pg.id, to: to, name: prop(pg, B.title), lang: B.lang(pg), subject: r.subject, body: r.body, seg: prop(pg, 'Отрасль') || '', country: prop(pg, 'Страна') || prop(pg, 'Регион') || '' });
+  });
+  if (back.length) await saveJson(B.key + ':queue', back.concat(q), 60 * 60 * 24 * 30);
+  return { restored: back.length, inQueue: q.length + back.length };
+}
+
 // Отмена всей очереди ещё не отправленных писем: этап возвращается, пачку можно собрать заново.
 async function cancelQueue(brand) {
   const B = cfg(brand);
@@ -451,4 +472,4 @@ async function mailboxStats() {
     schedule: [{ week: 1, cap: 5 }, { week: 2, cap: 10 }, { week: 3, cap: 15 }, { week: 4, cap: 20 }], boxes: rows };
 }
 
-module.exports = { mailboxStats, buildPack, approvePack, capFor, planStart, cancelQueue, statusText, failed, due, sent, SHOP_BOXES, BOXES: SHOP_BOXES, BRANDS, cfg, BAD, dailyCap, rewrite, fromDraft };
+module.exports = { mailboxStats, buildPack, approvePack, capFor, planStart, cancelQueue, statusText, failed, recover, due, sent, SHOP_BOXES, BOXES: SHOP_BOXES, BRANDS, cfg, BAD, dailyCap, rewrite, fromDraft };
