@@ -413,19 +413,41 @@ async function due(brand, boxesFromBridge) {
   }
   q = rest.concat(open);
   await saveJson(B.key + ':queue', q, 60 * 60 * 24 * 30);
-  // повторы: касание 2 через 4 дня, касание 3 («последнее письмо») через 9 дней от первого, только без ответа
+  // повторы: касание 2 через 4 дня, касание 3 («последнее письмо») через 9 дней от первого, только без ответа.
+  // Берём до 50 просроченных (раньше 10: первые десять, застрявшие вне окна 9-18, блокировали остальных),
+  // выбираем те, у кого сейчас открыто окно получателя, и укладываем в остаток суточного лимита Gmail.
   try {
+    const dayLimit = parseInt(process.env.OUTREACH_DAY_LIMIT, 10) || 90;
+    let used = 0;
+    for (const bx of boxes) used += (await loadJson(B.key + ':cnt:' + boxTag(bx) + d)) || 0;
+    const fuKey = B.key + ':fu:' + d;
+    let fu = (await loadJson(fuKey)) || 0;
+    let room = Math.max(0, dayLimit - used - fu);
+    const why = { closed: 0, limit: 0, nobox: 0 };
     for (const step of [{ n: 1, days: 4 }, { n: 2, days: 9 }]) {
       const old = new Date(Date.now() - step.days * 86400000).toISOString().slice(0, 10);
-      const rows = await query(B, B.followupFilter(old, step.n), 10, [{ property: 'Отправлено', direction: 'ascending' }]);
-      rows.forEach(function (pg) {
+      const rows = await query(B, B.followupFilter(old, step.n), 50, [{ property: 'Отправлено', direction: 'ascending' }]);
+      for (const pg of rows) {
         const lang = B.lang(pg);
+        if (!tzm.isOpen(tzm.zone(prop(pg, 'Страна') || prop(pg, 'Регион'), lang).tz)) { why.closed++; continue; }
+        if (room <= 0) { why.limit++; continue; }
         const tag = prop(pg, 'Ящик');
-        const from = boxes.find(function (b) { return boxTag(b) === tag; });
-        if (!tzm.isOpen(tzm.zone(prop(pg, 'Страна') || prop(pg, 'Регион'), lang).tz)) return; // вне окна 9-18 получателя
-        if (!from) return; // ящик, с которого писали, больше не подключён: повтор с чужого адреса не шлём
+        let from = boxes.find(function (b) { return boxTag(b) === tag; });
+        // ящик, с которого писали, больше не подключён (или подключён другой аккаунт): шлём с наименее загруженного из подключённых
+        if (!from) {
+          let best = null, bc = 1e9;
+          for (const bx of boxes) { const cc = (await loadJson(B.key + ':cnt:' + boxTag(bx) + d)) || 0; if (cc < bc) { bc = cc; best = bx; } }
+          from = best;
+        }
+        if (!from) { why.nobox++; continue; }
         out.push({ id: pg.id, to: String(prop(pg, B.email)).toLowerCase(), from: from, lang: lang, kind: 'followup', body: B.followups[step.n][lang] });
-      });
+        room--; fu++;
+      }
+    }
+    await saveJson(fuKey, fu, 60 * 60 * 30);
+    if (why.limit && !(await loadJson(B.key + ':fuwarn:' + d))) {
+      await saveJson(B.key + ':fuwarn:' + d, 1, 60 * 60 * 30);
+      await notify('⏸ Повторы: ' + why.limit + ' писем ждут до завтра, дневной лимит Gmail (' + dayLimit + ') исчерпан. Ушло сегодня: первых ' + used + ', повторов ' + fu + '.');
     }
   } catch (e) { await report('Рассылка: повторы (' + (brand || 'shop') + ')', e); }
   return out;

@@ -44,10 +44,21 @@ module.exports = async function handler(req, res) {
   try {
     if (scope) await ops.seen(scope);
     if (job === 'weekly') return res.status(200).json(await ops.weekly(false));
+    // Автопачка идёт первой: у функции Vercel 60 секунд, раньше их съедали сводка и черновики, и пачка не собиралась.
+    let auto;
+    if (fromVercel) {
+      try {
+        auto = await require('./_lib/autopack').run();
+        const items = auto && auto.out ? auto.out : [auto];
+        const lines = items.filter(function (x) { return x && x.skip && !/сегодня уже было|выходной/.test(String(x.skip)); })
+          .map(function (x) { return '• ' + (x.brand === 'agency' ? 'агентство' : 'магазин') + ': ' + x.skip; });
+        if (lines.length) await require('./_lib/tg').tg('sendMessage', { chat_id: process.env.TELEGRAM_CHAT_ID, text: 'ℹ️ Утренняя пачка не собрана:\n' + lines.join('\n') });
+      } catch (e) { await report('Автопачка', e); }
+    }
     const t = await ops.tick();
+    t.auto = auto;
     try { t.digest = await require('./_lib/digest').run(job === 'digest'); } catch (e) { await report('Сводка агентства', e); }
     if (fromVercel) { try { t.drafts = await require('./_lib/drafts').fillMissing(20, 40000); } catch (e) { await report('Авточерновики', e); } }
-    if (fromVercel) { try { t.auto = await require('./_lib/autopack').run(); } catch (e) { await report('Автопачка', e); } }
     return res.status(200).json(t);
   } catch (e) {
     await report('Служебный вызов ' + job, e);
