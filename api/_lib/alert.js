@@ -1,5 +1,5 @@
 // Журнал ошибок и статистика Sell Manager.
-// report(): ошибка уходит в Telegram (одинаковые не чаще раза в час) и в журнал для недельного отчёта.
+// report(): ошибка уходит в Telegram (одинаковые не чаще раза в 3 часа) и в журнал для недельного отчёта.
 // stat(): счётчики по неделям (обращения по каналам, подтверждения, продажи).
 const crypto = require('crypto');
 const { saveJson, loadJson, incr, once, enabled: storeEnabled } = require('./store');
@@ -32,11 +32,11 @@ async function report(where, err, ctx, quiet) {
     const log = (await loadJson('err:log')) || [];
     log.unshift({ ts: Date.now(), where: where, msg: msg.slice(0, 160) });
     await saveJson('err:log', log.slice(0, 40), 60 * 60 * 24 * 30);
-    if (quiet || !(await once('err:seen:' + h, 60 * 60))) return;
+    if (quiet || !(await once('err:seen:' + h, 60 * 60 * 3))) return;
     const { tg } = require('./tg');
     await tg('sendMessage', {
       chat_id: process.env.TELEGRAM_CHAT_ID, parse_mode: 'HTML', disable_web_page_preview: true,
-      text: '⚠️ <b>Ошибка Sell Manager</b> · ' + esc(where) + '\n' + esc(msg) + (ctx ? '\n<b>Что затронуто:</b> ' + esc(String(ctx).slice(0, 300)) : '') + '\nОдинаковые ошибки присылаю не чаще раза в час.'
+      text: '⚠️ <b>Ошибка Sell Manager</b> · ' + esc(where) + '\n' + esc(msg) + (ctx ? '\n<b>Что затронуто:</b> ' + esc(String(ctx).slice(0, 300)) : '') + '\nОдинаковые ошибки присылаю не чаще раза в 3 часа.'
     });
   } catch (e) { console.error('alert: не отправил', e); }
 }
