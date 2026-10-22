@@ -22,7 +22,18 @@ async function one(brand) {
   if (need < MIN_PACK) return { brand: brand, skip: 'очередь уже покрывает день (' + queued + ' из ' + perDay + ')' };
   // неодобренная пачка со вчера ещё висит: не плодим вторую
   const prev = await loadJson('op:auto:pending:' + brand);
-  if (prev && await loadJson('op:pack:' + prev)) return { brand: brand, skip: 'вчерашняя пачка ждёт одобрения' };
+  const old = prev ? await loadJson('op:pack:' + prev) : null;
+  if (old) {
+    // свежая (до суток) неодобренная пачка: повторно шлём карточку с кнопками, вдруг первая не дошла
+    if (old.at && Date.now() - old.at < 20 * 60 * 60 * 1000) {
+      await tg('sendMessage', { chat_id: process.env.TELEGRAM_CHAT_ID, text: '🔁 Пачка (' + (brand === 'agency' ? 'агентство' : 'магазин') + ', ' + old.items.length + ' писем) всё ещё ждёт одобрения. Одобрить?',
+        reply_markup: { inline_keyboard: [[{ text: '✅ Одобрить пачку', callback_data: 'op:ok:' + prev }, { text: '✖️ Отменить', callback_data: 'op:no:' + prev }]] } });
+      return { brand: brand, skip: 'пачка ждёт одобрения (карточка отправлена повторно)' };
+    }
+    // старая или без отметки времени: сбрасываем и собираем заново, чтобы не стоять днями
+    await saveJson('op:pack:' + prev, null, 1);
+    await saveJson('op:auto:pending:' + brand, null, 1);
+  }
   const p = await op.buildPack(need, brand, '');
   if (!p.items.length) {
     await tg('sendMessage', { chat_id: process.env.TELEGRAM_CHAT_ID, text: '📭 Автопачка (' + (brand === 'agency' ? 'агентство' : 'магазин') + '): нет лидов, готовых к рассылке. Нужны новые лиды в Hunter CRM.' });

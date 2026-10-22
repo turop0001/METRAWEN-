@@ -228,7 +228,7 @@ async function buildPack(n, brand, seg) {
     }));
   }
   const id = Date.now().toString(36);
-  await saveJson('op:pack:' + id, { brand: brand === 'agency' ? 'agency' : 'shop', items: items }, 60 * 60 * 24 * 3);
+  await saveJson('op:pack:' + id, { brand: brand === 'agency' ? 'agency' : 'shop', items: items, at: Date.now() }, 60 * 60 * 24 * 3);
   return { id: id, items: items, brand: brand, fromNotion: fromNotion, written: items.length - fromNotion };
 }
 
@@ -422,7 +422,9 @@ async function due(brand, boxesFromBridge) {
     for (const bx of boxes) used += (await loadJson(B.key + ':cnt:' + boxTag(bx) + d)) || 0;
     const fuKey = B.key + ':fu:' + d;
     let fu = (await loadJson(fuKey)) || 0;
-    let room = Math.max(0, dayLimit - used - fu);
+    // повторы не больше трети дневного лимита: остальное оставляем первым письмам новых лидов
+    const fuMax = Math.floor(dayLimit / 3);
+    let room = Math.max(0, Math.min(dayLimit - used - fu, fuMax - fu));
     const why = { closed: 0, limit: 0, nobox: 0 };
     for (const step of [{ n: 1, days: 4 }, { n: 2, days: 9 }]) {
       const old = new Date(Date.now() - step.days * 86400000).toISOString().slice(0, 10);
