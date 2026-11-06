@@ -6,7 +6,7 @@
 // (вопрос «прислать ссылку/пример?»: ответы греют домен) → «Одобрить пачку» → мост раз в час по будням забирает письма
 // и отправляет по графику прогрева → этап «Отправлено». Через 4 дня без ответа один короткий повтор в той же ветке.
 // Ответ лида → «Ответ»/«Ответ получен» (sellmanager), покупка → «Продажа», оплата КП → «Сделка/Оплачено».
-const { loadJson, saveJson } = require('./store');
+const { loadJson, saveJson, once } = require('./store');
 const llm = require('./llm');
 const shop = require('./shop');
 const hunter = require('./hunter');
@@ -449,7 +449,8 @@ async function due(brand, boxesFromBridge) {
     await saveJson(fuKey, fu, 60 * 60 * 30);
     if (why.limit && !(await loadJson(B.key + ':fuwarn:' + d))) {
       await saveJson(B.key + ':fuwarn:' + d, 1, 60 * 60 * 30);
-      await notify('⏸ Повторы: ' + why.limit + ' писем ждут до завтра, дневной лимит Gmail (' + dayLimit + ') исчерпан. Ушло сегодня: первых ' + used + ', повторов ' + fu + '.');
+      // Потолок повторов = треть дневного лимита Gmail, чтобы повторы не съедали место у первых писем. Сам лимит Gmail тут не исчерпан.
+      await notify('⏸ Повторы на сегодня: ' + fu + ' из ' + fuMax + ' (потолок повторов — треть дневного лимита ' + dayLimit + '). Ещё ' + why.limit + ' ждут до завтра, ничего не потеряно. Первых писем сегодня: ' + used + '.');
     }
   } catch (e) { await report('Рассылка: повторы (' + (brand || 'shop') + ')', e); }
   return out;
@@ -457,9 +458,13 @@ async function due(brand, boxesFromBridge) {
 
 async function sent(it, brand) {
   const B = cfg(brand);
+  let mark = '';
   try {
     const pg = await B.call('GET', '/pages/' + it.id);
     const n = (pg.properties['Касаний'] && pg.properties['Касаний'].number) || 0;
+    // Защита от двойного учёта: если мост по ошибке сообщит об одной и той же отправке дважды (повтор запроса), счётчик касаний не растёт.
+    mark = B.key + ':sentmark:' + it.id + ':' + (n + 1);
+    if (!(await once(mark, 60 * 60 * 6))) return;
     const props = {
       'Этап': { select: { name: B.sent } },
       'Касаний': { number: n + 1 },
@@ -475,7 +480,7 @@ async function sent(it, brand) {
     if (em) await saveJson('op:rcpt:' + em, brand === 'agency' ? 'agency' : 'shop', 60 * 60 * 24 * 120);
     await stat('sent:' + (brand === 'agency' ? 'agency' : 'shop'));
     if (it.kind !== 'followup') await track(B, brand, it.id, 'sent');
-  } catch (e) { await report('Рассылка: отметка «отправлено»', e, it.id); }
+  } catch (e) { try { if (mark) await saveJson(mark, null, 1); } catch (x) { /* не критично */ } await report('Рассылка: отметка «отправлено»', e, it.id); }
 }
 
 async function mailboxStats() {

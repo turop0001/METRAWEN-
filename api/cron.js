@@ -49,10 +49,7 @@ module.exports = async function handler(req, res) {
     if (fromVercel) {
       try {
         auto = await require('./_lib/autopack').run();
-        const items = auto && auto.out ? auto.out : [auto];
-        const lines = items.filter(function (x) { return x && x.skip && !/сегодня уже было|выходной/.test(String(x.skip)); })
-          .map(function (x) { return '• ' + (x.brand === 'agency' ? 'агентство' : 'магазин') + ': ' + x.skip; });
-        if (lines.length) await require('./_lib/tg').tg('sendMessage', { chat_id: process.env.TELEGRAM_CHAT_ID, text: 'ℹ️ Утренняя пачка не собрана:\n' + lines.join('\n') });
+        // Пропуски автопачки («очередь покрывает день», «нет ящиков у магазина») не шлём в Telegram: это штатное состояние, оно видно в /status и в OS.
       } catch (e) { await report('Автопачка', e); }
     }
     const t = await ops.tick();

@@ -6,7 +6,7 @@
 // Когда CRM переедет в Metrawen OS, поменять нужно только load() и tables().
 const H = require('./hunter');
 const { once, enabled: storeEnabled } = require('./store');
-const { report } = require('./alert');
+const { report, log } = require('./alert');
 
 const clean = function (v) { return String(v || '').replace(/[^\x20-\x7E]/g, '').trim(); };
 const PAGE = function () { return clean(process.env.NOTION_DIGEST_PAGE_ID) || '3f2ab017e982819fa6fdd16175795b52'; };
@@ -197,7 +197,8 @@ async function refresh(budgetMs) {
     });
   });
   let done = 0, skipped = 0;
-  await pool(jobs, 3, async function (j) {
+  // Страница одна, поэтому пишем по одной строке: параллельные записи в один блок дают 409 Conflict.
+  await pool(jobs, 1, async function (j) {
     if (Date.now() - t0 > (budgetMs || 40000)) { skipped++; return; }
     await H.ncall('PATCH', '/blocks/' + j.id, { table_row: { cells: j.cells.map(cell) } });
     done++;
@@ -218,7 +219,12 @@ async function run(force) {
     const r = await refresh(40000);
     if (r.tables < r.expected) await report('Сводка агентства', 'на странице найдено таблиц ' + r.tables + ' из ' + r.expected + ': макет изменён вручную или нет доступа интеграции Notion');
     return r;
-  } catch (e) { await report('Сводка агентства', e); return { ok: false }; }
+  } catch (e) {
+    // Временные сбои Notion (409, 429, 5xx, обрыв) не шлём в Telegram: сводка обновится на следующем тике, ошибка остаётся в журнале.
+    if (/notion (409|429|50\d)\b|aborted|fetch failed/i.test(String(e && e.message || e))) await log('Сводка агентства (временно)', e);
+    else await report('Сводка агентства', e);
+    return { ok: false };
+  }
 }
 
 // Markdown макета: таблицы в колонках. Строится из tables(), поэтому число строк всегда совпадает.
