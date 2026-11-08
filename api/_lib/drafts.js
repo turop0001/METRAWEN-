@@ -102,6 +102,7 @@ async function save(pg, body) {
 // Берёт до limit карточек без черновика и пишет черновики (параллельно по 3, в пределах бюджета времени).
 async function fillMissing(limit, budgetMs) {
   const out = { done: 0, failed: 0, left: 0, err: '' };
+  if (require('./pause').paused()) return Object.assign(out, { skipped: 'рассылка на паузе' });
   if (!llm.enabled()) return Object.assign(out, { skipped: 'нет ключа модели' });
   const j = await hunter.ncall('POST', '/databases/' + hunter.DB() + '/query', {
     filter: { and: [
@@ -128,7 +129,7 @@ async function fillMissing(limit, budgetMs) {
 
 // Фоновый вызов из тика: раз в ~9 минут, небольшая порция.
 async function step() {
-  if (!storeEnabled() || process.env.DRAFTS_AUTO === '0') return null;
+  if (!storeEnabled() || process.env.DRAFTS_AUTO === '0' || require('./pause').paused()) return null;
   if (!(await once('drafts:step', 9 * 60))) return null;
   try {
     const r = await fillMissing(8, 35000);

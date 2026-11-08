@@ -49,7 +49,7 @@ async function one(brand) {
 }
 
 async function run(force) {
-  if (!storeEnabled() || process.env.OUTREACH_AUTO === '0') return { skipped: true };
+  if (!storeEnabled() || process.env.OUTREACH_AUTO === '0' || require('./pause').paused()) return { skipped: true };
   const d = bkk(); const dow = d.getUTCDay();
   if (!force && (dow === 0 || dow === 6)) return { skipped: 'выходной' };
   const day = d.toISOString().slice(0, 10);

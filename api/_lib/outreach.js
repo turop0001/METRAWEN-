@@ -141,6 +141,7 @@ const sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms
 
 // Вызов модели с повтором при лимитах и перегрузке (429, 5xx).
 async function complete(system, user, tokens) {
+  if (require('./pause').paused()) throw new Error('рассылка на паузе (OUTREACH_PAUSED)');
   let last;
   for (let a = 0; a < 3; a++) {
     try { return await llm.complete(system, user, tokens); }
@@ -380,6 +381,7 @@ async function cancelQueue(brand) {
 
 // Вызывается мостом раз в час. boxes — ящики, с которых мост умеет отправлять (для agency их присылает сам мост).
 async function due(brand, boxesFromBridge) {
+  if (require('./pause').paused()) return [];
   const B = cfg(brand);
   const boxes = brand === 'agency'
     ? (Array.isArray(boxesFromBridge) ? boxesFromBridge : []).map(function (b) { return String(b).toLowerCase(); }).filter(function (b) { return /@/.test(b) && !/@metrawen\.com$/.test(b); }).slice(0, 5)

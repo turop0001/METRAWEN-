@@ -153,7 +153,7 @@ async function deliver(lead, body) {
 function dayWindow() { const h = new Date().getUTCHours(); return h >= 5 && h < 16; }
 
 async function runNudges() {
-  if (process.env.SM_NUDGE === '0' || !llm.enabled() || !dayWindow()) return 0;
+  if (process.env.SM_NUDGE === '0' || require('./pause').paused() || !llm.enabled() || !dayWindow()) return 0;
   const list = (await loadJson('sm:nudge')) || [];
   if (!list.length) return 0;
   const left = [];
