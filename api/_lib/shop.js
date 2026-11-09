@@ -12,7 +12,7 @@ const token = function () { return require('./env').secret('NOTION_TOKEN'); };
 const GOODS_DB = function () { return clean(process.env.NOTION_GOODS_DB_ID) || '2edf6f2347eb469093aba029e1dd663e'; };
 const HUNTER_DB = function () { return clean(process.env.NOTION_HUNTER_DB_ID) || '07b73fb5e5344edc8467dd687d60ef30'; };
 
-async function ncall(method, path, body) {
+async function ncall1(method, path, body) {
   const ctl = new AbortController();
   const t = setTimeout(function () { ctl.abort(); }, 7000);
   try {
@@ -26,6 +26,20 @@ async function ncall(method, path, body) {
     if (!r.ok) throw new Error('notion ' + r.status + ' ' + String(j.message || '').slice(0, 160) + (r.status === 401 ? ' [' + require('./env').diag('NOTION_TOKEN') + ']' : ''));
     return j;
   } finally { clearTimeout(t); }
+}
+
+// Notion иногда отвечает 409 (конфликт записи), 429 (лимит) или 5xx (502/503): это временно, повторяем до трёх раз с паузой.
+async function ncall(method, path, body) {
+  let last;
+  for (let a = 0; a < 3; a++) {
+    try { return await ncall1(method, path, body); }
+    catch (e) {
+      last = e;
+      if (!/notion (409|429|50\d)\b/.test(String(e && e.message || e))) throw e;
+      await new Promise(function (r) { setTimeout(r, 600 * (a + 1)); });
+    }
+  }
+  throw last;
 }
 
 // Домены площадок: письма от них отвечать из бота нельзя (ответ уходит на служебный адрес площадки), только вставка текста в диалог.

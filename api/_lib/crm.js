@@ -10,7 +10,7 @@ function token() { return require('./env').secret('NOTION_TOKEN'); }
 function dbId() { return clean(process.env.NOTION_CRM_DB_ID) || DEFAULT_DB; }
 function enabled() { return !!token(); }
 
-async function call(method, path, body) {
+async function call1(method, path, body) {
   const ctl = new AbortController();
   const t = setTimeout(function () { ctl.abort(); }, 7000);
   try {
@@ -30,6 +30,20 @@ async function call(method, path, body) {
   } finally {
     clearTimeout(t);
   }
+}
+
+// Notion иногда отвечает 409 (конфликт записи), 429 (лимит) или 5xx (502/503): это временно, повторяем до трёх раз с паузой.
+async function call(method, path, body) {
+  let last;
+  for (let a = 0; a < 3; a++) {
+    try { return await call1(method, path, body); }
+    catch (e) {
+      last = e;
+      if (!/notion (409|429|50\d)\b/.test(String(e && e.message || e))) throw e;
+      await new Promise(function (r) { setTimeout(r, 600 * (a + 1)); });
+    }
+  }
+  throw last;
 }
 
 const CHANNEL = { line: 'LINE', telegram: 'Telegram', whatsapp: 'WhatsApp', email: 'Email', chat: 'Чат на сайте' };
